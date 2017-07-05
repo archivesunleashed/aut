@@ -1,1 +1,0 @@
-var listOfAvailableDataFiles = ["graph.json"];

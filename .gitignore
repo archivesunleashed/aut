@@ -6,3 +6,8 @@ target/
 *.iml
 *~
 src/main/solr/lib/
+.gradle
+.settings
+.*.swp
+workbench.xmi
+build
