@@ -16,39 +16,93 @@
 
 package io.archivesunleashed.io;
 
+import io.archivesunleashed.data.ArcRecordUtils;
+import io.archivesunleashed.data.WarcRecordUtils;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import org.apache.hadoop.io.Writable;
 import org.archive.io.ArchiveRecord;
 import org.archive.io.arc.ARCRecord;
 import org.archive.io.warc.WARCRecord;
-import io.archivesunleashed.data.ArcRecordUtils;
-import io.archivesunleashed.data.WarcRecordUtils;
 
-
-import java.io.*;
-
+/**
+ * Implements Hadoop Writable for Generic Archive Records.
+ */
 public class GenericArchiveRecordWritable implements Writable {
-  public enum ArchiveFormat {UNKNOWN, ARC, WARC}
+
+  /**
+   * Archive Formats that can be used.
+   * <li>{@link #UNKNOWN}</li>
+   * <li>{@link #ARC}</li>
+   * <li>{@link #WARC}</li>
+   */
+  public enum ArchiveFormat {
+      /**
+       * UNKNOWN format.
+       */
+      UNKNOWN,
+
+      /**
+       * ARC format.
+       */
+      ARC,
+
+      /**
+       * WARC format.
+       */
+      WARC
+  }
+
+  /**
+   * Set default Generic Record format to UNKNOWN.
+   */
   private ArchiveFormat format = ArchiveFormat.UNKNOWN;
 
+  /**
+   * Initialize Generic Archive Record to null.
+   */
   private ArchiveRecord record = null;
 
-  public GenericArchiveRecordWritable() {}
+  /**
+   * Utility function.
+   */
+  public GenericArchiveRecordWritable() {
+  }
 
-  public GenericArchiveRecordWritable(ArchiveRecord r) {
+  /**
+   * Initialize Generic Archive Record.
+   *
+   * @param r Generic Archive Record
+   */
+  public GenericArchiveRecordWritable(final ArchiveRecord r) {
     this.record = r;
     detectFormat();
   }
 
-  public void setRecord(ArchiveRecord r) {
+  /**
+   * Set Generic Archive Record.
+   *
+   * @param r Generic Archive Record
+   */
+  public final void setRecord(final ArchiveRecord r) {
     this.record = r;
     detectFormat();
   }
 
-  public ArchiveRecord getRecord() {
+  /**
+   * Get Generic Archive Record.
+   *
+   * @return record Generic Archive Record
+   */
+  public final ArchiveRecord getRecord() {
     return record;
   }
 
-  public void detectFormat() {
+  /**
+   * Detect format of Generic Archive Record.
+   */
+  public final void detectFormat() {
     if (record instanceof ARCRecord) {
       format = ArchiveFormat.ARC;
     } else if (record instanceof WARCRecord)  {
@@ -58,16 +112,26 @@ public class GenericArchiveRecordWritable implements Writable {
     }
   }
 
-  public ArchiveFormat getFormat() {
+  /**
+   * Get format of Generic Archive Record.
+   *
+   * @return format of Generic Archive Record
+   */
+  public final ArchiveFormat getFormat() {
     return format;
   }
 
-  public void setFormat(ArchiveFormat f) {
+  /**
+   * Set format of Generic Archive Record.
+   *
+   * @param f format of Generic Archive Record
+   */
+  public final void setFormat(final ArchiveFormat f) {
     this.format = f;
   }
 
   @Override
-  public void readFields(DataInput in) throws IOException {
+  public final void readFields(final DataInput in) throws IOException {
     int len = in.readInt();
     if (len == 0) {
       this.record = null;
@@ -87,7 +151,7 @@ public class GenericArchiveRecordWritable implements Writable {
   }
 
   @Override
-  public void write(DataOutput out) throws IOException {
+  public final void write(final DataOutput out) throws IOException {
     if (record == null) {
       out.writeInt(0);
     }

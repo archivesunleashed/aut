@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC "-//Puppy Crawl//DTD Suppressions 1.1//EN"
+"http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
+<suppressions>
+  <suppress checks="AvoidStarImport" files="Test.+.java"/>
+  <suppress checks="ClassDataAbstractionCoupling" files="Test.+.java"/>
+  <suppress checks="LineLength" files="Test.+.java"/>
+  <suppress checks="MagicNumberCheck" files="Test.+.java"/>
+  <suppress checks="MultipleStringLiterals" files="Test.+.java"/>
+  <suppress id="MethodNameRegular" files="Test.+.java"  />
+  <suppress id="MethodNameTest" files="[\\/]src.+.java"  />
+  <suppress checks="TodoComment" files=".*TodoCommentCheck\.java"/>
+  <suppress checks="Javadoc" files=".*[\\/]src[\\/](test|it)[\\/]"/>
+</suppressions>

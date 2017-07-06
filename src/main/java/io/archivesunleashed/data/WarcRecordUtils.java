@@ -13,53 +13,71 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.archivesunleashed.data;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.httpclient.HttpParser;
-import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.log4j.Logger;
 import org.archive.io.warc.WARCConstants;
 import org.archive.io.warc.WARCReader;
 import org.archive.io.warc.WARCReaderFactory;
 import org.archive.io.warc.WARCRecord;
 
-import java.io.*;
-import java.lang.Exception;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * Utilities for working with {@code WARCRecord}s (from archive.org APIs).
  */
-public class WarcRecordUtils implements WARCConstants {
-  private static final Logger LOG = Logger.getLogger(WarcRecordUtils.class);
+public final class WarcRecordUtils implements WARCConstants {
 
-  // TODO: these methods work fine, but there's a lot of unnecessary buffer copying, which is
-  // terrible from a performance perspective.
+  /**
+   * Utility classes should not have a public or default constructor.
+   */
+  private WarcRecordUtils() {
+  }
+
+  /**
+  * Setup logger.
+  */
+  private static final Logger LOG = Logger.getLogger(WarcRecordUtils.class);
 
   /**
    * Converts raw bytes into an {@code WARCRecord}.
    *
    * @param bytes raw bytes
    * @return parsed {@code WARCRecord}
-   * @throws IOException
+   * @throws IOException if there is an issue
    */
-  public static WARCRecord fromBytes(byte[] bytes) throws IOException {
+  public static WARCRecord fromBytes(final byte[] bytes) throws IOException {
     WARCReader reader = (WARCReader) WARCReaderFactory.get("",
         new BufferedInputStream(new ByteArrayInputStream(bytes)), false);
     return (WARCRecord) reader.get();
   }
 
-  public static byte[] toBytes(WARCRecord record) throws IOException {
+  /**
+   * Converts WARC record into raw bytes.
+   *
+   * @param record conents of WARC response record
+   * @return raw contents
+   * @throws IOException if there is an issue
+   */
+  public static byte[] toBytes(final WARCRecord record) throws IOException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     DataOutputStream dout = new DataOutputStream(baos);
 
     dout.write("WARC/0.17\n".getBytes());
-    for (Map.Entry<String, Object> entry : record.getHeader().getHeaderFields().entrySet()) {
-      dout.write((entry.getKey() + ": " + entry.getValue().toString() + "\n").getBytes());
+    for (Map.Entry<String, Object> entry : record.getHeader()
+            .getHeaderFields().entrySet()) {
+      dout.write((entry.getKey() + ": " + entry.getValue().toString() + "\n")
+              .getBytes());
     }
     dout.write("\n".getBytes());
     record.dump(dout);
@@ -68,16 +86,18 @@ public class WarcRecordUtils implements WARCConstants {
   }
 
   /**
-   * Extracts the MIME type of WARC response records (i.e., "WARC-Type" is "response").
+   * Extracts the MIME type of WARC response records.
+   * "WARC-Type" is "response".
    * Note that this is different from the "Content-Type" in the WARC header.
    *
    * @param contents raw contents of the WARC response record
    * @return MIME type
    */
-  public static String getWarcResponseMimeType(byte[] contents) {
+  public static String getWarcResponseMimeType(final byte[] contents) {
     // This is a somewhat janky way to get the MIME type of the response.
     // Note that this is different from the "Content-Type" in the WARC header.
-    Pattern pattern = Pattern.compile("Content-Type: ([^\\s]+)", Pattern.CASE_INSENSITIVE);
+    Pattern pattern = Pattern.compile("Content-Type: ([^\\s]+)",
+            Pattern.CASE_INSENSITIVE);
     Matcher matcher = pattern.matcher(new String(contents));
     if (matcher.find()) {
       return matcher.group(1).replaceAll(";$", "");
@@ -91,9 +111,9 @@ public class WarcRecordUtils implements WARCConstants {
    *
    * @param record the {@code WARCRecord}
    * @return raw contents
-   * @throws IOException
+   * @throws IOException if there is an issue
    */
-  public static byte[] getContent(WARCRecord record) throws IOException {
+  public static byte[] getContent(final WARCRecord record) throws IOException {
     int len = (int) record.getHeader().getContentLength();
 
     // If we have a corrupt record, quit and move on.
@@ -110,13 +130,15 @@ public class WarcRecordUtils implements WARCConstants {
   }
 
   /**
-   * Extracts contents of the body from a {@code WARCRecord} (excluding HTTP headers).
+   * Extracts contents of the body from a {@code WARCRecord}.
+   * Excludes HTTP headers.
    *
    * @param record the {@code WARCRecord}
    * @return contents of the body
-   * @throws IOException
+   * @throws IOException if there is an issue
    */
-  public static byte[] getBodyContent(WARCRecord record) throws IOException {
+  public static byte[] getBodyContent(final WARCRecord record)
+      throws IOException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     String line = HttpParser.readLine(record, WARC_HEADER_ENCODING);
     if (line == null) {
@@ -129,13 +151,24 @@ public class WarcRecordUtils implements WARCConstants {
     return baos.toByteArray();
   }
 
-  private static byte[] copyToByteArray(InputStream is, final int recordLength,
-      boolean enforceLength) throws IOException {
+  /**
+   * Copies contents to a byte array.
+   *
+   * @param is raw input stream
+   * @param recordLength length of a record
+   * @param enforceLength enforce the length
+   * @return rawContents of body
+   * @throws IOException if there is an issue
+   */
+  private static byte[] copyToByteArray(final InputStream is,
+          final int recordLength, final boolean enforceLength)
+      throws IOException {
 
     BoundedInputStream bis = new BoundedInputStream(is, recordLength);
     byte[] rawContents = IOUtils.toByteArray(bis);
     if (enforceLength && rawContents.length != recordLength) {
-      LOG.error("Read " + rawContents.length + " bytes but expected " + recordLength + " bytes. Continuing...");
+      LOG.error("Read " + rawContents.length + " bytes but expected "
+              + recordLength + " bytes. Continuing...");
     }
     return rawContents;
   }

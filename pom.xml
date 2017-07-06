@@ -22,6 +22,7 @@
     <hadoop.version>2.6.0-cdh5.7.1</hadoop.version>
     <spark.version>1.6.0-cdh5.7.1</spark.version>
     <github.global.server>github</github.global.server>
+    <checkstyle.plugin.version>2.15</checkstyle.plugin.version>
   </properties>
 
   <licenses>
@@ -141,6 +142,31 @@
           </args>
         </configuration>
       </plugin>
+
+      <!-- for checkstyle -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>${checkstyle.plugin.version}</version>
+        <configuration>
+          <includeTestSourceDirectory>true</includeTestSourceDirectory>
+          <consoleOutput>true</consoleOutput>
+          <logViolationsToConsole>true</logViolationsToConsole>
+          <failsOnError>true</failsOnError>
+          <failOnViolation>true</failOnViolation>
+          <violationSeverity>warning</violationSeverity>
+          <suppressionsLocation>config/checkstyle/suppressions.xml</suppressionsLocation>
+        </configuration>
+        <executions>
+          <execution>
+            <id>checkstyle</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 
@@ -180,7 +206,7 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>14.0.1</version> 
+      <version>14.0.1</version>
       <!-- downgrade to fix http://stackoverflow.com/questions/36427291/illegalaccesserror-to-guavas-stopwatch-from-org-apache-hadoop-mapreduce-lib-inp -->
     </dependency>
     <dependency>

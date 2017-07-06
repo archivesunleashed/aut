@@ -16,33 +16,58 @@
 
 package io.archivesunleashed.io;
 
+import io.archivesunleashed.data.WarcRecordUtils;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-
 import org.apache.hadoop.io.Writable;
 import org.archive.io.warc.WARCRecord;
-import io.archivesunleashed.data.WarcRecordUtils;
 
+/**
+ * Implements Hadoop Writable for WARC Records.
+ */
 public class WarcRecordWritable implements Writable {
+
+  /**
+   * Initialize WARC Record to null.
+   */
   private WARCRecord record = null;
 
-  public WarcRecordWritable() {}
+  /**
+   * Utility function.
+   */
+  public WarcRecordWritable() {
+  }
 
-  public WarcRecordWritable(WARCRecord r) {
+  /**
+   * Initialize WARC Record.
+   *
+   * @param r WARC Record
+   */
+  public WarcRecordWritable(final WARCRecord r) {
     this.record = r;
   }
 
-  public void setRecord(WARCRecord r) {
+  /**
+   * Set WARC Record.
+   *
+   * @param r WARC Record
+   */
+  public final void setRecord(final WARCRecord r) {
     this.record = r;
   }
 
-  public WARCRecord getRecord() {
+  /**
+   * Get WARC Record.
+   *
+   * @return record WARC Record
+   */
+  public final WARCRecord getRecord() {
     return record;
   }
 
   @Override
-  public void readFields(DataInput in) throws IOException {
+  public final void readFields(final DataInput in) throws IOException {
     int len = in.readInt();
     if (len == 0) {
       this.record = null;
@@ -56,7 +81,7 @@ public class WarcRecordWritable implements Writable {
   }
 
   @Override
-  public void write(DataOutput out) throws IOException {
+  public final void write(final DataOutput out) throws IOException {
     if (record == null) {
       out.writeInt(0);
     }

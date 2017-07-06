@@ -17,6 +17,8 @@
 package io.archivesunleashed.mapreduce;
 
 import com.google.common.io.Resources;
+import io.archivesunleashed.io.GenericArchiveRecordWritable;
+import java.io.File;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
@@ -32,16 +34,12 @@ import org.archive.io.arc.ARCRecord;
 import org.archive.io.arc.ARCRecordMetaData;
 import org.archive.io.warc.WARCRecord;
 import org.junit.Test;
-import io.archivesunleashed.io.GenericArchiveRecordWritable;
-
-import java.io.File;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class WacGenericInputFormatTest {
   @Test
-  public void testArcInputFormat() throws Exception {
+  public final void testArcInputFormat() throws Exception {
     String[] urls = new String[]{
             "filedesc://IAH-20080430204825-00000-blackbook.arc",
             "dns:www.archive.org",
@@ -60,13 +58,16 @@ public class WacGenericInputFormatTest {
 
     InputFormat<LongWritable, GenericArchiveRecordWritable> inputFormat =
             ReflectionUtils.newInstance(WacGenericInputFormat.class, conf);
-    TaskAttemptContext context = new TaskAttemptContextImpl(conf, new TaskAttemptID());
+    TaskAttemptContext context = new TaskAttemptContextImpl(conf,
+            new TaskAttemptID());
     RecordReader<LongWritable, GenericArchiveRecordWritable> reader =
             inputFormat.createRecordReader(split, context);
 
     reader.initialize(split, context);
 
     int cnt = 0;
+    final int cntTest = 300;
+
     while (reader.nextKeyValue()) {
       ArchiveRecord record = reader.getCurrentValue().getRecord();
       boolean isArc = record instanceof ARCRecord;
@@ -83,11 +84,11 @@ public class WacGenericInputFormatTest {
 
       cnt++;
     }
-    assertEquals(300, cnt);
+    assertEquals(cntTest, cnt);
   }
 
   @Test
-  public void testWarcInputFormat() throws Exception {
+  public final void testWarcInputFormat() throws Exception {
     String[] urls = new String[]{
         null,
         "dns:www.archive.org",
@@ -123,7 +124,8 @@ public class WacGenericInputFormatTest {
 
     InputFormat<LongWritable, GenericArchiveRecordWritable> inputFormat =
             ReflectionUtils.newInstance(WacGenericInputFormat.class, conf);
-    TaskAttemptContext context = new TaskAttemptContextImpl(conf, new TaskAttemptID());
+    TaskAttemptContext context = new TaskAttemptContextImpl(conf,
+            new TaskAttemptID());
     RecordReader<LongWritable, GenericArchiveRecordWritable> reader =
             inputFormat.createRecordReader(split, context);
 
@@ -133,6 +135,9 @@ public class WacGenericInputFormatTest {
 
     int cnt = 0;
     int responseCnt = 0;
+    final int cntTest = 822;
+    final int responseCntTest = 299;
+
     while (reader.nextKeyValue()) {
       ArchiveRecord record = reader.getCurrentValue().getRecord();
       boolean isWarc = record instanceof WARCRecord;
@@ -142,17 +147,19 @@ public class WacGenericInputFormatTest {
         WARCRecord warcRecord = (WARCRecord) record;
         if (cnt < urls.length) {
           assertEquals(urls[cnt], warcRecord.getHeader().getUrl());
-          assertEquals(types[cnt], warcRecord.getHeader().getHeaderValue("WARC-Type"));
+          assertEquals(types[cnt], warcRecord.getHeader()
+                  .getHeaderValue("WARC-Type"));
         }
 
-        if (warcRecord.getHeader().getHeaderValue("WARC-Type").equals("response")) {
+        if (warcRecord.getHeader().getHeaderValue("WARC-Type")
+                .equals("response")) {
           responseCnt++;
         }
       }
 
       cnt++;
     }
-    assertEquals(822, cnt);
-    assertEquals(299, responseCnt);
+    assertEquals(cntTest, cnt);
+    assertEquals(responseCntTest, responseCnt);
   }
 }
