@@ -61,7 +61,7 @@ public class ArcRecordWritableTest {
     reader.initialize(split, context);
 
     int cnt = 0;
-    final int cntTest = 822;
+    final int cntTest = 300;
 
     while (reader.nextKeyValue()) {
       ArcRecordWritable record = reader.getCurrentValue();
