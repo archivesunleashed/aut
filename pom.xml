@@ -18,11 +18,14 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<project_name>${project.artifactId}</project_name>
+		<project_organization>The Archives Unleashed Project</project_organization>
     <scala.version>2.10.5</scala.version>
     <hadoop.version>2.6.0-cdh5.7.1</hadoop.version>
     <spark.version>1.6.0-cdh5.7.1</spark.version>
     <github.global.server>github</github.global.server>
     <checkstyle.plugin.version>2.15</checkstyle.plugin.version>
+    <license.plugin.version>2.11</license.plugin.version>
   </properties>
 
   <licenses>
@@ -179,6 +182,41 @@
           <check />
         </configuration>
       </plugin>
+      <!-- for mycila -->
+      <plugin>
+        <groupId>com.mycila</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <version>${license.plugin.version}</version>
+        <configuration>
+          <header>LICENSE_HEADER.txt</header>
+          <mapping>
+              <java>SLASHSTAR_STYLE</java>
+          </mapping>
+          <includes>
+            <include>**/src/main/java/**</include>
+            <include>**/src/test/java/**</include>
+          </includes>
+          <excludes>
+            <exclude>target/**</exclude>
+            <exclude>**/src/test/resources/**</exclude>
+            <exclude>**/src/main/resources/**</exclude>
+            <exclude>**/*.properties</exclude>
+          </excludes>
+          <properties>
+            <name>${project.artifactId}</name>
+            <holder>${project.organization.name}</holder>
+          </properties>
+          <encoding>UTF-8</encoding>
+          <strictCheck>true</strictCheck>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+			</plugin>
     </plugins>
   </build>
 
