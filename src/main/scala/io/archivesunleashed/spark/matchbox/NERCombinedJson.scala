@@ -1,3 +1,19 @@
+/*
+ * Archives Unleashed Toolkit (AUT):
+ * An open-source platform for analyzing web archives.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.archivesunleashed.spark.matchbox
 
 import java.io.BufferedReader
@@ -19,7 +35,7 @@ class NERCombinedJson extends Serializable {
 
   def combineKeyCountLists (l1: List[(String, Int)], l2: List[(String, Int)]): List[(String, Int)] = {
     (l1 ++ l2).groupBy(_._1 ).map {
-      case (key, tuples) => (key, tuples.map( _._2).sum) 
+      case (key, tuples) => (key, tuples.map( _._2).sum)
     }.toList
   }
 
@@ -33,7 +49,7 @@ class NERCombinedJson extends Serializable {
     val hadoopConfig = new Configuration()
     val hdfs = FileSystem.get(hadoopConfig)
     val rnd = new Random
-    
+
     val srcPath = new Path(srcDir)
     val tmpFile = rnd.alphanumeric.take(8).mkString + ".almostjson"
     val tmpPath = new Path(tmpFile)
@@ -50,11 +66,11 @@ class NERCombinedJson extends Serializable {
     val outFile = new BufferedWriter(new OutputStreamWriter(fsOutStream))
     outFile.write("[")
     val line = inFile.readLine()
-    if (line != null) outFile.write(line)    
+    if (line != null) outFile.write(line)
     Iterator.continually(inFile.readLine()).takeWhile(_ != null).foreach(s => {outFile.write(", " + s)})
     outFile.write("]")
     outFile.close()
-    
+
     inFile.close()
     hdfs.delete(tmpPath, false)
   }
@@ -88,9 +104,9 @@ class NERCombinedJson extends Serializable {
       .mapPartitions(iter => {
         iter.map(r => {
           val nerRec = new NerRecord(r._1._1, r._1._2)
-          r._2.foreach(entityMap => {  
+          r._2.foreach(entityMap => {
             // e.g., entityMap = "PERSON" -> List(("Jack", 1), ("Diane", 3))
-            val ec = new EntityCounts(entityMap._1)    
+            val ec = new EntityCounts(entityMap._1)
             entityMap._2.foreach(e => {
               ec.entities += new Entity(e._1, e._2)
             })
@@ -109,7 +125,7 @@ class NERCombinedJson extends Serializable {
     var freq: Int = iFreq
   }
 
-  class EntityCounts(iNerType: String) { 
+  class EntityCounts(iNerType: String) {
     var nerType: String = iNerType
     var entities = MutableList[Entity]()
   }

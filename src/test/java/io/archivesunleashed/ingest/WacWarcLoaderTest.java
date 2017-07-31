@@ -1,5 +1,6 @@
 /*
- * Warcbase: an open-source platform for managing web archives
+ * Archives Unleashed Toolkit (AUT):
+ * An open-source platform for analyzing web archives.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
