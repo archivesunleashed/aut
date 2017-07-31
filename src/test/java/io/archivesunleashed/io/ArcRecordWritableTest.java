@@ -18,12 +18,13 @@ package io.archivesunleashed.io;
 
 import static org.junit.Assert.assertEquals;
 
+import com.google.common.io.Resources;
+import io.archivesunleashed.mapreduce.WacArcInputFormat;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
@@ -35,13 +36,10 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.apache.hadoop.mapreduce.task.TaskAttemptContextImpl;
 import org.apache.hadoop.util.ReflectionUtils;
 import org.junit.Test;
-import io.archivesunleashed.mapreduce.WacArcInputFormat;
-
-import com.google.common.io.Resources;
 
 public class ArcRecordWritableTest {
   @Test
-  public void testInputFormat() throws Exception {
+  public final void testInputFormat() throws Exception {
     String arcFile = Resources.getResource("arc/example.arc.gz").getPath();
 
     Configuration conf = new Configuration(false);
@@ -51,15 +49,20 @@ public class ArcRecordWritableTest {
     Path path = new Path(testFile.getAbsoluteFile().toURI());
     FileSplit split = new FileSplit(path, 0, testFile.length(), null);
 
-    InputFormat<LongWritable, ArcRecordWritable> inputFormat = ReflectionUtils.newInstance(
+    InputFormat<LongWritable, ArcRecordWritable> inputFormat = ReflectionUtils
+        .newInstance(
         WacArcInputFormat.class, conf);
-    TaskAttemptContext context = new TaskAttemptContextImpl(conf, new TaskAttemptID());
-    RecordReader<LongWritable, ArcRecordWritable> reader = inputFormat.createRecordReader(split,
+    TaskAttemptContext context = new TaskAttemptContextImpl(conf,
+            new TaskAttemptID());
+    RecordReader<LongWritable, ArcRecordWritable> reader = inputFormat
+        .createRecordReader(split,
         context);
 
     reader.initialize(split, context);
 
     int cnt = 0;
+    final int cntTest = 300;
+
     while (reader.nextKeyValue()) {
       ArcRecordWritable record = reader.getCurrentValue();
       cnt++;
@@ -71,12 +74,13 @@ public class ArcRecordWritableTest {
 
       ArcRecordWritable reconstructed = new ArcRecordWritable();
 
-      reconstructed.readFields(new DataInputStream(new ByteArrayInputStream(bytesOut.toByteArray())));
+      reconstructed.readFields(new DataInputStream(new ByteArrayInputStream(
+                      bytesOut.toByteArray())));
 
       assertEquals(record.getRecord().getMetaData().getUrl(),
           reconstructed.getRecord().getMetaData().getUrl());
     }
 
-    assertEquals(300, cnt);
+    assertEquals(cntTest, cnt);
   }
 }

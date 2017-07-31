@@ -16,33 +16,58 @@
 
 package io.archivesunleashed.io;
 
+import io.archivesunleashed.data.ArcRecordUtils;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-
 import org.apache.hadoop.io.Writable;
 import org.archive.io.arc.ARCRecord;
-import io.archivesunleashed.data.ArcRecordUtils;
 
+/**
+ * Implements Hadoop Writable for ARC Records.
+ */
 public class ArcRecordWritable implements Writable {
+
+  /**
+   * Initialize ARC Record to null.
+   */
   private ARCRecord record = null;
 
-  public ArcRecordWritable() {}
+  /**
+   * Utility function.
+   */
+  public ArcRecordWritable() {
+  }
 
-  public ArcRecordWritable(ARCRecord r) {
+  /**
+   * Initialize ARC Record.
+   *
+   * @param r ARC Record
+   */
+  public ArcRecordWritable(final ARCRecord r) {
     this.record = r;
   }
 
-  public void setRecord(ARCRecord r) {
+  /**
+   * Set ARC Record.
+   *
+   * @param r ARC Record
+   */
+  public final void setRecord(final ARCRecord r) {
     this.record = r;
   }
 
-  public ARCRecord getRecord() {
+  /**
+   * Get ARC Record.
+   *
+   * @return record ARC Record
+   */
+  public final ARCRecord getRecord() {
     return record;
   }
 
   @Override
-  public void readFields(DataInput in) throws IOException {
+  public final void readFields(final DataInput in) throws IOException {
     int len = in.readInt();
     if (len == 0) {
       this.record = null;
@@ -56,7 +81,7 @@ public class ArcRecordWritable implements Writable {
   }
 
   @Override
-  public void write(DataOutput out) throws IOException {
+  public final void write(final DataOutput out) throws IOException {
     if (record == null) {
       out.writeInt(0);
     }

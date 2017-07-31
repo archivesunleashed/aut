@@ -16,15 +16,14 @@
 
 package io.archivesunleashed.ingest;
 
-import static org.junit.Assert.assertEquals;
-
+import com.google.common.io.Resources;
+import io.archivesunleashed.data.ArcRecordUtils;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Iterator;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.archive.io.ArchiveRecord;
@@ -33,15 +32,13 @@ import org.archive.io.arc.ARCReaderFactory;
 import org.archive.io.arc.ARCRecord;
 import org.archive.io.arc.ARCRecordMetaData;
 import org.junit.Test;
-import io.archivesunleashed.data.ArcRecordUtils;
-
-import com.google.common.io.Resources;
+import static org.junit.Assert.assertEquals;
 
 public class WacArcLoaderTest {
   private static final Log LOG = LogFactory.getLog(WacArcLoaderTest.class);
 
   @Test
-  public void testReader() throws Exception {
+  public final void testReader() throws Exception {
     String[] urls = new String[] {
         "filedesc://IAH-20080430204825-00000-blackbook.arc",
         "dns:www.archive.org",
@@ -53,6 +50,8 @@ public class WacArcLoaderTest {
     ARCReader reader = ARCReaderFactory.get(new File(arcFile));
 
     int cnt = 0;
+    final int cntTest = 300;
+
     for (Iterator<ArchiveRecord> ii = reader.iterator(); ii.hasNext();) {
       ARCRecord r = (ARCRecord) ii.next();
       ARCRecordMetaData meta = r.getMetaData();
@@ -65,15 +64,17 @@ public class WacArcLoaderTest {
     reader.close();
 
     LOG.info(cnt + " records read!");
-    assertEquals(300, cnt);
+    assertEquals(cntTest, cnt);
   }
 
   @Test
-  public void testReadFromStream() throws Exception {
+  public final void testReadFromStream() throws Exception {
     String arcFile = Resources.getResource("arc/example.arc.gz").getPath();
     ARCReader reader = ARCReaderFactory.get(new File(arcFile));
 
     int cnt = 0;
+    final int cntTest = 300;
+
     for (Iterator<ArchiveRecord> ii = reader.iterator(); ii.hasNext();) {
       ARCRecord r = (ARCRecord) ii.next();
       // Skip the file header.
@@ -83,7 +84,8 @@ public class WacArcLoaderTest {
       }
 
       String h = r.getHeaderString();
-      InputStream in = new DataInputStream(new ByteArrayInputStream(ArcRecordUtils.toBytes(r)));
+      InputStream in = new DataInputStream(new ByteArrayInputStream(
+                  ArcRecordUtils.toBytes(r)));
 
       ARCReader nr = (ARCReader) ARCReaderFactory.get("",
           new BufferedInputStream(in), false);
@@ -95,6 +97,6 @@ public class WacArcLoaderTest {
     reader.close();
 
     LOG.info(cnt + " records read!");
-    assertEquals(300, cnt);
+    assertEquals(cntTest, cnt);
   }
 }

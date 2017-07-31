@@ -16,10 +16,9 @@
 
 package io.archivesunleashed.mapreduce;
 
-import static org.junit.Assert.assertEquals;
-
+import com.google.common.io.Resources;
+import io.archivesunleashed.io.ArcRecordWritable;
 import java.io.File;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
@@ -33,13 +32,11 @@ import org.apache.hadoop.util.ReflectionUtils;
 import org.archive.io.arc.ARCRecord;
 import org.archive.io.arc.ARCRecordMetaData;
 import org.junit.Test;
-import io.archivesunleashed.io.ArcRecordWritable;
-
-import com.google.common.io.Resources;
+import static org.junit.Assert.assertEquals;
 
 public class WacArcInputFormatTest {
   @Test
-  public void testInputFormat() throws Exception {
+  public final void testInputFormat() throws Exception {
     String[] urls = new String[] {
         "filedesc://IAH-20080430204825-00000-blackbook.arc",
         "dns:www.archive.org",
@@ -58,13 +55,16 @@ public class WacArcInputFormatTest {
 
     InputFormat<LongWritable, ArcRecordWritable> inputFormat =
         ReflectionUtils.newInstance(WacArcInputFormat.class, conf);
-    TaskAttemptContext context = new TaskAttemptContextImpl(conf, new TaskAttemptID());
+    TaskAttemptContext context = new TaskAttemptContextImpl(conf,
+            new TaskAttemptID());
     RecordReader<LongWritable, ArcRecordWritable> reader =
         inputFormat.createRecordReader(split, context);
 
     reader.initialize(split, context);
 
     int cnt = 0;
+    final int cntTest = 300;
+
     while (reader.nextKeyValue()) {
       ARCRecord record = reader.getCurrentValue().getRecord();
       ARCRecordMetaData metadata = record.getMetaData();
@@ -74,6 +74,6 @@ public class WacArcInputFormatTest {
       }
       cnt++;
     }
-    assertEquals(300, cnt);
+    assertEquals(cntTest, cnt);
   }
 }

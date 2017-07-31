@@ -16,10 +16,10 @@
 
 package io.archivesunleashed.mapreduce;
 
+import io.archivesunleashed.io.WarcRecordWritable;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.util.Iterator;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
@@ -34,35 +34,80 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.archive.io.ArchiveRecord;
 import org.archive.io.warc.WARCReader;
-import org.archive.io.warc.WARCReaderFactory;
 import org.archive.io.warc.WARCReaderFactory.CompressedWARCReader;
+import org.archive.io.warc.WARCReaderFactory;
 import org.archive.io.warc.WARCRecord;
-import io.archivesunleashed.io.WarcRecordWritable;
 
-public class WacWarcInputFormat extends FileInputFormat<LongWritable, WarcRecordWritable> {
+/**
+ * Extends FileInputFormat for Web Archive Commons WARC InputFormat.
+ */
+public class WacWarcInputFormat extends FileInputFormat<LongWritable,
+       WarcRecordWritable> {
   @Override
-  public RecordReader<LongWritable, WarcRecordWritable> createRecordReader(InputSplit split,
-      TaskAttemptContext context) throws IOException, InterruptedException {
+  public final RecordReader<LongWritable, WarcRecordWritable>
+  createRecordReader(
+          final InputSplit split,
+      final TaskAttemptContext context) throws IOException,
+  InterruptedException {
     return new WarcRecordReader();
   }
 
   @Override
-  protected boolean isSplitable(JobContext context, Path filename) {
+  protected final boolean isSplitable(final JobContext context,
+          final Path filename) {
     return false;
   }
 
-  public class WarcRecordReader extends RecordReader<LongWritable, WarcRecordWritable> {
+  /**
+   * Extends RecordReader for WARC Record Reader.
+   */
+  public class WarcRecordReader extends RecordReader<LongWritable,
+         WarcRecordWritable> {
+
+    /**
+     * WARC reader.
+     */
     private WARCReader reader;
+
+    /**
+     * Start position of WARC being read.
+     */
     private long start;
+
+    /**
+     * A given position of a WARC being read.
+     */
     private long pos;
+
+    /**
+     * End position of a WARC being read.
+     */
     private long end;
+
+    /**
+     * LongWritable key.
+     */
     private LongWritable key = null;
+
+    /**
+     * WarcRecordWritable value.
+     */
     private WarcRecordWritable value = null;
+
+    /**
+     * Seekable file position.
+     */
     private Seekable filePosition;
+
+    /**
+     * Iterator for ArchiveRecord.
+     */
     private Iterator<ArchiveRecord> iter;
 
     @Override
-    public void initialize(InputSplit genericSplit, TaskAttemptContext context) throws IOException {
+    public final void initialize(final InputSplit genericSplit,
+            final TaskAttemptContext context)
+    throws IOException {
       FileSplit split = (FileSplit) genericSplit;
       Configuration job = context.getConfiguration();
       start = split.getStart();
@@ -76,15 +121,27 @@ public class WacWarcInputFormat extends FileInputFormat<LongWritable, WarcRecord
           new BufferedInputStream(fileIn), true);
 
       iter = reader.iterator();
-      //reader = (ARCReader) ARCReaderFactory.get(split.getPath().toString(), fileIn, true);
+      //reader = (ARCReader) ARCReaderFactory.get(split.getPath().toString(),
+      //fileIn, true);
 
       this.pos = start;
     }
 
+    /**
+     * Determins if WARC is compressed.
+     *
+     * @return reader true/false
+     */
     private boolean isCompressedInput() {
       return reader instanceof CompressedWARCReader;
     }
 
+    /**
+     * Get file position of WARC.
+     *
+     * @return retVal position of WARC
+     * @throws IOException is there is an issue
+     */
     private long getFilePosition() throws IOException {
       long retVal;
       if (isCompressedInput() && null != filePosition) {
@@ -96,7 +153,7 @@ public class WacWarcInputFormat extends FileInputFormat<LongWritable, WarcRecord
     }
 
     @Override
-    public boolean nextKeyValue() throws IOException {
+    public final boolean nextKeyValue() throws IOException {
       if (!iter.hasNext()) {
         return false;
       }
@@ -120,26 +177,27 @@ public class WacWarcInputFormat extends FileInputFormat<LongWritable, WarcRecord
     }
 
     @Override
-    public LongWritable getCurrentKey() {
+    public final LongWritable getCurrentKey() {
       return key;
     }
 
     @Override
-    public WarcRecordWritable getCurrentValue() {
+    public final WarcRecordWritable getCurrentValue() {
       return value;
     }
 
     @Override
-    public float getProgress() throws IOException {
+    public final float getProgress() throws IOException {
       if (start == end) {
         return 0.0f;
       } else {
-        return Math.min(1.0f, (getFilePosition() - start) / (float) (end - start));
+        return Math.min(1.0f, (getFilePosition() - start) / (float)
+                (end - start));
       }
     }
 
     @Override
-    public synchronized void close() throws IOException {
+    public final synchronized void close() throws IOException {
       reader.close();
     }
   }

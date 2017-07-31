@@ -16,11 +16,9 @@
 
 package io.archivesunleashed.mapreduce;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
+import com.google.common.io.Resources;
+import io.archivesunleashed.io.WarcRecordWritable;
 import java.io.File;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
@@ -33,13 +31,12 @@ import org.apache.hadoop.mapreduce.task.TaskAttemptContextImpl;
 import org.apache.hadoop.util.ReflectionUtils;
 import org.archive.io.warc.WARCRecord;
 import org.junit.Test;
-import io.archivesunleashed.io.WarcRecordWritable;
-
-import com.google.common.io.Resources;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class WacWarcInputFormatTest {
   @Test
-  public void testInputFormat() throws Exception {
+  public final void testInputFormat() throws Exception {
     String[] urls = new String[] {
         null,
         "dns:www.archive.org",
@@ -75,7 +72,8 @@ public class WacWarcInputFormatTest {
 
     InputFormat<LongWritable, WarcRecordWritable> inputFormat =
         ReflectionUtils.newInstance(WacWarcInputFormat.class, conf);
-    TaskAttemptContext context = new TaskAttemptContextImpl(conf, new TaskAttemptID());
+    TaskAttemptContext context = new TaskAttemptContextImpl(conf,
+            new TaskAttemptID());
     RecordReader<LongWritable, WarcRecordWritable> reader =
         inputFormat.createRecordReader(split, context);
 
@@ -85,12 +83,16 @@ public class WacWarcInputFormatTest {
 
     int cnt = 0;
     int responseCnt = 0;
+    final int cntTest = 822;
+    final int responseCntTest = 299;
+
     while (reader.nextKeyValue()) {
       WARCRecord record = reader.getCurrentValue().getRecord();
 
       if (cnt < urls.length) {
         assertEquals(urls[cnt], record.getHeader().getUrl());
-        assertEquals(types[cnt], record.getHeader().getHeaderValue("WARC-Type"));
+        assertEquals(types[cnt], record.getHeader()
+                .getHeaderValue("WARC-Type"));
       }
 
       if (record.getHeader().getHeaderValue("WARC-Type").equals("response")) {
@@ -99,7 +101,7 @@ public class WacWarcInputFormatTest {
 
       cnt++;
     }
-    assertEquals(822, cnt);
-    assertEquals(299, responseCnt);
+    assertEquals(cntTest, cnt);
+    assertEquals(responseCntTest, responseCnt);
   }
 }
