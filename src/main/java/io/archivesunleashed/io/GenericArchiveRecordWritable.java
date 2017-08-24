@@ -33,9 +33,9 @@ public class GenericArchiveRecordWritable implements Writable {
 
   /**
    * Archive Formats that can be used.
-   * <li>{@link #UNKNOWN}</li>
-   * <li>{@link #ARC}</li>
-   * <li>{@link #WARC}</li>
+   * {@link #UNKNOWN}
+   * {@link #ARC}
+   * {@link #WARC}
    */
   public enum ArchiveFormat {
       /**
