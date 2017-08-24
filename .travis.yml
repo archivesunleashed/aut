@@ -9,7 +9,9 @@ before_install:
  - "export JAVA_OPTS=-Xmx512m"
 
 script:
- - mvn clean install
+ - mvn install -B -V
+ - mvn javadoc:jar
+ - mvn javadoc:test-aggregate
  - mvn cobertura:cobertura
 
 after_success:
