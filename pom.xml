@@ -463,7 +463,7 @@
         </plugins>
       </build>
     </profile>
-	</profiles>
+  </profiles>
 
   <pluginRepositories>
     <pluginRepository>
