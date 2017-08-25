@@ -8,7 +8,7 @@
   <version>0.9.1-SNAPSHOT</version>
   <name>Archives Unleashed Toolkit</name>
   <description>An open-source platform for managing and analyzing web archives</description>
-  <url>http://archivesunleashed.io/</url>
+  <url>https://github.com/archivesunleashed/aut</url>
 
   <organization>
     <name>The Archives Unleased Project</name>
@@ -33,6 +33,10 @@
     <github-site.plugin.version>0.12</github-site.plugin.version>
     <javadoc.plugin.version>2.10.3</javadoc.plugin.version>
     <gpg.plugin.version>1.6</gpg.plugin.version>
+    <build-helper.plugin.version>1.9.1</build-helper.plugin.version>
+    <deploy.plugin.version>2.8.2</deploy.plugin.version>
+    <site.plugin.version>3.4</site.plugin.version>
+    <doxia-markdown.plugin.version>1.6</doxia-markdown.plugin.version>
   </properties>
 
   <licenses>
@@ -243,6 +247,26 @@
       </plugin>
       <!-- GitHub Pages -->
       <plugin>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <version>${deploy.plugin.version}</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>${site.plugin.version}</version>
+        <configuration>
+          <skipDeploy>true</skipDeploy>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <!-- allows markdown syntax for site generation. To use it
+                 place files below src/site/markdown/[filename].md -->
+            <groupId>org.apache.maven.doxia</groupId>
+            <artifactId>doxia-module-markdown</artifactId>
+            <version>${doxia-markdown.plugin.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+      <plugin>
         <groupId>com.github.github</groupId>
         <artifactId>site-maven-plugin</artifactId>
         <version>${github-site.plugin.version}</version>
@@ -295,8 +319,79 @@
         <artifactId>maven-changelog-plugin</artifactId>
         <version>${changelog.plugin.version}</version>
       </plugin>
-		</plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>${build-helper.plugin.version}</version>
+      </plugin>
+    </plugins>
   </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>${failsafe.plugin.version}</version>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${javadoc.plugin.version}</version>
+        <configuration>
+          <linksource>true</linksource>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>${jxr.plugin.version}</version>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>${surefire.plugin.version}</version>
+        <configuration>
+          <argLine>-XX:-UseSplitVerifier</argLine>
+          <outputName>surefire-report</outputName>
+          <aggregate>true</aggregate>
+          <reportsDirectories>
+            <reportsDirectory>${project.build.directory}/surefire-reports/</reportsDirectory>
+            <reportsDirectory>${project.build.directory}/failsafe-reports/</reportsDirectory>
+          </reportsDirectories>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>${project-info-reports.plugin.version}</version>
+        <configuration>
+          <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+          <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${jacoco.plugin.version}</version>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>versions-maven-plugin</artifactId>
+        <version>${versions.plugin.version}</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>dependency-updates-report</report>
+              <report>plugin-updates-report</report>
+              <report>property-updates-report</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+    </plugins>
+	</reporting>
 
   <dependencies>
     <dependency>
@@ -495,7 +590,7 @@
     <site>
       <id>gh-pages</id>
       <name>Deployment through GitHub's site deployment plugin</name>
-      <url>site/${project.version}</url>
+      <url>${project.version}</url>
     </site>
     <snapshotRepository>
       <id>sonatype-nexus-snapshots</id>
