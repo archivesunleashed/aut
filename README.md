@@ -9,6 +9,8 @@ The Archives Unleashed Toolkit is an open-source platform for analyzing web arch
 
 ## Getting Started
 
+You can download the [latest release here](https://github.com/archivesunleashed/aut/releases), or build it yourself as per the instructions below.
+
 Clone the repo:
 
 ```
