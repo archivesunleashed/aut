@@ -418,8 +418,8 @@
     </dependency>
     <dependency>
       <groupId>com.chuusai</groupId>
-      <artifactId>shapeless_2.10.5</artifactId>
-      <version>2.0.0</version>
+      <artifactId>shapeless_2.11</artifactId>
+      <version>2.2.5</version>
     </dependency>
     <dependency>
       <groupId>org.apache.spark</groupId>
