@@ -19,8 +19,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<project_name>${project.artifactId}</project_name>
-		<project_organization>The Archives Unleashed Project</project_organization>
-    <scala.version>2.10.5</scala.version>
+    <project_organization>The Archives Unleashed Project</project_organization>
+    <scala.version>2.11.7</scala.version>
     <hadoop.version>2.6.0-cdh5.7.1</hadoop.version>
     <spark.version>1.6.0-cdh5.7.1</spark.version>
     <github.global.server>github</github.global.server>
@@ -402,9 +402,14 @@
     </dependency>
     <dependency>
       <groupId>org.scalatest</groupId>
-      <artifactId>scalatest_2.10</artifactId>
-      <version>2.2.5</version>
+      <artifactId>scalatest_2.11</artifactId>
+      <version>2.2.6</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-parser-combinators</artifactId>
+      <version>2.11.0-M4</version>
     </dependency>
     <dependency>
       <groupId>org.scala-lang</groupId>
@@ -418,12 +423,12 @@
     </dependency>
     <dependency>
       <groupId>org.apache.spark</groupId>
-      <artifactId>spark-core_2.10</artifactId>
+      <artifactId>spark-core_2.11</artifactId>
       <version>${spark.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.spark</groupId>
-      <artifactId>spark-graphx_2.10</artifactId>
+      <artifactId>spark-graphx_2.11</artifactId>
       <version>${spark.version}</version>
     </dependency>
     <dependency>
