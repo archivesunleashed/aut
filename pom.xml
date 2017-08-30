@@ -21,8 +21,8 @@
 		<project_name>${project.artifactId}</project_name>
 		<project_organization>The Archives Unleashed Project</project_organization>
     <scala.version>2.10.5</scala.version>
-    <hadoop.version>2.6.0-cdh5.7.1</hadoop.version>
-    <spark.version>1.6.0-cdh5.7.1</spark.version>
+    <hadoop.version>2.7.3</hadoop.version>
+    <spark.version>1.6.2</spark.version>
     <github.global.server>github</github.global.server>
     <checkstyle.plugin.version>2.15</checkstyle.plugin.version>
     <license.plugin.version>2.11</license.plugin.version>
