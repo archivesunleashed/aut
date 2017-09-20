@@ -15,6 +15,7 @@ Clone the repo:
 
 ```
 $ git clone http://github.com/archivesunleashed/aut.git
+$ cd aut
 ```
 
 You can then build The Archives Unleashed Toolkit.
