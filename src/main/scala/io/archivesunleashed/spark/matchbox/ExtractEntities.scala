@@ -30,7 +30,7 @@ object ExtractEntities {
     * @param outputFile path of output directory
     */
   def extractFromRecords(iNerClassifierFile: String, inputRecordFile: String, outputFile: String, sc: SparkContext): RDD[(String, String, String)] = {
-    val rdd = RecordLoader.loadArc(inputRecordFile, sc)
+    val rdd = RecordLoader.loadArchives(inputRecordFile, sc)
       .map(r => (r.getCrawlDate, r.getUrl, RemoveHTML(r.getContentString)))
     extractAndOutput(iNerClassifierFile, rdd, outputFile)
   }
