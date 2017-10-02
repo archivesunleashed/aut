@@ -19,8 +19,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<project_name>${project.artifactId}</project_name>
-		<project_organization>The Archives Unleashed Project</project_organization>
-    <scala.version>2.10.5</scala.version>
+    <project_organization>The Archives Unleashed Project</project_organization>
+    <scala.version>2.11.7</scala.version>
     <hadoop.version>2.7.3</hadoop.version>
     <spark.version>1.6.2</spark.version>
     <github.global.server>github</github.global.server>
@@ -77,8 +77,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.2</version>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
+          <source>1.8</source>
+          <target>1.8</target>
         </configuration>
       </plugin>
       <plugin>
@@ -149,7 +149,7 @@
           <scalaVersion>${scala.version}</scalaVersion>
           <sendJavaToScalac>true</sendJavaToScalac>
           <args>
-            <arg>-target:jvm-1.7</arg>
+            <arg>-target:jvm-1.8</arg>
             <arg>-g:vars</arg>
             <arg>-deprecation</arg>
             <arg>-dependencyfile</arg>
@@ -402,9 +402,14 @@
     </dependency>
     <dependency>
       <groupId>org.scalatest</groupId>
-      <artifactId>scalatest_2.10</artifactId>
-      <version>2.2.5</version>
+      <artifactId>scalatest_2.11</artifactId>
+      <version>2.2.6</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-parser-combinators</artifactId>
+      <version>2.11.0-M4</version>
     </dependency>
     <dependency>
       <groupId>org.scala-lang</groupId>
@@ -413,17 +418,17 @@
     </dependency>
     <dependency>
       <groupId>com.chuusai</groupId>
-      <artifactId>shapeless_2.10.5</artifactId>
-      <version>2.0.0</version>
+      <artifactId>shapeless_2.11</artifactId>
+      <version>2.2.5</version>
     </dependency>
     <dependency>
       <groupId>org.apache.spark</groupId>
-      <artifactId>spark-core_2.10</artifactId>
+      <artifactId>spark-core_2.11</artifactId>
       <version>${spark.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.spark</groupId>
-      <artifactId>spark-graphx_2.10</artifactId>
+      <artifactId>spark-graphx_2.11</artifactId>
       <version>${spark.version}</version>
     </dependency>
     <dependency>
