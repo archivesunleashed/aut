@@ -31,13 +31,6 @@ $ mvn clean install -DskipTests
 
 Once built or downloaded, [you can follow the basic set of tutorials here](http://docs.archivesunleashed.io/).
 
-The Archives Unleashed Toolkit is built against CDH 5.7.1:
-
-+ Hadoop version: 2.6.0-cdh5.7.1
-+ Spark version: 1.6.0-cdh5.7.1
-
-The Hadoop ecosystem is evolving rapidly, so there may be incompatibilities with other versions.
-
 # License
 
 Licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
