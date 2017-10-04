@@ -26,4 +26,8 @@ class TupleFormatterTest extends FunSuite {
     val tuple = (("a", "b", ("c", 9)), "d", 5, ("hi", 1))
     assert(TupleFormatter.tabDelimit(tuple) == "a\tb\tc\t9\td\t5\thi\t1")
   }
+  test("just flatten") {
+    val tuple = ("a", 1, "c", ("x", 3, ("NO", "YES")), "perhaps", "maybe", 3, (0,1))
+    assert(TupleFormatter.flatten(tuple) == ("a", 1, "c", "x", 3, "NO", "YES", "perhaps", "maybe", 3, 0, 1))
+  }
 }
