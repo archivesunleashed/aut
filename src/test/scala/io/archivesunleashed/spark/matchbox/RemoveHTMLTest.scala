@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.archivesunleashed.spark.matchbox
 
 import org.junit.runner.RunWith
@@ -21,13 +22,18 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class TupleFormatterTest extends FunSuite {
-  test("tab delimit") {
-    val tuple = (("a", "b", ("c", 9)), "d", 5, ("hi", 1))
-    assert(TupleFormatter.tabDelimit(tuple) == "a\tb\tc\t9\td\t5\thi\t1")
-  }
-  test("just flatten") {
-    val tuple = ("a", 1, "c", ("x", 3, ("NO", "YES")), "perhaps", "maybe", 3, (0,1))
-    assert(TupleFormatter.flatten(tuple) == ("a", 1, "c", "x", 3, "NO", "YES", "perhaps", "maybe", 3, 0, 1))
+class RemoveHTMLTest extends FunSuite {
+  test("simple") {
+    val html =
+      """
+      <html>
+      <body>
+      <div>Here is some...</div>
+      <p>HTML</p>
+      </body>
+      </html>
+      """
+    val removed = RemoveHTML(html)
+    assert(removed == "Here is some... HTML")
   }
 }
