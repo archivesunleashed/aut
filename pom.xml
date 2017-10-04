@@ -20,7 +20,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<project_name>${project.artifactId}</project_name>
     <project_organization>The Archives Unleashed Project</project_organization>
-    <scala.version>2.11.7</scala.version>
+    <scala.version>2.11.8</scala.version>
     <hadoop.version>2.7.3</hadoop.version>
     <spark.version>2.1.1</spark.version>
     <github.global.server>github</github.global.server>
