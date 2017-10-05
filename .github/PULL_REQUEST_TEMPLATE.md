@@ -4,7 +4,7 @@
 
 **GitHub issue(s)**:
 
-If you are responding to an AUT issue, please mention their numbers below.
+If you are responding to an issue, please mention their numbers below.
 
 * ex: #1
 * ex: #2
@@ -31,9 +31,8 @@ A description of what steps someone could take to:
 Any additional information that you think would be helpful when reviewing this PR.
 
 Example:
-* Does this change require documentation to be updated? 
-* Does this change add any new dependencies? 
-* Does this change require any other modifications to be made to the repository (ie. Regeneration activity, etc.)? 
+* Does this change require documentation to be updated?
+* Does this change add any new dependencies?
 * Could this change or impact execution of existing code?
 
 # Interested parties
