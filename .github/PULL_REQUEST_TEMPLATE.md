@@ -4,12 +4,14 @@
 
 **GitHub issue(s)**:
 
+If you are responding to an AUT issue, please mention their numbers below.
+
 * ex: #1
 * ex: #2
 
 # What does this Pull Request do?
 
-A brief description of what the intended result of the PR will be, what problem it solves, technical details, and possible side effects.
+A brief description of what the intended result of the Pull Request (PR) will be, what problem it solves, technical details, and any possible side effects.
 
 Example:
 * Changes x feature to such that y
@@ -20,7 +22,7 @@ Example:
 
 A description of what steps someone could take to:
 * Reproduce the problem you are fixing (if applicable)
-* Test that the Pull Request does what is intended.
+* Test that the PR does what is intended.
 * Please be as detailed as possible.
 * Good testing instructions help get your PR completed faster.
 
@@ -32,8 +34,10 @@ Example:
 * Does this change require documentation to be updated? 
 * Does this change add any new dependencies? 
 * Does this change require any other modifications to be made to the repository (ie. Regeneration activity, etc.)? 
-* Could this change impact execution of existing code?
+* Could this change or impact execution of existing code?
 
 # Interested parties
 
 Tag (@ mention) interested parties.
+
+Thanks in advance for your help with the Archives Unleashed Toolkit!
