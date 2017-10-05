@@ -19,6 +19,7 @@ package io.archivesunleashed.spark.matchbox
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
+import java.io.IOException
 
 @RunWith(classOf[JUnitRunner])
 class ExtractImageLinksTest extends FunSuite {
@@ -39,5 +40,14 @@ class ExtractImageLinksTest extends FunSuite {
     assert("http://foo.bar.com/a/pic.png" == extracted(0))
     assert("http://baz.org/a/b/banner.jpg" == extracted(1))
     assert("http://foo.bar.com/logo.gif" == extracted(2))
+  }
+
+  test("errors") {
+    val fragment =
+      """Image here: <img src="pic.png"> and another <img src="http://baz.org/a/b/banner.jpg"/> and <img src="../logo.gif"/>"""
+    assert(ExtractImageLinks("", "") == Nil)
+    // Need way of creating an exception here
+    val invalid = null
+    intercept[IOException] { ExtractImageLinks (invalid, fragment)}
   }
 }
