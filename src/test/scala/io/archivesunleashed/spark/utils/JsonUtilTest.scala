@@ -25,7 +25,7 @@
  @RunWith(classOf[JUnitRunner])
  class JsonUtilTest extends FunSuite {
    test("proper Map") {
-     val map = Map('a' -> 1, 'b' -> 2, 'c' -> 3)
+     val map: Map[Symbol, Any] = Map('a -> 1, 'b -> 2, 'c -> 3)
      assert(JsonUtil.toJson(map) == """{"a":1,"b":2,"c":3}""")
    }
 
