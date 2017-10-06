@@ -16,25 +16,26 @@
  */
 package io.archivesunleashed.spark.matchbox
 
-import java.io.ByteArrayInputStream
+import org.junit.runner.RunWith
+import org.scalatest.FunSuite
+import org.scalatest.junit.JUnitRunner
+import java.io.ByteArrayOutputStream
+import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 
-/**
-  * Created by youngbinkim on 7/7/16.
-  */
-object ComputeImageSize {
-  def apply(bytes: Array[Byte]): (Int, Int) = {
-    try {
-      val in = new ByteArrayInputStream(bytes)
-      val image = ImageIO.read(in)
-      if (image == null)
-        return (0, 0)
-      (image.getWidth(), image.getHeight())
-    } catch {
-      case e: Throwable => {
-        e.printStackTrace()
-        return (0, 0)
-      }
-    }
+@RunWith(classOf[JUnitRunner])
+class ComputeImageSizeTest extends FunSuite {
+  var ios: ByteArrayOutputStream = new ByteArrayOutputStream();
+  val img = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB)
+  ImageIO.write(img, "png", ios)
+  ios.flush()
+  var image: Array[Byte] = ios.toByteArray();
+  ios.close()
+
+
+  test ("check images") {
+    assert(ComputeImageSize(image) == (10, 10))
+    assert(ComputeImageSize(Array[Byte](0,0,0)) == (0, 0))
+    assert (ComputeImageSize(null) == (0,0))
   }
 }
