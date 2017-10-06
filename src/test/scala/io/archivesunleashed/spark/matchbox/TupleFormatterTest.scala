@@ -36,8 +36,4 @@ class TupleFormatterTest extends FunSuite {
     assert(TupleFormatter.flatten(tuple) == ("a", 1, "c", "x", 3, "NO", "YES", "perhaps", "maybe", 3, 0, 1))
     assert(TupleFormatter.flatten.isInstanceOf[TupleFormatter.LowPriorityFlatten])
   }
-  test("just flatten") {
-    val tuple = ("a", 1, "c", ("x", 3, ("NO", "YES")), "perhaps", "maybe", 3, (0,1))
-    assert(TupleFormatter.flatten(tuple) == ("a", 1, "c", "x", 3, "NO", "YES", "perhaps", "maybe", 3, 0, 1))
-  }
 }
