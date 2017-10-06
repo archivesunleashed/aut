@@ -25,6 +25,8 @@ import StringUtils._
 class StringUtilsTest extends FunSuite {
   test("remove prefix") {
     val s: String = "www.example.com"
+    val n: String = null
     assert(s.removePrefixWWW() == "example.com")
+    assert(n.removePrefixWWW() == null)
   }
 }

@@ -43,4 +43,10 @@ class ExtractDomainTest extends FunSuite {
       case (link, base, domain) => assert(ExtractDomain(link, base) == domain)
     }
   }
+
+  test("error") {
+    assert(ExtractDomain(null) == null)
+    assert(ExtractDomain("index.html", null) == null)
+  }
+
 }

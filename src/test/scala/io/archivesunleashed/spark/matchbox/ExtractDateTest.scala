@@ -32,4 +32,12 @@ class ExtractDateTest extends FunSuite {
     assert(ExtractDate("20151204", YYYYMMDD) == "20151204")
     assert(ExtractDate(null, YYYYMMDD) == null)
   }
+
+  test("more perfect") {
+    assert(ExtractDate("20151204", YYYY) == "20151204".substring(0,4))
+    assert(ExtractDate("20151204", MM) == "20151204".substring(4,6))
+    assert(ExtractDate("20151204", DD) == "20151204".substring(6,8))
+    assert(ExtractDate("20151204", YYYYMM) == "20151204".substring(0,6))
+    assert(ExtractDate("20151204", YYYYMMDD) == "20151204".substring(0,8))
+  }
 }
