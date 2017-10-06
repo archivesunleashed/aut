@@ -36,6 +36,6 @@ class ComputeImageSizeTest extends FunSuite {
   test ("check images") {
     assert(ComputeImageSize(image) == (10, 10))
     assert(ComputeImageSize(Array[Byte](0,0,0)) == (0, 0))
-    intercept[NullPointerException] { ComputeImageSize(null) }
+    assert (ComputeImageSize(null) == (0,0))
   }
 }

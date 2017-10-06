@@ -24,9 +24,8 @@ import javax.imageio.ImageIO
   */
 object ComputeImageSize {
   def apply(bytes: Array[Byte]): (Int, Int) = {
-    val in = new ByteArrayInputStream(bytes)
-
     try {
+      val in = new ByteArrayInputStream(bytes)
       val image = ImageIO.read(in)
       if (image == null)
         return (0, 0)
