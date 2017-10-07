@@ -28,7 +28,7 @@ object TweetUtils {
     def lang: String = try { (tweet \ "lang").extract[String] } catch { case e: Exception => null}
 
     def username(): String = try { (tweet \ "user" \ "screen_name").extract[String] } catch { case e: Exception => null}
-    def isVerifiedUser(): Boolean = try { (tweet \ "user" \ "screen_name").extract[String] == "false" } catch { case e: Exception => false}
+    def isVerifiedUser(): Boolean = try { (tweet \ "user" \ "verified").extract[Boolean] } catch { case e: Exception => false}
 
     def followerCount: Int = try { (tweet \ "user" \ "followers_count").extract[Int] } catch { case e: Exception => 0}
     def friendCount: Int = try { (tweet \ "user" \ "friends_count").extract[Int] } catch { case e: Exception => 0}
