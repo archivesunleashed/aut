@@ -42,7 +42,8 @@ public class WacArcInputFormatTest {
         "dns:www.archive.org",
         "http://www.archive.org/robots.txt",
         "http://www.archive.org/",
-        "http://www.archive.org/index.php" };
+        "http://www.archive.org/index.php"
+      };
 
     String arcFile = Resources.getResource("arc/example.arc.gz").getPath();
 
@@ -65,9 +66,14 @@ public class WacArcInputFormatTest {
     int cnt = 0;
     final int cntTest = 300;
 
+    float getProg = reader.getProgress();
+    assertEquals(getProg, 0.0f, 0);
+
     while (reader.nextKeyValue()) {
+
       ARCRecord record = reader.getCurrentValue().getRecord();
       ARCRecordMetaData metadata = record.getMetaData();
+
 
       if (cnt < urls.length) {
         assertEquals(urls[cnt], metadata.getUrl());
@@ -75,5 +81,6 @@ public class WacArcInputFormatTest {
       cnt++;
     }
     assertEquals(cntTest, cnt);
+    assertEquals(reader.getProgress(), 0.0f, 0);
   }
 }
