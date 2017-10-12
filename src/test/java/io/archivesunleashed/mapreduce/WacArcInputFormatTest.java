@@ -65,16 +65,11 @@ public class WacArcInputFormatTest {
 
     int cnt = 0;
     final int cntTest = 300;
-
     float getProg = reader.getProgress();
     assertEquals(getProg, 0.0f, 0);
-
     while (reader.nextKeyValue()) {
-
       ARCRecord record = reader.getCurrentValue().getRecord();
       ARCRecordMetaData metadata = record.getMetaData();
-
-
       if (cnt < urls.length) {
         assertEquals(urls[cnt], metadata.getUrl());
       }
