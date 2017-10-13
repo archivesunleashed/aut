@@ -32,7 +32,5 @@ class RemoveHttpHeaderTest extends FunSuite {
     assert(removed == "Hello content")
     assert(unchanged == nohttp)
     assert( error == null )
-
-
   }
 }
