@@ -58,6 +58,8 @@
        val testCount = 1000
        assert(graph.vertices.map( r => r._2).take(3).deep == testVertexArray.deep)
        assert(graph.edges.map( r => r.attr ).take(3).deep == testEdgeArray.deep)
+       assert(ExtractGraph.VertexData("epic.org", 0.0, 0,0).domain == "epic.org")
+       assert(ExtractGraph.EdgeData("20080430","deadlists.com","deadlists.com").date == "20080430")
      }
 
      test("creates a network without pagerank scores") {
