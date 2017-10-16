@@ -49,6 +49,7 @@ class WriteGDFTest extends FunSuite with BeforeAndAfter{
     val networkrdd = sc.parallelize(network)
     WriteGDF(networkrdd, testFile)
     assert(Files.exists(Paths.get(testFile)) == true)
+    assert(WriteGDF(networkrdd, "") == ())
     val lines = Source.fromFile(testFile).getLines.toList
     assert(lines(0) == "nodedef> name VARCHAR")
     assert(lines.contains("Destination1"))
