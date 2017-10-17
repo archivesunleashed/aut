@@ -61,6 +61,13 @@ class WriteGDFTest extends FunSuite with BeforeAndAfter{
     assert(lines.contains("Source3,Destination3,100,Date3"))
   }
 
+  test ("returns a Bool depending on pass or failure") {
+    val networkrdd = sc.parallelize(network)
+    val gdf = WriteGDF(networkrdd, testFile)
+    assert(gdf == true)
+    assert(WriteGDF(networkrdd, "") == false)
+  }
+
   after {
     if (sc != null) {
       sc.stop()

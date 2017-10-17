@@ -25,17 +25,18 @@ import de.l3s.boilerpipe.extractors.DefaultExtractor
  */
 object ExtractBoilerpipeText {
   def apply(input: String) = {
-    if (input.isEmpty) Nil
-    else
-      try {
-        val text = DefaultExtractor.INSTANCE.getText(input).replaceAll("[\\r\\n]+", " ").trim()
-        if (text.isEmpty) Nil
-        else text
-      } catch {
-        case e: Exception =>
-          throw new IOException("Caught exception processing input row " + e)
-      }
+    try {
+      if (input.isEmpty) Nil
+      else extract(input)
+    } catch {
+      case e: Exception =>
+        throw new IOException("Caught exception processing input row " + e)
+    }
+  }
+
+  def extract (input: String) = {
+    val text = DefaultExtractor.INSTANCE.getText(input).replaceAll("[\\r\\n]+", " ").trim()
+    if (text.isEmpty) Nil
+    else text
   }
 }
-
-
