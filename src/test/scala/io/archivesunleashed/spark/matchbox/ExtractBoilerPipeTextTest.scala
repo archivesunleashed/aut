@@ -26,11 +26,12 @@
  class ExtractBoilerpipeTextTest extends FunSuite {
    var text = """<p>Text with a boiler plate.<p>
    <footer>Copyright 2017</footer>"""
-   var boilerless = """Copyright 2017"""
-   test ("Removes boiler plate") {
-     assert (ExtractBoilerpipeText (text) == boilerless)
+   var boiler = """Copyright 2017"""
+   test ("Collects boilerpip") {
+     assert (ExtractBoilerpipeText (text) == boiler)
      assert (ExtractBoilerpipeText ("") == Nil)
      assert (ExtractBoilerpipeText ("All Rights Reserved.") == Nil)
+     val caught = intercept[IOException] {ExtractBoilerpipeText (null)}
+     assert (caught.getMessage == "Caught exception processing input row java.lang.NullPointerException")
    }
-
  }
