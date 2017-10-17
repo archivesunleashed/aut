@@ -35,7 +35,7 @@ object WriteGDF {
   * Writes graph nodes and edges to file.
   */
   def apply(rdd: RDD[((String, String, String), Int)], gdfPath: String): Boolean = {
-    if (gdfPath == "") false
+    if (gdfPath.isEmpty()) false
     else makeFile (rdd, gdfPath)
   }
 
