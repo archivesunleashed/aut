@@ -14,27 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.archivesunleashed.spark.matchbox
 
-import java.io.ByteArrayInputStream
-import javax.imageio.ImageIO
+ package io.archivesunleashed.spark.matchbox
 
-/**
-  * Created by youngbinkim on 7/7/16.
-  */
-object ComputeImageSize {
-  def apply(bytes: Array[Byte]): (Int, Int) = {
-    try {
-      val in = new ByteArrayInputStream(bytes)
-      val image = ImageIO.read(in)
-      if (image == null)
-        return (0, 0)
-      (image.getWidth(), image.getHeight())
-    } catch {
-      case e: Throwable => {
-        e.printStackTrace()
-        return (0, 0)
-      }
-    }
-  }
-}
+ import org.junit.runner.RunWith
+ import org.scalatest.FunSuite
+ import org.scalatest.junit.JUnitRunner
+ import io.archivesunleashed.spark.matchbox._
+ import org.scalatest.Matchers._
+ import org.apache.tika.parser.pdf.PDFParser;
+
+ @RunWith(classOf[JUnitRunner])
+ class ExtractTextFromPDFsTest extends FunSuite {
+   test ("get parser") {
+     ExtractTextFromPDFs.pdfParser shouldBe a [PDFParser]
+ }
+
+ }

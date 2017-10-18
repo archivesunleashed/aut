@@ -14,20 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.archivesunleashed.spark.scripts
 
-import org.apache.spark.SparkContext
-import io.archivesunleashed.spark.matchbox.{RemoveHTML, RecordLoader}
-import io.archivesunleashed.spark.rdd.RecordRDD._
+package io.archivesunleashed.spark.matchbox
 
-object Filter {
-  def filter(sc: SparkContext) = {
-    val r = RecordLoader.loadArc("collections/ARCHIVEIT-227-UOFTORONTO-CANPOLPINT-20090201174320-00056-crawling04.us.archive.org.arc.gz", sc)
-      .keepMimeTypes(Set("text/html"))
-      .discardDate(null)
-      .keepDomains(Set("greenparty.ca"))
-      .map(r => (r.getCrawlDate, RemoveHTML(r.getContentString)))
-    r.saveAsTextFile("/green")
+import org.junit.runner.RunWith
+import org.scalatest.FunSuite
+import org.scalatest.junit.JUnitRunner
+
+@RunWith(classOf[JUnitRunner])
+class RemoveHttpHeaderTest extends FunSuite {
+  test("simple") {
+    val header = "HTTP/1.1 200 OK\r\n\r\nHello content"
+    val nohttp = "This has no Http"
+    val removed = RemoveHttpHeader(header)
+    val unchanged = RemoveHttpHeader(nohttp)
+    val error = RemoveHttpHeader(null)
+    assert(removed == "Hello content")
+    assert(unchanged == nohttp)
+    assert( error == null )
   }
 }
-

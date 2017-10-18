@@ -16,27 +16,26 @@
  */
 package io.archivesunleashed.spark.matchbox
 
-import java.io.IOException
-import de.l3s.boilerpipe.extractors.DefaultExtractor
+import org.junit.runner.RunWith
+import org.scalatest.FunSuite
+import org.scalatest.junit.JUnitRunner
+import java.io.ByteArrayOutputStream
+import java.awt.image.BufferedImage
+import javax.imageio.ImageIO
 
-/**
- * UDF for extracting raw text content from an HTML page, minus "boilerplate"
- * content (using boilerpipe).
- */
-object ExtractBoilerpipeText {
-  def apply(input: String) = {
-    try {
-      if (input.isEmpty) Nil
-      else extract(input)
-    } catch {
-      case e: Exception =>
-        throw new IOException("Caught exception processing input row " + e)
-    }
-  }
+@RunWith(classOf[JUnitRunner])
+class ComputeImageSizeTest extends FunSuite {
+  var ios: ByteArrayOutputStream = new ByteArrayOutputStream();
+  val img = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB)
+  ImageIO.write(img, "png", ios)
+  ios.flush()
+  var image: Array[Byte] = ios.toByteArray();
+  ios.close()
 
-  def extract (input: String) = {
-    val text = DefaultExtractor.INSTANCE.getText(input).replaceAll("[\\r\\n]+", " ").trim()
-    if (text.isEmpty) Nil
-    else text
+
+  test ("check images") {
+    assert(ComputeImageSize(image) == (10, 10))
+    assert(ComputeImageSize(Array[Byte](0,0,0)) == (0, 0))
+    assert (ComputeImageSize(null) == (0,0))
   }
 }

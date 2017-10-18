@@ -14,21 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.archivesunleashed.spark.scripts
 
-import org.apache.spark.SparkContext
-import io.archivesunleashed.spark.matchbox.{ExtractLinks, RecordLoader}
-import io.archivesunleashed.spark.rdd.RecordRDD._
+package io.archivesunleashed.spark.matchbox
 
-object SocialMediaLinks {
+import org.junit.runner.RunWith
+import org.scalatest.FunSuite
+import org.scalatest.junit.JUnitRunner
 
-  def socialMediaLinksCount(sc: SparkContext) = {
-    RecordLoader.loadArc("/shared/collections/CanadianPoliticalParties/arc/", sc)
-      .map(r => (r.getCrawlDate, r.getDomain, ExtractLinks(r.getUrl, r.getContentString)))
-      .flatMap(r => r._3
-        .filter(f => f._2.matches(".*(twitter|facebook|youtube).*"))
-        .map(f => (r._1, r._2, f._2)))
-      .countItems()
-      .saveAsTextFile("cpp.socialmedia/")
+@RunWith(classOf[JUnitRunner])
+class RemoveHTMLTest extends FunSuite {
+  test("simple") {
+    val html =
+      """
+      <html>
+      <body>
+      <div>Here is some...</div>
+      <p>HTML</p>
+      </body>
+      </html>
+      """
+    val removed = RemoveHTML(html)
+    assert(removed == "Here is some... HTML")
   }
 }

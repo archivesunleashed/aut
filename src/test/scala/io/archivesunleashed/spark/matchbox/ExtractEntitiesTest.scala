@@ -25,15 +25,18 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.logging.LogFactory
 import org.apache.spark.{SparkConf, SparkContext}
 import org.scalatest.{BeforeAndAfter, FunSuite}
+import org.scalatest.junit.JUnitRunner
+import org.junit.runner.RunWith
 import io.archivesunleashed.spark.matchbox.NER3Classifier.NERClassType
 
 import scala.collection.mutable
 
 // There must be a valid classifier file with path `iNerClassifierFile` for this test to pass
-// @RunWith(classOf[JUnitRunner])
+//@RunWith(classOf[JUnitRunner])
 class ExtractEntitiesTest extends FunSuite with BeforeAndAfter {
   private val LOG = LogFactory.getLog(classOf[ExtractEntitiesTest])
   private val scrapePath = Resources.getResource("ner/example.txt").getPath
+  private val archivePath = Resources.getResource("arc/example.arc.gz").getPath
   private val master = "local[4]"
   private val appName = "example-spark"
   private var sc: SparkContext = _
@@ -64,6 +67,11 @@ class ExtractEntitiesTest extends FunSuite with BeforeAndAfter {
     expectedEntityMap.toStream.foreach(f => {
       assert(f._2 == actual.get(f._1.toString).get)
     })
+  }
+
+  test("Extract from Record") {
+    val e = ExtractEntities.extractFromRecords(iNerClassifierFile, archivePath, tempDir + "/scrapeArcEntities", sc).take(3).last
+    assert(e._1 == "hello")
   }
 
   after {

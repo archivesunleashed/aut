@@ -20,7 +20,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<project_name>${project.artifactId}</project_name>
     <project_organization>The Archives Unleashed Project</project_organization>
-    <scala.version>2.11.7</scala.version>
+    <scala.version>2.11.8</scala.version>
     <hadoop.version>2.7.3</hadoop.version>
     <spark.version>2.1.1</spark.version>
     <github.global.server>github</github.global.server>
@@ -186,13 +186,13 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>cobertura-maven-plugin</artifactId>
         <version>2.7</version>
-        <configuration>
-          <formats>
-            <format>html</format>
-            <format>xml</format>
-          </formats>
-          <check />
-        </configuration>
+				<configuration>
+					<formats>
+						<format>html</format>
+						<format>xml</format>
+					</formats>
+					<check />
+				</configuration>
       </plugin>
       <!-- for mycila -->
       <plugin>
@@ -389,6 +389,19 @@
             </reports>
           </reportSet>
         </reportSets>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <version>2.7</version>
+        <configuration>
+          <formats>
+            <format>html</format>
+            <format>xml</format>
+          </formats>
+          <check />
+        </configuration>
       </plugin>
     </plugins>
 	</reporting>

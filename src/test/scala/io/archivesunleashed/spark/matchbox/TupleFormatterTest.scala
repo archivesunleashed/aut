@@ -19,11 +19,21 @@ package io.archivesunleashed.spark.matchbox
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
+import shapeless._
+import ops.tuple.FlatMapper
+import ops.tuple.ToList
+import syntax.std.tuple._
 
 @RunWith(classOf[JUnitRunner])
 class TupleFormatterTest extends FunSuite {
   test("tab delimit") {
     val tuple = (("a", "b", ("c", 9)), "d", 5, ("hi", 1))
     assert(TupleFormatter.tabDelimit(tuple) == "a\tb\tc\t9\td\t5\thi\t1")
+    assert(TupleFormatter.tabDelimit.isInstanceOf[Poly1])
+  }
+  test("just flatten") {
+    val tuple = ("a", 1, "c", ("x", 3, ("NO", "YES")), "perhaps", "maybe", 3, (0,1))
+    assert(TupleFormatter.flatten(tuple) == ("a", 1, "c", "x", 3, "NO", "YES", "perhaps", "maybe", 3, 0, 1))
+    assert(TupleFormatter.flatten.isInstanceOf[TupleFormatter.LowPriorityFlatten])
   }
 }
