@@ -31,7 +31,7 @@ import io.archivesunleashed.spark.rdd.RecordRDD._
 @RunWith(classOf[JUnitRunner])
 class RecordRDDTest extends FunSuite with BeforeAndAfter {
   private val arcPath = Resources.getResource("arc/example.arc.gz").getPath
-  private val warcPath = Resources.getResource("warc/example.warc.gz").getPath
+  private val badPath = Resources.getResource("arc/badexample.arc.gz").getPath
   private val master = "local[4]"
   private val appName = "example-spark"
   private var sc: SparkContext = _
@@ -44,13 +44,25 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
+  test("no valid pages") {
+    val base = RecordLoader.loadArc(badPath, sc)
+      .keepValidPages().take(2)
+    assert (base.length == 0)
+  }
+
+  test ("no images") {
+    val base = RecordLoader.loadArc(badPath, sc)
+      .keepValidPages().take(2)
+    assert (base.length == 0)
+  }
+
   test("keep date") {
     val base = RecordLoader.loadArc(arcPath, sc)
-    val component = DateComponent.YYYYMMDD
+    val component = DateComponent.YYYY
     val r = base
-      .filter (x => ExtractDate(x.getCrawlDate, component) == "20080430")
+      .filter (x => ExtractDate(x.getCrawlDate, component) == "2008")
       .map ( mp => mp.getUrl).take(3)
-    val r2 = base.keepDate("20080430", component)
+    val r2 = base.keepDate("2008", component)
       .map ( mp => mp.getUrl).take(3)
     assert (r2.sameElements(r)) }
 
