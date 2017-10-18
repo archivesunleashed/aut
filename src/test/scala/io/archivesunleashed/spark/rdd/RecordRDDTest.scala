@@ -62,6 +62,14 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     assert (r2 == 1)
   }
 
+  test ("keepUrlPatterns") {
+    val base = RecordLoader.loadArc(arcPath, sc)
+      .keepValidPages()
+    val urls = Set ("http://www.archive.org/".r, "http://www.sloan.org".r, "".r)
+    val r2 = base.keepUrlPatterns(urls).count
+    assert (r2 == 1)
+  }
+
   test ("check for domains") {
     val base2 = RecordLoader.loadArc(arcPath, sc)
       .keepValidPages()
@@ -85,8 +93,11 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     val base = RecordLoader.loadArc(arcPath, sc)
       .keepValidPages()
     val regex = Set(raw"Please visit our website at".r)
+    val regno = Set(raw"Please visit our website at".r, raw"UNINTELLIBLEDFSJKLS".r)
     val y2 = base.keepContent(regex).count()
+    val y1 = base.keepContent(regno).count()
     assert (y2 == 1)
+    assert (y1 == 1)
   }
 
   test ("discard mime") {
@@ -114,6 +125,14 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     assert (r2 == 135)
   }
 
+  test ("discard UrlPatterns") {
+    val base = RecordLoader.loadArc(arcPath, sc)
+      .keepValidPages()
+    val urls = Set ("http://www.archive.org/".r, "http://www.sloan.org".r, "".r)
+    val r2 = base.discardUrlPatterns(urls).count
+    assert (r2 == 134)
+  }
+
   test ("discard domains") {
     val base = RecordLoader.loadArc(arcPath, sc)
       .keepValidPages()
@@ -126,8 +145,11 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     val base = RecordLoader.loadArc(arcPath, sc)
       .keepValidPages()
     val regex = Set(raw"Please visit our website at".r)
+    val regno = Set(raw"Please visit our website at".r, raw"UNINTELLIBLEDFSJKLS".r)
     val y2 = base.discardContent(regex).count()
+    val y1 = base.discardContent(regno).count()
     assert (y2 == 134)
+    assert (y1 == 134)
   }
 
   after {
