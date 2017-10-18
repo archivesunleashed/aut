@@ -23,6 +23,7 @@ import shapeless._
 import ops.tuple.FlatMapper
 import ops.tuple.ToList
 import syntax.std.tuple._
+import org.scalatest.Matchers._
 
 @RunWith(classOf[JUnitRunner])
 class TupleFormatterTest extends FunSuite {
@@ -35,5 +36,10 @@ class TupleFormatterTest extends FunSuite {
     val tuple = ("a", 1, "c", ("x", 3, ("NO", "YES")), "perhaps", "maybe", 3, (0,1))
     assert(TupleFormatter.flatten(tuple) == ("a", 1, "c", "x", 3, "NO", "YES", "perhaps", "maybe", 3, 0, 1))
     assert(TupleFormatter.flatten.isInstanceOf[TupleFormatter.LowPriorityFlatten])
+  }
+
+  test ("Object extensions") {
+    TupleFormatter.flatten shouldBe a [TupleFormatter.LowPriorityFlatten]
+    TupleFormatter.tabDelimit shouldBe a [Poly1]
   }
 }

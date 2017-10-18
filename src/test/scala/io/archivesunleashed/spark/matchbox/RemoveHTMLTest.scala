@@ -20,6 +20,7 @@ package io.archivesunleashed.spark.matchbox
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
+import java.io.IOException
 
 @RunWith(classOf[JUnitRunner])
 class RemoveHTMLTest extends FunSuite {
@@ -35,5 +36,7 @@ class RemoveHTMLTest extends FunSuite {
       """
     val removed = RemoveHTML(html)
     assert(removed == "Here is some... HTML")
+    val caught = intercept[IOException] {RemoveHTML (null)}
+    assert (caught.getMessage == "Caught exception processing input row ")
   }
 }
