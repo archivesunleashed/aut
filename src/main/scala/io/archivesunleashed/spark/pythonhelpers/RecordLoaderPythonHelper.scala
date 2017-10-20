@@ -16,14 +16,6 @@ import io.archivesunleashed.spark.matchbox.RecordLoader
 import io.archivesunleashed.spark.rdd.RecordRDD._
 
 object RecordLoaderPythonHelper {
-//  def loadArc(path: String, jssc: JavaSparkContext): JavaRDD[ArcRecordWritable] = {
-//    val sc = jssc.sc
-//    //val rdd = RecordLoader.loadArc(path, sc)
-//    val rdd = sc.newAPIHadoopFile(path, classOf[WacArcInputFormat], classOf[LongWritable], classOf[ArcRecordWritable])
-//      .map(r => r._2)
-//    val jrdd = new JavaRDD(rdd)
-//    jrdd
-//  }
 
   def loadArc(path: String, jssc: JavaSparkContext, spark: SparkSession): DataFrame = {
     val sc = jssc.sc
@@ -50,7 +42,4 @@ object RecordLoaderPythonHelper {
     sc.textFile(path).filter(line => !line.startsWith("{\"delete\":"))
       .map(line => try { parse(line) } catch { case e: Exception => null }).filter(x => x != null)
 
-  def add(a: Int, b: Int): Int = a + b
-
-  def square(a : List[Int]): List[Int] = a.map(x => x*x)
 }

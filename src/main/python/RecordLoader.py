@@ -20,7 +20,7 @@ from ArchiveRecord import ArchiveRecord
 from RecordRDD import RecordRDD
 
 def loadArcAsRDD(path, sc, spark):
-  rlph = sc._jvm.io.archivesunleashed.pyspark.matchbox.RecordLoaderPythonHelper
+  rlph = sc._jvm.io.archivesunleashed.spark.pythonhelpers.RecordLoaderPythonHelper
   df = rlph.loadArc(path, sc._jsc, spark._jsparkSession)
   df.createTempView("df")
   pdf = spark.table("df")
@@ -28,7 +28,7 @@ def loadArcAsRDD(path, sc, spark):
   return pdf.rdd
 
 def loadArcAsDF(path, sc, spark):
-  rlph = sc._jvm.io.archivesunleashed.pyspark.matchbox.RecordLoaderPythonHelper
+  rlph = sc._jvm.io.archivesunleashed.spark.pythonhelpers.RecordLoaderPythonHelper
   df = rlph.loadArc(path, sc._jsc, spark._jsparkSession)
   df.createTempView("df")
   pdf = spark.table("df")
@@ -36,7 +36,7 @@ def loadArcAsDF(path, sc, spark):
   return pdf
 
 def loadWarcAsRDD(path, sc, spark):
-  rlph = sc._jvm.io.archivesunleashed.pyspark.matchbox.RecordLoaderPythonHelper
+  rlph = sc._jvm.io.archivesunleashed.spark.pythonhelpers.RecordLoaderPythonHelper
   df = rlph.loadWarc(path, sc._jsc, spark._jsparkSession)
   df.createTempView("df")
   pdf = spark.table("df")
@@ -44,7 +44,7 @@ def loadWarcAsRDD(path, sc, spark):
   return pdf.rdd
 
 def loadWarcAsDF(path, sc, spark):
-  rlph = sc._jvm.io.archivesunleashed.pyspark.matchbox.RecordLoaderPythonHelper
+  rlph = sc._jvm.io.archivesunleashed.spark.pythonhelpers.RecordLoaderPythonHelper
   df = rlph.loadWarc(path, sc._jsc, spark._jsparkSession)
   df.createTempView("df")
   pdf = spark.table("df")
@@ -52,7 +52,7 @@ def loadWarcAsDF(path, sc, spark):
   return pdf
 
 def loadArchivesAsDF(path, sc, spark):
-  rlph = sc._jvm.io.archivesunleashed.pyspark.matchbox.RecordLoaderPythonHelper
+  rlph = sc._jvm.io.archivesunleashed.spark.pythonhelpers.RecordLoaderPythonHelper
   df = rlph.loadArchives(path, sc._jsc, spark._jsparkSession)
   df.createTempView("df")
   pdf = spark.table("df")
@@ -60,7 +60,7 @@ def loadArchivesAsDF(path, sc, spark):
   return pdf
 
 def loadArchivesAsRDD(path, sc, spark):
-  rlph = sc._jvm.io.archivesunleashed.pyspark.matchbox.RecordLoaderPythonHelper
+  rlph = sc._jvm.io.archivesunleashed.spark.pythonhelpers.RecordLoaderPythonHelper
   df = rlph.loadArchives(path, sc._jsc, spark._jsparkSession)
   df.createTempView("df")
   pdf = spark.table("df")
