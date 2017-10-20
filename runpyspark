@@ -1,3 +1,0 @@
-#!/bin/bash
-
-pyspark --jars target/aut-0.10.1-SNAPSHOT-fatjar.jar --driver-class-path target/aut-0.10.1-SNAPSHOT-fatjar.jar
