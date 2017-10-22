@@ -25,14 +25,6 @@ def countItems(rdd):
     .reduceByKey(lambda c1, c2: c1 + c2) \
     .sortBy(lambda f: f[1], ascending = False)
 
-# def keepImages(df): 
-#   return df.filter(df['crawlDate'].isNotNull()) \
-#           .filter(df['mimeType'].isNotNull() & df['mimeType'].like('%image/%')
-#             | df['url'].endswith("jpg")
-#             | df['url'].endswith("jpeg")
-#             | df['url'].endswith("png")
-#             & ~df['url'].endswith("robots.txt"))
-
 def keepImages(df): 
   return df.filter(df['crawlDate'].isNotNull()
       & (
@@ -87,8 +79,6 @@ def keepContent(df, contentREs):
   content_filter_udf = udf(content_filter, BooleanType())
   return df.filter(content_filter_udf(df['contentString']))
 
-
-# ---- TODO: All discard filtering operations ---- #
 def discardMimeTypes(df, mimeTypes): 
   return df.filter(~df['mimeType'].isin(mimeTypes))
 

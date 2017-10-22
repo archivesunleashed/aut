@@ -64,7 +64,6 @@ def loadArchivesAsRDD(path, sc, spark):
   df = rlph.loadArchives(path, sc._jsc, spark._jsparkSession)
   df.createTempView("df")
   pdf = spark.table("df")
-  #rdd = pdf.rdd.map(lambda r: rowToArchiveRecord(r))
   spark.catalog.dropTempView("df")
   return pdf.rdd
 
