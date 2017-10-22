@@ -51,7 +51,6 @@ def keepUrls(row, urls):
   return row['url'] in urls
     
 def keepUrlPatterns(row, urlREs):
-  # TODO: Verify that this is correct
   url = row['url']
   for pattern in urlREs:
     if re.match(pattern, url) is not None:
@@ -59,14 +58,12 @@ def keepUrlPatterns(row, urlREs):
   return False
     
 def keepDomains(row, urls): 
-  # TODO: Verify that this is correct
   return re.sub(r"^\\s*www\\.", "", ExtractDomain(row['url'])) in urls
 
 def keepLanguages(row, langs):
   return detect(RemoveHTML(row.contentString)) in langs
 
 def keepContent(row, contentREs):
-  # TODO: Verify that this is correct
   contents = row['contentString']
   for pattern in contentREs:
     if re.match(pattern, contents) is not None:

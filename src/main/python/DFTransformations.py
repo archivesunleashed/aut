@@ -47,7 +47,6 @@ def keepUrls(df, urls):
   return df.filter(df['url'].isin(urls))
     
 def keepUrlPatterns(df, urlREs):
-  # TODO: Verify that this is correct
   def url_filter(url):
     for pattern in urlREs:
       if re.match(pattern, url) is not None:
@@ -57,7 +56,6 @@ def keepUrlPatterns(df, urlREs):
   return df.filter(url_filter_udf(df['url']))
     
 def keepDomains(df, urls): 
-  # TODO: Verify that this is correct
   def domain_filter(url):
     return re.sub(r"^\\s*www\\.", "", ExtractDomain(url)) in urls
   domain_filter_udf = udf(domain_filter, BooleanType())
@@ -70,7 +68,6 @@ def keepLanguages(df, langs):
   return df.filter(content_filter_udf(df['contentString'])) 
 
 def keepContent(df, contentREs):
-  # TODO: Verify that this is correct
   def content_filter(content):
     for pattern in contentREs:
       if re.match(pattern, content) is not None:
