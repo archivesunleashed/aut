@@ -21,6 +21,8 @@ trait ArchiveRecord extends Serializable {
 
   val getCrawlMonth: String
 
+  val getCrawlYear: String
+
   val getUrl: String
 
   val getDomain: String
