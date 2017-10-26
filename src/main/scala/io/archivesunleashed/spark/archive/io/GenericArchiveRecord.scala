@@ -57,6 +57,14 @@ class GenericArchiveRecord(r: SerializableWritable[GenericArchiveRecordWritable]
     }
   }
 
+  val getCrawlYear: String = {
+    if (r.t.getFormat == ArchiveFormat.ARC) {
+      ExtractDate(arcRecord.getMetaData.getDate, DateComponent.YYYY)
+    } else {
+      ExtractDate(ArchiveUtils.get14DigitDate(ISO8601.parse(warcRecord.getHeader.getDate)), DateComponent.YYYY)
+    }
+  }
+
   val getContentBytes: Array[Byte] = {
     if (r.t.getFormat == ArchiveFormat.ARC) {
       ArcRecordUtils.getBodyContent(arcRecord)

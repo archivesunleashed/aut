@@ -27,6 +27,8 @@ class ArcRecord(r: SerializableWritable[ArcRecordWritable]) extends ArchiveRecor
 
   val getCrawlMonth: String = ExtractDate(r.t.getRecord.getMetaData.getDate, DateComponent.YYYYMM)
 
+  val getCrawlYear: String = ExtractDate(r.t.getRecord.getMetaData.getDate, DateComponent.YYYY)
+
   val getMimeType: String = r.t.getRecord.getMetaData.getMimetype
 
   val getUrl: String = r.t.getRecord.getMetaData.getUrl
