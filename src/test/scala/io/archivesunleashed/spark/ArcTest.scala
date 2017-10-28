@@ -46,12 +46,16 @@ class ArcTest extends FunSuite with BeforeAndAfter {
   test("filter date") {
     val four = RecordLoader.loadArchives(arcPath, sc, keepValidPages = false)
       .keepDate("200804", DateComponent.YYYYMM)
+      .map(r => r.getCrawlDate)
       .collect()
+
     val five = RecordLoader.loadArchives(arcPath, sc, keepValidPages = false)
       .keepDate("200805", DateComponent.YYYYMM)
+      .map(r => r.getCrawlDate)
       .collect()
-    four.foreach(r => assert(r.getCrawlDate.substring(0, 6) == "200804"))
-    five.foreach(r => assert(r.getCrawlDate.substring(0, 6) == "200805"))
+
+    four.foreach(date => assert(date.substring(0, 6) == "200804"))
+    five.foreach(date => assert(date.substring(0, 6) == "200805"))
   }
 
   test("filter url pattern") {

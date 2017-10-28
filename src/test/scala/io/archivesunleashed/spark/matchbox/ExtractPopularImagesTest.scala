@@ -46,7 +46,7 @@ class ExtractPopularImagesTest extends FunSuite with BeforeAndAfter {
 
     test("extracts popular images") {
 
-      val examplerdd = RecordLoader.loadArchives(arcPath, sc)
+      val examplerdd = RecordLoader.loadArchives(arcPath, sc, keepValidPages = false)
       val imagesLowLimit = ExtractPopularImages(examplerdd, 3, sc)
       val imagesHighLimit = ExtractPopularImages(examplerdd, 507, sc)
       val response = Array("1	http://creativecommons.org/images/public/somerights20.gif",
