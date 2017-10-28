@@ -40,14 +40,14 @@ class ArcTest extends FunSuite with BeforeAndAfter {
   }
 
   test("count records") {
-    assert(RecordLoader.loadArc(arcPath, sc).count == 300L)
+    assert(RecordLoader.loadArchives(arcPath, sc).count == 300L)
   }
 
   test("filter date") {
-    val four = RecordLoader.loadArc(arcPath, sc)
+    val four = RecordLoader.loadArchives(arcPath, sc)
       .keepDate("200804", DateComponent.YYYYMM)
       .collect()
-    val five = RecordLoader.loadArc(arcPath, sc)
+    val five = RecordLoader.loadArchives(arcPath, sc)
       .keepDate("200805", DateComponent.YYYYMM)
       .collect()
     four.foreach(r => assert(r.getCrawlDate.substring(0, 6) == "200804"))
@@ -55,23 +55,23 @@ class ArcTest extends FunSuite with BeforeAndAfter {
   }
 
   test("filter url pattern") {
-    val keepMatches = RecordLoader.loadArc(arcPath, sc)
+    val keepMatches = RecordLoader.loadArchives(arcPath, sc)
       .keepUrlPatterns(Set("http://www.archive.org/about/.*".r))
-    val discardMatches = RecordLoader.loadArc(arcPath, sc)
+    val discardMatches = RecordLoader.loadArchives(arcPath, sc)
         .discardUrlPatterns(Set("http://www.archive.org/about/.*".r))
     assert(keepMatches.count == 16L)
     assert(discardMatches.count == 284L)
   }
 
   test("count links") {
-    val links = RecordLoader.loadArc(arcPath, sc)
+    val links = RecordLoader.loadArchives(arcPath, sc)
       .map(r => ExtractLinks(r.getUrl, r.getContentString))
       .reduce((a, b) => a ++ b)
     assert(links.size == 664)
   }
 
   test("detect language") {
-    val languageCounts = RecordLoader.loadArc(arcPath, sc)
+    val languageCounts = RecordLoader.loadArchives(arcPath, sc)
       .keepMimeTypes(Set("text/html"))
       .map(r => RemoveHTML(r.getContentString))
       .groupBy(content => DetectLanguage(content))
@@ -92,7 +92,7 @@ class ArcTest extends FunSuite with BeforeAndAfter {
   }
 
   test("detect mime type tika") {
-    val mimeTypeCounts = RecordLoader.loadArc(arcPath, sc)
+    val mimeTypeCounts = RecordLoader.loadArchives(arcPath, sc)
       .map(r => RemoveHTML(r.getContentString))
       .groupBy(content => DetectMimeTypeTika(content))
       .map(f => {
