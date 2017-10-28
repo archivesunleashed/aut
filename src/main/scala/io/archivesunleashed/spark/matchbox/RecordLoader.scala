@@ -22,22 +22,11 @@ import org.apache.spark.rdd.RDD
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
 import io.archivesunleashed.io.GenericArchiveRecordWritable.ArchiveFormat
-import io.archivesunleashed.io.{GenericArchiveRecordWritable, WarcRecordWritable, ArcRecordWritable}
-import io.archivesunleashed.mapreduce.{WacGenericInputFormat, WacWarcInputFormat, WacArcInputFormat}
+import io.archivesunleashed.io.{GenericArchiveRecordWritable}
+import io.archivesunleashed.mapreduce.{WacGenericInputFormat}
 import io.archivesunleashed.spark.archive.io.{WarcRecord, ArcRecord, ArchiveRecord, GenericArchiveRecord}
 
 object RecordLoader {
-  def loadArc(path: String, sc: SparkContext): RDD[ArchiveRecord] = {
-    sc.newAPIHadoopFile(path, classOf[WacArcInputFormat], classOf[LongWritable], classOf[ArcRecordWritable])
-      .map(r => new ArcRecord(new SerializableWritable(r._2)))
-  }
-
-  def loadWarc(path: String, sc: SparkContext): RDD[ArchiveRecord] = {
-    sc.newAPIHadoopFile(path, classOf[WacWarcInputFormat], classOf[LongWritable], classOf[WarcRecordWritable])
-      .filter(r => r._2.getRecord.getHeader.getHeaderValue("WARC-Type").equals("response"))
-      .map(r => new WarcRecord(new SerializableWritable(r._2)))
-  }
-
   def loadArchives(path: String, sc: SparkContext): RDD[ArchiveRecord] = {
     sc.newAPIHadoopFile(path, classOf[WacGenericInputFormat], classOf[LongWritable], classOf[GenericArchiveRecordWritable])
       .filter(r => (r._2.getFormat == ArchiveFormat.ARC) ||
