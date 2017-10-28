@@ -1,37 +1,11 @@
-/*
- * Archives Unleashed Toolkit (AUT):
- * An open-source platform for analyzing web archives.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package io.archivesunleashed.spark.archive.io
-
-trait ArchiveRecord extends Serializable {
-  val getCrawlDate: String
-
-  val getCrawlMonth: String
-
-  val getCrawlYear: String
-
-  val getUrl: String
-
-  val getDomain: String
-
-  val getMimeType: String
-
-  val getContentString: String
-
-  val getContentBytes: Array[Byte]
-
-  val getImageBytes: Array[Byte]
-}
+Unstaged changes after reset:
+M	src/main/scala/io/archivesunleashed/spark/archive/io/ArchiveRecord.scala
+D	src/main/scala/io/archivesunleashed/spark/archive/io/GenericArchiveRecord.scala
+M	src/main/scala/io/archivesunleashed/spark/matchbox/ExtractGraph.scala
+M	src/main/scala/io/archivesunleashed/spark/matchbox/RecordLoader.scala
+M	src/main/scala/io/archivesunleashed/spark/rdd/RecordRDD.scala
+M	src/test/scala/io/archivesunleashed/spark/ArcTest.scala
+M	src/test/scala/io/archivesunleashed/spark/ArchiveRecordTest.scala
+M	src/test/scala/io/archivesunleashed/spark/WarcTest.scala
+M	src/test/scala/io/archivesunleashed/spark/rdd/CountableRDDTest.scala
+M	src/test/scala/io/archivesunleashed/spark/rdd/RecordRDDTest.scala
