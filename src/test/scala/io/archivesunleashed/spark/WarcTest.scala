@@ -17,12 +17,12 @@
 package io.archivesunleashed.spark
 
 import com.google.common.io.Resources
+import io.archivesunleashed.spark.archive.io.ArchiveRecord
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
-import io.archivesunleashed.spark.archive.io.ArchiveRecord
 import io.archivesunleashed.spark.matchbox.RecordLoader
 import io.archivesunleashed.spark.rdd.RecordRDD._
 
@@ -40,7 +40,7 @@ class WarcTest extends FunSuite with BeforeAndAfter {
       .setMaster(master)
       .setAppName(appName)
     sc = new SparkContext(conf)
-    records = RecordLoader.loadWarc(warcPath, sc)
+    records = RecordLoader.loadArchives(warcPath, sc)
   }
 
   test("count records") {
@@ -58,7 +58,7 @@ class WarcTest extends FunSuite with BeforeAndAfter {
   }
 
   test("warc get content") {
-    val a = RecordLoader.loadWarc(warcPath, sc)
+    val a = RecordLoader.loadArchives(warcPath, sc)
       .map(r => r.getContentString)
       .take(1)
     assert(a.head.nonEmpty)
