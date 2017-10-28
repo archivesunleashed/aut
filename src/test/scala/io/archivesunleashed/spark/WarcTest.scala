@@ -40,7 +40,7 @@ class WarcTest extends FunSuite with BeforeAndAfter {
       .setMaster(master)
       .setAppName(appName)
     sc = new SparkContext(conf)
-    records = RecordLoader.loadArchives(warcPath, sc)
+    records = RecordLoader.loadArchives(warcPath, sc, keepValidPages = false)
   }
 
   test("count records") {
@@ -58,7 +58,7 @@ class WarcTest extends FunSuite with BeforeAndAfter {
   }
 
   test("warc get content") {
-    val a = RecordLoader.loadArchives(warcPath, sc)
+    val a = RecordLoader.loadArchives(warcPath, sc, keepValidPages = false)
       .map(r => r.getContentString)
       .take(1)
     assert(a.head.nonEmpty)

@@ -39,8 +39,8 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
   }
 
   test("count records") {
-    assert(RecordLoader.loadArchives(arcPath, sc).count == 300L)
-    assert(RecordLoader.loadArchives(warcPath, sc).count == 299L)
+    assert(RecordLoader.loadArchives(arcPath, sc, keepValidPages = false).count == 300L)
+    assert(RecordLoader.loadArchives(warcPath, sc, keepValidPages = false).count == 299L)
   }
 
   after {
