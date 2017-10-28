@@ -44,7 +44,7 @@ class GenericArchiveRecordTest extends FunSuite with BeforeAndAfter {
   }
 
   test("warc and arc get content") {
-    val arc10 = RecordLoader.loadArc(arcPath, sc)
+    val arc10 = RecordLoader.loadArchives(arcPath, sc)
       .map(r => r.getContentString)
       .take(10)
     var archives10 = RecordLoader.loadArchives(arcPath, sc)
@@ -52,7 +52,7 @@ class GenericArchiveRecordTest extends FunSuite with BeforeAndAfter {
       .take(10)
     for(i <- 0 to 9) { assert(arc10(i) == archives10(i)) }
 
-   val warc10 = RecordLoader.loadWarc(warcPath, sc)
+   val warc10 = RecordLoader.loadArchives(warcPath, sc)
       .map(r => r.getContentString)
       .take(10)
     archives10 = RecordLoader.loadArchives(warcPath, sc)
