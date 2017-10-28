@@ -16,9 +16,9 @@
  */
 package io.archivesunleashed.spark.matchbox
 
+import io.archivesunleashed.spark.archive.io.ArchiveRecord
 import org.apache.spark.graphx._
 import org.apache.spark.rdd.RDD
-import io.archivesunleashed.spark.archive.io.ArchiveRecord
 import io.archivesunleashed.spark.matchbox.StringUtils._
 import io.archivesunleashed.spark.rdd.RecordRDD._
 import io.archivesunleashed.spark.utils.JsonUtil
