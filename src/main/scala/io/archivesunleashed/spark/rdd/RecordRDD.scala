@@ -16,8 +16,8 @@
  */
 package io.archivesunleashed.spark.rdd
 
-import org.apache.spark.rdd.RDD
 import io.archivesunleashed.spark.archive.io.ArchiveRecord
+import org.apache.spark.rdd.RDD
 import io.archivesunleashed.spark.matchbox.{DetectLanguage, ExtractDate, ExtractDomain, RemoveHTML}
 import io.archivesunleashed.spark.matchbox.ExtractDate.DateComponent
 import io.archivesunleashed.spark.matchbox.ExtractDate.DateComponent.DateComponent
