@@ -115,7 +115,6 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
   test ("discard mime") {
     val base = RecordLoader.loadArchives(arcPath, sc, keepValidPages = false)
     val mime = Set ("text/plain", "image/jpeg")
-    //val r = base.filter(x => !mime.contains(x.getMimeType)).collect()
     val r2 = base.discardMimeTypes(mime)
       .map (mp => mp.getUrl).take(3)
     assert (r2.deep == Array("dns:www.archive.org", "http://www.archive.org/", "http://www.archive.org/index.php").deep)
