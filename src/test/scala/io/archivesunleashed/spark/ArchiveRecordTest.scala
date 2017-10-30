@@ -24,7 +24,7 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 import io.archivesunleashed.spark.matchbox._
 
 @RunWith(classOf[JUnitRunner])
-class GenericArchiveRecordTest extends FunSuite with BeforeAndAfter {
+class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
   private val arcPath = Resources.getResource("arc/example.arc.gz").getPath
   private val warcPath = Resources.getResource("warc/example.warc.gz").getPath
   private val master = "local[4]"
@@ -39,26 +39,8 @@ class GenericArchiveRecordTest extends FunSuite with BeforeAndAfter {
   }
 
   test("count records") {
-    assert(RecordLoader.loadArchives(arcPath, sc).count == 300L)
-    assert(RecordLoader.loadArchives(warcPath, sc).count == 299L)
-  }
-
-  test("warc and arc get content") {
-    val arc10 = RecordLoader.loadArc(arcPath, sc)
-      .map(r => r.getContentString)
-      .take(10)
-    var archives10 = RecordLoader.loadArchives(arcPath, sc)
-      .map(r => r.getContentString)
-      .take(10)
-    for(i <- 0 to 9) { assert(arc10(i) == archives10(i)) }
-
-   val warc10 = RecordLoader.loadWarc(warcPath, sc)
-      .map(r => r.getContentString)
-      .take(10)
-    archives10 = RecordLoader.loadArchives(warcPath, sc)
-      .map(r => r.getContentString)
-      .take(10)
-    for(i <- 0 to 9) { assert(warc10(i) == archives10(i)) }
+    assert(RecordLoader.loadArchives(arcPath, sc, keepValidPages = false).count == 300L)
+    assert(RecordLoader.loadArchives(warcPath, sc, keepValidPages = false).count == 299L)
   }
 
   after {
