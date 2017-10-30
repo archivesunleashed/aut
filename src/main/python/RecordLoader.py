@@ -19,49 +19,18 @@ from pyspark.ml.common import _java2py
 from ArchiveRecord import ArchiveRecord
 from RecordRDD import RecordRDD
 
-def loadArcAsRDD(path, sc, spark):
-  rlph = sc._jvm.io.archivesunleashed.spark.pythonhelpers.RecordLoaderPythonHelper
-  df = rlph.loadArc(path, sc._jsc, spark._jsparkSession)
-  df.createTempView("df")
-  pdf = spark.table("df")
-  spark.catalog.dropTempView("df")
-  return pdf.rdd
 
-def loadArcAsDF(path, sc, spark):
+def loadArchivesAsDF(path, sc, spark, keepValidPages = True):
   rlph = sc._jvm.io.archivesunleashed.spark.pythonhelpers.RecordLoaderPythonHelper
-  df = rlph.loadArc(path, sc._jsc, spark._jsparkSession)
+  df = rlph.loadArchives(path, sc._jsc, spark._jsparkSession, keepValidPages)
   df.createTempView("df")
   pdf = spark.table("df")
   spark.catalog.dropTempView("df")
   return pdf
 
-def loadWarcAsRDD(path, sc, spark):
+def loadArchivesAsRDD(path, sc, spark, keepValidPages = True):
   rlph = sc._jvm.io.archivesunleashed.spark.pythonhelpers.RecordLoaderPythonHelper
-  df = rlph.loadWarc(path, sc._jsc, spark._jsparkSession)
-  df.createTempView("df")
-  pdf = spark.table("df")
-  spark.catalog.dropTempView("df")
-  return pdf.rdd
-
-def loadWarcAsDF(path, sc, spark):
-  rlph = sc._jvm.io.archivesunleashed.spark.pythonhelpers.RecordLoaderPythonHelper
-  df = rlph.loadWarc(path, sc._jsc, spark._jsparkSession)
-  df.createTempView("df")
-  pdf = spark.table("df")
-  spark.catalog.dropTempView("df")
-  return pdf
-
-def loadArchivesAsDF(path, sc, spark):
-  rlph = sc._jvm.io.archivesunleashed.spark.pythonhelpers.RecordLoaderPythonHelper
-  df = rlph.loadArchives(path, sc._jsc, spark._jsparkSession)
-  df.createTempView("df")
-  pdf = spark.table("df")
-  spark.catalog.dropTempView("df")
-  return pdf
-
-def loadArchivesAsRDD(path, sc, spark):
-  rlph = sc._jvm.io.archivesunleashed.spark.pythonhelpers.RecordLoaderPythonHelper
-  df = rlph.loadArchives(path, sc._jsc, spark._jsparkSession)
+  df = rlph.loadArchives(path, sc._jsc, spark._jsparkSession, keepValidPages)
   df.createTempView("df")
   pdf = spark.table("df")
   spark.catalog.dropTempView("df")

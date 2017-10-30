@@ -1,39 +1,20 @@
 package io.archivesunleashed.spark.pythonhelpers
 
-import io.archivesunleashed.io.GenericArchiveRecordWritable.ArchiveFormat
-import io.archivesunleashed.io.{ArcRecordWritable, GenericArchiveRecordWritable, WarcRecordWritable}
-import io.archivesunleashed.mapreduce.{WacArcInputFormat, WacGenericInputFormat, WacWarcInputFormat}
-import io.archivesunleashed.spark.archive.io.{ArcRecord, ArchiveRecord, GenericArchiveRecord, WarcRecord}
-import org.apache.hadoop.io.LongWritable
-import org.apache.spark.api.java.{JavaRDD, JavaSparkContext, JavaPairRDD}
-import org.apache.spark.{SerializableWritable, SparkContext}
+import io.archivesunleashed.spark.archive.io.ArchiveRecord
+import org.apache.spark.api.java.JavaSparkContext
+import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 import org.json4s.JValue
 import org.json4s.jackson.JsonMethods.parse
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.DataFrame
 import io.archivesunleashed.spark.matchbox.RecordLoader
-import io.archivesunleashed.spark.rdd.RecordRDD._
 
 object RecordLoaderPythonHelper {
 
-  def loadArc(path: String, jssc: JavaSparkContext, spark: SparkSession): DataFrame = {
+  def loadArchives(path: String, jssc: JavaSparkContext, spark: SparkSession, keepValidPages: Boolean = true): DataFrame = {
     val sc = jssc.sc
-    val rdd = RecordLoader.loadArc(path, sc).keepValidPages()
-    val df = spark.createDataFrame(rdd = rdd, beanClass = classOf[ArchiveRecord])
-    df
-  }
-
-  def loadWarc(path: String, jssc: JavaSparkContext, spark: SparkSession): DataFrame = {
-    val sc = jssc.sc
-    val rdd = RecordLoader.loadWarc(path, sc).keepValidPages()
-    val df = spark.createDataFrame(rdd = rdd, beanClass = classOf[ArchiveRecord])
-    df
-  }
-
-  def loadArchives(path: String, jssc: JavaSparkContext, spark: SparkSession): DataFrame = {
-    val sc = jssc.sc
-    val rdd = RecordLoader.loadArchives(path, sc).keepValidPages()
+    val rdd = RecordLoader.loadArchives(path, sc, keepValidPages)
     val df = spark.createDataFrame(rdd = rdd, beanClass = classOf[ArchiveRecord])
     df
   }
