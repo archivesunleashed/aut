@@ -18,7 +18,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<project_name>${project.artifactId}</project_name>
+    <project_name>${project.artifactId}</project_name>
     <project_organization>The Archives Unleashed Project</project_organization>
     <scala.version>2.11.8</scala.version>
     <hadoop.version>2.7.3</hadoop.version>
@@ -58,15 +58,6 @@
     <repository>
       <id>maven</id>
       <url>http://repo.maven.apache.org/maven2/</url>
-    </repository>
-    <repository>
-      <id>cloudera</id>
-      <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
-    </repository>
-    <repository>
-      <id>internetarchive</id>
-      <name>Internet Archive Maven Repository</name>
-      <url>http://builds.archive.org:8080/maven2</url>
     </repository>
   </repositories>
 
@@ -186,13 +177,13 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>cobertura-maven-plugin</artifactId>
         <version>2.7</version>
-				<configuration>
-					<formats>
-						<format>html</format>
-						<format>xml</format>
-					</formats>
-					<check />
-				</configuration>
+        <configuration>
+          <formats>
+            <format>html</format>
+            <format>xml</format>
+          </formats>
+          <check />
+        </configuration>
       </plugin>
       <!-- for mycila -->
       <plugin>
@@ -229,7 +220,7 @@
           </execution>
         </executions>
       </plugin>
-			<!-- So we can release aut -->
+      <!-- So we can release aut -->
       <plugin>
         <artifactId>maven-release-plugin</artifactId>
         <version>${release.plugin.version}</version>
@@ -404,7 +395,7 @@
         </configuration>
       </plugin>
     </plugins>
-	</reporting>
+  </reporting>
 
   <dependencies>
     <dependency>
@@ -459,11 +450,6 @@
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
       <version>1.7.3</version>
-    </dependency>
-    <dependency>
-      <groupId>org.netpreserve.openwayback</groupId>
-      <artifactId>openwayback-core</artifactId>
-      <version>2.0.0.BETA.2</version>
     </dependency>
     <dependency>
       <groupId>org.netpreserve.commons</groupId>
@@ -602,7 +588,7 @@
         <enabled>false</enabled>
       </snapshots>
     </pluginRepository>
-	</pluginRepositories>
+  </pluginRepositories>
 
   <distributionManagement>
     <site>
@@ -619,6 +605,6 @@
       <id>sonatype-nexus-staging</id>
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
-	</distributionManagement>
+  </distributionManagement>
 
 </project>
