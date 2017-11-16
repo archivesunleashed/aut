@@ -31,7 +31,7 @@ For the impatient, to skip tests:
 $ mvn clean install -DskipTests
 ```
 
-Once built or downloaded, [you can follow the basic set of tutorials here](http://archivesunleashed.org/aut/).
+Once built or downloaded, you can follow the basic set of tutorials [here](http://archivesunleashed.org/aut/).
 
 # License
 
