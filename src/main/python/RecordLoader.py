@@ -17,8 +17,6 @@ from pyspark.rdd import RDD
 from pyspark.ml.common import _java2py
 
 from ArchiveRecord import ArchiveRecord
-from RecordRDD import RecordRDD
-
 
 def loadArchivesAsDF(path, sc, spark, keepValidPages = True):
   rlph = sc._jvm.io.archivesunleashed.spark.pythonhelpers.RecordLoaderPythonHelper
