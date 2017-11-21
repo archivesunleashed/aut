@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 def ExtractDomain(url, source = ""):
   if url is None: 

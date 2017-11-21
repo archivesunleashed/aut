@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from bs4 import BeautifulSoup
-from urlparse import urljoin
+from urllib.parse import urljoin
 
 # UDF for extracting image links from a webpage given the HTML content (using BeautifulSoup).
 def ExtractImageLinks(src, html):

@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from bs4 import BeautifulSoup
-from urlparse import urljoin
+from urllib.parse import urljoin
 
 def ExtractLinks(src, html, base = ""):
   output = list()
