@@ -26,7 +26,7 @@
     <github.global.server>github</github.global.server>
     <checkstyle.plugin.version>2.17</checkstyle.plugin.version>
     <license.plugin.version>3.0</license.plugin.version>
-    <release.plugin.version>3.0.4</release.plugin.version>
+    <release.plugin.version>2.5.2</release.plugin.version>
     <scm-provider-gitexe.plugin.version>1.9.5</scm-provider-gitexe.plugin.version>
     <changelog.plugin.version>2.3</changelog.plugin.version>
     <github-site.plugin.version>0.12</github-site.plugin.version>
