@@ -15,9 +15,8 @@
 
 from langdetect import detect
 
-def DetectLanguage(input: String):
-	if input == "":
+def DetectLanguage(input):
+	if input == "" or input == None:
 		return ""
 	else:
 		return detect(input)
-
