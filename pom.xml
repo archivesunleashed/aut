@@ -458,6 +458,12 @@
       <groupId>org.netpreserve.commons</groupId>
       <artifactId>webarchive-commons</artifactId>
       <version>1.1.8</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.hadoop</groupId>
+          <artifactId>hadoop-core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>edu.stanford.nlp</groupId>
