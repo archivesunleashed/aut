@@ -5,7 +5,9 @@
 [![LICENSE](https://img.shields.io/badge/license-Apache-blue.svg?style=flat-square)](./LICENSE)
 [![Contribution Guidelines](http://img.shields.io/badge/CONTRIBUTING-Guidelines-blue.svg)](./CONTRIBUTING.md)
 
-The Archives Unleashed Toolkit is an open-source platform for analyzing web archives. Tight integration with Hadoop provides powerful tools for analytics and data processing via Apache Spark. Our full documentation can be found at <http://docs.archivesunleashed.io/>.
+The Archives Unleashed Toolkit is an open-source platform for analyzing web archives. Tight integration with Hadoop provides powerful tools for analytics and data processing via Apache Spark. Our full documentation can be found at <http://archivesunleashed.org/aut/>.
+
+The Archives Unleashed Toolkit is part of the [Archives Unleashed Project](http://archivesunleashed.org/).
 
 ## Getting Started
 
@@ -29,7 +31,7 @@ For the impatient, to skip tests:
 $ mvn clean install -DskipTests
 ```
 
-Once built or downloaded, [you can follow the basic set of tutorials here](http://docs.archivesunleashed.io/).
+Once built or downloaded, you can follow the basic set of tutorials [here](http://archivesunleashed.org/aut/).
 
 # License
 
