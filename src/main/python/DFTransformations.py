@@ -71,7 +71,7 @@ def keepLanguages(df, langs):
 def keepContent(df, contentREs):
   def content_filter(content):
     for pattern in contentREs:
-      if re.match(pattern, content) is not None:
+      if re.search(pattern, content) is not None:
         return True
     return False
   content_filter_udf = udf(content_filter, BooleanType())
