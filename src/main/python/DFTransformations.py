@@ -50,7 +50,7 @@ def keepUrls(df, urls):
 def keepUrlPatterns(df, urlREs):
   def url_filter(url):
     for pattern in urlREs:
-      if re.match(pattern, url) is not None:
+      if re.search(pattern, url) is not None:
         return True
     return False
   url_filter_udf = udf(url_filter, BooleanType())
@@ -92,7 +92,7 @@ def discardUrls(df, urls):
 def discardUrlPatterns(df, urlREs):
   def url_filter(url):
     for pattern in urlREs:
-      if re.match(pattern, url) is not None:
+      if re.search(pattern, url) is not None:
         return True
     return False
   url_filter_udf = udf(url_filter, BooleanType())
@@ -107,7 +107,7 @@ def discardDomains(df, urls):
 def discardContent(df, contentREs):
   def content_filter(content):
     for pattern in contentREs:
-      if re.match(pattern, content) is not None:
+      if re.search(pattern, content) is not None:
         return True
     return False
   content_filter_udf = udf(content_filter, BooleanType())
