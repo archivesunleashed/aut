@@ -54,7 +54,7 @@ def keepUrls(row, urls):
 def keepUrlPatterns(row, urlREs):
   url = row['url']
   for pattern in urlREs:
-    if re.match(pattern, url) is not None:
+    if re.search(pattern, url) is not None:
       return True
   return False
 
@@ -67,7 +67,7 @@ def keepLanguages(row, langs):
 def keepContent(row, contentREs):
   contents = row['contentString']
   for pattern in contentREs:
-    if re.match(pattern, contents) is not None:
+    if re.search(pattern, contents) is not None:
       return True
   return False
 

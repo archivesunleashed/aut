@@ -16,21 +16,18 @@
 from urllib.parse import urlparse
 
 def ExtractDomain(url, source = ""):
-  if url is None: 
+  if url is None:
     return None
   host = None
   try:
     host = urlparse(url).hostname
   except Exception as e:
-    # it's okay 
-    pass 
-  if (host is not None or source == ""): 
+    # it's okay
+    pass
+  if (host is not None or source == ""):
     return host
   try:
     host = urlparse(source).hostname
     return host
   except Exception as e:
     return None
-
-
-
