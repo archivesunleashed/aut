@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from pyspark.rdd import RDD
-from pyspark.ml.common import _java2py
+#from pyspark.ml.common import _java2py
 
 from ArchiveRecord import ArchiveRecord
 
