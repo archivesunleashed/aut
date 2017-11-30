@@ -66,25 +66,25 @@ public final class ArcRecordUtils {
    * @return raw contents
    * @throws IOException if there is an issue
    */
-  public static byte[] toBytes(final ARCRecord record) throws IOException {
+  public static byte[] toBytes(ARCRecord record) throws IOException {
     ARCRecordMetaData meta = record.getMetaData();
 
-    String metaline = meta.getUrl() + " " + meta.getIp()
-        + " " + meta.getDate() + " " + meta.getMimetype()
-        + " " + (int) meta.getLength();
+    String metaline = meta.getUrl() + " " + meta.getIp() + " " + meta.getDate() + " "
+        + meta.getMimetype() + " " + (int) meta.getLength() + "\n";
+    String versionEtc = "";
+
+    if (meta.getOffset() == 0) {
+      versionEtc = meta.getVersion().replace(".", " ") +
+              " " + meta.getOrigin() + "\n" + 
+              "URL IP-address Archive-date Content-type Archive-length\n";
+      metaline += versionEtc;
+    }
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     DataOutputStream dout = new DataOutputStream(baos);
     dout.write(metaline.getBytes());
-    dout.write("\n".getBytes());
+    copyStream(record, (int) meta.getLength() - versionEtc.length(), true, dout);
 
-    long recordLength = meta.getLength();
-    long len = IOUtils.copyLarge(new BoundedInputStream(record, recordLength),
-            dout);
-    if (len != recordLength) {
-      LOG.error("Read " + len + " bytes but expected " + recordLength
-              + " bytes. Continuing...");
-    }
     return baos.toByteArray();
   }
 
@@ -95,10 +95,22 @@ public final class ArcRecordUtils {
    * @return raw contents
    * @throws IOException if there is an issue
    */
-  public static byte[] getContent(final ARCRecord record) throws IOException {
+  public static byte[] getContent(ARCRecord record) throws IOException {
     ARCRecordMetaData meta = record.getMetaData();
 
-    return copyToByteArray(record, (int) meta.getLength(), true);
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    DataOutputStream dout = new DataOutputStream(baos);
+    String versionEtc = "";
+
+    if (meta.getOffset() == 0) {
+      versionEtc = meta.getVersion().replace(".", " ") +
+              " InternetArchive\n" + // Should have meta.getOrigin()
+              "URL IP-address Archive-date Content-type Archive-length\n";
+      dout.write(versionEtc.getBytes());
+    }
+    copyStream(record, (int) meta.getLength() - versionEtc.length(), true, dout);
+
+    return baos.toByteArray();
   }
 
   /**
