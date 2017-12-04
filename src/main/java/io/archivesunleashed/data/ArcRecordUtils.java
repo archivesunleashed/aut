@@ -34,8 +34,13 @@ import org.archive.io.arc.ARCRecordMetaData;
  * Utilities for working with {@code ARCRecord}s (from archive.org APIs).
  */
 public final class ArcRecordUtils {
-
   /**
+  * Due to ARC header differences, until we merge code to reflect new
+  * webarchive-discovery version, a consistant difference of 76 bytes
+  * in ARC files is expected.
+  */
+  public static final long HEADER_DIFF = 76;
+   /**
    * Utility classes should not have a public or default constructor.
    */
   private ArcRecordUtils() {
@@ -81,7 +86,7 @@ public final class ArcRecordUtils {
     long recordLength = meta.getLength();
     long len = IOUtils.copyLarge(new BoundedInputStream(record, recordLength),
             dout);
-    if (len != recordLength) {
+    if (len != recordLength + HEADER_DIFF) {
       LOG.error("Read " + len + " bytes but expected " + recordLength
               + " bytes. Continuing...");
     }
@@ -142,9 +147,10 @@ public final class ArcRecordUtils {
 
     BoundedInputStream bis = new BoundedInputStream(is, recordLength);
     byte[] rawContents = IOUtils.toByteArray(bis);
-    if (enforceLength && rawContents.length != recordLength) {
+    if (!(rawContents.length == recordLength - HEADER_DIFF
+          || rawContents.length == recordLength)) {
       LOG.error("Read " + rawContents.length + " bytes but expected "
-              + recordLength + " bytes. Continuing...");
+      + recordLength + " bytes. Continuing...");
     }
     return rawContents;
   }
