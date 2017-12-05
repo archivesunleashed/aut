@@ -29,7 +29,7 @@ import org.apache.commons.httpclient.HttpParser;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.log4j.Logger;
-import org.archive.io.warc.WARCConstants;
+import org.archive.format.warc.WARCConstants;
 import org.archive.io.warc.WARCReader;
 import org.archive.io.warc.WARCReaderFactory;
 import org.archive.io.warc.WARCRecord;

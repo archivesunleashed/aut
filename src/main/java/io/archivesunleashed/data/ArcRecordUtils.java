@@ -70,15 +70,24 @@ public final class ArcRecordUtils {
     ARCRecordMetaData meta = record.getMetaData();
 
     String metaline = meta.getUrl() + " " + meta.getIp()
-        + " " + meta.getDate() + " " + meta.getMimetype()
-        + " " + (int) meta.getLength();
+            + " " + meta.getDate() + " " + meta.getMimetype()
+            + " " + (int) meta.getLength();
+    String versionEtc = "";
+
+
+    if (meta.getOffset() == 0) {
+      versionEtc = "\n" + meta.getVersion().replace(".", " ")
+              + " " + meta.getOrigin() + "\n"
+              + "URL IP-address Archive-date Content-type Archive-length";
+      metaline += versionEtc;
+    }
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     DataOutputStream dout = new DataOutputStream(baos);
     dout.write(metaline.getBytes());
     dout.write("\n".getBytes());
 
-    long recordLength = meta.getLength();
+    long recordLength = meta.getLength() - versionEtc.length();
     long len = IOUtils.copyLarge(new BoundedInputStream(record, recordLength),
             dout);
     if (len != recordLength) {
@@ -97,8 +106,16 @@ public final class ArcRecordUtils {
    */
   public static byte[] getContent(final ARCRecord record) throws IOException {
     ARCRecordMetaData meta = record.getMetaData();
+    String versionEtc = "";
 
-    return copyToByteArray(record, (int) meta.getLength(), true);
+    if (meta.getOffset() == 0) {
+      versionEtc = "\n" + meta.getVersion().replace(".", " ")
+              + " " + meta.getOrigin() + "\n"
+              + "URL IP-address Archive-date Content-type Archive-length";
+    }
+
+    return copyToByteArray(record, (int) meta.getLength()
+            - versionEtc.length(), true);
   }
 
   /**
