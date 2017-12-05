@@ -30,7 +30,7 @@ import org.apache.spark.rdd.RDD
 object WriteGEXF {
   /**
   * @param rdd RDD of elements in format ((datestring, source, target), count).
-  * @param gdfPath Output file.
+  * @param gexfPath Output file.
   *
   * Writes graph nodes and edges to file.
   */
@@ -39,8 +39,8 @@ object WriteGEXF {
     else makeFile (rdd, gexfPath)
   }
 
-  def makeFile (rdd: RDD[((String, String, String), Int)], gdfPath: String): Boolean = {
-    val outFile = Files.newBufferedWriter(Paths.get(gdfPath), StandardCharsets.UTF_8)
+  def makeFile (rdd: RDD[((String, String, String), Int)], gexfPath: String): Boolean = {
+    val outFile = Files.newBufferedWriter(Paths.get(gexfPath), StandardCharsets.UTF_8)
     val edges = rdd.map(r => "      <edge source=\"" + r._1._2 + "\" target=\"" +
       r._1._3 + "\" label=\"\" weight=\"" + r._2 +
       """"  type="directed">
