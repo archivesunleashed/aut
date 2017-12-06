@@ -17,8 +17,7 @@
 
  /**
    *  @deprecated as of 0.12.0 and will be removed
-   *  in a future release. Use WacGenericArchiveInputFormat (0.11.0) or
-   *  WacArchiveInputFormat (future releases) instead.
+   *  in a future release. Use WacGenericArchiveInputFormat instead.
    */
 
 package io.archivesunleashed.mapreduce;
