@@ -14,6 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+ /**
+   *  Features here have been deprecated as of 0.11.0 and will be removed in a
+   *  future release.   Use WacGenericArchiveInputFormat (0.11.0) or
+   *  WacArchiveInputFormat (future releases) instead.
+   */
+
 package io.archivesunleashed.mapreduce;
 
 import io.archivesunleashed.io.WarcRecordWritable;

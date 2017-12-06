@@ -14,6 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+ /**
+   *  Features here have been deprecated as of 0.11.0 and will be replaced
+   *  with ArchiveRecord Writable in a future release.
+   */
+
 package io.archivesunleashed.io;
 
 import io.archivesunleashed.data.ArcRecordUtils;
