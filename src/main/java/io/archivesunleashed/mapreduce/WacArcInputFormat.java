@@ -16,7 +16,7 @@
  */
 
  /**
-   *  Features here have been deprecated as of 0.11.0 and will be removed
+   *  @deprecated as of 0.11.0 and will be removed
    *  in a future release.   Use WacGenericArchiveInputFormat (0.11.0) or
    *  WacArchiveInputFormat (future releases) instead.
    */
@@ -49,6 +49,7 @@ import org.archive.io.arc.ARCRecord;
 /**
  * Extends FileInputFormat for Web Archive Commons ARC InputFormat.
  */
+@Deprecated
 public class WacArcInputFormat extends FileInputFormat<LongWritable,
        ArcRecordWritable> {
   @Override
@@ -69,6 +70,7 @@ public class WacArcInputFormat extends FileInputFormat<LongWritable,
   /**
    * Extends RecordReader for ARC Record Reader.
    */
+  @Deprecated
   public class ArcRecordReader extends RecordReader<LongWritable,
          ArcRecordWritable> {
 

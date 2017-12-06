@@ -16,7 +16,7 @@
  */
 
  /**
-   *  Features here have been deprecated as of 0.11.0 and will be removed
+   *  @deprecated as of 0.11.0 and will be removed
    *  in a future release.   Use GenericArchiveRecordWritable (0.11.0) or
    *  ArchiveRecordWritable (future releases) instead.
    */
@@ -33,6 +33,7 @@ import org.archive.io.warc.WARCRecord;
 /**
  * Implements Hadoop Writable for WARC Records.
  */
+@Deprecated 
 public class WarcRecordWritable implements Writable {
 
   /**

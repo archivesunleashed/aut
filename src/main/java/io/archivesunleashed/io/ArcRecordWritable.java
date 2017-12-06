@@ -16,7 +16,7 @@
  */
 
  /**
-   *  Features here have been deprecated as of 0.11.0 and will be removed
+   *  @deprecated as of 0.11.0 and will be removed
    *  in a future release.   Use GenericArchiveRecordWritable (0.11.0) or
    *  ArchiveRecordWritable (future releases) instead.
    */
@@ -33,6 +33,7 @@ import org.archive.io.arc.ARCRecord;
 /**
  * Implements Hadoop Writable for ARC Records.
  */
+@Deprecated
 public class ArcRecordWritable implements Writable {
 
   /**
