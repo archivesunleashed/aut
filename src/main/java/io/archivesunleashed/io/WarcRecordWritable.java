@@ -33,7 +33,7 @@ import org.archive.io.warc.WARCRecord;
 /**
  * Implements Hadoop Writable for WARC Records.
  */
-@Deprecated 
+@Deprecated
 public class WarcRecordWritable implements Writable {
 
   /**
