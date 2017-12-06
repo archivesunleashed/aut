@@ -16,8 +16,8 @@
  */
 package io.archivesunleashed.mapreduce;
 
-import io.archivesunleashed.io.GenericArchiveRecordWritable.ArchiveFormat;
-import io.archivesunleashed.io.GenericArchiveRecordWritable;
+import io.archivesunleashed.io.ArchiveRecordWritable.ArchiveFormat;
+import io.archivesunleashed.io.ArchiveRecordWritable;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.util.Iterator;
@@ -42,16 +42,16 @@ import org.archive.io.warc.WARCReader;
 import org.archive.io.warc.WARCReaderFactory.CompressedWARCReader;
 
 /**
- * Extends FileInputFormat for Web Archive Commons Generic InputFormat.
+ * Extends FileInputFormat for Web Archive Commons  InputFormat.
  */
-public class WacGenericInputFormat extends FileInputFormat<LongWritable,
-       GenericArchiveRecordWritable> {
+public class WacInputFormat extends FileInputFormat<LongWritable,
+       ArchiveRecordWritable> {
   @Override
   public final RecordReader<LongWritable,
-  GenericArchiveRecordWritable> createRecordReader(final InputSplit split,
+  ArchiveRecordWritable> createRecordReader(final InputSplit split,
       final TaskAttemptContext context) throws IOException,
   InterruptedException {
-    return new GenericArchiveRecordReader();
+    return new ArchiveRecordReader();
   }
 
   @Override
@@ -61,33 +61,33 @@ public class WacGenericInputFormat extends FileInputFormat<LongWritable,
   }
 
   /**
-   * Extends RecordReader for Generic Record Reader.
+   * Extends RecordReader for Record Reader.
    */
-  public class GenericArchiveRecordReader extends RecordReader<LongWritable,
-         GenericArchiveRecordWritable> {
+  public class ArchiveRecordReader extends RecordReader<LongWritable,
+         ArchiveRecordWritable> {
 
     /**
-     * Generic archive reader.
+     *  archive reader.
      */
     private ArchiveReader reader;
 
     /**
-     * Generic archive format.
+     *  archive format.
      */
     private ArchiveFormat format;
 
     /**
-     * Start position of generic archive being read.
+     * Start position of  archive being read.
      */
     private long start;
 
     /**
-     * A given position of a generic archive being read.
+     * A given position of a  archive being read.
      */
     private long pos;
 
     /**
-     * End position of a generic archive being read.
+     * End position of a  archive being read.
      */
     private long end;
 
@@ -97,9 +97,9 @@ public class WacGenericInputFormat extends FileInputFormat<LongWritable,
     private LongWritable key = null;
 
     /**
-     * GenericArchiveRecordWritable value.
+     * ArchiveRecordWritable value.
      */
-    private GenericArchiveRecordWritable value = null;
+    private ArchiveRecordWritable value = null;
 
     /**
      * Seekable file position.
@@ -107,15 +107,15 @@ public class WacGenericInputFormat extends FileInputFormat<LongWritable,
     private Seekable filePosition;
 
     /**
-     * Iterator for generic archive record.
+     * Iterator for  archive record.
      */
     private Iterator<ArchiveRecord> iter;
 
     @Override
-    public final void initialize(final InputSplit genericSplit,
+    public final void initialize(final InputSplit archiveRecordSplit,
             final TaskAttemptContext context)
     throws IOException {
-      FileSplit split = (FileSplit) genericSplit;
+      FileSplit split = (FileSplit) archiveRecordSplit;
       Configuration job = context.getConfiguration();
       start = split.getStart();
       end = start + split.getLength();
@@ -141,7 +141,7 @@ public class WacGenericInputFormat extends FileInputFormat<LongWritable,
     }
 
     /**
-     * Determins if generic archive is compressed.
+     * Determins if  archive is compressed.
      *
      * @return instanceof if ARC/WARC
      */
@@ -154,9 +154,9 @@ public class WacGenericInputFormat extends FileInputFormat<LongWritable,
     }
 
     /**
-     * Get file position of generic archive.
+     * Get file position of  archive.
      *
-     * @return retVal position of generic archive
+     * @return retVal position of  archive
      * @throws IOException if there is an issue
      */
     private long getFilePosition() throws IOException {
@@ -192,7 +192,7 @@ public class WacGenericInputFormat extends FileInputFormat<LongWritable,
       }
 
       if (value == null) {
-        value = new GenericArchiveRecordWritable();
+        value = new ArchiveRecordWritable();
       }
       value.setRecord(record);
 
@@ -205,7 +205,7 @@ public class WacGenericInputFormat extends FileInputFormat<LongWritable,
     }
 
     @Override
-    public final GenericArchiveRecordWritable getCurrentValue() {
+    public final ArchiveRecordWritable getCurrentValue() {
       return value;
     }
 

@@ -21,9 +21,9 @@ import org.apache.spark.{SerializableWritable, SparkContext}
 import org.apache.spark.rdd.RDD
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
-import io.archivesunleashed.io.GenericArchiveRecordWritable.ArchiveFormat
-import io.archivesunleashed.io.GenericArchiveRecordWritable
-import io.archivesunleashed.mapreduce.WacGenericInputFormat
+import io.archivesunleashed.io.ArchiveRecordWritable.ArchiveFormat
+import io.archivesunleashed.io.ArchiveRecordWritable
+import io.archivesunleashed.mapreduce.WacInputFormat
 import io.archivesunleashed.spark.archive.io.ArchiveRecord
 import io.archivesunleashed.spark.rdd.RecordRDD._
 
@@ -31,7 +31,7 @@ object RecordLoader {
 
   def loadArchives(path: String, sc: SparkContext, keepValidPages: Boolean = true): RDD[ArchiveRecord] = {
     val rdd: RDD[ArchiveRecord] =
-      sc.newAPIHadoopFile(path, classOf[WacGenericInputFormat], classOf[LongWritable], classOf[GenericArchiveRecordWritable])
+      sc.newAPIHadoopFile(path, classOf[WacInputFormat], classOf[LongWritable], classOf[ArchiveRecordWritable])
       .filter(r => (r._2.getFormat == ArchiveFormat.ARC) ||
         ((r._2.getFormat == ArchiveFormat.WARC) && r._2.getRecord.getHeader.getHeaderValue("WARC-Type").equals("response")))
       .map(r => new ArchiveRecord(new SerializableWritable(r._2)))

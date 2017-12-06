@@ -27,9 +27,9 @@ import org.archive.io.arc.ARCRecord;
 import org.archive.io.warc.WARCRecord;
 
 /**
- * Implements Hadoop Writable for Generic Archive Records.
+ * Implements Hadoop Writable for  Archive Records.
  */
-public class GenericArchiveRecordWritable implements Writable {
+public class ArchiveRecordWritable implements Writable {
 
   /**
    * Archive Formats that can be used.
@@ -55,35 +55,35 @@ public class GenericArchiveRecordWritable implements Writable {
   }
 
   /**
-   * Set default Generic Record format to UNKNOWN.
+   * Set default  Record format to UNKNOWN.
    */
   private ArchiveFormat format = ArchiveFormat.UNKNOWN;
 
   /**
-   * Initialize Generic Archive Record to null.
+   * Initialize  Archive Record to null.
    */
   private ArchiveRecord record = null;
 
   /**
    * Utility function.
    */
-  public GenericArchiveRecordWritable() {
+  public ArchiveRecordWritable() {
   }
 
   /**
-   * Initialize Generic Archive Record.
+   * Initialize  Archive Record.
    *
-   * @param r Generic Archive Record
+   * @param r  Archive Record
    */
-  public GenericArchiveRecordWritable(final ArchiveRecord r) {
+  public ArchiveRecordWritable(final ArchiveRecord r) {
     this.record = r;
     detectFormat();
   }
 
   /**
-   * Set Generic Archive Record.
+   * Set  Archive Record.
    *
-   * @param r Generic Archive Record
+   * @param r  Archive Record
    */
   public final void setRecord(final ArchiveRecord r) {
     this.record = r;
@@ -91,16 +91,16 @@ public class GenericArchiveRecordWritable implements Writable {
   }
 
   /**
-   * Get Generic Archive Record.
+   * Get  Archive Record.
    *
-   * @return record Generic Archive Record
+   * @return record  Archive Record
    */
   public final ArchiveRecord getRecord() {
     return record;
   }
 
   /**
-   * Detect format of Generic Archive Record.
+   * Detect format of  Archive Record.
    */
   public final void detectFormat() {
     if (record instanceof ARCRecord) {
@@ -113,18 +113,18 @@ public class GenericArchiveRecordWritable implements Writable {
   }
 
   /**
-   * Get format of Generic Archive Record.
+   * Get format of  Archive Record.
    *
-   * @return format of Generic Archive Record
+   * @return format of  Archive Record
    */
   public final ArchiveFormat getFormat() {
     return format;
   }
 
   /**
-   * Set format of Generic Archive Record.
+   * Set format of  Archive Record.
    *
-   * @param f format of Generic Archive Record
+   * @param f format of  Archive Record
    */
   public final void setFormat(final ArchiveFormat f) {
     this.format = f;

@@ -24,12 +24,12 @@ import org.archive.io.warc.WARCRecord
 
 import org.archive.util.ArchiveUtils
 import io.archivesunleashed.data.{ArcRecordUtils, WarcRecordUtils}
-import io.archivesunleashed.io.GenericArchiveRecordWritable
-import io.archivesunleashed.io.GenericArchiveRecordWritable.ArchiveFormat
+import io.archivesunleashed.io.ArchiveRecordWritable
+import io.archivesunleashed.io.ArchiveRecordWritable.ArchiveFormat
 import io.archivesunleashed.spark.matchbox.ExtractDate.DateComponent
 import io.archivesunleashed.spark.matchbox.{RemoveHttpHeader, ExtractDate, ExtractDomain}
 
-class ArchiveRecord(r: SerializableWritable[GenericArchiveRecordWritable]) extends Serializable {
+class ArchiveRecord(r: SerializableWritable[ArchiveRecordWritable]) extends Serializable {
   var arcRecord: ARCRecord = null
   var warcRecord: WARCRecord = null
 
