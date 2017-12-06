@@ -17,7 +17,7 @@
 
  /**
    *  Features here have been deprecated as of 0.11.0 and will be replaced
-   *  with ArchiveRecord Writable in a future release.
+   *  with ArchiveRecordWritable in a future release.
    */
 
 package io.archivesunleashed.io;

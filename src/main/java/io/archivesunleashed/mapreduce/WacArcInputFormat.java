@@ -16,8 +16,8 @@
  */
 
  /**
-   *  Features here have been deprecated as of 0.11.0 and will be removed in a
-   *  future release.   Use WacGenericArchiveInputFormat (0.11.0) or 
+   *  Features here have been deprecated as of 0.11.0 and will be removed
+   *  in a future release.   Use WacGenericArchiveInputFormat (0.11.0) or
    *  WacArchiveInputFormat (future releases) instead.
    */
 
