@@ -16,8 +16,8 @@
  */
 
  /**
-   *  @deprecated as of 0.11.0 and will be removed
-   *  in a future release.   Use GenericArchiveRecordWritable (0.11.0) or
+   *  @deprecated as of 0.12.0 and will be removed
+   *  in a future release. Use GenericArchiveRecordWritable (0.11.0) or
    *  ArchiveRecordWritable (future releases) instead.
    */
 

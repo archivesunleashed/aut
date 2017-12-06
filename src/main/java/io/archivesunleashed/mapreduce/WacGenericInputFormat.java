@@ -16,7 +16,7 @@
  */
 
  /**
-   *  Features here have been deprecated as of 0.11.0 and will be replaced
+   *  @deprecated as of 0.12.0 and will be replaced
    *  with WacInputFormat in a future release.
    */
 
