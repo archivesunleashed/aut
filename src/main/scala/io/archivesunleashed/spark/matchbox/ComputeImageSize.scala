@@ -32,6 +32,7 @@ object ComputeImageSize {
       (image.getWidth(), image.getHeight())
     } catch {
       case e: Throwable => {
+        e.printStackTrace()
         return (0, 0)
       }
     }
