@@ -14,6 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+ /**
+   *  @deprecated as of 0.12.0 and will be removed
+   *  in a future release. Use WacGenericArchiveInputFormat instead.
+   */
+
+
 package io.archivesunleashed.mapreduce;
 
 import io.archivesunleashed.io.ArcRecordWritable;
@@ -41,6 +48,7 @@ import org.archive.io.arc.ARCRecord;
 /**
  * Extends FileInputFormat for Web Archive Commons ARC InputFormat.
  */
+@Deprecated
 public class WacArcInputFormat extends FileInputFormat<LongWritable,
        ArcRecordWritable> {
   @Override
@@ -61,6 +69,7 @@ public class WacArcInputFormat extends FileInputFormat<LongWritable,
   /**
    * Extends RecordReader for ARC Record Reader.
    */
+  @Deprecated
   public class ArcRecordReader extends RecordReader<LongWritable,
          ArcRecordWritable> {
 
