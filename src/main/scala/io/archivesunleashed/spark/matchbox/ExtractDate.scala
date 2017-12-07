@@ -41,6 +41,6 @@ object ExtractDate {
       case MM => fullDate.substring(4, 6)
       case DD => fullDate.substring(6, 8)
       case YYYYMM => fullDate.substring(0, 6)
-      case YYYYMMDD => fullDate.substring(0, 8)
+      case _ => fullDate.substring(0, 8)
     }
 }
