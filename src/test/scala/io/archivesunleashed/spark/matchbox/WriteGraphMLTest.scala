@@ -50,7 +50,7 @@ class WriteGraphMLTest extends FunSuite with BeforeAndAfter{
     WriteGraphML(networkrdd, testFile)
     assert(Files.exists(Paths.get(testFile)) == true)
     val lines = Source.fromFile(testFile).getLines.toList
-    assert(lines(0) == """<?xml version="1.0" encoding="UTF-16"?>""")
+    assert(lines(0) == """<?xml version="1.0" encoding="UTF-8"?>""")
     assert(lines(14) == """                <node id="Source1">""")
     assert(lines(20) == """      <node id="Destination3">""")
     assert(lines(24) == """        <data id="n0">Destination1</data>""")

@@ -54,7 +54,7 @@ object WriteGEXF {
       "      <node id=\"" +
       r._1._3 + "\" label=\"" +
       r._1._3 + "\" />")).distinct.collect
-    outFile.write("""<?xml version="1.0" encoding="UTF-16"?>
+    outFile.write("""<?xml version="1.0" encoding="UTF-8"?>
       <gexf xmlns="http://www.gexf.net/1.3draft"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://www.gexf.net/1.3draft

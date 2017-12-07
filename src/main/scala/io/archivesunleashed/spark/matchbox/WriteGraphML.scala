@@ -53,7 +53,7 @@ object WriteGraphML {
       "      <node id=\"" + r._1._3 + "\">\n" +
       "        <data id=\"n0\">" + r._1._3 + """</data>
              </node>""")).distinct.collect
-    outFile.write("""<?xml version="1.0" encoding="UTF-16"?>
+    outFile.write("""<?xml version="1.0" encoding="UTF-8"?>
       <graphml xmlns="http://graphml.graphdrawing.org/xmlns"
                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
