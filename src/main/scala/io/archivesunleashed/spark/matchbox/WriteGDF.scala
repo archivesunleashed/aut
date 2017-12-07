@@ -29,7 +29,7 @@ import org.apache.spark.rdd.RDD
   * UDF for exporting an RDD representing a collection of links to a GDF file.
   */
 
-@Deprecated object WriteGDF {
+@deprecated object WriteGDF {
   /**
   * @param rdd RDD of elements in format ((datestring, source, target), count).
   * @param gdfPath Output file.
