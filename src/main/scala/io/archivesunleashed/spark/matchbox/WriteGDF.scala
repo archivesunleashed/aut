@@ -24,10 +24,12 @@ import java.nio.file.Paths
 import org.apache.spark.rdd.RDD
 
 /**
+  * @deprecated in 0.12.0. Use WriteGEXF or WriteGraphML for network Output
+  * instead.
   * UDF for exporting an RDD representing a collection of links to a GDF file.
   */
 
-object WriteGDF {
+@Deprecated object WriteGDF {
   /**
   * @param rdd RDD of elements in format ((datestring, source, target), count).
   * @param gdfPath Output file.
