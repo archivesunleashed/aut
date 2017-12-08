@@ -36,6 +36,7 @@ class TupleFormatterTest extends FunSuite {
     val tuple = ("a", 1, "c", ("x", 3, ("NO", "YES")), "perhaps", "maybe", 3, (0,1))
     assert(TupleFormatter.flatten(tuple) == ("a", 1, "c", "x", 3, "NO", "YES", "perhaps", "maybe", 3, 0, 1))
     assert(TupleFormatter.flatten.isInstanceOf[TupleFormatter.LowPriorityFlatten])
+    TupleFormatter.flatten.default shouldBe a [Poly1$CaseBuilder$$anon$1]
   }
 
   test ("Object extensions") {
