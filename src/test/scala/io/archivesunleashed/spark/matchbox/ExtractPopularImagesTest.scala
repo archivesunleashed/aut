@@ -19,7 +19,6 @@ package io.archivesunleashed.spark.matchbox
 import com.google.common.io.Resources
 import org.apache.spark.{ SparkConf, SparkContext }
 import org.junit.runner.RunWith
-import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{ BeforeAndAfter, FunSuite }
 import java.io.File
