@@ -14,6 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+ /**
+   *  @deprecated as of 0.12.0 and will be removed
+   *  in a future release. Use GenericArchiveRecordWritable instead.
+   */
+
 package io.archivesunleashed.io;
 
 import io.archivesunleashed.data.WarcRecordUtils;
@@ -26,6 +32,7 @@ import org.archive.io.warc.WARCRecord;
 /**
  * Implements Hadoop Writable for WARC Records.
  */
+@Deprecated
 public class WarcRecordWritable implements Writable {
 
   /**

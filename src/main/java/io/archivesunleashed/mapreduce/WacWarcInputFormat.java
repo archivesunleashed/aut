@@ -14,6 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+ /**
+   *  @deprecated as of 0.12.0 and will be removed
+   *  in a future release. Use WacGenericArchiveInputFormat instead.
+   */
+
 package io.archivesunleashed.mapreduce;
 
 import io.archivesunleashed.io.WarcRecordWritable;
@@ -41,6 +47,7 @@ import org.archive.io.warc.WARCRecord;
 /**
  * Extends FileInputFormat for Web Archive Commons WARC InputFormat.
  */
+@Deprecated
 public class WacWarcInputFormat extends FileInputFormat<LongWritable,
        WarcRecordWritable> {
   @Override
