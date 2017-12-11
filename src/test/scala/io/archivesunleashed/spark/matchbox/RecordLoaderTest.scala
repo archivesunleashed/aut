@@ -36,6 +36,7 @@
 
  @RunWith(classOf[JUnitRunner])
  class RecordLoaderTest extends FunSuite with BeforeAndAfter {
+   private val warcPath = Resources.getResource("warc/example.warc.gz").getPath
    private val tweetPath = Resources.getResource("arc/tweetsTest.json").getPath
    private val delTweetPath = Resources.getResource("arc/delTweetsTest.json").getPath
    private val master = "local[4]"
@@ -47,6 +48,13 @@
        .setMaster(master)
        .setAppName(appName)
      sc = new SparkContext(conf)
+   }
+
+   test("loads Warc") {
+     val base = RecordLoader.loadArchives(warcPath, sc)
+       .map(x => x.getUrl)
+       .take(1)
+     assert (base(0) == "http://www.archive.org/")
    }
 
    test("loads Tweets") {
