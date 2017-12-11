@@ -400,8 +400,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.12</version>
-      <scope>test</scope>
+      <version>4.8.2</version>
     </dependency>
     <dependency>
       <groupId>org.scalatest</groupId>
