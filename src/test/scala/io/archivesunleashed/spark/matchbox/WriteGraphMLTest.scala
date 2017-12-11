@@ -51,9 +51,9 @@ class WriteGraphMLTest extends FunSuite with BeforeAndAfter{
     assert(Files.exists(Paths.get(testFile)) == true)
     val lines = Source.fromFile(testFile).getLines.toList
     assert(lines(0) == """<?xml version="1.0" encoding="UTF-8"?>""")
-    assert(lines(14) == """                <node id="Source1">""")
-    assert(lines(20) == """      <node id="Destination3">""")
-    assert(lines(24) == """        <data id="n0">Destination1</data>""")
+    assert(lines(15) == """             <node id="Source2">""")
+    assert(lines(22) == """      <node id="Destination3">""")
+    assert(lines(30) == """               <data id="n0">Destination1</data>""")
   }
 
   test ("returns a Bool depending on pass or failure") {
