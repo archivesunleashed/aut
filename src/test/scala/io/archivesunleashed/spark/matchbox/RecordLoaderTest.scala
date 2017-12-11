@@ -55,12 +55,11 @@
        .collect()
      assert (base(0) == "some text")
      assert (base(1) == "some more text")
-
    }
 
    test("does not load deleted") {
-     val base = RecordLoader.loadTweets(delTweetPath, sc).take(3)
-     assert (base(0).text() == null)
+     val base = RecordLoader.loadTweets(delTweetPath, sc).collect()
+     assert (base.deep == Array().deep)
    }
 
    after {
