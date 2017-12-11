@@ -46,12 +46,12 @@ object WriteGraphML {
       <data key="e0">""" + r._2 + """</data>
       <data key="e1">"""" + r._1._1 + """"</data>
       </edge>""").collect
-    val nodes = rdd.flatMap(r => List("      <node id=\"" +
-      r._1._2 + "\">\n" +
-      "        <data id=\"n0\">" + r._1._2 + "</data>\n" +
-             "</node>",
-      "      <node id=\"" + r._1._3 + "\">\n" +
-      "        <data id=\"n0\">" + r._1._3 + """</data>
+    val nodes = rdd.flatMap(r => List("""
+             <node id="""" + r._1._2 + """">
+               <data id="n0">""" + r._1._2 + """</data>
+             </node>""",
+      "      <node id=\"" + r._1._3 + """">
+               <data id="n0">""" + r._1._3 + """</data>
              </node>""")).distinct.collect
     outFile.write("""<?xml version="1.0" encoding="UTF-8"?>
       <graphml xmlns="http://graphml.graphdrawing.org/xmlns"
