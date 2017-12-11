@@ -68,6 +68,32 @@ public class WacArcLoaderTest {
   }
 
   @Test
+  public final void testGetBodyContent() throws Exception {
+    String arcFile = Resources.getResource("arc/example.arc.gz").getPath();
+    ARCReader reader = ARCReaderFactory.get(new File(arcFile));
+    String[] lines = new String[] {
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>",
+        "www.archive.org.\t589\tIN\tA\t207.241.229.39",
+        "# Welcome to the Archive!",
+        "<script>",
+        " <link rel=\"SHORTCUT ICON\" href=\"/images/logo-16.jpg\"/>" };
+
+    int cnt = 0;
+
+    for (Iterator<ArchiveRecord> ii = reader.iterator(); ii.hasNext();) {
+      ARCRecord r = (ARCRecord) ii.next();
+      byte[] body = ArcRecordUtils.getBodyContent(r);
+      if (cnt < lines.length) {
+        assertEquals(lines[cnt], new String(body).split("\\r?\\n")[cnt]);
+      }
+      cnt++;
+    }
+    reader.close();
+
+    LOG.info(cnt + " records read!");
+  }
+
+  @Test
   public final void testReadFromStream() throws Exception {
     String arcFile = Resources.getResource("arc/example.arc.gz").getPath();
     ARCReader reader = ARCReaderFactory.get(new File(arcFile));
