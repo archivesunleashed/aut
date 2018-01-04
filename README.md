@@ -11,7 +11,7 @@ The Archives Unleashed Toolkit is part of the [Archives Unleashed Project](http:
 
 ## Getting Started
 
-You can download the [latest release here](https://github.com/archivesunleashed/aut/releases), or build it yourself as per the instructions below.
+You can download the [latest release here](https://github.com/archivesunleashed/aut/releases), build it yourself as per the instructions below, or use [Docker](https://github.com/archivesunleashed/docker-aut#use).
 
 Clone the repo:
 
