@@ -62,7 +62,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     val r = base
       .filter (x => ExtractDate(x.getCrawlDate, component) == "2008")
       .map ( mp => mp.getUrl).take(3)
-    val r2 = base.keepDate("2008", component)
+    val r2 = base.keepDate(List("2008"), component)
       .map ( mp => mp.getUrl).take(3)
     assert (r2.sameElements(r)) }
 

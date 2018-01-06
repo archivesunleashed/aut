@@ -73,8 +73,8 @@ object RecordRDD extends java.io.Serializable {
       rdd.filter(r => mimeTypes.contains(r.getMimeType))
     }
 
-    def keepDate(date: String, component: DateComponent = DateComponent.YYYYMMDD) = {
-      rdd.filter(r => ExtractDate(r.getCrawlDate, component) == date)
+    def keepDate(dates: List[String], component: DateComponent = DateComponent.YYYYMMDD) = {
+      rdd.filter(r => dates.contains(ExtractDate(r.getCrawlDate, component)))
     }
 
     def keepUrls(urls: Set[String]) = {
