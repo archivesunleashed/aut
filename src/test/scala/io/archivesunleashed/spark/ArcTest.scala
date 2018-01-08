@@ -45,12 +45,12 @@ class ArcTest extends FunSuite with BeforeAndAfter {
 
   test("filter date") {
     val four = RecordLoader.loadArchives(arcPath, sc, keepValidPages = false)
-      .keepDate(List("200804"), DateComponent.YYYYMM)
+      .keepDate(List("200804","200805"), DateComponent.YYYYMM)
       .map(r => r.getCrawlDate)
       .collect()
 
     val five = RecordLoader.loadArchives(arcPath, sc, keepValidPages = false)
-      .keepDate(List("200805"), DateComponent.YYYYMM)
+      .keepDate(List("200805","200807"), DateComponent.YYYYMM)
       .map(r => r.getCrawlDate)
       .collect()
 
