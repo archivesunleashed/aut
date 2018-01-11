@@ -15,11 +15,6 @@
  * limitations under the License.
  */
 
- /**
-   *  @deprecated as of 0.12.0 and will be replaced
-   *  with WacInputFormat in a future release.
-   */
-
 package io.archivesunleashed.mapreduce;
 
 import io.archivesunleashed.io.ArchiveRecordWritable.ArchiveFormat;
@@ -48,7 +43,7 @@ import org.archive.io.warc.WARCReader;
 import org.archive.io.warc.WARCReaderFactory.CompressedWARCReader;
 
 /**
- * Extends FileInputFormat for Web Archive Commons  InputFormat.
+ * Extends FileInputFormat for Web Archive Commons InputFormat.
  */
 public class WacInputFormat extends FileInputFormat<LongWritable,
        ArchiveRecordWritable> {
@@ -83,17 +78,17 @@ public class WacInputFormat extends FileInputFormat<LongWritable,
     private ArchiveFormat format;
 
     /**
-     * Start position of  archive being read.
+     * Start position of archive being read.
      */
     private long start;
 
     /**
-     * A given position of a  archive being read.
+     * A given position of a archive being read.
      */
     private long pos;
 
     /**
-     * End position of a  archive being read.
+     * End position of a archive being read.
      */
     private long end;
 
@@ -113,7 +108,7 @@ public class WacInputFormat extends FileInputFormat<LongWritable,
     private Seekable filePosition;
 
     /**
-     * Iterator for  archive record.
+     * Iterator for archive record.
      */
     private Iterator<ArchiveRecord> iter;
 
@@ -147,7 +142,7 @@ public class WacInputFormat extends FileInputFormat<LongWritable,
     }
 
     /**
-     * Determins if  archive is compressed.
+     * Determines if archive is compressed.
      *
      * @return instanceof if ARC/WARC
      */
@@ -160,7 +155,7 @@ public class WacInputFormat extends FileInputFormat<LongWritable,
     }
 
     /**
-     * Get file position of  archive.
+     * Get file position of archive.
      *
      * @return retVal position of  archive
      * @throws IOException if there is an issue

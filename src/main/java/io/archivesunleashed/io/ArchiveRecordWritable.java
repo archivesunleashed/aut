@@ -15,11 +15,6 @@
  * limitations under the License.
  */
 
- /**
-   *  @deprecated as of 0.12.0 and will be replaced
-   *  with ArchiveRecordWritable in a future release.
-   */
-
 package io.archivesunleashed.io;
 
 import io.archivesunleashed.data.ArcRecordUtils;
@@ -61,12 +56,12 @@ public class ArchiveRecordWritable implements Writable {
   }
 
   /**
-   * Set default  Record format to UNKNOWN.
+   * Set default Record format to UNKNOWN.
    */
   private ArchiveFormat format = ArchiveFormat.UNKNOWN;
 
   /**
-   * Initialize  Archive Record to null.
+   * Initialize Archive Record to null.
    */
   private ArchiveRecord record = null;
 
@@ -77,7 +72,7 @@ public class ArchiveRecordWritable implements Writable {
   }
 
   /**
-   * Initialize  Archive Record.
+   * Initialize Archive Record.
    *
    * @param r  Archive Record
    */
@@ -87,7 +82,7 @@ public class ArchiveRecordWritable implements Writable {
   }
 
   /**
-   * Set  Archive Record.
+   * Set Archive Record.
    *
    * @param r  Archive Record
    */
@@ -97,16 +92,16 @@ public class ArchiveRecordWritable implements Writable {
   }
 
   /**
-   * Get  Archive Record.
+   * Get Archive Record.
    *
-   * @return record  Archive Record
+   * @return record Archive Record
    */
   public final ArchiveRecord getRecord() {
     return record;
   }
 
   /**
-   * Detect format of  Archive Record.
+   * Detect format of Archive Record.
    */
   public final void detectFormat() {
     if (record instanceof ARCRecord) {
@@ -119,7 +114,7 @@ public class ArchiveRecordWritable implements Writable {
   }
 
   /**
-   * Get format of  Archive Record.
+   * Get format of Archive Record.
    *
    * @return format of  Archive Record
    */
@@ -128,7 +123,7 @@ public class ArchiveRecordWritable implements Writable {
   }
 
   /**
-   * Set format of  Archive Record.
+   * Set format of Archive Record.
    *
    * @param f format of  Archive Record
    */
