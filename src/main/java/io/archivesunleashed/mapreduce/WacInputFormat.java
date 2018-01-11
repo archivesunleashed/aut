@@ -15,14 +15,10 @@
  * limitations under the License.
  */
 
- /**
-   *  @deprecated as of 0.12.0 and will be removed
-   *  in a future release. Use WacGenericArchiveInputFormat instead.
-   */
-
 package io.archivesunleashed.mapreduce;
 
-import io.archivesunleashed.io.WarcRecordWritable;
+import io.archivesunleashed.io.ArchiveRecordWritable.ArchiveFormat;
+import io.archivesunleashed.io.ArchiveRecordWritable;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.util.Iterator;
@@ -38,25 +34,25 @@ import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+import org.archive.io.ArchiveReader;
+import org.archive.io.ArchiveReaderFactory;
 import org.archive.io.ArchiveRecord;
+import org.archive.io.arc.ARCReader;
+import org.archive.io.arc.ARCReaderFactory.CompressedARCReader;
 import org.archive.io.warc.WARCReader;
 import org.archive.io.warc.WARCReaderFactory.CompressedWARCReader;
-import org.archive.io.warc.WARCReaderFactory;
-import org.archive.io.warc.WARCRecord;
 
 /**
- * Extends FileInputFormat for Web Archive Commons WARC InputFormat.
+ * Extends FileInputFormat for Web Archive Commons InputFormat.
  */
-@Deprecated
-public class WacWarcInputFormat extends FileInputFormat<LongWritable,
-       WarcRecordWritable> {
+public class WacInputFormat extends FileInputFormat<LongWritable,
+  ArchiveRecordWritable> {
   @Override
-  public final RecordReader<LongWritable, WarcRecordWritable>
-  createRecordReader(
-          final InputSplit split,
+  public final RecordReader<LongWritable,
+    ArchiveRecordWritable> createRecordReader(final InputSplit split,
       final TaskAttemptContext context) throws IOException,
   InterruptedException {
-    return new WarcRecordReader();
+    return new ArchiveRecordReader();
   }
 
   @Override
@@ -66,28 +62,33 @@ public class WacWarcInputFormat extends FileInputFormat<LongWritable,
   }
 
   /**
-   * Extends RecordReader for WARC Record Reader.
+   * Extends RecordReader for Record Reader.
    */
-  public class WarcRecordReader extends RecordReader<LongWritable,
-         WarcRecordWritable> {
+  public class ArchiveRecordReader extends RecordReader<LongWritable,
+    ArchiveRecordWritable> {
 
     /**
-     * WARC reader.
+     * Archive reader.
      */
-    private WARCReader reader;
+    private ArchiveReader reader;
 
     /**
-     * Start position of WARC being read.
+     * Archive format.
+     */
+    private ArchiveFormat format;
+
+    /**
+     * Start position of archive being read.
      */
     private long start;
 
     /**
-     * A given position of a WARC being read.
+     * A given position of an archive being read.
      */
     private long pos;
 
     /**
-     * End position of a WARC being read.
+     * End position of an archive being read.
      */
     private long end;
 
@@ -97,9 +98,9 @@ public class WacWarcInputFormat extends FileInputFormat<LongWritable,
     private LongWritable key = null;
 
     /**
-     * WarcRecordWritable value.
+     * ArchiveRecordWritable value.
      */
-    private WarcRecordWritable value = null;
+    private ArchiveRecordWritable value = null;
 
     /**
      * Seekable file position.
@@ -107,15 +108,15 @@ public class WacWarcInputFormat extends FileInputFormat<LongWritable,
     private Seekable filePosition;
 
     /**
-     * Iterator for ArchiveRecord.
+     * Iterator for an archive record.
      */
     private Iterator<ArchiveRecord> iter;
 
     @Override
-    public final void initialize(final InputSplit genericSplit,
+    public final void initialize(final InputSplit archiveRecordSplit,
             final TaskAttemptContext context)
     throws IOException {
-      FileSplit split = (FileSplit) genericSplit;
+      FileSplit split = (FileSplit) archiveRecordSplit;
       Configuration job = context.getConfiguration();
       start = split.getStart();
       end = start + split.getLength();
@@ -124,30 +125,40 @@ public class WacWarcInputFormat extends FileInputFormat<LongWritable,
       FileSystem fs = file.getFileSystem(job);
       FSDataInputStream fileIn = fs.open(split.getPath());
 
-      reader = (WARCReader) WARCReaderFactory.get(split.getPath().toString(),
+      reader = ArchiveReaderFactory.get(split.getPath().toString(),
           new BufferedInputStream(fileIn), true);
 
-      iter = reader.iterator();
-      //reader = (ARCReader) ARCReaderFactory.get(split.getPath().toString(),
-      //fileIn, true);
+      if (reader instanceof ARCReader) {
+        format = ArchiveFormat.ARC;
+        iter = reader.iterator();
+      }
+
+      if (reader instanceof WARCReader) {
+        format = ArchiveFormat.WARC;
+        iter = reader.iterator();
+      }
 
       this.pos = start;
     }
 
     /**
-     * Determins if WARC is compressed.
+     * Determines if archive is compressed.
      *
-     * @return reader true/false
+     * @return instanceof if ARC/WARC
      */
     private boolean isCompressedInput() {
-      return reader instanceof CompressedWARCReader;
+      if (format == ArchiveFormat.ARC) {
+        return reader instanceof CompressedARCReader;
+      } else {
+        return reader instanceof CompressedWARCReader;
+      }
     }
 
     /**
-     * Get file position of WARC.
+     * Get file position of archive.
      *
-     * @return retVal position of WARC
-     * @throws IOException is there is an issue
+     * @return retVal position of archive
+     * @throws IOException if there is an issue
      */
     private long getFilePosition() throws IOException {
       long retVal;
@@ -170,13 +181,19 @@ public class WacWarcInputFormat extends FileInputFormat<LongWritable,
       }
       key.set(pos);
 
-      WARCRecord record = (WARCRecord) iter.next();
+      ArchiveRecord record = null;
+      try {
+        record = iter.next();
+      } catch (Exception e) {
+        return false;
+      }
+
       if (record == null) {
         return false;
       }
 
       if (value == null) {
-        value = new WarcRecordWritable();
+        value = new ArchiveRecordWritable();
       }
       value.setRecord(record);
 
@@ -189,7 +206,7 @@ public class WacWarcInputFormat extends FileInputFormat<LongWritable,
     }
 
     @Override
-    public final WarcRecordWritable getCurrentValue() {
+    public final ArchiveRecordWritable getCurrentValue() {
       return value;
     }
 

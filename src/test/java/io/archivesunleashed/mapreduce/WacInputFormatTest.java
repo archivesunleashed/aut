@@ -17,7 +17,7 @@
 package io.archivesunleashed.mapreduce;
 
 import com.google.common.io.Resources;
-import io.archivesunleashed.io.GenericArchiveRecordWritable;
+import io.archivesunleashed.io.ArchiveRecordWritable;
 import java.io.File;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -37,7 +37,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class WacGenericInputFormatTest {
+public class WacInputFormatTest {
   @Test
   public final void testArcInputFormat() throws Exception {
     String[] urls = new String[]{
@@ -56,11 +56,11 @@ public class WacGenericInputFormatTest {
     Path path = new Path(testFile.getAbsoluteFile().toURI());
     FileSplit split = new FileSplit(path, 0, testFile.length(), null);
 
-    InputFormat<LongWritable, GenericArchiveRecordWritable> inputFormat =
-            ReflectionUtils.newInstance(WacGenericInputFormat.class, conf);
+    InputFormat<LongWritable, ArchiveRecordWritable> inputFormat =
+            ReflectionUtils.newInstance(WacInputFormat.class, conf);
     TaskAttemptContext context = new TaskAttemptContextImpl(conf,
             new TaskAttemptID());
-    RecordReader<LongWritable, GenericArchiveRecordWritable> reader =
+    RecordReader<LongWritable, ArchiveRecordWritable> reader =
             inputFormat.createRecordReader(split, context);
 
     reader.initialize(split, context);
@@ -122,11 +122,11 @@ public class WacGenericInputFormatTest {
     Path path = new Path(testFile.getAbsoluteFile().toURI());
     FileSplit split = new FileSplit(path, 0, testFile.length(), null);
 
-    InputFormat<LongWritable, GenericArchiveRecordWritable> inputFormat =
-            ReflectionUtils.newInstance(WacGenericInputFormat.class, conf);
+    InputFormat<LongWritable, ArchiveRecordWritable> inputFormat =
+            ReflectionUtils.newInstance(WacInputFormat.class, conf);
     TaskAttemptContext context = new TaskAttemptContextImpl(conf,
             new TaskAttemptID());
-    RecordReader<LongWritable, GenericArchiveRecordWritable> reader =
+    RecordReader<LongWritable, ArchiveRecordWritable> reader =
             inputFormat.createRecordReader(split, context);
 
     reader.initialize(split, context);

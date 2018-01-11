@@ -17,8 +17,8 @@
 package io.archivesunleashed.io;
 
 import com.google.common.io.Resources;
-import io.archivesunleashed.io.GenericArchiveRecordWritable.ArchiveFormat;
-import io.archivesunleashed.mapreduce.WacGenericInputFormat;
+import io.archivesunleashed.io.ArchiveRecordWritable.ArchiveFormat;
+import io.archivesunleashed.mapreduce.WacInputFormat;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -39,7 +39,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class GenericArchiveRecordWritableTest {
+public class ArchiveRecordWritableTest {
     @Test
     public final void testArcInputFormat() throws Exception {
         String arcFile = Resources.getResource("arc/example.arc.gz").getPath();
@@ -51,12 +51,12 @@ public class GenericArchiveRecordWritableTest {
         Path path = new Path(testFile.getAbsoluteFile().toURI());
         FileSplit split = new FileSplit(path, 0, testFile.length(), null);
 
-        InputFormat<LongWritable, GenericArchiveRecordWritable> inputFormat =
+        InputFormat<LongWritable, ArchiveRecordWritable> inputFormat =
             ReflectionUtils.newInstance(
-                WacGenericInputFormat.class, conf);
+                WacInputFormat.class, conf);
         TaskAttemptContext context = new TaskAttemptContextImpl(conf,
                 new TaskAttemptID());
-        RecordReader<LongWritable, GenericArchiveRecordWritable> reader =
+        RecordReader<LongWritable, ArchiveRecordWritable> reader =
             inputFormat.createRecordReader(split, context);
 
         reader.initialize(split, context);
@@ -65,7 +65,7 @@ public class GenericArchiveRecordWritableTest {
         final int cntTest = 300;
 
         while (reader.nextKeyValue()) {
-            GenericArchiveRecordWritable record = reader.getCurrentValue();
+            ArchiveRecordWritable record = reader.getCurrentValue();
             cnt++;
 
             ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
@@ -73,8 +73,8 @@ public class GenericArchiveRecordWritableTest {
 
             record.write(dataOut);
 
-            GenericArchiveRecordWritable reconstructed =
-                new GenericArchiveRecordWritable();
+            ArchiveRecordWritable reconstructed =
+                new ArchiveRecordWritable();
 
             reconstructed.setFormat(ArchiveFormat.ARC);
             reconstructed.readFields(new DataInputStream(
@@ -105,12 +105,12 @@ public class GenericArchiveRecordWritableTest {
         Path path = new Path(testFile.getAbsoluteFile().toURI());
         FileSplit split = new FileSplit(path, 0, testFile.length(), null);
 
-        InputFormat<LongWritable, GenericArchiveRecordWritable> inputFormat =
+        InputFormat<LongWritable, ArchiveRecordWritable> inputFormat =
             ReflectionUtils.newInstance(
-                WacGenericInputFormat.class, conf);
+                WacInputFormat.class, conf);
         TaskAttemptContext context = new TaskAttemptContextImpl(conf,
                 new TaskAttemptID());
-        RecordReader<LongWritable, GenericArchiveRecordWritable> reader =
+        RecordReader<LongWritable, ArchiveRecordWritable> reader =
             inputFormat.createRecordReader(split, context);
 
         reader.initialize(split, context);
@@ -119,7 +119,7 @@ public class GenericArchiveRecordWritableTest {
         final int cntTest = 822;
 
         while (reader.nextKeyValue()) {
-            GenericArchiveRecordWritable record = reader.getCurrentValue();
+            ArchiveRecordWritable record = reader.getCurrentValue();
 
             cnt++;
 
@@ -128,8 +128,8 @@ public class GenericArchiveRecordWritableTest {
 
             record.write(dataOut);
 
-            GenericArchiveRecordWritable reconstructed =
-                new GenericArchiveRecordWritable();
+            ArchiveRecordWritable reconstructed =
+                new ArchiveRecordWritable();
 
             reconstructed.setFormat(ArchiveFormat.WARC);
             reconstructed.readFields(new DataInputStream(
