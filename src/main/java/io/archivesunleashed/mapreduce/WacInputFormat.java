@@ -46,10 +46,10 @@ import org.archive.io.warc.WARCReaderFactory.CompressedWARCReader;
  * Extends FileInputFormat for Web Archive Commons InputFormat.
  */
 public class WacInputFormat extends FileInputFormat<LongWritable,
-       ArchiveRecordWritable> {
+  ArchiveRecordWritable> {
   @Override
   public final RecordReader<LongWritable,
-  ArchiveRecordWritable> createRecordReader(final InputSplit split,
+    ArchiveRecordWritable> createRecordReader(final InputSplit split,
       final TaskAttemptContext context) throws IOException,
   InterruptedException {
     return new ArchiveRecordReader();
@@ -65,15 +65,15 @@ public class WacInputFormat extends FileInputFormat<LongWritable,
    * Extends RecordReader for Record Reader.
    */
   public class ArchiveRecordReader extends RecordReader<LongWritable,
-         ArchiveRecordWritable> {
+    ArchiveRecordWritable> {
 
     /**
-     *  archive reader.
+     * Archive reader.
      */
     private ArchiveReader reader;
 
     /**
-     *  archive format.
+     * Archive format.
      */
     private ArchiveFormat format;
 
