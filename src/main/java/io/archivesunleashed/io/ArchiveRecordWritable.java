@@ -74,7 +74,7 @@ public class ArchiveRecordWritable implements Writable {
   /**
    * Initialize Archive Record.
    *
-   * @param r  Archive Record
+   * @param r Archive Record
    */
   public ArchiveRecordWritable(final ArchiveRecord r) {
     this.record = r;
@@ -84,7 +84,7 @@ public class ArchiveRecordWritable implements Writable {
   /**
    * Set Archive Record.
    *
-   * @param r  Archive Record
+   * @param r Archive Record
    */
   public final void setRecord(final ArchiveRecord r) {
     this.record = r;
@@ -116,7 +116,7 @@ public class ArchiveRecordWritable implements Writable {
   /**
    * Get format of Archive Record.
    *
-   * @return format of  Archive Record
+   * @return format of Archive Record
    */
   public final ArchiveFormat getFormat() {
     return format;
@@ -125,7 +125,7 @@ public class ArchiveRecordWritable implements Writable {
   /**
    * Set format of Archive Record.
    *
-   * @param f format of  Archive Record
+   * @param f format of Archive Record
    */
   public final void setFormat(final ArchiveFormat f) {
     this.format = f;
