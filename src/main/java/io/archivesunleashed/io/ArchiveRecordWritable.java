@@ -28,7 +28,7 @@ import org.archive.io.arc.ARCRecord;
 import org.archive.io.warc.WARCRecord;
 
 /**
- * Implements Hadoop Writable for  Archive Records.
+ * Implements Hadoop Writable for Archive Records.
  */
 public class ArchiveRecordWritable implements Writable {
 

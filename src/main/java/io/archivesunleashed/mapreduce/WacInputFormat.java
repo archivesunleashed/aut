@@ -83,12 +83,12 @@ public class WacInputFormat extends FileInputFormat<LongWritable,
     private long start;
 
     /**
-     * A given position of a archive being read.
+     * A given position of an archive being read.
      */
     private long pos;
 
     /**
-     * End position of a archive being read.
+     * End position of an archive being read.
      */
     private long end;
 
@@ -108,7 +108,7 @@ public class WacInputFormat extends FileInputFormat<LongWritable,
     private Seekable filePosition;
 
     /**
-     * Iterator for archive record.
+     * Iterator for an archive record.
      */
     private Iterator<ArchiveRecord> iter;
 
@@ -157,7 +157,7 @@ public class WacInputFormat extends FileInputFormat<LongWritable,
     /**
      * Get file position of archive.
      *
-     * @return retVal position of  archive
+     * @return retVal position of archive
      * @throws IOException if there is an issue
      */
     private long getFilePosition() throws IOException {

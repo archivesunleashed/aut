@@ -36,8 +36,6 @@ import java.net.URL
 import java.io._
 import scala.io.Source
 
-
-
 /* There must be a valid classifier file with path `iNerClassifierFile` for this test to pass
 @RunWith(classOf[JUnitRunner])
 class ExtractEntitiesTest extends FunSuite with BeforeAndAfter {
@@ -97,15 +95,13 @@ class ExtractEntitiesTest extends FunSuite with BeforeAndAfter {
     expectedEntityMap.toStream.foreach(f => {
       assert(f._2 == actual.get(f._1.toString).get)
     })
-  } 
-
+  }
 
   //ScrapeFile no longer exists in Resources
   test("Extract from Record") {
     val e = ExtractEntities.extractFromRecords(iNerClassifierFile, archivePath, tempDir + "/scrapeArcEntities", sc).take(3).last
     assert(e._1 == "hello")
   }
-
 
   after {
     FileUtils.deleteDirectory(tempDir)
