@@ -17,6 +17,7 @@
 package io.archivesunleashed.spark.matchbox
 
 import java.io.File
+import java.nio.file.{Paths}
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
@@ -30,20 +31,45 @@ import org.junit.runner.RunWith
 import io.archivesunleashed.spark.matchbox.NER3Classifier.NERClassType
 
 import scala.collection.mutable
+import sys.process._
+import java.net.URL
+import java.io._
+import scala.io.Source
+
+
 
 // There must be a valid classifier file with path `iNerClassifierFile` for this test to pass
-//@RunWith(classOf[JUnitRunner])
+@RunWith(classOf[JUnitRunner])
 class ExtractEntitiesTest extends FunSuite with BeforeAndAfter {
+  def fileDownloader(url: String, filename: String) = {
+      new URL(url) #> new File(filename) !!
+  }
+  private val resourceDirectory = Paths.get("src","test","resources");
   private val LOG = LogFactory.getLog(classOf[ExtractEntitiesTest])
-  private val scrapePath = Resources.getResource("ner/example.txt").getPath
+  private val NERUrl = "https://minhaskamal.github.io/DownGit/" +
+    "#/home?url=https://github.com/archivesunleashed/" +
+    "aut-resources/blob/master/NER/english.all.3class.distsim.crf.ser.gz"
+  private val nerPath = resourceDirectory + "/ner/"
+  private val scrapePath = Resources.getResource("ner").getPath
   private val archivePath = Resources.getResource("arc/example.arc.gz").getPath
   private val master = "local[4]"
   private val appName = "example-spark"
   private var sc: SparkContext = _
   private var tempDir: File = _
   private val mapper = new ObjectMapper().registerModule(DefaultScalaModule)
-  private val iNerClassifierFile =
-    Resources.getResource("ner/classifiers/english.all.3class.distsim.crf.ser.gz").getPath
+  val NER: String = try {
+     Resources.getResource("ner/english.all.3class.distsim.crf.ser.gz").getPath;
+  } catch {
+    case e: Exception => {
+      null
+    }
+  } finally {
+      fileDownloader(NERUrl, nerPath+"english.all.3class.distsim.crf.ser.gz");
+      Resources.getResource("ner/english.all.3class.distsim.crf.ser.gz").getPath;
+
+  }
+
+  val iNerClassifierFile = NERUrl
 
   before {
     val conf = new SparkConf()
@@ -55,6 +81,10 @@ class ExtractEntitiesTest extends FunSuite with BeforeAndAfter {
   }
 
   test("extract entities") {
+    assume (
+      ExtractEntities.extractFromScrapeText(iNerClassifierFile, scrapePath, tempDir + "/scrapeTextEntities", sc).take(3).last == "happy",
+      "Could not find a NER Classifier, skipping test ...")
+
     val e = ExtractEntities.extractFromScrapeText(iNerClassifierFile, scrapePath, tempDir + "/scrapeTextEntities", sc).take(3).last
     val expectedEntityMap = mutable.Map[NERClassType.Value, List[String]]()
     expectedEntityMap.put(NERClassType.PERSON, List())
@@ -69,10 +99,13 @@ class ExtractEntitiesTest extends FunSuite with BeforeAndAfter {
     })
   }
 
+  /*
+  //ScrapeFile no longer exists in Resources
   test("Extract from Record") {
     val e = ExtractEntities.extractFromRecords(iNerClassifierFile, archivePath, tempDir + "/scrapeArcEntities", sc).take(3).last
     assert(e._1 == "hello")
   }
+  */
 
   after {
     FileUtils.deleteDirectory(tempDir)

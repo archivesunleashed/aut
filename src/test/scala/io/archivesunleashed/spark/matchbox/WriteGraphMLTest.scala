@@ -29,7 +29,7 @@ import io.archivesunleashed.spark.rdd.RecordRDD._
 import scala.io.Source
 
 @RunWith(classOf[JUnitRunner])
-class WriteGEXFTest extends FunSuite with BeforeAndAfter{
+class WriteGraphMLTest extends FunSuite with BeforeAndAfter{
   private var sc: SparkContext = _
   private val master = "local[4]"
   private val appName = "example-spark"
@@ -47,21 +47,21 @@ class WriteGEXFTest extends FunSuite with BeforeAndAfter{
 
   test("creates the file") {
     val networkrdd = sc.parallelize(network)
-    WriteGEXF(networkrdd, testFile)
+    WriteGraphML(networkrdd, testFile)
     assert(Files.exists(Paths.get(testFile)) == true)
     val lines = Source.fromFile(testFile).getLines.toList
     assert(lines(0) == """<?xml version="1.0" encoding="UTF-8"?>""")
-    assert(lines(16) == """      <node id="Source3" label="Source3" />""")
-    assert(lines(18) == """      <node id="Destination1" label="Destination1" />""")
-    assert(lines(21) == """            <edge source="Source1" target="Destination1" label="" weight="3"  type="directed">""")
+    assert(lines(15) == """             <node id="Source2">""")
+    assert(lines(22) == """      <node id="Destination3">""")
+    assert(lines(30) == """               <data id="n0">Destination1</data>""")
   }
 
   test ("returns a Bool depending on pass or failure") {
     val networkrdd = sc.parallelize(network)
-    val gexf = WriteGEXF(networkrdd, testFile)
-    println (gexf)
-    assert(gexf == true)
-    assert(WriteGEXF(networkrdd, "") == false)
+    val graphml = WriteGraphML(networkrdd, testFile)
+    println(graphml)
+    assert(graphml == true)
+    assert(WriteGraphML(networkrdd, "") == false)
   }
 
   after {

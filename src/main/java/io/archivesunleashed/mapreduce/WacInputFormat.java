@@ -14,6 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+ /**
+   *  @deprecated as of 0.12.0 and will be replaced
+   *  with WacInputFormat in a future release.
+   */
+
 package io.archivesunleashed.mapreduce;
 
 import io.archivesunleashed.io.ArchiveRecordWritable.ArchiveFormat;
