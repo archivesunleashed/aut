@@ -36,8 +36,8 @@ import java.net.URL
 import java.io._
 import scala.io.Source
 
-/* There must be a valid classifier file with path `iNerClassifierFile` for this test to pass
-@RunWith(classOf[JUnitRunner])
+// There must be a valid classifier file with path `iNerClassifierFile` for this test to pass
+//@RunWith(classOf[JUnitRunner])
 class ExtractEntitiesTest extends FunSuite with BeforeAndAfter {
   def fileDownloader(url: String, filename: String) = {
       new URL(url) #> new File(filename) !!
@@ -110,4 +110,4 @@ class ExtractEntitiesTest extends FunSuite with BeforeAndAfter {
       sc.stop()
     }
   }
-} */
+}
