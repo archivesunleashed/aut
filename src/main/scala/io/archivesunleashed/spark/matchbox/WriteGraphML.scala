@@ -58,7 +58,7 @@ object WriteGraphML {
                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
                http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
-        <key id="n0" for="node" attr.name="label" attr.type="label">
+        <key id="n0" for="node" attr.name="label" attr.type="string">
           <default>""</default>
         </key>
         <key id="e0" for="edge" attr.name="weight" attr.type="double">
