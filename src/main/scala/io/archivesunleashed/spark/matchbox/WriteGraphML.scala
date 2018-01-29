@@ -43,28 +43,23 @@ object WriteGraphML {
     val outFile = Files.newBufferedWriter(Paths.get(graphmlPath), StandardCharsets.UTF_8)
     val edges = rdd.map(r => "      <edge source=\"" + r._1._2 + "\" target=\"" +
       r._1._3 + """"  type="directed">
-      <data key="e0">""" + r._2 + """</data>
-      <data key="e1">"""" + r._1._1 + """"</data>
+      <data key="WT">""" + r._2 + """</data>
+      <data key="CD">"""" + r._1._1 + """"</data>
       </edge>""").collect
     val nodes = rdd.flatMap(r => List("""
              <node id="""" + r._1._2 + """">
-               <data id="n0">""" + r._1._2 + """</data>
              </node>""",
       "      <node id=\"" + r._1._3 + """">
-               <data id="n0">""" + r._1._3 + """</data>
              </node>""")).distinct.collect
     outFile.write("""<?xml version="1.0" encoding="UTF-8"?>
       <graphml xmlns="http://graphml.graphdrawing.org/xmlns"
                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
                http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
-        <key id="n0" for="node" attr.name="label" attr.type="string">
-          <default>""</default>
-        </key>
-        <key id="e0" for="edge" attr.name="weight" attr.type="double">
+        <key id="WT" for="edge" attr.name="weight" attr.type="double">
           <default>0.0</default>
         </key>
-        <key id="e1" for="edge" attr.name="crawlDate" attr.type="string">
+        <key id="CD" for="edge" attr.name="crawlDate" attr.type="string">
         </key>
         <graph mode="static" edgedefault="directed">
           """)
