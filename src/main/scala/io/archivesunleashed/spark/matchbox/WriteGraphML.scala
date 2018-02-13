@@ -52,7 +52,6 @@ object WriteGraphML {
 
   def makeFile (rdd: RDD[((String, String, String), Int)], graphmlPath: String): Boolean = {
     val outFile = Files.newBufferedWriter(Paths.get(graphmlPath), StandardCharsets.UTF_8)
-<<<<<<< HEAD
     val edges = rdd.map(r => "<edge source=\"" + computeHash(r._1._2) + "\" target=\"" +
       computeHash(r._1._3) + "\"  type=\"directed\">\n" +
     "<data key=\"weight\">" + r._2 + "</data>\n" +
@@ -77,34 +76,6 @@ object WriteGraphML {
     edges.foreach(r => outFile.write(r))
     outFile.write("</graph>\n" +
     "</graphml>")
-=======
-    val edges = rdd.map(r => "      <edge source=\"" + r._1._2 + "\" target=\"" +
-      r._1._3 + """"  type="directed">
-      <data key="WT">""" + r._2 + """</data>
-      <data key="CD">"""" + r._1._1 + """"</data>
-      </edge>""").collect
-    val nodes = rdd.flatMap(r => List("""
-             <node id="""" + r._1._2 + """">
-             </node>""",
-      "      <node id=\"" + r._1._3 + """">
-             </node>""")).distinct.collect
-    outFile.write("""<?xml version="1.0" encoding="UTF-8"?>
-      <graphml xmlns="http://graphml.graphdrawing.org/xmlns"
-               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-               xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
-               http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
-        <key id="WT" for="edge" attr.name="weight" attr.type="double">
-          <default>0.0</default>
-        </key>
-        <key id="CD" for="edge" attr.name="crawlDate" attr.type="string">
-        </key>
-        <graph mode="static" edgedefault="directed">
-          """)
-    nodes.foreach(r => outFile.write(r + "\n"))
-    edges.foreach(r => outFile.write(r + "\n"))
-    outFile.write("""</graph>
-      </graphml>""")
->>>>>>> master
     outFile.close()
     return true
   }
