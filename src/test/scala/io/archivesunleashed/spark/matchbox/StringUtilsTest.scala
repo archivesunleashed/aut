@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 package io.archivesunleashed.spark.matchbox
-
+import java.io.IOException
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
@@ -28,5 +28,17 @@ class StringUtilsTest extends FunSuite {
     val n: String = null
     assert(s.removePrefixWWW() == "example.com")
     assert(n.removePrefixWWW() == null)
+  }
+
+  test("create hash") {
+    val invalid: String = "A<B>C&D\"";
+    val except: String = null;
+    assert(invalid.escapeInvalidXML() == "A&lt;B&gt;C&amp;D&quot;");
+    val caught = intercept[IOException] {except.escapeInvalidXML()}
+    assert (caught.getMessage == "Caught exception processing input row ");
+  }
+  test ("md5 hash") {
+    val s: String = "unesco.org";
+    assert(s.computeHash() == "8e8decc8e8107bcf9d3896f3222b77d8");
   }
 }

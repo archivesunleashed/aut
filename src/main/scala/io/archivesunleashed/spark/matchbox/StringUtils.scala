@@ -15,6 +15,9 @@
  * limitations under the License.
  */
 package io.archivesunleashed.spark.matchbox
+import scala.xml.Utility.escape
+import java.io.IOException
+import java.security.MessageDigest
 
 object StringUtils {
 
@@ -23,6 +26,19 @@ object StringUtils {
       if (s == null) return null
       s.replaceAll("^\\s*www\\.", "")
     }
-  }
 
+    def escapeInvalidXML(): String = {
+      try {
+        return escape(s)
+      }
+      catch {
+        case e: Exception => throw new IOException("Caught exception processing input row ", e)
+      }
+    }
+
+    def computeHash(): String = {
+      val md5 = MessageDigest.getInstance("MD5")
+      return md5.digest(s.getBytes).map("%02x".format(_)).mkString
+    }
+  }
 }

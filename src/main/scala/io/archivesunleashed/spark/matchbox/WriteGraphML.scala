@@ -22,7 +22,9 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
 import org.apache.spark.rdd.RDD
-import java.security.MessageDigest
+import StringUtils._
+
+
 
 /**
   * UDF for exporting an RDD representing a collection of links to a GDF file.
@@ -45,22 +47,17 @@ object WriteGraphML {
     else makeFile (rdd, graphmlPath)
   }
 
-  def computeHash(id: String): String = {
-    val md5 = MessageDigest.getInstance("MD5")
-    return md5.digest(id.getBytes).map("%02x".format(_)).mkString
-  }
-
   def makeFile (rdd: RDD[((String, String, String), Int)], graphmlPath: String): Boolean = {
     val outFile = Files.newBufferedWriter(Paths.get(graphmlPath), StandardCharsets.UTF_8)
-    val edges = rdd.map(r => "<edge source=\"" + computeHash(r._1._2) + "\" target=\"" +
-      computeHash(r._1._3) + "\"  type=\"directed\">\n" +
+    val edges = rdd.map(r => "<edge source=\"" + r._1._2.computeHash() + "\" target=\"" +
+      r._1._3.computeHash() + "\"  type=\"directed\">\n" +
     "<data key=\"weight\">" + r._2 + "</data>\n" +
     "<data key=\"crawlDate\">" + r._1._1 + "</data>\n" +
     "</edge>\n").collect
-    val nodes = rdd.flatMap(r => List("<node id=\"" + computeHash(r._1._2) + "\">\n" +
-      "<data key=\"label\">" + r._1._2 + "</data>\n</node>\n",
-      "<node id=\"" + computeHash(r._1._3) + "\">\n" +
-      "<data key=\"label\">" + r._1._3 + "</data>\n</node>\n")).distinct.collect
+    val nodes = rdd.flatMap(r => List("<node id=\"" + r._1._2.computeHash() + "\">\n" +
+      "<data key=\"label\">" + r._1._2.escapeInvalidXML() + "</data>\n</node>\n",
+      "<node id=\"" + r._1._3.computeHash() + "\">\n" +
+      "<data key=\"label\">" + r._1._3.escapeInvalidXML() + "</data>\n</node>\n")).distinct.collect
     outFile.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
       "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\"\n" +
       "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
