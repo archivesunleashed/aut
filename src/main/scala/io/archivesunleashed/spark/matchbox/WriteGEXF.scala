@@ -45,7 +45,7 @@ object WriteGEXF {
     val outFile = Files.newBufferedWriter(Paths.get(gexfPath), StandardCharsets.UTF_8)
     val edges = rdd.map(r => "<edge source=\"" + r._1._2.computeHash() + "\" target=\"" +
       r._1._3.computeHash() + "\" weight=\"" + r._2 +
-      " type=\"directed\">\n" +
+      "\" type=\"directed\">\n" +
       "<attvalues>\n" +
       "<attvalue for=\"0\" value=\"" + r._1._1 + "\" />\n" +
       "</attvalues>\n" +
