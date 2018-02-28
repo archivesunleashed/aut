@@ -22,6 +22,8 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
 import org.apache.spark.rdd.RDD
+import StringUtils._
+
 
 /**
   * UDF for exporting an RDD representing a collection of links to a GDF file.
@@ -41,38 +43,34 @@ object WriteGEXF {
 
   def makeFile (rdd: RDD[((String, String, String), Int)], gexfPath: String): Boolean = {
     val outFile = Files.newBufferedWriter(Paths.get(gexfPath), StandardCharsets.UTF_8)
-    val edges = rdd.map(r => "      <edge source=\"" + r._1._2 + "\" target=\"" +
-      r._1._3 + "\" label=\"\" weight=\"" + r._2 +
-      """"  type="directed">
-      <attvalues>
-      <attvalue for="0" value="""" + r._1._1 + """" />
-      </attvalues>
-      </edge>""").collect
-    val nodes = rdd.flatMap(r => List("      <node id=\"" +
-      r._1._2 + "\" label=\"" +
-      r._1._2 + "\" />\n",
-      "      <node id=\"" +
-      r._1._3 + "\" label=\"" +
-      r._1._3 + "\" />")).distinct.collect
-    outFile.write("""<?xml version="1.0" encoding="UTF-8"?>
-      <gexf xmlns="http://www.gexf.net/1.3draft"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="http://www.gexf.net/1.3draft
-                                http://www.gexf.net/1.3draft/gexf.xsd"
-            version="1.3">
-        <graph mode="static" defaultedgetype="directed">
-          <attributes class="edge">
-            <attribute id="0" title="crawlDate" type="string" />
-          </attributes>
-          <nodes>""")
-    nodes.foreach(r => outFile.write(r + "\n"))
-    outFile.write("""    </nodes>
-      <edges>
-      """)
-    edges.foreach(r => outFile.write(r + "\n"))
-    outFile.write("""    </edges>
-        </graph>
-      </gexf>""")
+    val edges = rdd.map(r => "<edge source=\"" + r._1._2.computeHash() + "\" target=\"" +
+      r._1._3.computeHash() + "\" weight=\"" + r._2 +
+      "\" type=\"directed\">\n" +
+      "<attvalues>\n" +
+      "<attvalue for=\"0\" value=\"" + r._1._1 + "\" />\n" +
+      "</attvalues>\n" +
+      "</edge>\n").collect
+    val nodes = rdd.flatMap(r => List("<node id=\"" +
+      r._1._2.computeHash() + "\" label=\"" +
+      r._1._2.escapeInvalidXML() + "\" />\n",
+      "<node id=\"" +
+      r._1._3.computeHash() + "\" label=\"" +
+      r._1._3.escapeInvalidXML() + "\" />\n")).distinct.collect
+    outFile.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+      "<gexf xmlns=\"http://www.gexf.net/1.3draft\"\n" +
+      "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+      "  xsi:schemaLocation=\"http://www.gexf.net/1.3draft\n" +
+      "                       http://www.gexf.net/1.3draft/gexf.xsd\"\n" +
+      "  version=\"1.3\">\n" +
+      "<graph mode=\"static\" defaultedgetype=\"directed\">\n" +
+      "<attributes class=\"edge\">\n" +
+      "  <attribute id=\"0\" title=\"crawlDate\" type=\"string\" />\n" +
+      "</attributes>\n" +
+      "<nodes>\n")
+    nodes.foreach(r => outFile.write(r))
+    outFile.write("</nodes>\n<edges>\n")
+    edges.foreach(r => outFile.write(r))
+    outFile.write("</edges>\n</graph>\n</gexf>")
     outFile.close()
     return true
   }

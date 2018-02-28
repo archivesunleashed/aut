@@ -50,10 +50,11 @@ class WriteGEXFTest extends FunSuite with BeforeAndAfter{
     WriteGEXF(networkrdd, testFile)
     assert(Files.exists(Paths.get(testFile)) == true)
     val lines = Source.fromFile(testFile).getLines.toList
+    println(lines)
     assert(lines(0) == """<?xml version="1.0" encoding="UTF-8"?>""")
-    assert(lines(16) == """      <node id="Source3" label="Source3" />""")
-    assert(lines(18) == """      <node id="Destination1" label="Destination1" />""")
-    assert(lines(21) == """            <edge source="Source1" target="Destination1" label="" weight="3"  type="directed">""")
+    assert(lines(12) == """<node id="f61def1ec71cd27401b8c821f04b7c27" label="Destination1" />""")
+    assert(lines(22) == """</attvalues>""")
+    assert(lines(34) == """</edges>""")
   }
 
   test ("returns a Bool depending on pass or failure") {
