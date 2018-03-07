@@ -29,7 +29,31 @@ import io.archivesunleashed.io.ArchiveRecordWritable.ArchiveFormat
 import io.archivesunleashed.spark.matchbox.ExtractDate.DateComponent
 import io.archivesunleashed.spark.matchbox.{RemoveHttpHeader, ExtractDate, ExtractDomain}
 
-class ArchiveRecord(r: SerializableWritable[ArchiveRecordWritable]) extends Serializable {
+object ArchiveRecord {
+  val ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX")
+}
+
+trait ArchiveRecord extends Serializable {
+  def getCrawlDate: String
+
+  def getCrawlMonth: String
+
+  def getContentBytes: Array[Byte]
+
+  def getContentString: String
+
+  def getMimeType: String
+
+  def getUrl: String
+
+  def getDomain: String
+
+  def getImageBytes: Array[Byte]
+}
+
+class ArchiveRecordImpl(r: SerializableWritable[ArchiveRecordWritable]) extends ArchiveRecord {
+  import ArchiveRecord._
+
   var arcRecord: ARCRecord = null
   var warcRecord: WARCRecord = null
 
@@ -37,9 +61,6 @@ class ArchiveRecord(r: SerializableWritable[ArchiveRecordWritable]) extends Seri
     arcRecord = r.t.getRecord.asInstanceOf[ARCRecord]
   else if (r.t.getFormat == ArchiveFormat.WARC)
     warcRecord = r.t.getRecord.asInstanceOf[WARCRecord]
-
-
-  val ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX")
 
   val getCrawlDate: String = {
     if (r.t.getFormat == ArchiveFormat.ARC) {
@@ -67,7 +88,7 @@ class ArchiveRecord(r: SerializableWritable[ArchiveRecordWritable]) extends Seri
 
   val getContentString: String = new String(getContentBytes)
 
-  val getMimeType = {
+  val getMimeType: String = {
     if (r.t.getFormat == ArchiveFormat.ARC) {
       arcRecord.getMetaData.getMimetype
     } else {
@@ -75,7 +96,7 @@ class ArchiveRecord(r: SerializableWritable[ArchiveRecordWritable]) extends Seri
     }
   }
 
-  val getUrl = {
+  val getUrl: String = {
     if (r.t.getFormat == ArchiveFormat.ARC) {
       arcRecord.getMetaData.getUrl
     } else {
