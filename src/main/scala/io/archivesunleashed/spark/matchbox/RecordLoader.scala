@@ -24,7 +24,7 @@ import org.json4s.jackson.JsonMethods._
 import io.archivesunleashed.io.ArchiveRecordWritable.ArchiveFormat
 import io.archivesunleashed.io.ArchiveRecordWritable
 import io.archivesunleashed.mapreduce.WacInputFormat
-import io.archivesunleashed.spark.archive.io.ArchiveRecord
+import io.archivesunleashed.spark.archive.io._
 import io.archivesunleashed.spark.rdd.RecordRDD._
 
 object RecordLoader {
@@ -34,7 +34,7 @@ object RecordLoader {
       sc.newAPIHadoopFile(path, classOf[WacInputFormat], classOf[LongWritable], classOf[ArchiveRecordWritable])
       .filter(r => (r._2.getFormat == ArchiveFormat.ARC) ||
         ((r._2.getFormat == ArchiveFormat.WARC) && r._2.getRecord.getHeader.getHeaderValue("WARC-Type").equals("response")))
-      .map(r => new ArchiveRecord(new SerializableWritable(r._2)))
+      .map(r => new ArchiveRecordImpl(new SerializableWritable(r._2)))
 
     if (keepValidPages) rdd.keepValidPages() else rdd
   }
