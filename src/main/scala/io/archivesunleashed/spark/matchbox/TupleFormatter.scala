@@ -16,14 +16,13 @@
  */
 package io.archivesunleashed.spark.matchbox
 
+import shapeless._  // v2.0.0, for full compatibility with Scala 2.10.4 (Spark dep)
 import ops.tuple.FlatMapper
 import ops.tuple.ToList
-import shapeless._  // v2.0.0, for full compatibility with Scala 2.10.4 (Spark dep)
 import syntax.std.tuple._
 
 /** Tuple formatter utility. */
 object TupleFormatter {
-
   /** Borrowed from shapeless's flatten.scala example. */
   trait LowPriorityFlatten extends Poly1 {
     implicit def default[T] = at[T](Tuple1(_))
