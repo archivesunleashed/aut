@@ -15,18 +15,31 @@
  * limitations under the License.
  */
 package io.archivesunleashed.spark.matchbox
-import scala.xml.Utility.escape
+
 import java.io.IOException
 import java.security.MessageDigest
+import scala.xml.Utility.escape
 
+/** String utils for matchbox UDFs. */
 object StringUtils {
 
   implicit class WWWLink(s: String) {
+
+    /** Needs a description.
+     *
+     * @param
+     * @return
+     */
     def removePrefixWWW(): String = {
       if (s == null) return null
       s.replaceAll("^\\s*www\\.", "")
     }
 
+    /** Needs a description.
+     *
+     * @param
+     * @return
+     */
     def escapeInvalidXML(): String = {
       try {
         return escape(s)
@@ -36,6 +49,11 @@ object StringUtils {
       }
     }
 
+    /** Needs a description.
+     *
+     * @param
+     * @return
+     */
     def computeHash(): String = {
       val md5 = MessageDigest.getInstance("MD5")
       return md5.digest(s.getBytes).map("%02x".format(_)).mkString

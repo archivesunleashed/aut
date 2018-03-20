@@ -16,37 +16,34 @@
  */
 package io.archivesunleashed.spark.matchbox
 
+import StringUtils._
 import java.io.BufferedWriter
 import java.io.OutputStreamWriter
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
 import org.apache.spark.rdd.RDD
-import StringUtils._
 
-
-
-/**
-  * UDF for exporting an RDD representing a collection of links to a GDF file.
-  */
-
+/** Utility for exporting an RDD representing a collection of links to a GDF file. */
 object WriteGraphML {
-  /**
-  * @param rdd RDD of elements in format ((datestring, source, target), count).
-  * @param graphmlPath Output file.
-  *
-  * Writes graph nodes and edges to file.
-  */
 
-
-// Compute a hash of a file
-// The output of this function should match the output of running "md5 -q <file>"
-
+  /** Writes graph nodes and edges to file.
+   *
+   * @param rdd RDD of elements in format ((datestring, source, target), count).
+   * @param graphmlPath Output file.
+   * @return
+   */
   def apply(rdd: RDD[((String, String, String), Int)], graphmlPath: String): Boolean = {
     if (graphmlPath.isEmpty()) false
     else makeFile (rdd, graphmlPath)
   }
 
+  /** Needs a description.
+   *
+   * @param rdd RDD of elements in format ((datestring, source, target), count).
+   * @param graphmlPath Output file.
+   * @return
+   */
   def makeFile (rdd: RDD[((String, String, String), Int)], graphmlPath: String): Boolean = {
     val outFile = Files.newBufferedWriter(Paths.get(graphmlPath), StandardCharsets.UTF_8)
     val edges = rdd.map(r => "<edge source=\"" + r._1._2.computeHash() + "\" target=\"" +

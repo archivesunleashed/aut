@@ -16,6 +16,7 @@
  */
 package io.archivesunleashed.spark.matchbox
 
+import io.archivesunleashed.spark.utils.JsonUtil
 import java.io.BufferedReader
 import java.io.BufferedWriter
 import java.io.InputStreamReader
@@ -23,27 +24,29 @@ import java.io.OutputStreamWriter
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs._
 import org.apache.spark.SparkContext
-import io.archivesunleashed.spark.utils.JsonUtil
 import scala.collection.mutable.MutableList
 import scala.util.Random
 
-/**
-  * Classifies records using NER and stores results as JSON
-  */
-
+/** Classifies records using NER and stores results as JSON. */
 class NERCombinedJson extends Serializable {
 
+  /** Needs a description.
+   *
+   * @param l1
+   * @param l2
+   * @return
+   */
   def combineKeyCountLists (l1: List[(String, Int)], l2: List[(String, Int)]): List[(String, Int)] = {
     (l1 ++ l2).groupBy(_._1 ).map {
       case (key, tuples) => (key, tuples.map( _._2).sum)
     }.toList
   }
 
-  /** Combines directory of part-files containing one JSON array per line
-    * into a single file containing a single JSON array of arrays.
+  /** Combines directory of part-files containing one JSON array per line into a single file containing a single JSON array of arrays.
     *
     * @param srcDir name of directory holding files, also name that will
     *               be given to JSON file.
+    * @return
     */
   def partDirToFile(srcDir: String): Unit = {
     val hadoopConfig = new Configuration()
@@ -82,6 +85,7 @@ class NERCombinedJson extends Serializable {
     *                  from which to extract entities
     * @param outputFile path of output file (e.g., "entities.json")
     * @param sc Spark context object
+    * @return
     */
   def classify(iNerClassifierFile: String, inputFile: String, outputFile: String, sc: SparkContext) {
     val out = sc.textFile(inputFile)
@@ -120,22 +124,36 @@ class NERCombinedJson extends Serializable {
     partDirToFile(outputFile)
   }
 
+  /** Needs a description.
+   *
+   * @constructor create an entity with iEntity and iFreq.
+   * @param iEntity
+   * @param iFreq
+   */
   class Entity(iEntity: String, iFreq: Int) {
     var entity: String = iEntity
     var freq: Int = iFreq
   }
 
+  /** Needs a description.
+   *
+   * @constructor create an entity count with iNerType.
+   * @param iNerType
+   */
   class EntityCounts(iNerType: String) {
     var nerType: String = iNerType
     var entities = MutableList[Entity]()
   }
 
+  /** Needs a description.
+   *
+   * @constructor create a NER record with recDate and recDomain.
+   * @param recData
+   * @param recDomain
+   */
   class NerRecord(recDate: String, recDomain: String) {
     var date = recDate
     var domain = recDomain
-
     var ner = MutableList[EntityCounts]()
   }
 }
-
-

@@ -19,15 +19,15 @@ package io.archivesunleashed.spark.matchbox
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 
-/**
-  * Extracts entities
-  */
+/** Extracts entities. */
 object ExtractEntities {
 
-  /**
+  /** Needs a description.
+    *
     * @param iNerClassifierFile path of classifier file
     * @param inputRecordFile path of ARC or WARC file from which to extract entities
     * @param outputFile path of output directory
+    * @return
     */
   def extractFromRecords(iNerClassifierFile: String, inputRecordFile: String, outputFile: String, sc: SparkContext): RDD[(String, String, String)] = {
     val rdd = RecordLoader.loadArchives(inputRecordFile, sc)
@@ -35,11 +35,13 @@ object ExtractEntities {
     extractAndOutput(iNerClassifierFile, rdd, outputFile)
   }
 
-  /**
+  /** Needs a description.
+    *
     * @param iNerClassifierFile path of classifier file
     * @param inputFile path of file with tuples (date: String, url: String, content: String)
     *                  from which to extract entities
     * @param outputFile path of output directory
+    * @return
     */
   def extractFromScrapeText(iNerClassifierFile: String, inputFile: String, outputFile: String, sc: SparkContext): RDD[(String, String, String)] = {
     val rdd = sc.textFile(inputFile)
@@ -53,10 +55,12 @@ object ExtractEntities {
     extractAndOutput(iNerClassifierFile, rdd, outputFile)
   }
 
-  /**
-    * @param iNerClassifierFile path of classifier file
+  /** Needs a description.
+   *
+   * @param iNerClassifierFile path of classifier file
     * @param rdd with values (date, url, content)
     * @param outputFile path of output directory
+    * @return
     */
   def extractAndOutput(iNerClassifierFile: String, rdd: RDD[(String, String, String)], outputFile: String): RDD[(String, String, String)] = {
     val r = rdd.mapPartitions(iter => {

@@ -18,6 +18,7 @@ package io.archivesunleashed.spark.matchbox
 
 import org.json4s.JsonAST._
 
+/** Utilities for working with Twitter JSON. */
 object TweetUtils {
   implicit class JsonTweet(tweet: JValue) {
     implicit lazy val formats = org.json4s.DefaultFormats

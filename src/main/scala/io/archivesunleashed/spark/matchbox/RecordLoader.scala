@@ -16,19 +16,27 @@
  */
 package io.archivesunleashed.spark.matchbox
 
-import org.apache.hadoop.io.LongWritable
-import org.apache.spark.{SerializableWritable, SparkContext}
-import org.apache.spark.rdd.RDD
-import org.json4s._
-import org.json4s.jackson.JsonMethods._
-import io.archivesunleashed.io.ArchiveRecordWritable.ArchiveFormat
 import io.archivesunleashed.io.ArchiveRecordWritable
+import io.archivesunleashed.io.ArchiveRecordWritable.ArchiveFormat
 import io.archivesunleashed.mapreduce.WacInputFormat
 import io.archivesunleashed.spark.archive.io.ArchiveRecord
 import io.archivesunleashed.spark.rdd.RecordRDD._
+import org.apache.hadoop.io.LongWritable
+import org.apache.spark.rdd.RDD
+import org.apache.spark.{SerializableWritable, SparkContext}
+import org.json4s._
+import org.json4s.jackson.JsonMethods._
 
+/** Loads records. (Needs a better description.) */
 object RecordLoader {
 
+  /** Load archives (ARCs/WARCs).
+   *
+   * @param path to archive.
+   * @param sc SparkContext.
+   * @param keepValidPages
+   * @return
+   */
   def loadArchives(path: String, sc: SparkContext, keepValidPages: Boolean = true): RDD[ArchiveRecord] = {
     val rdd: RDD[ArchiveRecord] =
       sc.newAPIHadoopFile(path, classOf[WacInputFormat], classOf[LongWritable], classOf[ArchiveRecordWritable])
@@ -39,6 +47,12 @@ object RecordLoader {
     if (keepValidPages) rdd.keepValidPages() else rdd
   }
 
+  /** Load tweets.
+   *
+   * @param path to archive.
+   * @param sc SparkContext.
+   * @return
+   */
   def loadTweets(path: String, sc: SparkContext): RDD[JValue] =
     sc.textFile(path).filter(line => !line.startsWith("{\"delete\":"))
       .map(line => try { parse(line) } catch { case e: Exception => null }).filter(x => x != null)

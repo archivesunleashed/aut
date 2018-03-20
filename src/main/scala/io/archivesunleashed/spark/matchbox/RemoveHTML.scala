@@ -17,10 +17,16 @@
 package io.archivesunleashed.spark.matchbox
 
 import java.io.IOException
-
 import org.jsoup.Jsoup
 
+/** Remove HTML markup with JSoup. */
 object RemoveHTML {
+
+  /** Remove HTML.
+   *
+   * @param content
+   * @return content without html markup.
+   */
   def apply(content: String) = {
     try {
       Jsoup.parse(content).text().replaceAll("[\\r\\n]+", " ")

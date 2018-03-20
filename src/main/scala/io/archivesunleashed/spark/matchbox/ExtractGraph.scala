@@ -17,21 +17,25 @@
 package io.archivesunleashed.spark.matchbox
 
 import io.archivesunleashed.spark.archive.io.ArchiveRecord
-import org.apache.spark.graphx._
-import org.apache.spark.rdd.RDD
 import io.archivesunleashed.spark.matchbox.StringUtils._
 import io.archivesunleashed.spark.rdd.RecordRDD._
 import io.archivesunleashed.spark.utils.JsonUtil
+import org.apache.spark.graphx._
+import org.apache.spark.rdd.RDD
 
-/**
+/** Extracts graph.
   *
   * e.g. when done:
   * $ cat nodes.partjson/part-* > nodes.json && cat links.partjson/part-* > links.json
   * $ jq -c -n --slurpfile nodes nodes.json --slurpfile links links.json '{nodes: $nodes, links: $links}' > graph.json
-  *
   */
-
 object ExtractGraph {
+
+  /** Need a description.
+   *
+   * @param url
+   * @return
+   */
   def pageHash(url: String): VertexId = {
     url.hashCode.toLong
   }
@@ -39,6 +43,12 @@ object ExtractGraph {
   case class VertexData(domain: String, pageRank: Double, inDegree: Int, outDegree: Int)
   case class EdgeData(date: String, src: String, dst: String)
 
+  /** Need a description.
+   *
+   * @param records
+   * @param dynamic
+   * @return
+   */
   def apply(records: RDD[ArchiveRecord], dynamic: Boolean = false,
             tolerance: Double = 0.005, numIter: Int = 20): Graph[VertexData, EdgeData] = {
     val extractedLinks = records.keepValidPages()

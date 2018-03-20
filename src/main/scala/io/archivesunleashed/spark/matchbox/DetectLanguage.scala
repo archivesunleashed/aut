@@ -18,7 +18,14 @@ package io.archivesunleashed.spark.matchbox
 
 import org.apache.tika.language.LanguageIdentifier
 
+/** Detects language using Apache Tika. */
 object DetectLanguage {
+
+  /** Detects language.
+   *
+   * @param input
+   * @return ISO 639-2 language code.
+   */
   def apply(input: String): String = {
     if (input.isEmpty) ""
     else new LanguageIdentifier(input).getLanguage

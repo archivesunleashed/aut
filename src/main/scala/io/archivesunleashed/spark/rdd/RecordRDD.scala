@@ -17,22 +17,17 @@
 package io.archivesunleashed.spark.rdd
 
 import io.archivesunleashed.spark.archive.io.ArchiveRecord
-import org.apache.spark.rdd.RDD
-import io.archivesunleashed.spark.matchbox.{DetectLanguage, ExtractDate, ExtractDomain, RemoveHTML}
 import io.archivesunleashed.spark.matchbox.ExtractDate.DateComponent
 import io.archivesunleashed.spark.matchbox.ExtractDate.DateComponent.DateComponent
-
+import io.archivesunleashed.spark.matchbox.{DetectLanguage, ExtractDate, ExtractDomain, RemoveHTML}
+import org.apache.spark.rdd.RDD
 import scala.reflect.ClassTag
 import scala.util.matching.Regex
 
-/**
-  * RDD wrappers for working with Records
-  */
+/** RDD wrappers for working with Records. */
 object RecordRDD extends java.io.Serializable {
 
-  /**
-    * A Wrapper class around RDD to simplify counting
-    */
+  /** A Wrapper class around RDD to simplify counting. */
   implicit class CountableRDD[T: ClassTag](rdd: RDD[T]) extends java.io.Serializable {
     def countItems(): RDD[(T, Int)] = {
       rdd.map(r => (r, 1))
@@ -41,8 +36,7 @@ object RecordRDD extends java.io.Serializable {
     }
   }
 
-  /**
-    * A Wrapper class around RDD to allow RDDs of type ARCRecord and WARCRecord to be queried via a fluent API.
+  /** A Wrapper class around RDD to allow RDDs of type ARCRecord and WARCRecord to be queried via a fluent API.
     *
     * To load such an RDD, please see [[io.archivesunleashed.spark.matchbox.RecordLoader]]
     */
@@ -141,5 +135,4 @@ object RecordRDD extends java.io.Serializable {
           }).exists(identity))
     }
   }
-
 }

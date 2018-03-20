@@ -18,16 +18,13 @@ package io.archivesunleashed.spark.matchbox
 
 import java.security.MessageDigest
 
-
-/**
-  * compute MD5 checksum..
-  *
-  */
+/** Compute MD5 checksum. */
 object ComputeMD5 {
-  /**
+
+  /** Compute MD5 checksum.
     *
     * @param bytes
-    * @return
+    * @return MD5 checksum.
     */
   def apply(bytes: Array[Byte]): String = {
     new String(MessageDigest.getInstance("MD5").digest(bytes))

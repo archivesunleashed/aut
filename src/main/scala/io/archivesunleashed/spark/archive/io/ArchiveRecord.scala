@@ -16,19 +16,22 @@
  */
 package io.archivesunleashed.spark.archive.io
 
-import java.text.SimpleDateFormat
-
-import org.apache.spark.SerializableWritable
-import org.archive.io.arc.ARCRecord
-import org.archive.io.warc.WARCRecord
-
-import org.archive.util.ArchiveUtils
 import io.archivesunleashed.data.{ArcRecordUtils, WarcRecordUtils}
 import io.archivesunleashed.io.ArchiveRecordWritable
 import io.archivesunleashed.io.ArchiveRecordWritable.ArchiveFormat
 import io.archivesunleashed.spark.matchbox.ExtractDate.DateComponent
 import io.archivesunleashed.spark.matchbox.{RemoveHttpHeader, ExtractDate, ExtractDomain}
+import java.text.SimpleDateFormat
+import org.apache.spark.SerializableWritable
+import org.archive.io.arc.ARCRecord
+import org.archive.io.warc.WARCRecord
+import org.archive.util.ArchiveUtils
 
+/** ArchiveRecord.
+ *
+ *  @constructor an archive record.
+ *  @param r
+ */
 class ArchiveRecord(r: SerializableWritable[ArchiveRecordWritable]) extends Serializable {
   var arcRecord: ARCRecord = null
   var warcRecord: WARCRecord = null
