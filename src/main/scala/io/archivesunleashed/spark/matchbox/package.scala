@@ -16,27 +16,8 @@
  */
 package io.archivesunleashed.spark.matchbox
 
-import java.io.ByteArrayInputStream
-import org.apache.tika.Tika
-import org.apache.tika.detect.DefaultDetector
-import org.apache.tika.parser.AutoDetectParser
-
-/** Detect mime type(s) using Apache Tika. */
-object DetectMimeTypeTika {
-
-  /** Detect mime type(s).
-   *
-   * @param content
-   * @return mimetype(s).
-   */
-  def apply(content: String): String = {
-    if (content.isEmpty) "N/A"
-    else {
-      val is = new ByteArrayInputStream(content.getBytes)
-      val detector = new DefaultDetector()
-      val parser = new AutoDetectParser(detector)
-      val mimetype = new Tika(detector, parser).detect(is)
-      mimetype
-    }
-  }
+/**
+* This package provides various ARC/WARC analysis utilities.
+*/
+package object matchbox {
 }

@@ -19,10 +19,14 @@ package io.archivesunleashed.spark.matchbox
 import java.io.ByteArrayInputStream
 import javax.imageio.ImageIO
 
-/**
-  * Created by youngbinkim on 7/7/16.
-  */
+/** Computes image size. */
 object ComputeImageSize {
+
+  /** Computes image size.
+   *
+   * @param bytes of image.
+   * @return size of image.
+   */
   def apply(bytes: Array[Byte]): (Int, Int) = {
     try {
       val in = new ByteArrayInputStream(bytes)

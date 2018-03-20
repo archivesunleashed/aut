@@ -18,7 +18,15 @@ package io.archivesunleashed.spark.matchbox
 
 import java.net.URL
 
+/** Extract domain. */
 object ExtractDomain {
+
+  /** Extract domains.
+   *
+   * @param url
+   * @param source
+   * @return
+   */
   def apply(url: String, source: String = ""): String = {
     if (url == null) return null
     var host: String = null

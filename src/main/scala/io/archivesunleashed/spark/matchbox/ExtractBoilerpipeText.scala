@@ -16,14 +16,17 @@
  */
 package io.archivesunleashed.spark.matchbox
 
-import java.io.IOException
 import de.l3s.boilerpipe.extractors.DefaultExtractor
+import java.io.IOException
 
-/**
- * UDF for extracting raw text content from an HTML page, minus "boilerplate"
- * content (using boilerpipe).
- */
+/** Extract raw text content from an HTML page, minus "boilerplate" content (using boilerpipe).  */
 object ExtractBoilerpipeText {
+
+  /** Needs a description.
+   *
+   * @param input
+   * @return
+   */
   def apply(input: String) = {
     try {
       if (input.isEmpty) Nil
@@ -34,6 +37,11 @@ object ExtractBoilerpipeText {
     }
   }
 
+  /** Needs a description.
+   *
+   * @param input
+   * @return
+   */
   def extract (input: String) = {
     val text = DefaultExtractor.INSTANCE.getText(input).replaceAll("[\\r\\n]+", " ").trim()
     if (text.isEmpty) Nil

@@ -16,9 +16,7 @@
  */
 package io.archivesunleashed.spark.matchbox
 
-/**
-  * Simple wrapper for getting different parts of a date
-  */
+/** Simple wrapper for getting different parts of a date. */
 object ExtractDate {
 
   object DateComponent extends Enumeration {
@@ -28,11 +26,11 @@ object ExtractDate {
 
   import DateComponent._
 
-  /**
-    * Extracts the wanted component from a date
+  /** Extracts the wanted component from a date.
     *
     * @param fullDate date returned by `WARecord.getCrawlDate`, formatted as YYYYMMDD
     * @param dateFormat an enum describing the portion of the date wanted
+    * @return
     */
   def apply(fullDate: String, dateFormat: DateComponent): String =
     if (fullDate == null) fullDate

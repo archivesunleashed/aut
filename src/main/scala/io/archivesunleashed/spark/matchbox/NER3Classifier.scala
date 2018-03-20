@@ -16,20 +16,16 @@
  */
 package io.archivesunleashed.spark.matchbox
 
-import java.util
-
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JsonScalaEnumeration}
 import edu.stanford.nlp.ie.AbstractSequenceClassifier
 import edu.stanford.nlp.ie.crf.CRFClassifier
 import edu.stanford.nlp.ling.{CoreAnnotations, CoreLabel}
-
+import java.util
 import scala.collection.mutable
 
-/**
-  * UDF which reads in a text string, and returns entities identified by the configured Stanford NER classifier
-  */
+/** Reads in a text string, and returns entities identified by the configured Stanford NER classifier. */
 object NER3Classifier {
 
   var serializedClassifier: String = _
@@ -46,10 +42,20 @@ object NER3Classifier {
 
   }
 
+  /** Needs a description.
+   *
+   * @param file
+   * @return
+   */
   def apply(file: String) = {
     serializedClassifier = file
   }
 
+  /** Needs a description.
+   *
+   * @param input
+   * @return
+   */
   def classify(input: String): String = {
     val emptyString: String = "{\"PERSON\":[],\"ORGANIZATION\"=[],\"LOCATION\"=[]}"
     val entitiesByType = mutable.LinkedHashMap[NERClassType.Value, mutable.Seq[String]]()

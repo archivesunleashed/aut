@@ -16,6 +16,7 @@
  */
 package io.archivesunleashed.spark.matchbox
 
+/** Extract Twitter mentions. */
 object ExtractAtMentions {
   val pattern = """@[A-Za-z_0-9]+""".r
   def apply(src: String): List[String] = pattern.findAllIn(src).toList

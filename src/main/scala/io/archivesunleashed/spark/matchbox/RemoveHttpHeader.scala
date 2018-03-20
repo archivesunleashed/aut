@@ -16,11 +16,15 @@
  */
 package io.archivesunleashed.spark.matchbox
 
-/**
-  * Created by youngbinkim on 7/9/16.
-  */
+/** Remove HTTP headers. */
 object RemoveHttpHeader {
   val headerEnd = "\r\n\r\n"
+
+  /** Remove HTML headers.
+   *
+   * @param content
+   * @return
+   */
   def apply(content: String): String = {
     try {
       if (content.startsWith("HTTP/"))
