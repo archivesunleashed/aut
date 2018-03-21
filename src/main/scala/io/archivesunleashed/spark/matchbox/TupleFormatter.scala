@@ -16,7 +16,7 @@
  */
 package io.archivesunleashed.spark.matchbox
 
-import shapeless._  // v2.0.0, for full compatibility with Scala 2.10.4 (Spark dep)
+import shapeless._
 import ops.tuple.FlatMapper
 import ops.tuple.ToList
 import syntax.std.tuple._

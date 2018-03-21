@@ -19,6 +19,7 @@ package io.archivesunleashed.spark.utils
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 
+/** JSON utilities extension to work with Twitter data. */
 object JsonUtil extends Serializable {
   val mapper = new ObjectMapper()
   mapper.registerModule(DefaultScalaModule)
