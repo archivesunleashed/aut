@@ -14,15 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.archivesunleashed.matchbox
+package io.archivesunleashed.app
 
-import java.io.BufferedWriter
-import java.io.OutputStreamWriter
+import io.archivesunleashed._
+import io.archivesunleashed.util.JsonUtils
+import io.archivesunleashed.util.StringUtils._
+
 import java.nio.charset.StandardCharsets
-import java.nio.file.Files
-import java.nio.file.Paths
+import java.nio.file.{Files, Paths}
+
 import org.apache.spark.rdd.RDD
-import StringUtils._
 
 
 /**

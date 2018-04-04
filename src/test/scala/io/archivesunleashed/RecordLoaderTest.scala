@@ -22,11 +22,9 @@
  import org.junit.runner.RunWith
  import org.scalatest.junit.JUnitRunner
  import org.scalatest.{BeforeAndAfter, FunSuite}
- import java.nio.file.{Paths, Files}
- import org.json4s._
- import org.json4s.jackson.JsonMethods._
- import matchbox.TweetUtils._
+ import java.nio.file.{Files, Paths}
 
+ import io.archivesunleashed.util.TweetUtils._
 
  @RunWith(classOf[JUnitRunner])
  class RecordLoaderTest extends FunSuite with BeforeAndAfter {

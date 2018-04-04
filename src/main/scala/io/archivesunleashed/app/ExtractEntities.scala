@@ -14,10 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.archivesunleashed.matchbox
+package io.archivesunleashed.app
 
 import io.archivesunleashed._
-
+import io.archivesunleashed.matchbox.{NER3Classifier, RemoveHTML}
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 

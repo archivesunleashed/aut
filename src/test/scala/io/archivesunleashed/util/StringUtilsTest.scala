@@ -14,13 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.archivesunleashed.matchbox
+package io.archivesunleashed.util
 
 import java.io.IOException
+
+import io.archivesunleashed.util.StringUtils._
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-import StringUtils._
 
 @RunWith(classOf[JUnitRunner])
 class StringUtilsTest extends FunSuite {

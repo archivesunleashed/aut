@@ -20,23 +20,23 @@
  import org.junit.runner.RunWith
  import org.scalatest.FunSuite
  import org.scalatest.junit.JUnitRunner
- import io.archivesunleashed.utils._
+ import io.archivesunleashed.util.JsonUtils
 
  @RunWith(classOf[JUnitRunner])
- class JsonUtilTest extends FunSuite {
+ class JsonUtilsTest extends FunSuite {
    test("proper Map") {
      val map: Map[Symbol, Any] = Map('a -> 1, 'b -> 2, 'c -> 3)
-     assert(JsonUtil.toJson(map) == """{"a":1,"b":2,"c":3}""")
+     assert(JsonUtils.toJson(map) == """{"a":1,"b":2,"c":3}""")
    }
 
    test("any value") {
      val value = 12345
-     assert(JsonUtil.toJson(12345) == "12345")
+     assert(JsonUtils.toJson(12345) == "12345")
    }
 
    test("json string") {
      val jsonString = """{"a":1,"b":2,"c":3}"""
-     assert(JsonUtil.fromJson(jsonString) == Map("a" -> 1, "b" -> 2, "c" -> 3 ))
+     assert(JsonUtils.fromJson(jsonString) == Map("a" -> 1, "b" -> 2, "c" -> 3 ))
 
    }
  }

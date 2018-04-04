@@ -14,15 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.archivesunleashed.matchbox
+package io.archivesunleashed.util
 
+import io.archivesunleashed.util.TweetUtils._
+import org.json4s._
+import org.json4s.jackson.JsonMethods._
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-import org.json4s._
-import org.json4s.jackson.JsonMethods._
-import org.json4s.JsonAST._
-import TweetUtils._
 
 @RunWith(classOf[JUnitRunner])
 class TweetUtilsTest extends FunSuite {

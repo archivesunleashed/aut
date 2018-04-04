@@ -14,10 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.archivesunleashed.matchbox
-import scala.xml.Utility.escape
+package io.archivesunleashed.util
+
 import java.io.IOException
 import java.security.MessageDigest
+
+import scala.xml.Utility.escape
 
 object StringUtils {
 

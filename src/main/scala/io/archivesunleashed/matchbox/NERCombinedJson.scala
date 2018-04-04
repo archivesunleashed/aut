@@ -23,7 +23,7 @@ import java.io.OutputStreamWriter
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs._
 import org.apache.spark.SparkContext
-import io.archivesunleashed.utils.JsonUtil
+import io.archivesunleashed.util.JsonUtils
 import scala.collection.mutable.MutableList
 import scala.util.Random
 
@@ -93,7 +93,7 @@ class NERCombinedJson extends Serializable {
           })
           .map(r => {
             val classifiedJson = NER3Classifier.classify(r._3)
-            val classifiedMap = JsonUtil.fromJson(classifiedJson)
+            val classifiedMap = JsonUtils.fromJson(classifiedJson)
             val classifiedMapCountTuples: Map[String, List[(String, Int)]] = classifiedMap.map {
               case (nerType, entities: List[String @unchecked]) => (nerType, entities.groupBy(identity).mapValues(_.size).toList)
             }
@@ -112,7 +112,7 @@ class NERCombinedJson extends Serializable {
             })
             nerRec.ner += ec
           })
-          JsonUtil.toJson(nerRec)
+          JsonUtils.toJson(nerRec)
         })
       })
       .saveAsTextFile(outputFile)

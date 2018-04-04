@@ -14,12 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.archivesunleashed.matchbox
+package io.archivesunleashed.app
 
 import io.archivesunleashed._
-import matchbox.StringUtils._
-import utils.JsonUtil
-
+import io.archivesunleashed.util.JsonUtils
+import io.archivesunleashed.util.StringUtils._
+import io.archivesunleashed.matchbox.{ExtractDomain, ExtractLinks}
 import org.apache.spark.graphx._
 import org.apache.spark.rdd.RDD
 
@@ -84,8 +84,8 @@ object ExtractGraph {
           "count" -> r._2)
       }
 
-      edgesCounted.map(r => JsonUtil.toJson(r)).saveAsTextFile(edgesPath)
-      graph.vertices.map(r => JsonUtil.toJson(r._2)).saveAsTextFile(verticesPath)
+      edgesCounted.map(r => JsonUtils.toJson(r)).saveAsTextFile(edgesPath)
+      graph.vertices.map(r => JsonUtils.toJson(r._2)).saveAsTextFile(verticesPath)
     }
   }
 }

@@ -17,13 +17,16 @@
 package io.archivesunleashed.matchbox
 
 
-import org.apache.spark.{ SparkConf, SparkContext }
+import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.{ BeforeAndAfter, FunSuite }
+import org.scalatest.{BeforeAndAfter, FunSuite}
 import java.io.File
-import java.nio.file.{Paths, Files}
+import java.nio.file.{Files, Paths}
+
+import io.archivesunleashed.app.WriteGraphML
+
 import scala.io.Source
 
 @RunWith(classOf[JUnitRunner])

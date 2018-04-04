@@ -18,18 +18,20 @@
 package io.archivesunleashed.matchbox
 
 import io.archivesunleashed._
-
 import com.google.common.io.Resources
- import org.apache.spark.{ SparkConf, SparkContext }
- import org.apache.commons.io.FileUtils
- import org.apache.spark.graphx._
- import org.junit.runner.RunWith
- import org.scalatest.{ BeforeAndAfter, FunSuite }
- import org.scalatest.junit.JUnitRunner
- import java.io.File
- import java.nio.file.{Paths, Files}
- import scala.io.Source
- import scala.util.{ Try, Success, Failure }
+import org.apache.spark.{SparkConf, SparkContext}
+import org.apache.commons.io.FileUtils
+import org.apache.spark.graphx._
+import org.junit.runner.RunWith
+import org.scalatest.{BeforeAndAfter, FunSuite}
+import org.scalatest.junit.JUnitRunner
+import java.io.File
+import java.nio.file.{Files, Paths}
+
+import io.archivesunleashed.app.ExtractGraph
+
+import scala.io.Source
+import scala.util.{Failure, Success, Try}
 
  @RunWith(classOf[JUnitRunner])
  class ExtractGraphTest extends FunSuite with BeforeAndAfter {

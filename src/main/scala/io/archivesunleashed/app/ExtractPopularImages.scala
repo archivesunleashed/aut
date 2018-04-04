@@ -14,12 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.archivesunleashed.matchbox
+package io.archivesunleashed.app
 
 import io.archivesunleashed._
-
-import org.apache.spark.{RangePartitioner, SparkContext}
+import io.archivesunleashed.matchbox.{ComputeImageSize, ComputeMD5}
 import org.apache.spark.rdd.RDD
+import org.apache.spark.{RangePartitioner, SparkContext}
 
 /**
   * Extract most popular images
