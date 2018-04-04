@@ -16,9 +16,7 @@
  */
 package io.archivesunleashed.app
 
-import io.archivesunleashed._
-import io.archivesunleashed.util.JsonUtils
-import io.archivesunleashed.util.StringUtils._
+import io.archivesunleashed.matchbox._
 
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}

@@ -17,9 +17,8 @@
 package io.archivesunleashed.app
 
 import io.archivesunleashed._
+import io.archivesunleashed.matchbox._
 import io.archivesunleashed.util.JsonUtils
-import io.archivesunleashed.util.StringUtils._
-import io.archivesunleashed.matchbox.{ExtractDomain, ExtractLinks}
 import org.apache.spark.graphx._
 import org.apache.spark.rdd.RDD
 
