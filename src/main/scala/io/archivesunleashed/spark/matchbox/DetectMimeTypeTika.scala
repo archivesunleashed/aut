@@ -24,10 +24,10 @@ import org.apache.tika.parser.AutoDetectParser
 /** Detect mime type(s) using Apache Tika. */
 object DetectMimeTypeTika {
 
-  /** Detect mime type(s).
+  /** Detect mime type(s) from an input string.
    *
-   * @param content
-   * @return mimetype(s).
+   * @param content A string of content for which to detect the MimeType
+   * @return mimetype(s) (e.g. "text/html" or "application/xml") or "N/A"
    */
   def apply(content: String): String = {
     if (content.isEmpty) "N/A"

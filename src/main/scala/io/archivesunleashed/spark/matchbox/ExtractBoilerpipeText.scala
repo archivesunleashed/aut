@@ -21,11 +21,12 @@ import java.io.IOException
 
 /** Extract raw text content from an HTML page, minus "boilerplate" content (using boilerpipe).  */
 object ExtractBoilerpipeText {
-
-  /** Needs a description.
+  /** Uses boilerpipe to extract raw text content from a page.
    *
-   * @param input
-   * @return
+   * ExtractBoilerpipeText removes boilerplate text (e.g. a copyright statement)
+   * from an html string.
+   * @param input an html string possibly containing boilerpipe text.
+   * @return Text with boilerplate removed or Nil if the text is empty.
    */
   def apply(input: String) = {
     try {
@@ -37,10 +38,10 @@ object ExtractBoilerpipeText {
     }
   }
 
-  /** Needs a description.
+  /** Extracts boilerplate
    *
-   * @param input
-   * @return
+   * @param input an html string possibly containing boilerpipe text.
+   * @return filtered text or Nil if the text is empty.
    */
   def extract (input: String) = {
     val text = DefaultExtractor.INSTANCE.getText(input).replaceAll("[\\r\\n]+", " ").trim()

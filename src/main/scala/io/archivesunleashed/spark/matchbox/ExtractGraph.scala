@@ -23,7 +23,7 @@ import io.archivesunleashed.spark.utils.JsonUtil
 import org.apache.spark.graphx._
 import org.apache.spark.rdd.RDD
 
-/** Extracts graph.
+/** Extracts a network graph using Spark's GraphX utility.
   *
   * e.g. when done:
   * $ cat nodes.partjson/part-* > nodes.json && cat links.partjson/part-* > links.json
@@ -31,10 +31,10 @@ import org.apache.spark.rdd.RDD
   */
 object ExtractGraph {
 
-  /** Need a description.
+  /** creates a hashcode from a url to use as a unique id.
    *
    * @param url
-   * @return
+   * @return unique id as long integer
    */
   def pageHash(url: String): VertexId = {
     url.hashCode.toLong
@@ -43,11 +43,16 @@ object ExtractGraph {
   case class VertexData(domain: String, pageRank: Double, inDegree: Int, outDegree: Int)
   case class EdgeData(date: String, src: String, dst: String)
 
-  /** Need a description.
+  /** Creates a network graph from loaded Archive Records with optional pageRank
+   * calculations.
    *
-   * @param records
-   * @param dynamic
-   * @return
+   * @param records an RDD of archive records
+   * @param dynamic whether to calculate PageRank (an O(n^2) calculation, so not
+   * recommended for very large graphs).
+   * @param tolerance the percentage of the time the PR algorithm "jumps" to
+   * a random location in its random walks.
+   * @param numIter the number of iterations applied to the PR algorithm
+   * @return a Graph object containing data for vertices and edges as extracted.
    */
   def apply(records: RDD[ArchiveRecord], dynamic: Boolean = false,
             tolerance: Double = 0.005, numIter: Int = 20): Graph[VertexData, EdgeData] = {
@@ -83,7 +88,10 @@ object ExtractGraph {
       }
     }
   }
-
+  /** Writes a Graph object to a Json file
+    *
+    *
+    */
   implicit class GraphWriter(graph: Graph[VertexData, EdgeData]) {
     def writeAsJson(verticesPath: String, edgesPath: String) = {
       // Combine edges of a given (date, src, dst) combination into single record with count value.
@@ -93,10 +101,8 @@ object ExtractGraph {
           "dst" -> r._1.attr.dst,
           "count" -> r._2)
       }
-
       edgesCounted.map(r => JsonUtil.toJson(r)).saveAsTextFile(edgesPath)
       graph.vertices.map(r => JsonUtil.toJson(r._2)).saveAsTextFile(verticesPath)
     }
   }
 }
-
