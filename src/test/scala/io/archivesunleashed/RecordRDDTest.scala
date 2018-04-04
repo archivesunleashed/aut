@@ -20,8 +20,6 @@ import matchbox._
 import matchbox.ExtractDate.DateComponent
 import matchbox.ExtractDate.DateComponent.DateComponent
 
-import _root_.io.archivesunleashed.Transformations._
-
 import com.google.common.io.Resources
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith

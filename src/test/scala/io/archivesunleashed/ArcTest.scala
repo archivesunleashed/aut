@@ -14,17 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.archivesunleashed.spark
+package io.archivesunleashed
 
 import com.google.common.io.Resources
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
-import io.archivesunleashed.matchbox.ExtractDate.DateComponent
-import io.archivesunleashed.matchbox._
-import io.archivesunleashed.Transformations._
-import io.archivesunleashed.RecordLoader
+import matchbox.ExtractDate.DateComponent
+import matchbox._
 
 @RunWith(classOf[JUnitRunner])
 class ArcTest extends FunSuite with BeforeAndAfter {

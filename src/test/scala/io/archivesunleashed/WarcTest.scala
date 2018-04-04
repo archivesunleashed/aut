@@ -16,8 +16,6 @@
  */
 package io.archivesunleashed
 
-import Transformations._
-
 import com.google.common.io.Resources
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{SparkConf, SparkContext}

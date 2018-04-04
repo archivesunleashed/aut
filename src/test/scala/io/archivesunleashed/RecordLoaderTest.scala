@@ -17,8 +17,6 @@
 
  package io.archivesunleashed
 
- import Transformations._
-
  import com.google.common.io.Resources
  import org.apache.spark.{SparkConf, SparkContext}
  import org.junit.runner.RunWith

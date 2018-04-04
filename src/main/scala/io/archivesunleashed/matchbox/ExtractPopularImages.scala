@@ -16,8 +16,7 @@
  */
 package io.archivesunleashed.matchbox
 
-import io.archivesunleashed.ArchiveRecord
-import io.archivesunleashed.Transformations._
+import io.archivesunleashed._
 
 import org.apache.spark.{RangePartitioner, SparkContext}
 import org.apache.spark.rdd.RDD

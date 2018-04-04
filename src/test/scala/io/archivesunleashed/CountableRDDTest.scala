@@ -17,7 +17,6 @@
 package io.archivesunleashed
 
 import matchbox._
-import _root_.io.archivesunleashed.Transformations._
 
 import com.google.common.io.Resources
 import org.apache.spark.{SparkConf, SparkContext}
