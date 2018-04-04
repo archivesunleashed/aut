@@ -14,16 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.archivesunleashed.ingest;
+package io.archivesunleashed.data;
 
 import com.google.common.io.Resources;
-import io.archivesunleashed.data.ArcRecordUtils;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.util.Iterator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.archive.io.ArchiveRecord;
@@ -32,10 +25,18 @@ import org.archive.io.arc.ARCReaderFactory;
 import org.archive.io.arc.ARCRecord;
 import org.archive.io.arc.ARCRecordMetaData;
 import org.junit.Test;
+
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.util.Iterator;
+
 import static org.junit.Assert.assertEquals;
 
-public class WacArcLoaderTest {
-  private static final Log LOG = LogFactory.getLog(WacArcLoaderTest.class);
+public class ArcLoaderTest {
+  private static final Log LOG = LogFactory.getLog(ArcLoaderTest.class);
 
   @Test
   public final void testReader() throws Exception {

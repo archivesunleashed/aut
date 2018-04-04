@@ -14,10 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.archivesunleashed.ingest;
+package io.archivesunleashed.data;
 
 import com.google.common.io.Resources;
-import io.archivesunleashed.data.WarcRecordUtils;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -38,8 +38,8 @@ import static org.junit.Assert.assertEquals;
 import tl.lin.data.fd.Object2IntFrequencyDistribution;
 import tl.lin.data.fd.Object2IntFrequencyDistributionEntry;
 
-public class WacWarcLoaderTest {
-  private static final Log LOG = LogFactory.getLog(WacWarcLoaderTest.class);
+public class WarcLoaderTest {
+  private static final Log LOG = LogFactory.getLog(WarcLoaderTest.class);
   private static final SimpleDateFormat DATE_WARC =
       new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 

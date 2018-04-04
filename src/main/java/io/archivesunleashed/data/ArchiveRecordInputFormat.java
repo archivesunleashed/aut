@@ -15,13 +15,9 @@
  * limitations under the License.
  */
 
-package io.archivesunleashed.mapreduce;
+package io.archivesunleashed.data;
 
-import io.archivesunleashed.io.ArchiveRecordWritable.ArchiveFormat;
-import io.archivesunleashed.io.ArchiveRecordWritable;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.util.Iterator;
+import io.archivesunleashed.data.ArchiveRecordWritable.ArchiveFormat;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
@@ -42,10 +38,14 @@ import org.archive.io.arc.ARCReaderFactory.CompressedARCReader;
 import org.archive.io.warc.WARCReader;
 import org.archive.io.warc.WARCReaderFactory.CompressedWARCReader;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.util.Iterator;
+
 /**
  * Extends FileInputFormat for Web Archive Commons InputFormat.
  */
-public class WacInputFormat extends FileInputFormat<LongWritable,
+public class ArchiveRecordInputFormat extends FileInputFormat<LongWritable,
   ArchiveRecordWritable> {
   @Override
   public final RecordReader<LongWritable,

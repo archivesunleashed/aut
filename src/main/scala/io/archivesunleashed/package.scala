@@ -1,8 +1,7 @@
 package io
 
-import io.archivesunleashed.io.ArchiveRecordWritable
-import io.archivesunleashed.io.ArchiveRecordWritable.ArchiveFormat
-import io.archivesunleashed.mapreduce.WacInputFormat
+import io.archivesunleashed.data.{ArchiveRecordWritable, ArchiveRecordInputFormat}
+import ArchiveRecordWritable.ArchiveFormat
 import io.archivesunleashed.matchbox.{DetectLanguage, ExtractDate, ExtractDomain, RemoveHTML}
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent._
@@ -18,7 +17,7 @@ import scala.util.matching.Regex
 package object archivesunleashed {
   object RecordLoader {
     def loadArchives(path: String, sc: SparkContext): RDD[ArchiveRecord] =
-      sc.newAPIHadoopFile(path, classOf[WacInputFormat], classOf[LongWritable], classOf[ArchiveRecordWritable])
+      sc.newAPIHadoopFile(path, classOf[ArchiveRecordInputFormat], classOf[LongWritable], classOf[ArchiveRecordWritable])
         .filter(r => (r._2.getFormat == ArchiveFormat.ARC) ||
           ((r._2.getFormat == ArchiveFormat.WARC) && r._2.getRecord.getHeader.getHeaderValue("WARC-Type").equals("response")))
         .map(r => new ArchiveRecord(new SerializableWritable(r._2)))

@@ -15,17 +15,16 @@
  * limitations under the License.
  */
 
-package io.archivesunleashed.io;
+package io.archivesunleashed.data;
 
-import io.archivesunleashed.data.ArcRecordUtils;
-import io.archivesunleashed.data.WarcRecordUtils;
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
 import org.apache.hadoop.io.Writable;
 import org.archive.io.ArchiveRecord;
 import org.archive.io.arc.ARCRecord;
 import org.archive.io.warc.WARCRecord;
+
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
 /**
  * Implements Hadoop Writable for Archive Records.

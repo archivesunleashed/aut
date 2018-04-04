@@ -14,11 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.archivesunleashed.mapreduce;
+package io.archivesunleashed.data;
 
 import com.google.common.io.Resources;
-import io.archivesunleashed.io.ArchiveRecordWritable;
-import java.io.File;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
@@ -34,10 +32,13 @@ import org.archive.io.arc.ARCRecord;
 import org.archive.io.arc.ARCRecordMetaData;
 import org.archive.io.warc.WARCRecord;
 import org.junit.Test;
+
+import java.io.File;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class WacInputFormatTest {
+public class ArchiveRecordInputFormatTest {
   @Test
   public final void testArcInputFormat() throws Exception {
     String[] urls = new String[]{
@@ -57,7 +58,7 @@ public class WacInputFormatTest {
     FileSplit split = new FileSplit(path, 0, testFile.length(), null);
 
     InputFormat<LongWritable, ArchiveRecordWritable> inputFormat =
-            ReflectionUtils.newInstance(WacInputFormat.class, conf);
+            ReflectionUtils.newInstance(ArchiveRecordInputFormat.class, conf);
     TaskAttemptContext context = new TaskAttemptContextImpl(conf,
             new TaskAttemptID());
     RecordReader<LongWritable, ArchiveRecordWritable> reader =
@@ -123,7 +124,7 @@ public class WacInputFormatTest {
     FileSplit split = new FileSplit(path, 0, testFile.length(), null);
 
     InputFormat<LongWritable, ArchiveRecordWritable> inputFormat =
-            ReflectionUtils.newInstance(WacInputFormat.class, conf);
+            ReflectionUtils.newInstance(ArchiveRecordInputFormat.class, conf);
     TaskAttemptContext context = new TaskAttemptContextImpl(conf,
             new TaskAttemptID());
     RecordReader<LongWritable, ArchiveRecordWritable> reader =

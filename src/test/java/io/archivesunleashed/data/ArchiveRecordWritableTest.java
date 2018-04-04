@@ -14,16 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.archivesunleashed.io;
+package io.archivesunleashed.data;
 
 import com.google.common.io.Resources;
-import io.archivesunleashed.io.ArchiveRecordWritable.ArchiveFormat;
-import io.archivesunleashed.mapreduce.WacInputFormat;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
+import io.archivesunleashed.data.ArchiveRecordWritable.ArchiveFormat;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
@@ -36,6 +30,13 @@ import org.apache.hadoop.mapreduce.task.TaskAttemptContextImpl;
 import org.apache.hadoop.util.ReflectionUtils;
 import org.archive.io.arc.ARCRecord;
 import org.junit.Test;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -53,7 +54,7 @@ public class ArchiveRecordWritableTest {
 
         InputFormat<LongWritable, ArchiveRecordWritable> inputFormat =
             ReflectionUtils.newInstance(
-                WacInputFormat.class, conf);
+                ArchiveRecordInputFormat.class, conf);
         TaskAttemptContext context = new TaskAttemptContextImpl(conf,
                 new TaskAttemptID());
         RecordReader<LongWritable, ArchiveRecordWritable> reader =
@@ -107,7 +108,7 @@ public class ArchiveRecordWritableTest {
 
         InputFormat<LongWritable, ArchiveRecordWritable> inputFormat =
             ReflectionUtils.newInstance(
-                WacInputFormat.class, conf);
+                ArchiveRecordInputFormat.class, conf);
         TaskAttemptContext context = new TaskAttemptContextImpl(conf,
                 new TaskAttemptID());
         RecordReader<LongWritable, ArchiveRecordWritable> reader =
