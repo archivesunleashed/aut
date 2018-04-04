@@ -14,21 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.archivesunleashed.matchbox
+package io.archivesunleashed.app
 
 import java.io.File
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.google.common.io.{Files, Resources}
-import io.archivesunleashed.app.ExtractEntities
+import io.archivesunleashed.matchbox.NER3Classifier.NERClassType
 import org.apache.commons.io.FileUtils
 import org.apache.commons.logging.LogFactory
 import org.apache.spark.{SparkConf, SparkContext}
 import org.scalatest.{BeforeAndAfter, FunSuite}
-import org.scalatest.junit.JUnitRunner
-import org.junit.runner.RunWith
-import io.archivesunleashed.matchbox.NER3Classifier.NERClassType
 
 import scala.collection.mutable
 

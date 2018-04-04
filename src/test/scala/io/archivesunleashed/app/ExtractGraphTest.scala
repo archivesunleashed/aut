@@ -15,23 +15,20 @@
  * limitations under the License.
  */
 
-package io.archivesunleashed.matchbox
+package io.archivesunleashed.app
 
-import io.archivesunleashed._
-import com.google.common.io.Resources
-import org.apache.spark.{SparkConf, SparkContext}
-import org.apache.commons.io.FileUtils
-import org.apache.spark.graphx._
-import org.junit.runner.RunWith
-import org.scalatest.{BeforeAndAfter, FunSuite}
-import org.scalatest.junit.JUnitRunner
 import java.io.File
 import java.nio.file.{Files, Paths}
 
-import io.archivesunleashed.app.ExtractGraph
+import com.google.common.io.Resources
+import io.archivesunleashed._
+import org.apache.commons.io.FileUtils
+import org.apache.spark.{SparkConf, SparkContext}
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
+import org.scalatest.{BeforeAndAfter, FunSuite}
 
-import scala.io.Source
-import scala.util.{Failure, Success, Try}
+import scala.util.Try
 
  @RunWith(classOf[JUnitRunner])
  class ExtractGraphTest extends FunSuite with BeforeAndAfter {

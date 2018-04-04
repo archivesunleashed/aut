@@ -14,17 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.archivesunleashed.matchbox
+package io.archivesunleashed.app
 
+import java.io.File
+import java.nio.file.{Files, Paths}
 
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
-import java.io.File
-import java.nio.file.{Files, Paths}
-
-import io.archivesunleashed.app.WriteGEXF
 
 import scala.io.Source
 
