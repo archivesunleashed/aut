@@ -16,11 +16,11 @@
  */
 package io.archivesunleashed.matchbox
 
-import org.apache.spark.{RangePartitioner, SparkContext}
-import io.archivesunleashed.rdd.RecordRDD._
-import org.apache.spark.rdd.RDD
-import io.archivesunleashed.archive.io.ArchiveRecord
+import io.archivesunleashed.ArchiveRecord
+import io.archivesunleashed.Transformations._
 
+import org.apache.spark.{RangePartitioner, SparkContext}
+import org.apache.spark.rdd.RDD
 
 /**
   * Extract most popular images

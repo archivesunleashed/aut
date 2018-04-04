@@ -14,15 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.archivesunleashed.rdd
+package io.archivesunleashed
+
+import matchbox._
+import _root_.io.archivesunleashed.Transformations._
 
 import com.google.common.io.Resources
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
-import io.archivesunleashed.matchbox._
-import io.archivesunleashed.rdd.RecordRDD._
 
 @RunWith(classOf[JUnitRunner])
 class CountableRDDTest extends FunSuite with BeforeAndAfter {
@@ -39,7 +40,7 @@ class CountableRDDTest extends FunSuite with BeforeAndAfter {
   }
 
   test("count records") {
-    val base = RecordLoader.loadArchives(arcPath, sc, keepValidPages = false)
+    val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
       .map(r => ExtractDomain(r.getUrl))
     val r = base

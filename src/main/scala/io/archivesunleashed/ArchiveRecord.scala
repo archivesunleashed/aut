@@ -14,7 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.archivesunleashed.archive.io
+
+package io.archivesunleashed
+
+import io.ArchiveRecordWritable
+import io.ArchiveRecordWritable._
+import data.{ArcRecordUtils, WarcRecordUtils}
+import matchbox.{RemoveHttpHeader, ExtractDate, ExtractDomain}
+import ExtractDate.DateComponent
 
 import java.text.SimpleDateFormat
 
@@ -23,11 +30,6 @@ import org.archive.io.arc.ARCRecord
 import org.archive.io.warc.WARCRecord
 
 import org.archive.util.ArchiveUtils
-import io.archivesunleashed.data.{ArcRecordUtils, WarcRecordUtils}
-import io.archivesunleashed.io.ArchiveRecordWritable
-import io.archivesunleashed.io.ArchiveRecordWritable.ArchiveFormat
-import io.archivesunleashed.matchbox.ExtractDate.DateComponent
-import io.archivesunleashed.matchbox.{RemoveHttpHeader, ExtractDate, ExtractDomain}
 
 class ArchiveRecord(r: SerializableWritable[ArchiveRecordWritable]) extends Serializable {
   var arcRecord: ARCRecord = null

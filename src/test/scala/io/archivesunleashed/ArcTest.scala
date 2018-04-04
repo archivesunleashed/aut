@@ -23,7 +23,8 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent
 import io.archivesunleashed.matchbox._
-import io.archivesunleashed.rdd.RecordRDD._
+import io.archivesunleashed.Transformations._
+import io.archivesunleashed.RecordLoader
 
 @RunWith(classOf[JUnitRunner])
 class ArcTest extends FunSuite with BeforeAndAfter {
@@ -40,16 +41,16 @@ class ArcTest extends FunSuite with BeforeAndAfter {
   }
 
   test("count records") {
-    assert(RecordLoader.loadArchives(arcPath, sc, keepValidPages = false).count == 300L)
+    assert(RecordLoader.loadArchives(arcPath, sc).count == 300L)
   }
 
   test("filter date") {
-    val four = RecordLoader.loadArchives(arcPath, sc, keepValidPages = false)
+    val four = RecordLoader.loadArchives(arcPath, sc)
       .keepDate(List("200804","200805"), DateComponent.YYYYMM)
       .map(r => r.getCrawlDate)
       .collect()
 
-    val five = RecordLoader.loadArchives(arcPath, sc, keepValidPages = false)
+    val five = RecordLoader.loadArchives(arcPath, sc)
       .keepDate(List("200805","200807"), DateComponent.YYYYMM)
       .map(r => r.getCrawlDate)
       .collect()
@@ -59,23 +60,23 @@ class ArcTest extends FunSuite with BeforeAndAfter {
   }
 
   test("filter url pattern") {
-    val keepMatches = RecordLoader.loadArchives(arcPath, sc, keepValidPages = false)
+    val keepMatches = RecordLoader.loadArchives(arcPath, sc)
       .keepUrlPatterns(Set("http://www.archive.org/about/.*".r))
-    val discardMatches = RecordLoader.loadArchives(arcPath, sc, keepValidPages = false)
+    val discardMatches = RecordLoader.loadArchives(arcPath, sc)
         .discardUrlPatterns(Set("http://www.archive.org/about/.*".r))
     assert(keepMatches.count == 16L)
     assert(discardMatches.count == 284L)
   }
 
   test("count links") {
-    val links = RecordLoader.loadArchives(arcPath, sc, keepValidPages = false)
+    val links = RecordLoader.loadArchives(arcPath, sc)
       .map(r => ExtractLinks(r.getUrl, r.getContentString))
       .reduce((a, b) => a ++ b)
     assert(links.size == 664)
   }
 
   test("detect language") {
-    val languageCounts = RecordLoader.loadArchives(arcPath, sc, keepValidPages = false)
+    val languageCounts = RecordLoader.loadArchives(arcPath, sc)
       .keepMimeTypes(Set("text/html"))
       .map(r => RemoveHTML(r.getContentString))
       .groupBy(content => DetectLanguage(content))
@@ -96,7 +97,7 @@ class ArcTest extends FunSuite with BeforeAndAfter {
   }
 
   test("detect mime type tika") {
-    val mimeTypeCounts = RecordLoader.loadArchives(arcPath, sc, keepValidPages = false)
+    val mimeTypeCounts = RecordLoader.loadArchives(arcPath, sc)
       .map(r => RemoveHTML(r.getContentString))
       .groupBy(content => DetectMimeTypeTika(content))
       .map(f => {

@@ -14,30 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.archivesunleashed.matchbox
+package io.archivesunleashed
+
+import io.ArchiveRecordWritable
+import io.ArchiveRecordWritable._
+import mapreduce.WacInputFormat
 
 import org.apache.hadoop.io.LongWritable
 import org.apache.spark.{SerializableWritable, SparkContext}
 import org.apache.spark.rdd.RDD
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
-import io.archivesunleashed.io.ArchiveRecordWritable.ArchiveFormat
-import io.archivesunleashed.io.ArchiveRecordWritable
-import io.archivesunleashed.mapreduce.WacInputFormat
-import io.archivesunleashed.archive.io.ArchiveRecord
-import io.archivesunleashed.rdd.RecordRDD._
 
 object RecordLoader {
-
-  def loadArchives(path: String, sc: SparkContext, keepValidPages: Boolean = true): RDD[ArchiveRecord] = {
-    val rdd: RDD[ArchiveRecord] =
-      sc.newAPIHadoopFile(path, classOf[WacInputFormat], classOf[LongWritable], classOf[ArchiveRecordWritable])
-      .filter(r => (r._2.getFormat == ArchiveFormat.ARC) ||
-        ((r._2.getFormat == ArchiveFormat.WARC) && r._2.getRecord.getHeader.getHeaderValue("WARC-Type").equals("response")))
-      .map(r => new ArchiveRecord(new SerializableWritable(r._2)))
-
-    if (keepValidPages) rdd.keepValidPages() else rdd
-  }
+  def loadArchives(path: String, sc: SparkContext): RDD[ArchiveRecord] =
+    sc.newAPIHadoopFile(path, classOf[WacInputFormat], classOf[LongWritable], classOf[ArchiveRecordWritable])
+     .filter(r => (r._2.getFormat == ArchiveFormat.ARC) ||
+       ((r._2.getFormat == ArchiveFormat.WARC) && r._2.getRecord.getHeader.getHeaderValue("WARC-Type").equals("response")))
+     .map(r => new ArchiveRecord(new SerializableWritable(r._2)))
 
   def loadTweets(path: String, sc: SparkContext): RDD[JValue] =
     sc.textFile(path).filter(line => !line.startsWith("{\"delete\":"))

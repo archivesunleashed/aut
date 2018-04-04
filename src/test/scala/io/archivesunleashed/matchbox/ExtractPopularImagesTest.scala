@@ -23,8 +23,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{ BeforeAndAfter, FunSuite }
 import java.io.File
 import java.nio.file.{Paths, Files}
-import io.archivesunleashed.matchbox._
-import io.archivesunleashed.rdd.RecordRDD._
+import io.archivesunleashed.RecordLoader
 import scala.io.Source
 
 @RunWith(classOf[JUnitRunner])
@@ -45,7 +44,7 @@ class ExtractPopularImagesTest extends FunSuite with BeforeAndAfter {
 
     test("extracts popular images") {
 
-      val examplerdd = RecordLoader.loadArchives(arcPath, sc, keepValidPages = false)
+      val examplerdd = RecordLoader.loadArchives(arcPath, sc)
       val imagesLowLimit = ExtractPopularImages(examplerdd, 3, sc)
       val imagesHighLimit = ExtractPopularImages(examplerdd, 507, sc)
       val response = Array("1	http://creativecommons.org/images/public/somerights20.gif",

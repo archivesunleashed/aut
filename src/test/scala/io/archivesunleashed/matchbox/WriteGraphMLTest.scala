@@ -24,8 +24,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{ BeforeAndAfter, FunSuite }
 import java.io.File
 import java.nio.file.{Paths, Files}
-import io.archivesunleashed.matchbox._
-import io.archivesunleashed.rdd.RecordRDD._
+import io.archivesunleashed.Transformations._
 import scala.io.Source
 
 @RunWith(classOf[JUnitRunner])

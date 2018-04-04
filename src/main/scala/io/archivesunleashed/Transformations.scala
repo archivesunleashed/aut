@@ -14,13 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.archivesunleashed.rdd
+package io.archivesunleashed
 
-import io.archivesunleashed.archive.io.ArchiveRecord
+import matchbox.{DetectLanguage, ExtractDate, ExtractDomain, RemoveHTML}
+import matchbox.ExtractDate.DateComponent
+import matchbox.ExtractDate.DateComponent.DateComponent
+
 import org.apache.spark.rdd.RDD
-import io.archivesunleashed.matchbox.{DetectLanguage, ExtractDate, ExtractDomain, RemoveHTML}
-import io.archivesunleashed.matchbox.ExtractDate.DateComponent
-import io.archivesunleashed.matchbox.ExtractDate.DateComponent.DateComponent
 
 import scala.reflect.ClassTag
 import scala.util.matching.Regex
@@ -28,7 +28,7 @@ import scala.util.matching.Regex
 /**
   * RDD wrappers for working with Records
   */
-object RecordRDD extends java.io.Serializable {
+object Transformations extends java.io.Serializable {
 
   /**
     * A Wrapper class around RDD to simplify counting

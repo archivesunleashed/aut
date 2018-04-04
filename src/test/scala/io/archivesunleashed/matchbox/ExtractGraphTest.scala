@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
- package io.archivesunleashed.matchbox
+package io.archivesunleashed.matchbox
 
- import com.google.common.io.Resources
+import io.archivesunleashed.Transformations._
+import io.archivesunleashed.RecordLoader
+
+import com.google.common.io.Resources
  import org.apache.spark.{ SparkConf, SparkContext }
  import org.apache.commons.io.FileUtils
- import io.archivesunleashed.rdd.RecordRDD._
  import org.apache.spark.graphx._
  import org.junit.runner.RunWith
  import org.scalatest.{ BeforeAndAfter, FunSuite }

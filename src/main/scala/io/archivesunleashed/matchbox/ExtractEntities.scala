@@ -16,6 +16,8 @@
  */
 package io.archivesunleashed.matchbox
 
+import io.archivesunleashed._
+
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 

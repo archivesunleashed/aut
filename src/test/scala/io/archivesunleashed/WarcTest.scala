@@ -16,9 +16,7 @@
  */
 package io.archivesunleashed
 
-import archive.io.ArchiveRecord
-import matchbox.RecordLoader
-import rdd.RecordRDD._
+import Transformations._
 
 import com.google.common.io.Resources
 import org.apache.spark.rdd.RDD
@@ -41,7 +39,7 @@ class WarcTest extends FunSuite with BeforeAndAfter {
       .setMaster(master)
       .setAppName(appName)
     sc = new SparkContext(conf)
-    records = RecordLoader.loadArchives(warcPath, sc, keepValidPages = false)
+    records = RecordLoader.loadArchives(warcPath, sc)
   }
 
   test("count records") {
@@ -59,7 +57,7 @@ class WarcTest extends FunSuite with BeforeAndAfter {
   }
 
   test("warc get content") {
-    val a = RecordLoader.loadArchives(warcPath, sc, keepValidPages = false)
+    val a = RecordLoader.loadArchives(warcPath, sc)
       .map(r => r.getContentString)
       .take(1)
     assert(a.head.nonEmpty)

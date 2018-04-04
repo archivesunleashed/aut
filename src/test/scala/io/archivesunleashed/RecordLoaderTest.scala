@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
- package io.archivesunleashed.rdd
+ package io.archivesunleashed
+
+ import Transformations._
 
  import com.google.common.io.Resources
  import org.apache.spark.{SparkConf, SparkContext}
  import org.junit.runner.RunWith
  import org.scalatest.junit.JUnitRunner
  import org.scalatest.{BeforeAndAfter, FunSuite}
- import scala.util.matching.Regex
- import io.archivesunleashed.matchbox._
- import io.archivesunleashed.matchbox.ExtractDate.DateComponent
- import io.archivesunleashed.matchbox.ExtractDate.DateComponent.DateComponent
- import io.archivesunleashed.rdd.RecordRDD._
- import java.io._
  import java.nio.file.{Paths, Files}
  import org.json4s._
  import org.json4s.jackson.JsonMethods._
- import TweetUtils._
+ import matchbox.TweetUtils._
 
 
  @RunWith(classOf[JUnitRunner])
@@ -52,6 +48,7 @@
 
    test("loads Warc") {
      val base = RecordLoader.loadArchives(warcPath, sc)
+       .keepValidPages()
        .map(x => x.getUrl)
        .take(1)
      assert (base(0) == "http://www.archive.org/")

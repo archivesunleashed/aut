@@ -14,7 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.archivesunleashed.rdd
+package io.archivesunleashed
+
+import matchbox._
+import matchbox.ExtractDate.DateComponent
+import matchbox.ExtractDate.DateComponent.DateComponent
+
+import _root_.io.archivesunleashed.Transformations._
 
 import com.google.common.io.Resources
 import org.apache.spark.{SparkConf, SparkContext}
@@ -22,11 +28,6 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 import scala.util.matching.Regex
-import io.archivesunleashed.matchbox._
-import io.archivesunleashed.matchbox.ExtractDate.DateComponent
-import io.archivesunleashed.matchbox.ExtractDate.DateComponent.DateComponent
-import io.archivesunleashed.rdd.RecordRDD._
-
 
 @RunWith(classOf[JUnitRunner])
 class RecordRDDTest extends FunSuite with BeforeAndAfter {
@@ -45,19 +46,19 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
   }
 
   test("no valid pages") {
-    val base = RecordLoader.loadArchives(badPath, sc, keepValidPages = false)
+    val base = RecordLoader.loadArchives(badPath, sc)
       .keepValidPages().take(2)
     assert (base.length == 0)
   }
 
   test ("no images") {
-    val base = RecordLoader.loadArchives(badPath, sc, keepValidPages = false)
+    val base = RecordLoader.loadArchives(badPath, sc)
       .keepValidPages().take(2)
     assert (base.length == 0)
   }
 
   test("keep date") {
-    val base = RecordLoader.loadArchives(arcPath, sc, keepValidPages = false)
+    val base = RecordLoader.loadArchives(arcPath, sc)
     val component = DateComponent.YYYY
     val r = base
       .filter (x => ExtractDate(x.getCrawlDate, component) == "2008")
@@ -67,7 +68,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     assert (r2.sameElements(r)) }
 
   test ("keepUrls") {
-    val base = RecordLoader.loadArchives(arcPath, sc, keepValidPages = false)
+    val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
     val urls: Set[String] = Set ("http://www.archive.org/", "http://www.sloan.org")
     val r2 = base.keepUrls(urls).count
@@ -75,7 +76,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
   }
 
   test ("keepUrlPatterns") {
-    val base = RecordLoader.loadArchives(arcPath, sc, keepValidPages = false)
+    val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
     val urls = Set ("http://www.archive.org/".r, "http://www.sloan.org".r, "".r)
     val r2 = base.keepUrlPatterns(urls).count
@@ -83,7 +84,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
   }
 
   test ("check for domains") {
-    val base2 = RecordLoader.loadArchives(arcPath, sc, keepValidPages = false)
+    val base2 = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
     val urls: Set[String] = Set("www.archive.org", "www.sloan.org")
     val x2 = base2.keepDomains(urls).count()
@@ -91,7 +92,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
   }
 
   test ("keep languages") {
-    val base2 = RecordLoader.loadArchives(arcPath, sc, keepValidPages = false)
+    val base2 = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
     val langs: Set[String] = Set("en", "fr")
     val r = Array("http://www.archive.org/index.php",
@@ -102,7 +103,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
   }
 
   test ("check for keep content"){
-    val base = RecordLoader.loadArchives(arcPath, sc, keepValidPages = false)
+    val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
     val regex = Set(raw"Please visit our website at".r)
     val regno = Set(raw"Please visit our website at".r, raw"UNINTELLIBLEDFSJKLS".r)
@@ -113,7 +114,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
   }
 
   test ("discard mime") {
-    val base = RecordLoader.loadArchives(arcPath, sc, keepValidPages = false)
+    val base = RecordLoader.loadArchives(arcPath, sc)
     val mime = Set ("text/plain", "image/jpeg")
     val r2 = base.discardMimeTypes(mime)
       .map (mp => mp.getUrl).take(3)
@@ -121,7 +122,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
   }
 
   test ("discard date") {
-    val base = RecordLoader.loadArchives(arcPath, sc, keepValidPages = false)
+    val base = RecordLoader.loadArchives(arcPath, sc)
     val date = "20080430"
     val r = base.filter( x=> x.getCrawlDate != date).collect()
     val r2 = base.discardDate(date).take(3)
@@ -129,7 +130,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
   }
 
   test ("discard urls") {
-    val base = RecordLoader.loadArchives(arcPath, sc, keepValidPages = false)
+    val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
     val urls: Set[String] = Set ("http://www.sloan.org")
     val r2 = base.discardUrls(urls).count()
@@ -137,7 +138,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
   }
 
   test ("discard UrlPatterns") {
-    val base = RecordLoader.loadArchives(arcPath, sc, keepValidPages = false)
+    val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
     val urls = Set ("http://www.archive.org/".r, "http://www.sloan.org".r, "".r)
     val r2 = base.discardUrlPatterns(urls).count
@@ -145,7 +146,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
   }
 
   test ("discard domains") {
-    val base = RecordLoader.loadArchives(arcPath, sc, keepValidPages = false)
+    val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
     val urls: Set[String] = Set ("www.sloan.org")
     val r2 = base.discardDomains(urls).count()
@@ -153,7 +154,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
   }
 
   test ("discard content") {
-    val base = RecordLoader.loadArchives(arcPath, sc, keepValidPages = false)
+    val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
     val regex = Set(raw"Please visit our website at".r)
     val regno = Set(raw"Please visit our website at".r, raw"UNINTELLIBLEDFSJKLS".r)

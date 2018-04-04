@@ -16,12 +16,13 @@
  */
 package io.archivesunleashed.matchbox
 
-import io.archivesunleashed.archive.io.ArchiveRecord
+import io.archivesunleashed.ArchiveRecord
+import io.archivesunleashed.Transformations._
+import io.archivesunleashed.matchbox.StringUtils._
+import io.archivesunleashed.utils.JsonUtil
+
 import org.apache.spark.graphx._
 import org.apache.spark.rdd.RDD
-import io.archivesunleashed.matchbox.StringUtils._
-import io.archivesunleashed.rdd.RecordRDD._
-import io.archivesunleashed.utils.JsonUtil
 
 /**
   *
