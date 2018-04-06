@@ -76,7 +76,7 @@ package object archivesunleashed {
     * To load such an RDD, please see [[io.archivesunleashed.spark.matchbox.RecordLoader]]
     */
   implicit class WARecordRDD(rdd: RDD[ArchiveRecord]) extends java.io.Serializable {
-
+    /** Removes all non-html-based data (images, executables etc.) from html text*/
     def keepValidPages(): RDD[ArchiveRecord] = {
       rdd.filter(r =>
         r.getCrawlDate != null
@@ -86,7 +86,7 @@ package object archivesunleashed {
           || r.getUrl.endsWith("html"))
           && !r.getUrl.endsWith("robots.txt"))
     }
-
+    /** Removes all data except images */
     def keepImages() = {
       rdd.filter(r =>
         r.getCrawlDate != null
@@ -97,19 +97,32 @@ package object archivesunleashed {
             || r.getUrl.endsWith("png"))
           && !r.getUrl.endsWith("robots.txt"))
     }
-
+    /** Removes all data but selected mimeTypes
+      *
+      * @param mimeTypes a Set of Mimetypes to keep
+      */
     def keepMimeTypes(mimeTypes: Set[String]) = {
       rdd.filter(r => mimeTypes.contains(r.getMimeType))
     }
-
+    /** Removes all data that does not have selected data
+      *
+      * @param dates a list of dates to keep
+      * @param component the selected DateComponent enum value
+      */
     def keepDate(dates: List[String], component: DateComponent = DateComponent.YYYYMMDD) = {
       rdd.filter(r => dates.contains(ExtractDate(r.getCrawlDate, component)))
     }
-
+    /** Removes all data but selected exact urls
+      *
+      * @param urls a Set of urls to keep
+      */
     def keepUrls(urls: Set[String]) = {
       rdd.filter(r => urls.contains(r.getUrl))
     }
-
+    /** Removes all data but selected url patterns
+      *
+      * @param urlREs a Set of Regular Expressions to keep
+      */
     def keepUrlPatterns(urlREs: Set[Regex]) = {
       rdd.filter(r =>
         urlREs.map(re =>
@@ -118,11 +131,17 @@ package object archivesunleashed {
             case _ => false
           }).exists(identity))
     }
-
+    /** Removes all data but selected source domains
+      *
+      * @param urls a Set of urls for the source domains to keep
+      */
     def keepDomains(urls: Set[String]) = {
       rdd.filter(r => urls.contains(ExtractDomain(r.getUrl).replace("^\\s*www\\.", "")))
     }
-
+    /** Removes all data not in selected language
+      *
+      * @param lang a Set of ISO 639-2 codes
+      */
     def keepLanguages(lang: Set[String]) = {
       rdd.filter(r => lang.contains(DetectLanguage(RemoveHTML(r.getContentString))))
     }

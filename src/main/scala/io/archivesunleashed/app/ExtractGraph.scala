@@ -22,12 +22,7 @@ import io.archivesunleashed.util.JsonUtils
 import org.apache.spark.graphx._
 import org.apache.spark.rdd.RDD
 
-/** Extracts a network graph using Spark's GraphX utility.
-  *
-  * e.g. when done:
-  * $ cat nodes.partjson/part-* > nodes.json && cat links.partjson/part-* > links.json
-  * $ jq -c -n --slurpfile nodes nodes.json --slurpfile links links.json '{nodes: $nodes, links: $links}' > graph.json
-  */
+/** Extracts a network graph using Spark's GraphX utility. */
 object ExtractGraph {
 
   /** Creates a hashcode from a url to use as a unique id.
@@ -47,9 +42,9 @@ object ExtractGraph {
    *
    * @param records an RDD of archive records
    * @param dynamic whether to calculate PageRank (an O(n^2) calculation, so not
-   * recommended for very large graphs).
+   *                recommended for very large graphs).
    * @param tolerance the percentage of the time the PR algorithm "jumps" to
-   * a random location in its random walks.
+   *                  a random location in its random walks.
    * @param numIter the number of iterations applied to the PR algorithm
    * @return a Graph object containing data for vertices and edges as extracted.
    */
@@ -87,16 +82,17 @@ object ExtractGraph {
       }
     }
   }
-  /** Writes a Graph object to a Json file
+
+  /** Writes a Graph object to a Json file.
     *
     * @constructor graph - a SparkX graph object containing vertex and edge data.
     * @return Unit()
     */
   implicit class GraphWriter(graph: Graph[VertexData, EdgeData]) {
-    /** writes a graph object to json files containing vertex and edge data.
+    /** Writes a graph object to json files containing vertex and edge data.
       *
-      * @param verticesPath Filepath for vertices output
-      * @param edgesPath Filepath for edges output
+      * @param verticesPath Filepath for vertices output.
+      * @param edgesPath Filepath for edges output.
       * @return Unit()
       */
     def writeAsJson(verticesPath: String, edgesPath: String) = {

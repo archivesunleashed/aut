@@ -92,13 +92,13 @@ object NER3Classifier {
               entityBuffer += " " + wordText
           }
         }
-        //end of sentence
-        //apply commit and reset
+        // End of sentence.
+        // Apply commit and reset.
         if (prevEntityType != NERClassType.O && !entityBuffer.equals("")) {
           entitiesByType.put(prevEntityType, entitiesByType.get(prevEntityType).get ++ Seq(entityBuffer))
           entityBuffer = ""
         }
-        //reset
+        // Reset.
         prevEntityType = NERClassType.O
         entityBuffer = ""
       }
