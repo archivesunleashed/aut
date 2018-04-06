@@ -35,13 +35,25 @@ import scala.util.matching.Regex
   * Package object which supplies implicits to augment generic RDDs with AUT-specific transformations.
   */
 package object archivesunleashed {
+  /** Loads records from either WARCs, ARCs or Twitter API data **/
   object RecordLoader {
+    /** Creates an Archive Record RDD from a WARC or ARC file.
+      *
+      * @param path the path to the WARC(s)
+      * @param sc the apache spark context
+      * @return an RDD of ArchiveRecords for mapping
+      */
     def loadArchives(path: String, sc: SparkContext): RDD[ArchiveRecord] =
       sc.newAPIHadoopFile(path, classOf[ArchiveRecordInputFormat], classOf[LongWritable], classOf[ArchiveRecordWritable])
         .filter(r => (r._2.getFormat == ArchiveFormat.ARC) ||
           ((r._2.getFormat == ArchiveFormat.WARC) && r._2.getRecord.getHeader.getHeaderValue("WARC-Type").equals("response")))
         .map(r => new ArchiveRecord(new SerializableWritable(r._2)))
-
+    /** Creates an Archive Record RDD from tweets.
+      *
+      * @param path the path to the Tweets file
+      * @param sc the apache spark context
+      * @return an RDD of JValue (json objects) for mapping
+      */
     def loadTweets(path: String, sc: SparkContext): RDD[JValue] =
       sc.textFile(path).filter(line => !line.startsWith("{\"delete\":"))
         .map(line => try { parse(line) } catch { case e: Exception => null }).filter(x => x != null)
