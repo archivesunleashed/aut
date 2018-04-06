@@ -71,7 +71,7 @@ package object archivesunleashed {
   /**
     * A Wrapper class around RDD to allow RDDs of type ARCRecord and WARCRecord to be queried via a fluent API.
     *
-    * To load such an RDD, please see [[io.archivesunleashed.spark.matchbox.RecordLoader]].
+    * To load such an RDD, please see [[RecordLoader]].
     */
   implicit class WARecordRDD(rdd: RDD[ArchiveRecord]) extends java.io.Serializable {
     /** Removes all non-html-based data (images, executables etc.) from html text*/
