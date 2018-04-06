@@ -16,16 +16,16 @@
  */
 package io.archivesunleashed.matchbox
 
-/** Simple wrapper for getting different parts of a date. */
+/** Gets different parts of a date. */
 object ExtractDate {
-
   object DateComponent extends Enumeration {
+    /** An enum specifying years, months, days or a combination.
+      *
+      */
     type DateComponent = Value
     val YYYY, MM, DD, YYYYMM, YYYYMMDD = Value
   }
-
   import DateComponent._
-
   /** Extracts the wanted component from a date.
     *
     * @param fullDate date returned by `WARecord.getCrawlDate`, formatted as YYYYMMDD
