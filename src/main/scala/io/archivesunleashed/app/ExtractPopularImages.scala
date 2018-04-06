@@ -27,11 +27,10 @@ object ExtractPopularImages {
   /** Extracts the n most popular images from an RDD within a given size range.
    *
    * @param records
-   * @param limit number of most popular images in the output.
-   * @param sc SparkContext.
-   * @param minWidth of image.
-   * @param minHeight of image.
-   * @return
+   * @param limit number of most popular images in the output
+   * @param sc SparkContext
+   * @param minWidth of image
+   * @param minHeight of image
    */
   def apply(records: RDD[ArchiveRecord], limit: Int, sc:SparkContext, minWidth: Int = 30, minHeight: Int = 30) = {
     val res = records

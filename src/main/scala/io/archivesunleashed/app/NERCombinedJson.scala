@@ -45,8 +45,8 @@ class NERCombinedJson extends Serializable {
   /** Combines directory of part-files containing one JSON array per line into a single file containing a single JSON array of arrays.
     *
     * @param srcDir name of directory holding files, also name that will
-    *               be given to JSON file.
-    * @return Unit()
+    *               be given to JSON file
+    * @return Unit().
     */
   def partDirToFile(srcDir: String): Unit = {
     val hadoopConfig = new Configuration()
@@ -57,10 +57,10 @@ class NERCombinedJson extends Serializable {
     val tmpFile = rnd.alphanumeric.take(8).mkString + ".almostjson"
     val tmpPath = new Path(tmpFile)
 
-    // Merge part-files into single file
+    // Merge part-files into single file.
     FileUtil.copyMerge(hdfs, srcPath, hdfs, tmpPath, false, hadoopConfig, null)
 
-    // Read file of JSON arrays, write into single JSON array of arrays
+    // Read file of JSON arrays, write into single JSON array of arrays.
     val fsInStream = hdfs.open(tmpPath)
     val inFile = new BufferedReader(new InputStreamReader(fsInStream))
     hdfs.delete(srcPath, true)  // Don't need part-files anymore
@@ -85,7 +85,6 @@ class NERCombinedJson extends Serializable {
     *                  from which to extract entities
     * @param outputFile path of output file (e.g., "entities.json")
     * @param sc Spark context object
-    * @return
     */
   def classify(iNerClassifierFile: String, inputFile: String, outputFile: String, sc: SparkContext) {
     val out = sc.textFile(inputFile)
@@ -124,7 +123,7 @@ class NERCombinedJson extends Serializable {
     partDirToFile(outputFile)
   }
 
-  /** Create a NER Entity
+  /** Create a NER Entity.
    *
    * @constructor create an entity with iEntity and iFreq.
    * @param iEntity

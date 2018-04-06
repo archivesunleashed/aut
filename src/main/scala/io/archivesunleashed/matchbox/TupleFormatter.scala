@@ -23,7 +23,7 @@ import syntax.std.tuple._
 
 /** Tuple formatter utility. */
 object TupleFormatter {
-  /** Borrowed from shapeless's flatten.scala example. */
+  /** Borrowed from shapeless' flatten.scala example. */
   trait LowPriorityFlatten extends Poly1 {
     implicit def default[T] = at[T](Tuple1(_))
   }

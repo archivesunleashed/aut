@@ -22,7 +22,7 @@ object RemoveHttpHeader {
 
   /** Remove HTTP headers.
    *
-   * @param content String of WARC or ARC-based text content
+   * @param content string of WARC or ARC-based text content
    * @return string with HTTP headers removed.
    */
   def apply(content: String): String = {

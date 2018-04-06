@@ -28,7 +28,6 @@ object ExtractDate {
     *
     * @param fullDate date returned by `WARecord.getCrawlDate`, formatted as YYYYMMDD
     * @param dateFormat an enum describing the portion of the date wanted
-    * @return
     */
   def apply(fullDate: String, dateFormat: DateComponent): String =
     if (fullDate == null) fullDate

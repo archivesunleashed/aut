@@ -41,9 +41,9 @@ object ExtractGraph {
    *
    * @param records an RDD of archive records
    * @param dynamic whether to calculate PageRank (an O(n^2) calculation, so not
-   *                recommended for very large graphs).
+   *                recommended for very large graphs)
    * @param tolerance the percentage of the time the PR algorithm "jumps" to
-   *                  a random location in its random walks.
+   *                  a random location in its random walks
    * @param numIter the number of iterations applied to the PR algorithm
    * @return a Graph object containing data for vertices and edges as extracted.
    */
@@ -84,7 +84,7 @@ object ExtractGraph {
 
   /** Writes a Graph object to a Json file.
     *
-    * @constructor graph - a SparkX graph object containing vertex and edge data.
+    * @constructor graph - a SparkX graph object containing vertex and edge data
     * @return Unit().
     */
   implicit class GraphWriter(graph: Graph[VertexData, EdgeData]) {

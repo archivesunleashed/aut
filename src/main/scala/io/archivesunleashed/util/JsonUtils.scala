@@ -19,13 +19,13 @@ package io.archivesunleashed.util
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 
-/** JSON utilities extension to work with Twitter data. */
+/** JSON utilities extension to work with Twitter API data (JSON). */
 object JsonUtils extends Serializable {
   val mapper = new ObjectMapper()
   mapper.registerModule(DefaultScalaModule)
   mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-/** Convert a Scala Map to a json string.
+/** Convert a Scala Map to a JSON string.
   *
   * @param value a Scala Map of keys and values
   * @return a json string.
@@ -33,7 +33,7 @@ object JsonUtils extends Serializable {
   def toJson(value: Map[Symbol, Any]): String = {
     toJson(value map { case (k,v) => k.name -> v})
   }
-  /** Convert a Scala Object or other mappable to a json string.
+  /** Convert a Scala Object or other mappable to a JSON string.
     *
     * @param value any mappable object
     * @return a json string.

@@ -32,7 +32,6 @@ object WriteGraphML {
    *
    * @param rdd RDD of elements in format ((datestring, source, target), count)
    * @param graphmlPath output file
-   * @return
    */
   def apply(rdd: RDD[((String, String, String), Int)], graphmlPath: String): Boolean = {
     if (graphmlPath.isEmpty()) false

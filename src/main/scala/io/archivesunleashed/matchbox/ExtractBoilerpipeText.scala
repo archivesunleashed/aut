@@ -23,10 +23,10 @@ import java.io.IOException
 object ExtractBoilerpipeText {
   /** Uses boilerpipe to extract raw text content from a page.
    *
-   * ExtractBoilerpipeText removes boilerplate text (e.g. a copyright statement) from an html string.
+   * ExtractBoilerpipeText removes boilerplate text (e.g. a copyright statement) from an HTML string.
    *
    * @param input an html string possibly containing boilerpipe text
-   * @return Text with boilerplate removed or Nil if the text is empty.
+   * @return ext with boilerplate removed or Nil if the text is empty.
    */
   def apply(input: String) = {
     try {
