@@ -17,85 +17,20 @@
 
 package io.archivesunleashed
 
-import data.{ArcRecordUtils, WarcRecordUtils}
-import data.ArchiveRecordWritable.ArchiveFormat
-import matchbox.{ExtractDate, ExtractDomain, RemoveHttpHeader}
-import ExtractDate.DateComponent
-import java.text.SimpleDateFormat
+trait ArchiveRecord extends Serializable {
+  def getCrawlDate: String
 
-import io.archivesunleashed.data.ArchiveRecordWritable
-import org.apache.spark.SerializableWritable
-import org.archive.io.arc.ARCRecord
-import org.archive.io.warc.WARCRecord
-import org.archive.util.ArchiveUtils
+  def getCrawlMonth: String
 
-/** ArchiveRecord.
- *
- *  @constructor an archive record.
- *  @param r
- */
-class ArchiveRecord(r: SerializableWritable[ArchiveRecordWritable]) extends Serializable {
-  var arcRecord: ARCRecord = null
-  var warcRecord: WARCRecord = null
+  def getContentBytes: Array[Byte]
 
-  if (r.t.getFormat == ArchiveFormat.ARC)
-    arcRecord = r.t.getRecord.asInstanceOf[ARCRecord]
-  else if (r.t.getFormat == ArchiveFormat.WARC)
-    warcRecord = r.t.getRecord.asInstanceOf[WARCRecord]
+  def getContentString: String
 
+  def getMimeType: String
 
-  val ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX")
+  def getUrl: String
 
-  val getCrawlDate: String = {
-    if (r.t.getFormat == ArchiveFormat.ARC) {
-      ExtractDate(arcRecord.getMetaData.getDate, DateComponent.YYYYMMDD)
-    } else {
-      ExtractDate(ArchiveUtils.get14DigitDate(ISO8601.parse(warcRecord.getHeader.getDate)), DateComponent.YYYYMMDD)
-    }
-  }
+  def getDomain: String
 
-  val getCrawlMonth: String = {
-    if (r.t.getFormat == ArchiveFormat.ARC) {
-      ExtractDate(arcRecord.getMetaData.getDate, DateComponent.YYYYMM)
-    } else {
-      ExtractDate(ArchiveUtils.get14DigitDate(ISO8601.parse(warcRecord.getHeader.getDate)), DateComponent.YYYYMM)
-    }
-  }
-
-  val getContentBytes: Array[Byte] = {
-    if (r.t.getFormat == ArchiveFormat.ARC) {
-      ArcRecordUtils.getBodyContent(arcRecord)
-    } else {
-      WarcRecordUtils.getContent(warcRecord)
-    }
-  }
-
-  val getContentString: String = new String(getContentBytes)
-
-  val getMimeType = {
-    if (r.t.getFormat == ArchiveFormat.ARC) {
-      arcRecord.getMetaData.getMimetype
-    } else {
-      WarcRecordUtils.getWarcResponseMimeType(getContentBytes)
-    }
-  }
-
-  val getUrl = {
-    if (r.t.getFormat == ArchiveFormat.ARC) {
-      arcRecord.getMetaData.getUrl
-    } else {
-      warcRecord.getHeader.getUrl
-    }
-  }
-
-  val getDomain: String = ExtractDomain(getUrl)
-
-  val getImageBytes: Array[Byte] = {
-    if (getContentString.startsWith("HTTP/"))
-      getContentBytes.slice(
-        getContentString.indexOf(RemoveHttpHeader.headerEnd)
-          + RemoveHttpHeader.headerEnd.length, getContentBytes.length)
-    else
-      getContentBytes
-  }
+  def getImageBytes: Array[Byte]
 }
