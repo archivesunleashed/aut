@@ -14,14 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.archivesunleashed.matchbox
+package io.archivesunleashed.spark.matchbox
 
-/** Extracts Urls found in a string of text.
-  *
-  * @param src the source text.
-  * @return a list of urls found in the string.
-  */
-object ExtractUrls {
-  val pattern = """https?://[^ ]+""".r
-  def apply(src: String): List[String] = pattern.findAllIn(src).toList
+/**
+* This package provides various ARC/WARC analysis utilities.
+*/
+package object matchbox {
 }

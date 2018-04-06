@@ -27,23 +27,26 @@ import org.apache.spark.SparkContext
 import scala.collection.mutable.MutableList
 import scala.util.Random
 
-/**
-  * Classifies records using NER and stores results as JSON
-  */
-
+/** Classifies records using NER and stores results as JSON. */
 class NERCombinedJson extends Serializable {
 
-  def combineKeyCountLists (l1: List[(String, Int)], l2: List[(String, Int)]): List[(String, Int)] = {
-    (l1 ++ l2).groupBy(_._1 ).map {
+  /** Merges the counts from two lists of tuples.
+   *
+   * @param keyCount1 the first list of tuples (String, Count)
+   * @param keyCount2 the second list of tuples to merge into l1
+   * @return
+   */
+  def combineKeyCountLists (keyCount1: List[(String, Int)], keyCount2: List[(String, Int)]): List[(String, Int)] = {
+    (keyCount1 ++ keyCount2).groupBy(_._1 ).map {
       case (key, tuples) => (key, tuples.map( _._2).sum)
     }.toList
   }
 
-  /** Combines directory of part-files containing one JSON array per line
-    * into a single file containing a single JSON array of arrays.
+  /** Combines directory of part-files containing one JSON array per line into a single file containing a single JSON array of arrays.
     *
     * @param srcDir name of directory holding files, also name that will
     *               be given to JSON file.
+    * @return
     */
   def partDirToFile(srcDir: String): Unit = {
     val hadoopConfig = new Configuration()
@@ -54,10 +57,10 @@ class NERCombinedJson extends Serializable {
     val tmpFile = rnd.alphanumeric.take(8).mkString + ".almostjson"
     val tmpPath = new Path(tmpFile)
 
-    // Merge part-files into single file
+    // Merge part-files into single file.
     FileUtil.copyMerge(hdfs, srcPath, hdfs, tmpPath, false, hadoopConfig, null)
 
-    // Read file of JSON arrays, write into single JSON array of arrays
+    // Read file of JSON arrays, write into single JSON array of arrays.
     val fsInStream = hdfs.open(tmpPath)
     val inFile = new BufferedReader(new InputStreamReader(fsInStream))
     hdfs.delete(srcPath, true)  // Don't need part-files anymore
@@ -82,6 +85,7 @@ class NERCombinedJson extends Serializable {
     *                  from which to extract entities
     * @param outputFile path of output file (e.g., "entities.json")
     * @param sc Spark context object
+    * @return
     */
   def classify(iNerClassifierFile: String, inputFile: String, outputFile: String, sc: SparkContext) {
     val out = sc.textFile(inputFile)
@@ -120,22 +124,36 @@ class NERCombinedJson extends Serializable {
     partDirToFile(outputFile)
   }
 
+  /** Needs a description.
+   *
+   * @constructor create an entity with iEntity and iFreq.
+   * @param iEntity
+   * @param iFreq
+   */
   class Entity(iEntity: String, iFreq: Int) {
     var entity: String = iEntity
     var freq: Int = iFreq
   }
 
+  /** Needs a description.
+   *
+   * @constructor create an entity count with iNerType.
+   * @param iNerType
+   */
   class EntityCounts(iNerType: String) {
     var nerType: String = iNerType
     var entities = MutableList[Entity]()
   }
 
+  /** Needs a description.
+   *
+   * @constructor create a NER record with recDate and recDomain.
+   * @param recData
+   * @param recDomain
+   */
   class NerRecord(recDate: String, recDomain: String) {
     var date = recDate
     var domain = recDomain
-
     var ner = MutableList[EntityCounts]()
   }
 }
-
-

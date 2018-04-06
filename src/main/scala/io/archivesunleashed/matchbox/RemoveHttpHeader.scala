@@ -16,11 +16,15 @@
  */
 package io.archivesunleashed.matchbox
 
-/**
-  * Created by youngbinkim on 7/9/16.
-  */
+/** Remove HTTP headers. */
 object RemoveHttpHeader {
   val headerEnd = "\r\n\r\n"
+
+  /** Remove HTTP headers.
+   *
+   * @param content String of WARC or ARC-based text content
+   * @return string with HTTP headers removed.
+   */
   def apply(content: String): String = {
     try {
       if (content.startsWith("HTTP/"))

@@ -29,6 +29,11 @@ import org.archive.io.arc.ARCRecord
 import org.archive.io.warc.WARCRecord
 import org.archive.util.ArchiveUtils
 
+/** ArchiveRecord.
+ *
+ *  @constructor an archive record.
+ *  @param r
+ */
 class ArchiveRecordImpl(r: SerializableWritable[ArchiveRecordWritable]) extends ArchiveRecord {
   var arcRecord: ARCRecord = null
   var warcRecord: WARCRecord = null

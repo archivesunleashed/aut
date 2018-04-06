@@ -17,15 +17,18 @@
 package io.archivesunleashed.matchbox
 
 import java.io.ByteArrayInputStream
-
 import org.apache.tika.Tika
 import org.apache.tika.detect.DefaultDetector
 import org.apache.tika.parser.AutoDetectParser
 
-/**
-  * A UDF to detect mime types
-  */
+/** Detect mime type(s) using Apache Tika. */
 object DetectMimeTypeTika {
+
+  /** Detect mime type(s) from an input string.
+   *
+   * @param content A string of content for which to detect the MimeType
+   * @return mimetype(s) (e.g. "text/html" or "application/xml") or "N/A"
+   */
   def apply(content: String): String = {
     if (content.isEmpty) "N/A"
     else {

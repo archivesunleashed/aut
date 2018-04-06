@@ -16,6 +16,7 @@
  */
 package io.archivesunleashed.matchbox
 
+/** Extract Twitter mentions (e.g. "@username") from a string */
 object ExtractAtMentions {
   val pattern = """@[A-Za-z_0-9]+""".r
   def apply(src: String): List[String] = pattern.findAllIn(src).toList

@@ -21,13 +21,18 @@ import io.archivesunleashed.matchbox.{ComputeImageSize, ComputeMD5}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{RangePartitioner, SparkContext}
 
-/**
-  * Extract most popular images
-  *
-  * limit: number of most popular images in the output
-  * timeoutVal: time allowed to connect to each image
-  */
+/** Extract most popular images from an RDD. */
 object ExtractPopularImages {
+
+  /** Extracts the n most popular images from an RDD within a given size range.
+   *
+   * @param records
+   * @param limit number of most popular images in the output.
+   * @param sc SparkContext.
+   * @param minWidth of image.
+   * @param minHeight of image.
+   * @return
+   */
   def apply(records: RDD[ArchiveRecord], limit: Int, sc:SparkContext, minWidth: Int = 30, minHeight: Int = 30) = {
     val res = records
       .keepImages()
