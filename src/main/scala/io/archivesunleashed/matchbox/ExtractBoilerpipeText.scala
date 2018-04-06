@@ -26,7 +26,7 @@ object ExtractBoilerpipeText {
    * ExtractBoilerpipeText removes boilerplate text (e.g. a copyright statement) from an HTML string.
    *
    * @param input an html string possibly containing boilerpipe text
-   * @return ext with boilerplate removed or Nil if the text is empty.
+   * @return text with boilerplate removed or Nil if the text is empty.
    */
   def apply(input: String) = {
     try {
