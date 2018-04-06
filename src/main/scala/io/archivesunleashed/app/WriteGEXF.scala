@@ -24,7 +24,7 @@ import java.nio.file.{Files, Paths}
 import org.apache.spark.rdd.RDD
 
 /**
-  * UDF for exporting an RDD representing a collection of links to a GDF file.
+  * UDF for exporting an RDD representing a collection of links to a GEXF file.
   */
 object WriteGEXF {
 
@@ -32,7 +32,7 @@ object WriteGEXF {
    *
    * @param rdd RDD of elements in format ((datestring, source, target), count).
    * @param gexfPath Output file.
-   * @return
+   * @return Unit()
    */
   def apply(rdd: RDD[((String, String, String), Int)], gexfPath: String): Boolean = {
     if (gexfPath.isEmpty()) false
@@ -43,7 +43,7 @@ object WriteGEXF {
    *
    * @param rdd
    * @param gexfPath
-   * @return
+   * @return true on success
    */
   def makeFile (rdd: RDD[((String, String, String), Int)], gexfPath: String): Boolean = {
     val outFile = Files.newBufferedWriter(Paths.get(gexfPath), StandardCharsets.UTF_8)

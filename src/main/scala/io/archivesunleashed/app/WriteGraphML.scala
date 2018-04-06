@@ -24,7 +24,7 @@ import java.nio.file.{Files, Paths}
 import org.apache.spark.rdd.RDD
 
 /**
-  * UDF for exporting an RDD representing a collection of links to a GDF file.
+  * UDF for exporting an RDD representing a collection of links to a GraphML file.
   */
 object WriteGraphML {
 
@@ -39,11 +39,11 @@ object WriteGraphML {
     else makeFile (rdd, graphmlPath)
   }
 
-  /** Needs a description.
+  /** Produces the GraphML output from an RDD of tuples and outputs it to graphmlPath.
    *
    * @param rdd RDD of elements in format ((datestring, source, target), count).
    * @param graphmlPath Output file.
-   * @return
+   * @return true on successful run.
    */
   def makeFile (rdd: RDD[((String, String, String), Int)], graphmlPath: String): Boolean = {
     val outFile = Files.newBufferedWriter(Paths.get(graphmlPath), StandardCharsets.UTF_8)

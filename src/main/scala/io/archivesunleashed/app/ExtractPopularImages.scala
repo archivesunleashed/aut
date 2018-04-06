@@ -21,10 +21,10 @@ import io.archivesunleashed.matchbox.{ComputeImageSize, ComputeMD5}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{RangePartitioner, SparkContext}
 
-/** Extract most popular images. */
+/** Extract most popular images from an RDD. */
 object ExtractPopularImages {
 
-  /** Extracts most popular images.
+  /** Extracts the n most popular images from an RDD within a given size range.
    *
    * @param records
    * @param limit number of most popular images in the output.

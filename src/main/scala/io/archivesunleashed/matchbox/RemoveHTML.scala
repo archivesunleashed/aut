@@ -22,9 +22,9 @@ import org.jsoup.Jsoup
 /** Remove HTML markup with JSoup. */
 object RemoveHTML {
 
-  /** Remove HTML.
+  /** Remove HTML markup.
    *
-   * @param content
+   * @param content an html or text string
    * @return content without html markup.
    */
   def apply(content: String) = {

@@ -25,14 +25,27 @@ object JsonUtils extends Serializable {
   mapper.registerModule(DefaultScalaModule)
   mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
+/** Convert a Scala Map to a json string.
+  *
+  * @param value a Scala Map of keys and values
+  * @return a json string
+  */
   def toJson(value: Map[Symbol, Any]): String = {
     toJson(value map { case (k,v) => k.name -> v})
   }
-
+  /** Convert a Scala Object or other mappable to a json string.
+    *
+    * @param value Any mappable object
+    * @return a json string
+    */
   def toJson(value: Any): String = {
     mapper.writeValueAsString(value)
   }
-
+  /** Injest a Json string and produce a Map Object
+    *
+    * @param value A json string
+    * @return a map of [key, value] based on json string. 
+    */
   def fromJson(json: String): Map[String, Any] = {
     mapper.readValue(json, classOf[Map[String, Any]])
   }
