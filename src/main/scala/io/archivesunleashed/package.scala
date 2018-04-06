@@ -47,7 +47,7 @@ package object archivesunleashed {
       sc.newAPIHadoopFile(path, classOf[ArchiveRecordInputFormat], classOf[LongWritable], classOf[ArchiveRecordWritable])
         .filter(r => (r._2.getFormat == ArchiveFormat.ARC) ||
           ((r._2.getFormat == ArchiveFormat.WARC) && r._2.getRecord.getHeader.getHeaderValue("WARC-Type").equals("response")))
-        .map(r => new ArchiveRecord(new SerializableWritable(r._2)))
+        .map(r => new ArchiveRecordImpl(new SerializableWritable(r._2)))
     /** Creates an Archive Record RDD from tweets.
       *
       * @param path the path to the Tweets file
@@ -145,7 +145,10 @@ package object archivesunleashed {
     def keepLanguages(lang: Set[String]) = {
       rdd.filter(r => lang.contains(DetectLanguage(RemoveHTML(r.getContentString))))
     }
-
+    /** Removes all content that does not pass Regular Expression test
+      *
+      * @param contentREs a list of Regular expressions to keep.
+      */
     def keepContent(contentREs: Set[Regex]) = {
       rdd.filter(r =>
         contentREs.map(re =>
@@ -154,7 +157,10 @@ package object archivesunleashed {
             case None => false
           }).exists(identity))
     }
-
+    /** Filters MimeTypes from RDDs
+      *
+      * @param mimeTypes 
+      */
     def discardMimeTypes(mimeTypes: Set[String]) = {
       rdd.filter(r => !mimeTypes.contains(r.getMimeType))
     }
