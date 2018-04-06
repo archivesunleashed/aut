@@ -27,7 +27,8 @@ import org.apache.spark.rdd.RDD
   * applies rules formed in a [[https://stanfordnlp.github.io/CoreNLP  Named
   * Entity Classifier]] to identify locations, people or other objects from data.
   */
-object ExtractEntities
+object ExtractEntities {
+
   /** Extracts NER entities from WARC or ARC files at a given path to a given
     * output directory.
     *
