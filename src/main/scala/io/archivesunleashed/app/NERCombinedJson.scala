@@ -34,7 +34,7 @@ class NERCombinedJson extends Serializable {
    *
    * @param keyCount1 the first list of tuples (String, Count)
    * @param keyCount2 the second list of tuples to merge into l1
-   * @return
+   * @return combined list of (key, Count) tuples.
    */
   def combineKeyCountLists (keyCount1: List[(String, Int)], keyCount2: List[(String, Int)]): List[(String, Int)] = {
     (keyCount1 ++ keyCount2).groupBy(_._1 ).map {
@@ -46,7 +46,7 @@ class NERCombinedJson extends Serializable {
     *
     * @param srcDir name of directory holding files, also name that will
     *               be given to JSON file.
-    * @return
+    * @return Unit()
     */
   def partDirToFile(srcDir: String): Unit = {
     val hadoopConfig = new Configuration()
@@ -57,10 +57,10 @@ class NERCombinedJson extends Serializable {
     val tmpFile = rnd.alphanumeric.take(8).mkString + ".almostjson"
     val tmpPath = new Path(tmpFile)
 
-    // Merge part-files into single file.
+    // Merge part-files into single file
     FileUtil.copyMerge(hdfs, srcPath, hdfs, tmpPath, false, hadoopConfig, null)
 
-    // Read file of JSON arrays, write into single JSON array of arrays.
+    // Read file of JSON arrays, write into single JSON array of arrays
     val fsInStream = hdfs.open(tmpPath)
     val inFile = new BufferedReader(new InputStreamReader(fsInStream))
     hdfs.delete(srcPath, true)  // Don't need part-files anymore
@@ -124,7 +124,7 @@ class NERCombinedJson extends Serializable {
     partDirToFile(outputFile)
   }
 
-  /** Needs a description.
+  /** Create a NER Entity
    *
    * @constructor create an entity with iEntity and iFreq.
    * @param iEntity
@@ -135,7 +135,7 @@ class NERCombinedJson extends Serializable {
     var freq: Int = iFreq
   }
 
-  /** Needs a description.
+  /** Counts the entities from a NER operation.
    *
    * @constructor create an entity count with iNerType.
    * @param iNerType
@@ -145,7 +145,7 @@ class NERCombinedJson extends Serializable {
     var entities = MutableList[Entity]()
   }
 
-  /** Needs a description.
+  /** Creates a NER record from a date and a domain.
    *
    * @constructor create a NER record with recDate and recDomain.
    * @param recData

@@ -31,7 +31,7 @@ object WriteGEXF {
   /** Writes graph nodes and edges to file.
    *
    * @param rdd RDD of elements in format ((datestring, source, target), count)
-   * @param gexfPath Output file
+   * @param gexfPath output file
    * @return Unit().
    */
   def apply(rdd: RDD[((String, String, String), Int)], gexfPath: String): Boolean = {
@@ -39,10 +39,10 @@ object WriteGEXF {
     else makeFile (rdd, gexfPath)
   }
 
-  /** Needs a description.
+  /** Produces the GEXF output from an RDD of tuples and outputs it to graphmlPath.
    *
-   * @param rdd
-   * @param gexfPath
+   * @param rdd an RDD of elements in format ((datestring, source, target), count)
+   * @param gexfPath output file
    * @return true on success.
    */
   def makeFile (rdd: RDD[((String, String, String), Int)], gexfPath: String): Boolean = {
