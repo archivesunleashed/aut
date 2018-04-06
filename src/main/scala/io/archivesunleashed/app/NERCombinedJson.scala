@@ -33,7 +33,7 @@ class NERCombinedJson extends Serializable {
   /** Merges the counts from two lists of tuples.
    *
    * @param keyCount1 the first list of tuples (String, Count)
-   * @param keyCount2 the second list of tuples to merge into l1
+   * @param keyCount2 the second list of tuples to merge into keyCount1
    * @return combined list of (key, Count) tuples.
    */
   def combineKeyCountLists (keyCount1: List[(String, Int)], keyCount2: List[(String, Int)]): List[(String, Int)] = {
