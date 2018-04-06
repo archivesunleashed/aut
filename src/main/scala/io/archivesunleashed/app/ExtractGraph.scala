@@ -28,7 +28,7 @@ object ExtractGraph {
   /** Creates a hashcode from a url to use as a unique id.
    *
    * @param url
-   * @return unique id as long integer
+   * @return unique id as long integer.
    */
   def pageHash(url: String): VertexId = {
     url.hashCode.toLong
@@ -37,8 +37,7 @@ object ExtractGraph {
   case class VertexData(domain: String, pageRank: Double, inDegree: Int, outDegree: Int)
   case class EdgeData(date: String, src: String, dst: String)
 
-  /** Creates a network graph from loaded Archive Records with optional pageRank
-   * calculations.
+  /** Creates a network graph from loaded Archive Records with optional pageRank calculations.
    *
    * @param records an RDD of archive records
    * @param dynamic whether to calculate PageRank (an O(n^2) calculation, so not
@@ -86,14 +85,14 @@ object ExtractGraph {
   /** Writes a Graph object to a Json file.
     *
     * @constructor graph - a SparkX graph object containing vertex and edge data.
-    * @return Unit()
+    * @return Unit().
     */
   implicit class GraphWriter(graph: Graph[VertexData, EdgeData]) {
     /** Writes a graph object to json files containing vertex and edge data.
       *
-      * @param verticesPath Filepath for vertices output.
-      * @param edgesPath Filepath for edges output.
-      * @return Unit()
+      * @param verticesPath Filepath for vertices output
+      * @param edgesPath Filepath for edges output
+      * @return Unit().
       */
     def writeAsJson(verticesPath: String, edgesPath: String) = {
       // Combine edges of a given (date, src, dst) combination into single record with count value.

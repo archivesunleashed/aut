@@ -45,7 +45,7 @@ object NER3Classifier {
   /** Reads the NER Classifier file.
    *
    * @param file path to NER Classifier
-   * @return Unit()
+   * @return Unit().
    */
   def apply(file: String) = {
     serializedClassifier = file
@@ -54,7 +54,7 @@ object NER3Classifier {
   /** Conducts NER classificiation based on NER Classifier.
    *
    * @param input
-   * @return json string containing lists of people, organizations and locations
+   * @return json string containing lists of people, organizations and locations.
    */
   def classify(input: String): String = {
     val emptyString: String = "{\"PERSON\":[],\"ORGANIZATION\"=[],\"LOCATION\"=[]}"
@@ -79,7 +79,7 @@ object NER3Classifier {
           val currEntityType = NERClassType.withName(classText)
           if (prevEntityType != currEntityType) {
             if (prevEntityType != NERClassType.O && !entityBuffer.equals("")) {
-              //time to commit
+              // Time to commit.
               entitiesByType.put(prevEntityType, entitiesByType.get(prevEntityType).get ++ Seq(entityBuffer))
               entityBuffer = ""
             }

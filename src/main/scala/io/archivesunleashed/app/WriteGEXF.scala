@@ -30,9 +30,9 @@ object WriteGEXF {
 
   /** Writes graph nodes and edges to file.
    *
-   * @param rdd RDD of elements in format ((datestring, source, target), count).
-   * @param gexfPath Output file.
-   * @return Unit()
+   * @param rdd RDD of elements in format ((datestring, source, target), count)
+   * @param gexfPath Output file
+   * @return Unit().
    */
   def apply(rdd: RDD[((String, String, String), Int)], gexfPath: String): Boolean = {
     if (gexfPath.isEmpty()) false
@@ -43,7 +43,7 @@ object WriteGEXF {
    *
    * @param rdd
    * @param gexfPath
-   * @return true on success
+   * @return true on success.
    */
   def makeFile (rdd: RDD[((String, String, String), Int)], gexfPath: String): Boolean = {
     val outFile = Files.newBufferedWriter(Paths.get(gexfPath), StandardCharsets.UTF_8)

@@ -18,7 +18,7 @@ package io.archivesunleashed.matchbox
 
 /** Extracts Urls found in a string of text.
   *
-  * @param src the source text.
+  * @param src the source text
   * @return a list of urls found in the string.
   */
 object ExtractUrls {

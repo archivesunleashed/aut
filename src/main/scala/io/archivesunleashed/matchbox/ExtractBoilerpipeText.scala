@@ -23,9 +23,9 @@ import java.io.IOException
 object ExtractBoilerpipeText {
   /** Uses boilerpipe to extract raw text content from a page.
    *
-   * ExtractBoilerpipeText removes boilerplate text (e.g. a copyright statement)
-   * from an html string.
-   * @param input an html string possibly containing boilerpipe text.
+   * ExtractBoilerpipeText removes boilerplate text (e.g. a copyright statement) from an html string.
+   *
+   * @param input an html string possibly containing boilerpipe text
    * @return Text with boilerplate removed or Nil if the text is empty.
    */
   def apply(input: String) = {
@@ -38,9 +38,9 @@ object ExtractBoilerpipeText {
     }
   }
 
-  /** Extracts boilerplate
+  /** Extracts boilerplate.
    *
-   * @param input an html string possibly containing boilerpipe text.
+   * @param input an html string possibly containing boilerpipe text
    * @return filtered text or Nil if the text is empty.
    */
   def extract (input: String) = {

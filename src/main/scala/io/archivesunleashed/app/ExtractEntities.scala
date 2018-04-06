@@ -21,7 +21,7 @@ import io.archivesunleashed.matchbox.{NER3Classifier, RemoveHTML}
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 
-/** Conducts Named Entity Recognition (NER) on a WARC or ARC file
+/** Conducts Named Entity Recognition (NER) on a WARC or ARC file.
   *
   * [[http://nlp.stanford.edu/software/CRF-NER.html Named Entity Recognition]]
   * applies rules formed in a [[https://stanfordnlp.github.io/CoreNLP  Named
@@ -29,14 +29,13 @@ import org.apache.spark.rdd.RDD
   */
 object ExtractEntities {
 
-  /** Extracts NER entities from WARC or ARC files at a given path to a given
-    * output directory.
+  /** Extracts NER entities from WARC or ARC files at a given path to a given output directory.
     *
     * @param iNerClassifierFile path to NER classifier file
     * @param inputRecordFile path of ARC or WARC file from which to extract entities
     * @param outputFile path of output directory
     * @param sc the Apache Spark context
-    * @return an rdd with classification entities
+    * @return an rdd with classification entities.
     */
   def extractFromRecords(iNerClassifierFile: String, inputRecordFile: String, outputFile: String, sc: SparkContext): RDD[(String, String, String)] = {
     val rdd = RecordLoader.loadArchives(inputRecordFile, sc)
@@ -50,7 +49,7 @@ object ExtractEntities {
     * @param inputFile path of file containing tuples (date: String, url: String, content: String)
     *                  from which to extract entities
     * @param outputFile path of output directory
-    * @return an rdd with classification entities
+    * @return an rdd with classification entities.
     */
   def extractFromScrapeText(iNerClassifierFile: String, inputFile: String, outputFile: String, sc: SparkContext): RDD[(String, String, String)] = {
     val rdd = sc.textFile(inputFile)

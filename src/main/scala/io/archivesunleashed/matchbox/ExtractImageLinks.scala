@@ -28,7 +28,7 @@ object ExtractImageLinks {
     *
     * @param src the src link
     * @param html the content from which links are to be extracted
-    * @return a sequence of image links
+    * @return a sequence of image links.
     */
   def apply(src: String, html: String): Seq[String] = {
     if (html.isEmpty) return Nil

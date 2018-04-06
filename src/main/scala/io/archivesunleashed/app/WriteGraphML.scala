@@ -30,8 +30,8 @@ object WriteGraphML {
 
   /** Writes graph nodes and edges to file.
    *
-   * @param rdd RDD of elements in format ((datestring, source, target), count).
-   * @param graphmlPath Output file.
+   * @param rdd RDD of elements in format ((datestring, source, target), count)
+   * @param graphmlPath output file
    * @return
    */
   def apply(rdd: RDD[((String, String, String), Int)], graphmlPath: String): Boolean = {
@@ -41,8 +41,8 @@ object WriteGraphML {
 
   /** Produces the GraphML output from an RDD of tuples and outputs it to graphmlPath.
    *
-   * @param rdd RDD of elements in format ((datestring, source, target), count).
-   * @param graphmlPath Output file.
+   * @param rdd RDD of elements in format ((datestring, source, target), count)
+   * @param graphmlPath output file
    * @return true on successful run.
    */
   def makeFile (rdd: RDD[((String, String, String), Int)], graphmlPath: String): Boolean = {

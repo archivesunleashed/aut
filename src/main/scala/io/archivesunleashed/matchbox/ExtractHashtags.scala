@@ -18,7 +18,7 @@ package io.archivesunleashed.matchbox
 
 /** Extract hashtags from tweets.
   *
-  * @param src the source string.
+  * @param src the source string
   * @return a list of #hashtags contained in the string.
  */
 object ExtractHashtags {

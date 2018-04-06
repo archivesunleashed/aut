@@ -20,9 +20,10 @@ import org.json4s.JsonAST._
 
 /** Utilities for working with Twitter JSON. */
 object TweetUtils {
+
   /** Extract Twitter API data in json format.
     *
-    * @param tweet JValue / Json object containing twitter api data
+    * @param tweet JValue/JSON object containing Twitter API data (JSON)
     */
   implicit class JsonTweet(tweet: JValue) {
     implicit lazy val formats = org.json4s.DefaultFormats
@@ -36,7 +37,7 @@ object TweetUtils {
     def lang: String = try { (tweet \ "lang").extract[String] } catch { case e: Exception => null}
     /* Get the username of the user who wrote the status. */
     def username(): String = try { (tweet \ "user" \ "screen_name").extract[String] } catch { case e: Exception => null}
-    /* Gheck if user of status is "verified" (true or false). */
+    /* Check if user of status is "verified" (true or false). */
     def isVerifiedUser(): Boolean = try { (tweet \ "user" \ "verified").extract[Boolean] } catch { case e: Exception => false}
     /* Get the number of followers the user has. */
     def followerCount: Int = try { (tweet \ "user" \ "followers_count").extract[Int] } catch { case e: Exception => 0}

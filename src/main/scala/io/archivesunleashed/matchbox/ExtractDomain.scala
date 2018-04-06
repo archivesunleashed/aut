@@ -24,7 +24,7 @@ object ExtractDomain {
    *
    * @param url a url as a string
    * @param source an optional default url for urls with no valid domain host
-   * @return domain host, source or null if url is null
+   * @return domain host, source or null if url is null.
    */
   def apply(url: String, source: String = ""): String = {
     if (url == null) return null

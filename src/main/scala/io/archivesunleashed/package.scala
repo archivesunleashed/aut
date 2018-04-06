@@ -35,13 +35,13 @@ import scala.util.matching.Regex
   * Package object which supplies implicits to augment generic RDDs with AUT-specific transformations.
   */
 package object archivesunleashed {
-  /** Loads records from either WARCs, ARCs or Twitter API data **/
+  /** Loads records from either WARCs, ARCs or Twitter API data (JSON). **/
   object RecordLoader {
     /** Creates an Archive Record RDD from a WARC or ARC file.
       *
       * @param path the path to the WARC(s)
       * @param sc the apache spark context
-      * @return an RDD of ArchiveRecords for mapping
+      * @return an RDD of ArchiveRecords for mapping.
       */
     def loadArchives(path: String, sc: SparkContext): RDD[ArchiveRecord] =
       sc.newAPIHadoopFile(path, classOf[ArchiveRecordInputFormat], classOf[LongWritable], classOf[ArchiveRecordWritable])
@@ -52,16 +52,14 @@ package object archivesunleashed {
       *
       * @param path the path to the Tweets file
       * @param sc the apache spark context
-      * @return an RDD of JValue (json objects) for mapping
+      * @return an RDD of JValue (json objects) for mapping.
       */
     def loadTweets(path: String, sc: SparkContext): RDD[JValue] =
       sc.textFile(path).filter(line => !line.startsWith("{\"delete\":"))
         .map(line => try { parse(line) } catch { case e: Exception => null }).filter(x => x != null)
   }
 
-  /**
-    * A Wrapper class around RDD to simplify counting
-    */
+  /** A Wrapper class around RDD to simplify counting. */
   implicit class CountableRDD[T: ClassTag](rdd: RDD[T]) extends java.io.Serializable {
     def countItems(): RDD[(T, Int)] = {
       rdd.map(r => (r, 1))
@@ -73,7 +71,7 @@ package object archivesunleashed {
   /**
     * A Wrapper class around RDD to allow RDDs of type ARCRecord and WARCRecord to be queried via a fluent API.
     *
-    * To load such an RDD, please see [[io.archivesunleashed.spark.matchbox.RecordLoader]]
+    * To load such an RDD, please see [[io.archivesunleashed.spark.matchbox.RecordLoader]].
     */
   implicit class WARecordRDD(rdd: RDD[ArchiveRecord]) extends java.io.Serializable {
     /** Removes all non-html-based data (images, executables etc.) from html text*/
@@ -86,7 +84,7 @@ package object archivesunleashed {
           || r.getUrl.endsWith("html"))
           && !r.getUrl.endsWith("robots.txt"))
     }
-    /** Removes all data except images */
+    /** Removes all data except images. */
     def keepImages() = {
       rdd.filter(r =>
         r.getCrawlDate != null
@@ -97,7 +95,7 @@ package object archivesunleashed {
             || r.getUrl.endsWith("png"))
           && !r.getUrl.endsWith("robots.txt"))
     }
-    /** Removes all data but selected mimeTypes
+    /** Removes all data but selected mimeTypes.
       *
       * @param mimeTypes a Set of Mimetypes to keep
       */
@@ -119,7 +117,7 @@ package object archivesunleashed {
     def keepUrls(urls: Set[String]) = {
       rdd.filter(r => urls.contains(r.getUrl))
     }
-    /** Removes all data but selected url patterns
+    /** Removes all data but selected url patterns.
       *
       * @param urlREs a Set of Regular Expressions to keep
       */
@@ -131,23 +129,23 @@ package object archivesunleashed {
             case _ => false
           }).exists(identity))
     }
-    /** Removes all data but selected source domains
+    /** Removes all data but selected source domains.
       *
       * @param urls a Set of urls for the source domains to keep
       */
     def keepDomains(urls: Set[String]) = {
       rdd.filter(r => urls.contains(ExtractDomain(r.getUrl).replace("^\\s*www\\.", "")))
     }
-    /** Removes all data not in selected language
+    /** Removes all data not in selected language.
       *
       * @param lang a Set of ISO 639-2 codes
       */
     def keepLanguages(lang: Set[String]) = {
       rdd.filter(r => lang.contains(DetectLanguage(RemoveHTML(r.getContentString))))
     }
-    /** Removes all content that does not pass Regular Expression test
+    /** Removes all content that does not pass Regular Expression test.
       *
-      * @param contentREs a list of Regular expressions to keep.
+      * @param contentREs a list of Regular expressions to keep
       */
     def keepContent(contentREs: Set[Regex]) = {
       rdd.filter(r =>
@@ -157,9 +155,9 @@ package object archivesunleashed {
             case None => false
           }).exists(identity))
     }
-    /** Filters MimeTypes from RDDs
+    /** Filters MimeTypes from RDDs.
       *
-      * @param mimeTypes 
+      * @param mimeTypes
       */
     def discardMimeTypes(mimeTypes: Set[String]) = {
       rdd.filter(r => !mimeTypes.contains(r.getMimeType))

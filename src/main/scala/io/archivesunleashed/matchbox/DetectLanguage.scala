@@ -23,7 +23,7 @@ object DetectLanguage {
 
   /** Detects the language of a String input.
    *
-   * @param input The string for which language can be detected.
+   * @param input The string for which language can be detected
    * @return ISO 639-2 language code (eg. "en", "fr" or "it").
    */
   def apply(input: String): String = {

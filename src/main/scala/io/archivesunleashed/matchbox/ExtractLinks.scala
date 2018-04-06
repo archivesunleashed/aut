@@ -26,10 +26,10 @@ object ExtractLinks {
 
   /** Extract links.
     *
-    * @param src the src link.
-    * @param html the content from which links are to be extracted.
-    * @param base an optional base URI.
-    * @returns a sequence of (source, target, anchortext)
+    * @param src the src link
+    * @param html the content from which links are to be extracted
+    * @param base an optional base URI
+    * @returns a sequence of (source, target, anchortext).
     */
   def apply(src: String, html: String, base: String = ""): Seq[(String, String, String)] = {
     try {
