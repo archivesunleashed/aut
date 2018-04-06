@@ -57,10 +57,10 @@ class NERCombinedJson extends Serializable {
     val tmpFile = rnd.alphanumeric.take(8).mkString + ".almostjson"
     val tmpPath = new Path(tmpFile)
 
-    // Merge part-files into single file
+    // Merge part-files into single file.
     FileUtil.copyMerge(hdfs, srcPath, hdfs, tmpPath, false, hadoopConfig, null)
 
-    // Read file of JSON arrays, write into single JSON array of arrays
+    // Read file of JSON arrays, write into single JSON array of arrays.
     val fsInStream = hdfs.open(tmpPath)
     val inFile = new BufferedReader(new InputStreamReader(fsInStream))
     hdfs.delete(srcPath, true)  // Don't need part-files anymore
