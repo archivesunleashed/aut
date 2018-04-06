@@ -30,14 +30,14 @@ import scala.util.Random
 /** Classifies records using NER and stores results as JSON. */
 class NERCombinedJson extends Serializable {
 
-  /** Needs a description.
+  /** Merges the counts from two lists of tuples.
    *
-   * @param l1
-   * @param l2
+   * @param keyCount1 the first list of tuples (String, Count)
+   * @param keyCount2 the second list of tuples to merge into l1
    * @return
    */
-  def combineKeyCountLists (l1: List[(String, Int)], l2: List[(String, Int)]): List[(String, Int)] = {
-    (l1 ++ l2).groupBy(_._1 ).map {
+  def combineKeyCountLists (keyCount1: List[(String, Int)], keyCount2: List[(String, Int)]): List[(String, Int)] = {
+    (keyCount1 ++ keyCount2).groupBy(_._1 ).map {
       case (key, tuples) => (key, tuples.map( _._2).sum)
     }.toList
   }

@@ -89,9 +89,16 @@ object ExtractGraph {
   }
   /** Writes a Graph object to a Json file
     *
-    *
+    * @constructor graph - a SparkX graph object containing vertex and edge data.
+    * @return Unit()
     */
   implicit class GraphWriter(graph: Graph[VertexData, EdgeData]) {
+    /** writes a graph object to json files containing vertex and edge data.
+      *
+      * @param verticesPath Filepath for vertices output
+      * @param edgesPath Filepath for edges output
+      * @return Unit()
+      */
     def writeAsJson(verticesPath: String, edgesPath: String) = {
       // Combine edges of a given (date, src, dst) combination into single record with count value.
       val edgesCounted = graph.edges.countItems().map {
@@ -100,7 +107,6 @@ object ExtractGraph {
           "dst" -> r._1.attr.dst,
           "count" -> r._2)
       }
-
       edgesCounted.map(r => JsonUtils.toJson(r)).saveAsTextFile(edgesPath)
       graph.vertices.map(r => JsonUtils.toJson(r._2)).saveAsTextFile(verticesPath)
     }

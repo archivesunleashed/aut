@@ -42,19 +42,19 @@ object NER3Classifier {
 
   }
 
-  /** Needs a description.
+  /** Reads the NER Classifier file.
    *
-   * @param file
-   * @return
+   * @param file path to NER Classifier
+   * @return Unit()
    */
   def apply(file: String) = {
     serializedClassifier = file
   }
 
-  /** Needs a description.
+  /** Conducts NER classificiation based on NER Classifier.
    *
    * @param input
-   * @return
+   * @return json string containing lists of people, organizations and locations
    */
   def classify(input: String): String = {
     val emptyString: String = "{\"PERSON\":[],\"ORGANIZATION\"=[],\"LOCATION\"=[]}"
@@ -62,12 +62,9 @@ object NER3Classifier {
     for (t <- NERClassType.values) {
       if (t != NERClassType.O) entitiesByType.put(t, mutable.Seq())
     }
-
     var prevEntityType = NERClassType.O
     var entityBuffer: String = ""
-
     if (input == null) return emptyString
-
     try {
       if (classifier == null) classifier = CRFClassifier.getClassifier(serializedClassifier)
       val out: util.List[util.List[CoreLabel]] = classifier.classify(input)
@@ -105,7 +102,6 @@ object NER3Classifier {
         prevEntityType = NERClassType.O
         entityBuffer = ""
       }
-
       mapper.writeValueAsString(entitiesByType)
     } catch {
       case e: Exception =>

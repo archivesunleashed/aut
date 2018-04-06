@@ -16,7 +16,11 @@
  */
 package io.archivesunleashed.matchbox
 
-/** Extract hashtags from tweets. */
+/** Extract hashtags from tweets.
+  *
+  * @param src the source string
+  * @return a list of #hashtags contained in the string.
+ */
 object ExtractHashtags {
   val pattern = """#[^ ]+""".r
   def apply(src: String): List[String] = pattern.findAllIn(src).toList

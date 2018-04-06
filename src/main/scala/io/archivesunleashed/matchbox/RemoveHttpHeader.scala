@@ -20,10 +20,10 @@ package io.archivesunleashed.matchbox
 object RemoveHttpHeader {
   val headerEnd = "\r\n\r\n"
 
-  /** Remove HTML headers.
+  /** Remove HTTP headers.
    *
-   * @param content
-   * @return
+   * @param content String of WARC or ARC-based text content
+   * @return string with HTTP headers removed.
    */
   def apply(content: String): String = {
     try {
