@@ -40,7 +40,7 @@ package object archivesunleashed {
       sc.newAPIHadoopFile(path, classOf[ArchiveRecordInputFormat], classOf[LongWritable], classOf[ArchiveRecordWritable])
         .filter(r => (r._2.getFormat == ArchiveFormat.ARC) ||
           ((r._2.getFormat == ArchiveFormat.WARC) && r._2.getRecord.getHeader.getHeaderValue("WARC-Type").equals("response")))
-        .map(r => new ArchiveRecord(new SerializableWritable(r._2)))
+        .map(r => new ArchiveRecordImpl(new SerializableWritable(r._2)))
 
     def loadTweets(path: String, sc: SparkContext): RDD[JValue] =
       sc.textFile(path).filter(line => !line.startsWith("{\"delete\":"))
