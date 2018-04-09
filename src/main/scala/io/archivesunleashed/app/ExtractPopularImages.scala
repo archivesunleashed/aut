@@ -24,7 +24,7 @@ import org.apache.spark.{RangePartitioner, SparkContext}
 /** Extract most popular images from an RDD. */
 object ExtractPopularImages {
 
-  /** Extracts the n most popular images from an RDD within a given size range.
+  /** Extracts the <i>n</i> most popular images from an RDD within a given size range.
    *
    * @param records
    * @param limit number of most popular images in the output

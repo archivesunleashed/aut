@@ -21,7 +21,7 @@ import io.archivesunleashed.matchbox.{NER3Classifier, RemoveHTML}
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 
-/** Conducts Named Entity Recognition (NER) on a WARC or ARC file.
+/** Performs Named Entity Recognition (NER) on a WARC or ARC file.
   *
   * [[http://nlp.stanford.edu/software/CRF-NER.html Named Entity Recognition]]
   * applies rules formed in a [[https://stanfordnlp.github.io/CoreNLP  Named
@@ -29,7 +29,7 @@ import org.apache.spark.rdd.RDD
   */
 object ExtractEntities {
 
-  /** Extracts NER entities from WARC or ARC files at a given path to a given output directory.
+  /** Extracts named entities from WARC or ARC files at a given path to a given output directory.
     *
     * @param iNerClassifierFile path to NER classifier file
     * @param inputRecordFile path of ARC or WARC file from which to extract entities
@@ -43,7 +43,7 @@ object ExtractEntities {
     extractAndOutput(iNerClassifierFile, rdd, outputFile)
   }
 
-  /** Extracts NER entities from tuple-formatted derivatives scraped from a website.
+  /** Extracts named entities from tuple-formatted derivatives scraped from a website.
     *
     * @param iNerClassifierFile path of classifier file
     * @param inputFile path of file containing tuples (date: String, url: String, content: String)

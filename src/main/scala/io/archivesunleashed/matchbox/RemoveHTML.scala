@@ -19,10 +19,10 @@ package io.archivesunleashed.matchbox
 import java.io.IOException
 import org.jsoup.Jsoup
 
-/** Remove HTML markup with JSoup. */
+/** Removes HTML markup with JSoup. */
 object RemoveHTML {
 
-  /** Remove HTML markup.
+  /** Removes HTML markup.
    *
    * @param content an html or text string
    * @return content without html markup.

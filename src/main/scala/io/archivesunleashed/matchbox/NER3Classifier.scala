@@ -51,7 +51,7 @@ object NER3Classifier {
     serializedClassifier = file
   }
 
-  /** Conducts NER classificiation based on NER Classifier.
+  /** Performs NER classificiation based on NER Classifier.
    *
    * @param input
    * @return json string containing lists of people, organizations and locations.

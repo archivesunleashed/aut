@@ -48,6 +48,7 @@ package object archivesunleashed {
         .filter(r => (r._2.getFormat == ArchiveFormat.ARC) ||
           ((r._2.getFormat == ArchiveFormat.WARC) && r._2.getRecord.getHeader.getHeaderValue("WARC-Type").equals("response")))
         .map(r => new ArchiveRecordImpl(new SerializableWritable(r._2)))
+
     /** Creates an Archive Record RDD from tweets.
       *
       * @param path the path to the Tweets file
@@ -74,7 +75,7 @@ package object archivesunleashed {
     * To load such an RDD, please see [[RecordLoader]].
     */
   implicit class WARecordRDD(rdd: RDD[ArchiveRecord]) extends java.io.Serializable {
-    /** Removes all non-html-based data (images, executables etc.) from html text*/
+    /** Removes all non-html-based data (images, executables etc.) from html text. */
     def keepValidPages(): RDD[ArchiveRecord] = {
       rdd.filter(r =>
         r.getCrawlDate != null
@@ -84,6 +85,7 @@ package object archivesunleashed {
           || r.getUrl.endsWith("html"))
           && !r.getUrl.endsWith("robots.txt"))
     }
+
     /** Removes all data except images. */
     def keepImages() = {
       rdd.filter(r =>
@@ -95,6 +97,7 @@ package object archivesunleashed {
             || r.getUrl.endsWith("png"))
           && !r.getUrl.endsWith("robots.txt"))
     }
+
     /** Removes all data but selected mimeTypes.
       *
       * @param mimeTypes a Set of Mimetypes to keep
@@ -102,7 +105,8 @@ package object archivesunleashed {
     def keepMimeTypes(mimeTypes: Set[String]) = {
       rdd.filter(r => mimeTypes.contains(r.getMimeType))
     }
-    /** Removes all data that does not have selected data
+
+    /** Removes all data that does not have selected data.
       *
       * @param dates a list of dates to keep
       * @param component the selected DateComponent enum value
@@ -110,13 +114,15 @@ package object archivesunleashed {
     def keepDate(dates: List[String], component: DateComponent = DateComponent.YYYYMMDD) = {
       rdd.filter(r => dates.contains(ExtractDate(r.getCrawlDate, component)))
     }
-    /** Removes all data but selected exact urls
+
+    /** Removes all data but selected exact URLs
       *
-      * @param urls a Set of urls to keep
+      * @param urls a Set of URLs to keep
       */
     def keepUrls(urls: Set[String]) = {
       rdd.filter(r => urls.contains(r.getUrl))
     }
+
     /** Removes all data but selected url patterns.
       *
       * @param urlREs a Set of Regular Expressions to keep
@@ -129,6 +135,7 @@ package object archivesunleashed {
             case _ => false
           }).exists(identity))
     }
+
     /** Removes all data but selected source domains.
       *
       * @param urls a Set of urls for the source domains to keep
@@ -136,6 +143,7 @@ package object archivesunleashed {
     def keepDomains(urls: Set[String]) = {
       rdd.filter(r => urls.contains(ExtractDomain(r.getUrl).replace("^\\s*www\\.", "")))
     }
+
     /** Removes all data not in selected language.
       *
       * @param lang a Set of ISO 639-2 codes
@@ -143,6 +151,7 @@ package object archivesunleashed {
     def keepLanguages(lang: Set[String]) = {
       rdd.filter(r => lang.contains(DetectLanguage(RemoveHTML(r.getContentString))))
     }
+
     /** Removes all content that does not pass Regular Expression test.
       *
       * @param contentREs a list of Regular expressions to keep
@@ -155,6 +164,7 @@ package object archivesunleashed {
             case None => false
           }).exists(identity))
     }
+
     /** Filters MimeTypes from RDDs.
       *
       * @param mimeTypes
