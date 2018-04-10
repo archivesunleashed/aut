@@ -29,7 +29,7 @@ import org.archive.io.arc.ARCRecord
 import org.archive.io.warc.WARCRecord
 import org.archive.util.ArchiveUtils
 
-/** ArchiveRecord.
+/** Used by RecordLoader to extract data from WARC and ARC files.
  *
  *  @constructor an archive record.
  *  @param r
