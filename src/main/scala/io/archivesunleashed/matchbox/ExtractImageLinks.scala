@@ -17,21 +17,18 @@
 package io.archivesunleashed.matchbox
 
 import java.io.IOException
-
 import org.jsoup.Jsoup
 import org.jsoup.select.Elements
-
 import scala.collection.mutable
 
-/**
-  * UDF for extracting image links from a webpage given the HTML content (using Jsoup).
-  */
+/** Extracts image links from a webpage given the HTML content (using Jsoup). */
 object ExtractImageLinks {
-  /**
+
+  /** Extracts image links.
+    *
     * @param src the src link
     * @param html the content from which links are to be extracted
-    *
-    * Returns a sequence of image links
+    * @return a sequence of image links.
     */
   def apply(src: String, html: String): Seq[String] = {
     if (html.isEmpty) return Nil

@@ -16,20 +16,16 @@
  */
 package io.archivesunleashed.matchbox
 
-import java.util
-
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, JsonScalaEnumeration}
 import edu.stanford.nlp.ie.AbstractSequenceClassifier
 import edu.stanford.nlp.ie.crf.CRFClassifier
 import edu.stanford.nlp.ling.{CoreAnnotations, CoreLabel}
-
+import java.util
 import scala.collection.mutable
 
-/**
-  * UDF which reads in a text string, and returns entities identified by the configured Stanford NER classifier
-  */
+/** Reads in a text string, and returns entities identified by the configured Stanford NER classifier. */
 object NER3Classifier {
 
   var serializedClassifier: String = _
@@ -46,22 +42,29 @@ object NER3Classifier {
 
   }
 
+  /** Reads the NER Classifier file.
+   *
+   * @param file path to NER Classifier
+   * @return Unit().
+   */
   def apply(file: String) = {
     serializedClassifier = file
   }
 
+  /** Performs NER classificiation based on NER Classifier.
+   *
+   * @param input
+   * @return json string containing lists of people, organizations and locations.
+   */
   def classify(input: String): String = {
     val emptyString: String = "{\"PERSON\":[],\"ORGANIZATION\"=[],\"LOCATION\"=[]}"
     val entitiesByType = mutable.LinkedHashMap[NERClassType.Value, mutable.Seq[String]]()
     for (t <- NERClassType.values) {
       if (t != NERClassType.O) entitiesByType.put(t, mutable.Seq())
     }
-
     var prevEntityType = NERClassType.O
     var entityBuffer: String = ""
-
     if (input == null) return emptyString
-
     try {
       if (classifier == null) classifier = CRFClassifier.getClassifier(serializedClassifier)
       val out: util.List[util.List[CoreLabel]] = classifier.classify(input)
@@ -76,7 +79,7 @@ object NER3Classifier {
           val currEntityType = NERClassType.withName(classText)
           if (prevEntityType != currEntityType) {
             if (prevEntityType != NERClassType.O && !entityBuffer.equals("")) {
-              //time to commit
+              // Time to commit.
               entitiesByType.put(prevEntityType, entitiesByType.get(prevEntityType).get ++ Seq(entityBuffer))
               entityBuffer = ""
             }
@@ -89,17 +92,16 @@ object NER3Classifier {
               entityBuffer += " " + wordText
           }
         }
-        //end of sentence
-        //apply commit and reset
+        // End of sentence.
+        // Apply commit and reset.
         if (prevEntityType != NERClassType.O && !entityBuffer.equals("")) {
           entitiesByType.put(prevEntityType, entitiesByType.get(prevEntityType).get ++ Seq(entityBuffer))
           entityBuffer = ""
         }
-        //reset
+        // Reset.
         prevEntityType = NERClassType.O
         entityBuffer = ""
       }
-
       mapper.writeValueAsString(entitiesByType)
     } catch {
       case e: Exception =>

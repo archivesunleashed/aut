@@ -17,22 +17,19 @@
 package io.archivesunleashed.matchbox
 
 import java.io.IOException
-
 import org.jsoup.Jsoup
 import org.jsoup.select.Elements
-
 import scala.collection.mutable
 
-/**
-  * UDF for extracting links from a webpage given the HTML content (using Jsoup).
-  */
+/** Extracts links from a webpage given the HTML content (using Jsoup). */
 object ExtractLinks {
-  /**
-    * @param src the src link.
-    * @param html the content from which links are to be extracted.
-    * @param base an optional base URI.
+
+  /** Extract links.
     *
-    * Returns a sequence of (source, target, anchortext)
+    * @param src the src link
+    * @param html the content from which links are to be extracted
+    * @param base an optional base URI
+    * @return a sequence of (source, target, anchortext).
     */
   def apply(src: String, html: String, base: String = ""): Seq[(String, String, String)] = {
     try {
