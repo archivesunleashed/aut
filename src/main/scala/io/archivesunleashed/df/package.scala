@@ -7,4 +7,6 @@ import org.apache.spark.sql.functions.udf
   */
 package object df {
   val ExtractDomain = udf(io.archivesunleashed.matchbox.ExtractDomain.apply(_: String, ""))
+
+  val RemovePrefixWWW = udf[String, String](_.replaceAll("^\\s*www\\.", ""))
 }
