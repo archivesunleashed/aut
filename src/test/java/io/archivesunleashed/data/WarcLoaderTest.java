@@ -153,4 +153,11 @@ public class WarcLoaderTest {
     LOG.info(cnt + " records read!");
     assertEquals(cntTest, cnt);
   }
+
+  @Test
+  public final void testContentTypeWithCharset() throws Exception {
+    byte[] content = "Content-Type: text/html;charset=ISO-8859-1\r\n".getBytes("UTF-8");
+    String mimeType = WarcRecordUtils.getWarcResponseMimeType(content);
+    assertEquals("text/html", mimeType);
+  }
 }
