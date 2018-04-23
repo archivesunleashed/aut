@@ -156,8 +156,9 @@ public class WarcLoaderTest {
 
   @Test
   public final void testContentTypeWithCharset() throws Exception {
-    byte[] content = "Content-Type: text/html;charset=ISO-8859-1\r\n".getBytes("UTF-8");
-    String mimeType = WarcRecordUtils.getWarcResponseMimeType(content);
+    String content = "Content-Type: text/html;charset=ISO-8859-1\r\n";
+    byte[] contentBytes = content.getBytes("UTF-8");
+    String mimeType = WarcRecordUtils.getWarcResponseMimeType(contentBytes);
     assertEquals("text/html", mimeType);
   }
 }

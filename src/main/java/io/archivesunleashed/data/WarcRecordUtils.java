@@ -98,7 +98,8 @@ public final class WarcRecordUtils implements WARCConstants {
     // This is a somewhat janky way to get the MIME type of the response.
     // Moreover the parser is not fully complaint to the specification.
     // See: https://www.w3.org/Protocols/rfc1341/4_Content-Type.html
-    // It would be much better to parse all headers using org.apache.commons.httpclient.HeaderElement
+    // It would be much better to parse all headers using an external library:
+    //   org.apache.commons.httpclient.HeaderElement
     // Note that this is different from the "Content-Type" in the WARC header.
     Pattern pattern = Pattern.compile("Content-Type: ([^\\s;]+) *(;.*)?",
             Pattern.CASE_INSENSITIVE);
