@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.archivesunleashed.matchbox
 
 import org.junit.runner.RunWith
@@ -38,6 +39,7 @@ class ExtractDomainTest extends FunSuite {
       case (link, domain) => assert(ExtractDomain(link) == domain)
     }
   }
+
   test("withBase") {
     data2.foreach {
       case (link, base, domain) => assert(ExtractDomain(link, base) == domain)
@@ -48,5 +50,4 @@ class ExtractDomainTest extends FunSuite {
     assert(ExtractDomain(null) == null)
     assert(ExtractDomain("index.html", null) == null)
   }
-
 }

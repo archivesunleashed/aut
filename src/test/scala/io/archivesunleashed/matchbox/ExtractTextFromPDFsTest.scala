@@ -15,19 +15,17 @@
  * limitations under the License.
  */
 
- package io.archivesunleashed.matchbox
+package io.archivesunleashed.matchbox
 
- import org.junit.runner.RunWith
- import org.scalatest.FunSuite
- import org.scalatest.junit.JUnitRunner
- import io.archivesunleashed.matchbox._
- import org.scalatest.Matchers._
- import org.apache.tika.parser.pdf.PDFParser;
+import org.apache.tika.parser.pdf.PDFParser
+import org.junit.runner.RunWith
+import org.scalatest.FunSuite
+import org.scalatest.Matchers._
+import org.scalatest.junit.JUnitRunner
 
- @RunWith(classOf[JUnitRunner])
- class ExtractTextFromPDFsTest extends FunSuite {
-   test ("get parser") {
-     ExtractTextFromPDFs.pdfParser shouldBe a [PDFParser]
- }
-
- }
+@RunWith(classOf[JUnitRunner])
+class ExtractTextFromPDFsTest extends FunSuite {
+  test("get parser") {
+    ExtractTextFromPDFs.pdfParser shouldBe a[PDFParser]
+  }
+}
