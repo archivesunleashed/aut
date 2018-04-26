@@ -14,11 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.archivesunleashed
 
-import matchbox._
-
 import com.google.common.io.Resources
+import io.archivesunleashed.matchbox._
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner

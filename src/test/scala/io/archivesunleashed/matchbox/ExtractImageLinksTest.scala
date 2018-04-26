@@ -14,12 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.archivesunleashed.matchbox
+
+import java.io.IOException
 
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-import java.io.IOException
 
 @RunWith(classOf[JUnitRunner])
 class ExtractImageLinksTest extends FunSuite {
@@ -48,6 +50,8 @@ class ExtractImageLinksTest extends FunSuite {
     assert(ExtractImageLinks("", "") == Nil)
     // Need way of creating an exception here
     val invalid = null
-    intercept[IOException] { ExtractImageLinks (invalid, fragment)}
+    intercept[IOException] {
+      ExtractImageLinks(invalid, fragment)
+    }
   }
 }

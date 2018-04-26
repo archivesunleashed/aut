@@ -15,23 +15,27 @@
  * limitations under the License.
  */
 
- package io.archivesunleashed.matchbox
+package io.archivesunleashed.matchbox
 
- import org.junit.runner.RunWith
- import org.scalatest.FunSuite
- import org.scalatest.junit.JUnitRunner
- import java.io.IOException
+import java.io.IOException
 
- @RunWith(classOf[JUnitRunner])
- class ExtractBoilerpipeTextTest extends FunSuite {
-   var text = """<p>Text with a boiler plate.<p>
+import org.junit.runner.RunWith
+import org.scalatest.FunSuite
+import org.scalatest.junit.JUnitRunner
+
+@RunWith(classOf[JUnitRunner])
+class ExtractBoilerPipeTextTest extends FunSuite {
+  var text = """<p>Text with a boiler plate.<p>
    <footer>Copyright 2017</footer>"""
-   var boiler = """Copyright 2017"""
-   test ("Collects boilerpip") {
-     assert (ExtractBoilerpipeText (text) == boiler)
-     assert (ExtractBoilerpipeText ("") == Nil)
-     assert (ExtractBoilerpipeText ("All Rights Reserved.") == Nil)
-     val caught = intercept[IOException] {ExtractBoilerpipeText (null)}
-     assert (caught.getMessage == "Caught exception processing input row java.lang.NullPointerException")
-   }
- }
+  var boiler = """Copyright 2017"""
+
+  test("Collects boilerpip") {
+    assert(ExtractBoilerpipeText(text) == boiler)
+    assert(ExtractBoilerpipeText("") == Nil)
+    assert(ExtractBoilerpipeText("All Rights Reserved.") == Nil)
+    val caught = intercept[IOException] {
+      ExtractBoilerpipeText(null)
+    }
+    assert(caught.getMessage == "Caught exception processing input row java.lang.NullPointerException")
+  }
+}

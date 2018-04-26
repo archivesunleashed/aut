@@ -14,18 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.archivesunleashed
 
-import matchbox._
-import matchbox.ExtractDate.DateComponent
-import matchbox.ExtractDate.DateComponent.DateComponent
-
 import com.google.common.io.Resources
+import io.archivesunleashed.matchbox.ExtractDate.DateComponent
+import io.archivesunleashed.matchbox._
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
-import scala.util.matching.Regex
 
 @RunWith(classOf[JUnitRunner])
 class RecordRDDTest extends FunSuite with BeforeAndAfter {
@@ -34,7 +32,6 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
   private val master = "local[4]"
   private val appName = "example-spark"
   private var sc: SparkContext = _
-
 
   before {
     val conf = new SparkConf()

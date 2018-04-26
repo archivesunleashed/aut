@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.archivesunleashed.matchbox
 
 import java.io.IOException
@@ -38,6 +39,7 @@ class StringUtilsTest extends FunSuite {
     val caught = intercept[IOException] {except.escapeInvalidXML()}
     assert (caught.getMessage == "Caught exception processing input row ");
   }
+
   test ("md5 hash") {
     val s: String = "unesco.org";
     assert(s.computeHash() == "8e8decc8e8107bcf9d3896f3222b77d8");

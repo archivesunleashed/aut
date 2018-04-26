@@ -15,58 +15,56 @@
  * limitations under the License.
  */
 
- package io.archivesunleashed
+package io.archivesunleashed
 
- import com.google.common.io.Resources
- import org.apache.spark.{SparkConf, SparkContext}
- import org.junit.runner.RunWith
- import org.scalatest.junit.JUnitRunner
- import org.scalatest.{BeforeAndAfter, FunSuite}
- import java.nio.file.{Files, Paths}
+import com.google.common.io.Resources
+import io.archivesunleashed.util.TweetUtils._
+import org.apache.spark.{SparkConf, SparkContext}
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
+import org.scalatest.{BeforeAndAfter, FunSuite}
 
- import io.archivesunleashed.util.TweetUtils._
+@RunWith(classOf[JUnitRunner])
+class RecordLoaderTest extends FunSuite with BeforeAndAfter {
+  private val warcPath = Resources.getResource("warc/example.warc.gz").getPath
+  private val tweetPath = Resources.getResource("arc/tweetsTest.json").getPath
+  private val delTweetPath = Resources.getResource("arc/delTweetsTest.json").getPath
+  private val master = "local[4]"
+  private val appName = "example-spark"
+  private var sc: SparkContext = _
 
- @RunWith(classOf[JUnitRunner])
- class RecordLoaderTest extends FunSuite with BeforeAndAfter {
-   private val warcPath = Resources.getResource("warc/example.warc.gz").getPath
-   private val tweetPath = Resources.getResource("arc/tweetsTest.json").getPath
-   private val delTweetPath = Resources.getResource("arc/delTweetsTest.json").getPath
-   private val master = "local[4]"
-   private val appName = "example-spark"
-   private var sc: SparkContext = _
+  before {
+    val conf = new SparkConf()
+      .setMaster(master)
+      .setAppName(appName)
+    conf.set("spark.driver.allowMultipleContexts", "true");
+    sc = new SparkContext(conf)
+  }
 
-   before {
-     val conf = new SparkConf()
-       .setMaster(master)
-       .setAppName(appName)
-     conf.set("spark.driver.allowMultipleContexts", "true");
-     sc = new SparkContext(conf)
-   }
+  test("loads Warc") {
+    val base = RecordLoader.loadArchives(warcPath, sc)
+      .keepValidPages()
+      .map(x => x.getUrl)
+      .take(1)
+    assert(base(0) == "http://www.archive.org/")
+  }
 
-   test("loads Warc") {
-     val base = RecordLoader.loadArchives(warcPath, sc)
-       .keepValidPages()
-       .map(x => x.getUrl)
-       .take(1)
-     assert (base(0) == "http://www.archive.org/")
-   }
+  test("loads Tweets") {
+    val base = RecordLoader.loadTweets(tweetPath, sc)
+      .map(x => x.text())
+      .collect()
+    assert(base(0) == "some text")
+    assert(base(1) == "some more text")
+  }
 
-   test("loads Tweets") {
-     val base = RecordLoader.loadTweets(tweetPath, sc)
-       .map(x => x.text())
-       .collect()
-     assert (base(0) == "some text")
-     assert (base(1) == "some more text")
-   }
+  test("does not load deleted") {
+    val base = RecordLoader.loadTweets(delTweetPath, sc).collect()
+    assert(base.deep == Array().deep)
+  }
 
-   test("does not load deleted") {
-     val base = RecordLoader.loadTweets(delTweetPath, sc).collect()
-     assert (base.deep == Array().deep)
-   }
-
-   after {
-     if (sc != null) {
-       sc.stop()
-     }
-   }
- }
+  after {
+    if (sc != null) {
+      sc.stop()
+    }
+  }
+}

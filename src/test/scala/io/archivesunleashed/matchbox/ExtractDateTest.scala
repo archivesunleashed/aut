@@ -14,12 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.archivesunleashed.matchbox
 
+import io.archivesunleashed.matchbox.ExtractDate.DateComponent._
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-import io.archivesunleashed.matchbox.ExtractDate.DateComponent._
 
 @RunWith(classOf[JUnitRunner])
 class ExtractDateTest extends FunSuite {
@@ -34,10 +35,10 @@ class ExtractDateTest extends FunSuite {
   }
 
   test("more perfect") {
-    assert(ExtractDate("20151204", YYYY) == "20151204".substring(0,4))
-    assert(ExtractDate("20151204", MM) == "20151204".substring(4,6))
-    assert(ExtractDate("20151204", DD) == "20151204".substring(6,8))
-    assert(ExtractDate("20151204", YYYYMM) == "20151204".substring(0,6))
-    assert(ExtractDate("20151204", YYYYMMDD) == "20151204".substring(0,8))
+    assert(ExtractDate("20151204", YYYY) == "20151204".substring(0, 4))
+    assert(ExtractDate("20151204", MM) == "20151204".substring(4, 6))
+    assert(ExtractDate("20151204", DD) == "20151204".substring(6, 8))
+    assert(ExtractDate("20151204", YYYYMM) == "20151204".substring(0, 6))
+    assert(ExtractDate("20151204", YYYYMMDD) == "20151204".substring(0, 8))
   }
 }
