@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.archivesunleashed.matchbox
 
 import org.junit.runner.RunWith
@@ -24,7 +25,8 @@ import org.scalatest.junit.JUnitRunner
 class ExtractUrlsTest extends FunSuite {
   test("simple") {
     val tweet = "Tweet with http://t.co/sgeexaad and http://twitter.com/ and https://twitter.com/lintool/"
-    val extracted = ExtractUrls(tweet).toList
+    val extracted = ExtractUrls(tweet)
+
     assert(extracted.size == 3)
     assert("http://t.co/sgeexaad" == extracted(0))
     assert("http://twitter.com/" == extracted(1))

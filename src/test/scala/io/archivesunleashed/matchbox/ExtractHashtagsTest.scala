@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.archivesunleashed.matchbox
 
 import org.junit.runner.RunWith
@@ -21,7 +22,7 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class ExtractHashtagTest extends FunSuite {
+class ExtractHashtagsTest extends FunSuite {
   test("simple") {
     val tweet = "Here are #some #hashtags #TeSTing"
     val extracted = ExtractHashtags(tweet).toList

@@ -14,13 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.archivesunleashed.matchbox
+
+import java.io.IOException
 
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
+
 import scala.collection.mutable
-import java.io.IOException
 
 @RunWith(classOf[JUnitRunner])
 class ExtractLinksTest extends FunSuite {
@@ -51,6 +54,5 @@ class ExtractLinksTest extends FunSuite {
     assert(ExtractLinks("", "", "http://www.foobar.org/index.html") == mutable.MutableList[(String, String, String)]())
     // invalid url should throw exception - need more information here
     intercept[IOException] { ExtractLinks("", null, "FROTSTEDwww.foobar.org/index.html") }
-
   }
 }
