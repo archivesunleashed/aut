@@ -35,6 +35,7 @@ class ArcTest extends FunSuite with BeforeAndAfter {
     val conf = new SparkConf()
       .setMaster(master)
       .setAppName(appName)
+    conf.set("spark.driver.allowMultipleContexts", "true");
     sc = new SparkContext(conf)
   }
 
