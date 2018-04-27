@@ -11,3 +11,5 @@ src/main/solr/lib/
 .*.swp
 workbench.xmi
 build
+derby.log
+metastore_db

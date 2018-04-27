@@ -14,14 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.archivesunleashed.matchbox
+
+import java.awt.image.BufferedImage
+import java.io.ByteArrayOutputStream
+import javax.imageio.ImageIO
 
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-import java.io.ByteArrayOutputStream
-import java.awt.image.BufferedImage
-import javax.imageio.ImageIO
 
 @RunWith(classOf[JUnitRunner])
 class ComputeImageSizeTest extends FunSuite {

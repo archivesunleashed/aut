@@ -23,29 +23,27 @@ import java.nio.file.{Files, Paths}
 
 import org.apache.spark.rdd.RDD
 
-
-
 /**
-  * UDF for exporting an RDD representing a collection of links to a GDF file.
+  * UDF for exporting an RDD representing a collection of links to a GraphML file.
   */
-
 object WriteGraphML {
-  /**
-  * @param rdd RDD of elements in format ((datestring, source, target), count).
-  * @param graphmlPath Output file.
-  *
-  * Writes graph nodes and edges to file.
-  */
 
-
-// Compute a hash of a file
-// The output of this function should match the output of running "md5 -q <file>"
-
+  /** Writes graph nodes and edges to file.
+   *
+   * @param rdd RDD of elements in format ((datestring, source, target), count)
+   * @param graphmlPath output file
+   */
   def apply(rdd: RDD[((String, String, String), Int)], graphmlPath: String): Boolean = {
     if (graphmlPath.isEmpty()) false
     else makeFile (rdd, graphmlPath)
   }
 
+  /** Produces the GraphML output from an RDD of tuples and outputs it to graphmlPath.
+   *
+   * @param rdd RDD of elements in format ((datestring, source, target), count)
+   * @param graphmlPath output file
+   * @return true on successful run.
+   */
   def makeFile (rdd: RDD[((String, String, String), Int)], graphmlPath: String): Boolean = {
     val outFile = Files.newBufferedWriter(Paths.get(graphmlPath), StandardCharsets.UTF_8)
     val edges = rdd.map(r => "<edge source=\"" + r._1._2.computeHash() + "\" target=\"" +

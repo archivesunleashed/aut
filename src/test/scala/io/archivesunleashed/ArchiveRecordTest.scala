@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.archivesunleashed
 
 import com.google.common.io.Resources
@@ -21,7 +22,6 @@ import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
-
 
 @RunWith(classOf[JUnitRunner])
 class ArchiveRecordTest extends FunSuite with BeforeAndAfter {

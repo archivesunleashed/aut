@@ -18,7 +18,14 @@ package io.archivesunleashed.matchbox
 
 import java.net.URL
 
+/** Extracts the host domain name from a full url string. */
 object ExtractDomain {
+  /** Extract source domains from a full url string.
+   *
+   * @param url a url as a string
+   * @param source an optional default url for urls with no valid domain host
+   * @return domain host, source or null if url is null.
+   */
   def apply(url: String, source: String = ""): String = {
     if (url == null) return null
     var host: String = null

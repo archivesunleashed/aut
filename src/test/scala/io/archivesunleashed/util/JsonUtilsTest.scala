@@ -15,28 +15,27 @@
  * limitations under the License.
  */
 
- package io.archivesunleashed.matchbox
+package io.archivesunleashed.matchbox
 
- import org.junit.runner.RunWith
- import org.scalatest.FunSuite
- import org.scalatest.junit.JUnitRunner
- import io.archivesunleashed.util.JsonUtils
+import io.archivesunleashed.util.JsonUtils
+import org.junit.runner.RunWith
+import org.scalatest.FunSuite
+import org.scalatest.junit.JUnitRunner
 
- @RunWith(classOf[JUnitRunner])
- class JsonUtilsTest extends FunSuite {
-   test("proper Map") {
-     val map: Map[Symbol, Any] = Map('a -> 1, 'b -> 2, 'c -> 3)
-     assert(JsonUtils.toJson(map) == """{"a":1,"b":2,"c":3}""")
-   }
+@RunWith(classOf[JUnitRunner])
+class JsonUtilsTest extends FunSuite {
+  test("proper Map") {
+    val map: Map[Symbol, Any] = Map('a -> 1, 'b -> 2, 'c -> 3)
+    assert(JsonUtils.toJson(map) == """{"a":1,"b":2,"c":3}""")
+  }
 
-   test("any value") {
-     val value = 12345
-     assert(JsonUtils.toJson(12345) == "12345")
-   }
+  test("any value") {
+    val value = 12345
+    assert(JsonUtils.toJson(12345) == "12345")
+  }
 
-   test("json string") {
-     val jsonString = """{"a":1,"b":2,"c":3}"""
-     assert(JsonUtils.fromJson(jsonString) == Map("a" -> 1, "b" -> 2, "c" -> 3 ))
-
-   }
- }
+  test("json string") {
+    val jsonString = """{"a":1,"b":2,"c":3}"""
+    assert(JsonUtils.fromJson(jsonString) == Map("a" -> 1, "b" -> 2, "c" -> 3))
+  }
+}

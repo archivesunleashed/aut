@@ -16,6 +16,11 @@
  */
 package io.archivesunleashed.matchbox
 
+/** Extracts Urls found in a string of text.
+  *
+  * @param src the source text
+  * @return a list of urls found in the string.
+  */
 object ExtractUrls {
   val pattern = """https?://[^ ]+""".r
   def apply(src: String): List[String] = pattern.findAllIn(src).toList

@@ -19,10 +19,17 @@ package io.archivesunleashed.matchbox
 import java.io.ByteArrayInputStream
 import javax.imageio.ImageIO
 
-/**
-  * Created by youngbinkim on 7/7/16.
-  */
+/** Image sizing utilities. */
 object ComputeImageSize {
+
+  /** Computes image size from a byte array using ImageIO.
+   *
+   * Used by `ExtractPopularImages` to calculate the size of
+   * the image as a tuple of integers (width, height).
+   *
+   * @param bytes image as a byte array
+   * @return size of image as a tuple (width, height) or (0,0).
+   */
   def apply(bytes: Array[Byte]): (Int, Int) = {
     try {
       val in = new ByteArrayInputStream(bytes)

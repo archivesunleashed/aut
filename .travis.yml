@@ -13,6 +13,7 @@ script:
  - mvn javadoc:jar
  - mvn javadoc:test-aggregate
  - mvn cobertura:cobertura
+ - mvn site
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

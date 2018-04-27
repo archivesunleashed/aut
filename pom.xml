@@ -5,7 +5,7 @@
   <groupId>io.archivesunleashed</groupId>
   <artifactId>aut</artifactId>
   <packaging>jar</packaging>
-  <version>0.14.1-SNAPSHOT</version>
+  <version>0.16.1-SNAPSHOT</version>
   <name>Archives Unleashed Toolkit</name>
   <description>An open-source platform for managing and analyzing web archives</description>
   <url>https://github.com/archivesunleashed/aut</url>
@@ -171,6 +171,30 @@
           <execution>
             <id>checkstyle</id>
             <phase>verify</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- for scalastyle -->
+      <plugin>
+        <groupId>org.scalastyle</groupId>
+        <artifactId>scalastyle-maven-plugin</artifactId>
+        <version>1.0.0</version>
+        <configuration>
+          <verbose>false</verbose>
+          <failOnViolation>true</failOnViolation>
+          <includeTestSourceDirectory>true</includeTestSourceDirectory>
+          <failOnWarning>false</failOnWarning>
+          <sourceDirectory>${project.basedir}/src/main/scala</sourceDirectory>
+          <testSourceDirectory>${project.basedir}/src/test/scala</testSourceDirectory>
+          <configLocation>${project.basedir}/config/checkstyle/scalastyle_config.xml</configLocation>
+          <outputFile>${project.basedir}/target/scalastyle-output.xml</outputFile>
+          <outputEncoding>UTF-8</outputEncoding>
+        </configuration>
+        <executions>
+          <execution>
             <goals>
               <goal>check</goal>
             </goals>
@@ -449,7 +473,7 @@
     <dependency>
       <groupId>org.json4s</groupId>
       <artifactId>json4s-jackson_2.11</artifactId>
-      <version>3.5.1</version>
+      <version>3.2.11</version>
     </dependency>
     <dependency>
       <groupId>org.scala-lang.modules</groupId>

@@ -22,9 +22,7 @@ import java.security.MessageDigest
 
 import scala.xml.Utility._
 
-/**
-  * Package object which supplies implicits providing common UDF-related functionalities.
-  */
+/** Package object which supplies implicits providing common UDF-related functionalities. */
 package object matchbox {
   implicit class WWWLink(s: String) {
     def removePrefixWWW(): String = {

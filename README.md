@@ -2,14 +2,17 @@
 [![Build Status](https://travis-ci.org/archivesunleashed/aut.svg?branch=master)](https://travis-ci.org/archivesunleashed/aut)
 [![codecov](https://codecov.io/gh/archivesunleashed/aut/branch/master/graph/badge.svg)](https://codecov.io/gh/archivesunleashed/aut)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.archivesunleashed/aut/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.archivesunleashed/aut)
-[![Javadoc](https://javadoc-badge.appspot.com/io.archivesunleashed/aut.svg?label=javadoc)](http://java.docs.archivesunleashed.io/0.14.0/apidocs/index.html)
-[![Scaladoc](https://javadoc-badge.appspot.com/io.archivesunleashed/aut.svg?label=scaladoc)](http://java.docs.archivesunleashed.io/0.14.0/scaladocs/index.html)
+[![Javadoc](https://javadoc-badge.appspot.com/io.archivesunleashed/aut.svg?label=javadoc)](http://java.docs.archivesunleashed.io/0.16.0/apidocs/index.html)
+[![Scaladoc](https://javadoc-badge.appspot.com/io.archivesunleashed/aut.svg?label=scaladoc)](http://java.docs.archivesunleashed.io/0.16.0/scaladocs/index.html)
 [![LICENSE](https://img.shields.io/badge/license-Apache-blue.svg?style=flat-square)](./LICENSE)
 [![Contribution Guidelines](http://img.shields.io/badge/CONTRIBUTING-Guidelines-blue.svg)](./CONTRIBUTING.md)
 
-The Archives Unleashed Toolkit is an open-source platform for analyzing web archives. Tight integration with Hadoop provides powerful tools for analytics and data processing via Apache Spark. Our full documentation can be found at <http://archivesunleashed.org/aut/>.
+The Archives Unleashed Toolkit is an open-source platform for analyzing web archives built around [Apache Spark](https://spark.apache.org/). This toolkit is part of the [Archives Unleashed Project](http://archivesunleashed.org/).
+Our full documentation can be found [here](http://archivesunleashed.org/aut/).
 
-The Archives Unleashed Toolkit is part of the [Archives Unleashed Project](http://archivesunleashed.org/).
+The Archives Unleashed Toolkit grew out of a previous project called Warcbase. The following article provides a nice overview, much of which is still relevant:
+
++ Jimmy Lin, Ian Milligan, Jeremy Wiebe, and Alice Zhou. [Warcbase: Scalable Analytics Infrastructure for Exploring Web Archives](https://dl.acm.org/authorize.cfm?key=N46731). _ACM Journal on Computing and Cultural Heritage_, 10(4), Article 22, 2017.
 
 ## Getting Started
 
