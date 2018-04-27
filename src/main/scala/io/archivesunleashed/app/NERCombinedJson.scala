@@ -87,7 +87,7 @@ class NERCombinedJson extends Serializable {
     * @param outputFile path of output file (e.g., "entities.json")
     * @param sc Spark context object
     */
-  def classify(iNerClassifierFile: String, inputFile: String, outputFile: String, sc: SparkContext) {
+  def classify(iNerClassifierFile: String, inputFile: String, outputFile: String, sc: SparkContext): Unit = {
     val out = sc.textFile(inputFile)
       .mapPartitions(iter => {
         NER3Classifier.apply(iNerClassifierFile)

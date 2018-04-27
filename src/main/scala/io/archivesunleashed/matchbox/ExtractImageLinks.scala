@@ -31,22 +31,24 @@ object ExtractImageLinks {
     * @return a sequence of image links.
     */
   def apply(src: String, html: String): Seq[String] = {
-    if (html.isEmpty) return Nil
-    try {
-      val output = mutable.MutableList[String]()
-      val doc = Jsoup.parse(html)
-      val links: Elements = doc.select("img[src]")
-      val it = links.iterator()
-      while (it.hasNext) {
-        val link = it.next()
-        link.setBaseUri(src)
-        val target = link.attr("abs:src")
-        output += (target)
+    if (html.isEmpty) { Nil }
+    else {
+      try {
+        val output = mutable.MutableList[String]()
+        val doc = Jsoup.parse(html)
+        val links: Elements = doc.select("img[src]")
+        val it = links.iterator()
+        while (it.hasNext) {
+          val link = it.next()
+          link.setBaseUri(src)
+          val target = link.attr("abs:src")
+          output += (target)
+        }
+        output
+      } catch {
+        case e: Exception =>
+          throw new IOException("Caught exception processing input ", e);
       }
-      output
-    } catch {
-      case e: Exception =>
-        throw new IOException("Caught exception processing input ", e);
     }
   }
 }

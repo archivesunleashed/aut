@@ -34,12 +34,11 @@ object ComputeImageSize {
     try {
       val in = new ByteArrayInputStream(bytes)
       val image = ImageIO.read(in)
-      if (image == null)
-        return (0, 0)
-      (image.getWidth(), image.getHeight())
+      if (image == null) { (0, 0) }
+      else { (image.getWidth(), image.getHeight()) }
     } catch {
       case e: Throwable => {
-        return (0, 0)
+        (0, 0)
       }
     }
   }

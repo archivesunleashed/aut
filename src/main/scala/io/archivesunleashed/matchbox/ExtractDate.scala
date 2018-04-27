@@ -30,12 +30,16 @@ object ExtractDate {
     * @param dateFormat an enum describing the portion of the date wanted
     */
   def apply(fullDate: String, dateFormat: DateComponent): String =
-    if (fullDate == null) fullDate
+    val start = 0
+    val endyear = 4
+    val endmonth = 6
+    val endday = 8
+    if (fullDate == null) { fullDate }
     else dateFormat match {
-      case YYYY => fullDate.substring(0, 4)
-      case MM => fullDate.substring(4, 6)
-      case DD => fullDate.substring(6, 8)
-      case YYYYMM => fullDate.substring(0, 6)
-      case _ => fullDate.substring(0, 8)
+      case YYYY => fullDate.substring(start, endyear)
+      case MM => fullDate.substring(endyear, endmonth)
+      case DD => fullDate.substring(endmonth, endday)
+      case YYYYMM => fullDate.substring(start, endmonth)
+      case _ => fullDate.substring(start, endday)
     }
 }

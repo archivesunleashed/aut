@@ -30,8 +30,8 @@ class JsonUtilsTest extends FunSuite {
   }
 
   test("any value") {
-    val value = 12345
-    assert(JsonUtils.toJson(12345) == "12345")
+    val value: Int = 12345
+    assert(JsonUtils.toJson(value) == "12345")
   }
 
   test("json string") {
