@@ -34,23 +34,23 @@ object ExtractLinks {
   def apply(src: String, html: String, base: String = ""): Seq[(String, String, String)] = {
     try {
       val output = mutable.MutableList[(String, String, String)]()
-
       // Basic input checking, return empty list if we fail.
-      if (src == null) return output
-      if (html.isEmpty) return output
-
-      val doc = Jsoup.parse(html)
-      val links: Elements = doc.select("a[href]")
-      val it = links.iterator()
-      while (it.hasNext) {
-        val link = it.next()
-        if (base.nonEmpty) link.setBaseUri(base)
-        val target = link.attr("abs:href")
-        if (target.nonEmpty) {
-          output += ((src, target, link.text))
+      if (src == null) output
+      else if (html.isEmpty) output
+      else {
+        val doc = Jsoup.parse(html)
+        val links: Elements = doc.select("a[href]")
+        val it = links.iterator()
+        while (it.hasNext) {
+          val link = it.next()
+          if (base.nonEmpty) link.setBaseUri(base)
+          val target = link.attr("abs:href")
+          if (target.nonEmpty) {
+            output += ((src, target, link.text))
+          }
         }
-      }
-      output
+        output
+      }      
     } catch {
       case e: Exception =>
         throw new IOException("Caught exception processing input ", e);

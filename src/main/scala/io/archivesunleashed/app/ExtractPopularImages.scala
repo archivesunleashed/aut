@@ -23,6 +23,8 @@ import org.apache.spark.{RangePartitioner, SparkContext}
 
 /** Extract most popular images from an RDD. */
 object ExtractPopularImages {
+  val MINIMUM_WIDTH: Int = 30;
+  val MINIMUM_HEIGHT: Int = 30;
 
   /** Extracts the <i>n</i> most popular images from an RDD within a given size range.
    *
@@ -32,7 +34,7 @@ object ExtractPopularImages {
    * @param minWidth of image
    * @param minHeight of image
    */
-  def apply(records: RDD[ArchiveRecord], limit: Int, sc:SparkContext, minWidth: Int = 30, minHeight: Int = 30) = {
+  def apply(records: RDD[ArchiveRecord], limit: Int, sc:SparkContext, minWidth: Int = MINIMUM_WIDTH, minHeight: Int = MINIMUM_HEIGHT) = {
     val res = records
       .keepImages()
       .map(r => ((r.getUrl, r.getImageBytes), 1))

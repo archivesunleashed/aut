@@ -20,7 +20,7 @@ import java.io.ByteArrayInputStream
 import org.apache.tika.metadata.Metadata
 import org.apache.tika.parser.ParseContext
 import org.apache.tika.parser.pdf.PDFParser
-import org.apache.tika.sax.BodyContentHandler;
+import org.apache.tika.sax.BodyContentHandler
 
 /** Exacts texts from PDFs using Apache Tika. */
 object ExtractTextFromPDFs {
