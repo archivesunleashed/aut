@@ -19,9 +19,13 @@ package io
 
 import io.archivesunleashed.data.{ArchiveRecordWritable, ArchiveRecordInputFormat}
 import ArchiveRecordWritable.ArchiveFormat
-import io.archivesunleashed.matchbox.{DetectLanguage, ExtractDate, ExtractDomain, RemoveHTML}
+import io.archivesunleashed.matchbox.{DetectLanguage, ExtractDate, ExtractLinks, ExtractDomain, RemoveHTML}
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent._
+
+import org.apache.spark.sql._
+import org.apache.spark.sql.types._
+
 import org.apache.hadoop.io.LongWritable
 import org.apache.spark.{SerializableWritable, SparkContext}
 import org.apache.spark.rdd.RDD
@@ -84,6 +88,36 @@ package object archivesunleashed {
           || r.getUrl.endsWith("htm")
           || r.getUrl.endsWith("html"))
           && !r.getUrl.endsWith("robots.txt"))
+    }
+
+    def extractValidPagesDF(): DataFrame = {
+      val records = rdd.keepValidPages()
+        .map(r => Row(r.getCrawlDate, r.getUrl, r.getMimeType, r.getContentString))
+
+      val schema = new StructType()
+        .add(StructField("CrawlDate", StringType, true))
+        .add(StructField("Url", StringType, true))
+        .add(StructField("MimeType", StringType, true))
+        .add(StructField("Content", StringType, true))
+
+      val sqlContext = SparkSession.builder()
+      sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
+    def extractHyperlinksDF(): DataFrame = {
+      val records = rdd.keepValidPages()
+        .keepValidPages()
+        .flatMap(r => ExtractLinks(r.getUrl, r.getContentString).map(t => (r.getCrawlDate, t._1, t._2, t._3)))
+        .map(t => Row(t._1, t._2, t._3, t._4))
+
+      val schema = new StructType()
+        .add(StructField("CrawlDate", StringType, true))
+        .add(StructField("Src", StringType, true))
+        .add(StructField("Dest", StringType, true))
+        .add(StructField("Anchor", StringType, true))
+
+      val sqlContext = SparkSession.builder();
+      sqlContext.getOrCreate().createDataFrame(records, schema)
     }
 
     /** Removes all data except images. */
