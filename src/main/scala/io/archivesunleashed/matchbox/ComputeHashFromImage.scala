@@ -19,7 +19,7 @@ package io.archivesunleashed.matchbox
 import java.security.MessageDigest
 
 /** Compute MD5 checksum. */
-object ComputeMD5 {
+object ComputeHashFromImage {
 
   /** Computes the MD5 checksum of a byte array (eg. an image).
     *

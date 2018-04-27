@@ -35,8 +35,8 @@ object ExtractLinks {
     try {
       val output = mutable.MutableList[(String, String, String)]()
       // Basic input checking, return empty list if we fail.
-      if (src == null) output
-      else if (html.isEmpty) output
+      if (src == null) { output }
+      else if (html.isEmpty) { output }
       else {
         val doc = Jsoup.parse(html)
         val links: Elements = doc.select("a[href]")
@@ -50,7 +50,7 @@ object ExtractLinks {
           }
         }
         output
-      }      
+      }
     } catch {
       case e: Exception =>
         throw new IOException("Caught exception processing input ", e);

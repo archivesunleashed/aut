@@ -16,7 +16,7 @@
  */
 
 package io.archivesunleashed.matchbox
-
+import java.security.MessageDigest
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import javax.imageio.ImageIO
@@ -26,9 +26,9 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class ComputeImageSizeTest extends FunSuite {
-  val width: Int = 10
-  val height: Int = 10
+class ComputeHashFromImageTest extends FunSuite {
+  val width: Int = 5
+  val height: Int = 5
   var ios: ByteArrayOutputStream = new ByteArrayOutputStream();
   val img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
   ImageIO.write(img, "png", ios)
@@ -37,8 +37,7 @@ class ComputeImageSizeTest extends FunSuite {
   ios.close()
 
   test ("check images") {
-    assert(ComputeImageSize(image) == (width, height))
-    assert(ComputeImageSize(Array[Byte](0,0,0)) == (0, 0))
-    assert(ComputeImageSize(null) == (0,0)) // scalastyle:off NullChecker
+    val hash = ComputeHashFromImage(image)
+    assert(hash.length == 15)
   }
 }
