@@ -100,7 +100,7 @@ package object archivesunleashed {
         .add(StructField("MimeType", StringType, true))
         .add(StructField("Content", StringType, true))
 
-      val sqlContext = SparkSession.builder();
+      val sqlContext = SparkSession.builder()
       sqlContext.getOrCreate().createDataFrame(records, schema)
     }
 
