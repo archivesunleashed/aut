@@ -10,13 +10,31 @@
 The Archives Unleashed Toolkit is an open-source platform for analyzing web archives built around [Apache Spark](https://spark.apache.org/). This toolkit is part of the [Archives Unleashed Project](http://archivesunleashed.org/).
 Our full documentation can be found [here](http://archivesunleashed.org/aut/).
 
-The Archives Unleashed Toolkit grew out of a previous project called Warcbase. The following article provides a nice overview, much of which is still relevant:
+The Archives Unleashed Toolkit grew out of a previous project called [Warcbase](https://github.com/lintool/warcbase). The following article provides a nice overview, much of which is still relevant:
 
 + Jimmy Lin, Ian Milligan, Jeremy Wiebe, and Alice Zhou. [Warcbase: Scalable Analytics Infrastructure for Exploring Web Archives](https://dl.acm.org/authorize.cfm?key=N46731). _ACM Journal on Computing and Cultural Heritage_, 10(4), Article 22, 2017.
 
 ## Getting Started
 
-You can download the [latest release here](https://github.com/archivesunleashed/aut/releases), build it yourself as per the instructions below, or use [Docker](https://github.com/archivesunleashed/docker-aut#use).
+### Easy
+
+If you have Apache Spark ready to go, it's as easy as:
+
+```
+$ spark-shell --packages "io.archivesunleashed:aut:0.16.0"`
+```
+
+### A little less easy
+
+You can download the [latest release here](https://github.com/archivesunleashed/aut/releases) and include it like so:
+
+```
+$ spark-shell --jars /path/to/aut-0.16.0-fatjar.jar"`
+```
+
+### Even less easy
+
+Build it yourself as per the instructions below:
 
 Clone the repo:
 
@@ -35,6 +53,12 @@ For the impatient, to skip tests:
 ```
 $ mvn clean install -DskipTests
 ```
+
+### I want to use Docker!
+
+Ok! Take a quick spin with `aut` with [Docker](https://github.com/archivesunleashed/docker-aut#use).
+
+## How do I use it?
 
 Once built or downloaded, you can follow the basic set of tutorials [here](http://archivesunleashed.org/aut/).
 
