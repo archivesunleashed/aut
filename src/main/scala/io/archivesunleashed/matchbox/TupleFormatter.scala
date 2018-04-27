@@ -24,7 +24,7 @@ import syntax.std.tuple._
 /** Tuple formatter utility. */
 object TupleFormatter {
   /** Borrowed from shapeless' flatten.scala example. */
-  trait LowPriorityFlatten extends Poly1 {
+  trait LowPriorityFlatten extends Poly1 { // scalastyle:off ObjectNamesChecker
     implicit def default[T] = at[T](Tuple1(_))
   }
 
@@ -35,7 +35,7 @@ object TupleFormatter {
   }
 
   /** Transforms a tuple into a tab-delimited string, flattening any nesting, taking an argument a tuple of any size. */
-  object tabDelimit extends Poly1 {
+  object tabDelimit extends Poly1 { // scalastyle:off ObjectNamesChecker
     implicit def caseTuple[T <: Product, Lub](implicit tl: ToList[T, Lub], fm: FlatMapper[T, flatten.type]) =
       at[T](flatten(_).asInstanceOf[Product].productIterator.mkString("\t"))
   }

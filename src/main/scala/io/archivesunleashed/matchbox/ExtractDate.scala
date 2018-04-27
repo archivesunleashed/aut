@@ -36,11 +36,11 @@ object ExtractDate {
   def apply(fullDate: String, dateFormat: DateComponent): String = {
     if (fullDate == null) { fullDate }
     else dateFormat match {
-      case YYYY => fullDate.substring(start, endyear)
-      case MM => fullDate.substring(endyear, endmonth)
-      case DD => fullDate.substring(endmonth, endday)
-      case YYYYMM => fullDate.substring(start, endmonth)
-      case _ => fullDate.substring(start, endday)
+      case YYYY => { fullDate.substring(start, endyear) }
+      case MM => { fullDate.substring(endyear, endmonth) }
+      case DD => { fullDate.substring(endmonth, endday) }
+      case YYYYMM => { fullDate.substring(start, endmonth) }
+      case _ => { fullDate.substring(start, endday) }
     }
   }
 }

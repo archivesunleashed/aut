@@ -33,7 +33,7 @@ class ComputeHashFromImageTest extends FunSuite {
   val img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
   ImageIO.write(img, "png", ios)
   ios.flush()
-  var image: Array[Byte] = ios.toByteArray();
+  var image: Array [Byte] = ios.toByteArray();
   ios.close()
 
   test ("check images") {
