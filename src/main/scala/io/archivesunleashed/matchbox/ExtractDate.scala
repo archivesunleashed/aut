@@ -18,6 +18,10 @@ package io.archivesunleashed.matchbox
 
 /** Gets different parts of a dateString. */
 object ExtractDate {
+  val start = 0
+  val endyear = 4
+  val endmonth = 6
+  val endday = 8
   object DateComponent extends Enumeration {
     /** An enum specifying years, months, days or a combination. */
     type DateComponent = Value
@@ -29,11 +33,7 @@ object ExtractDate {
     * @param fullDate date returned by `WARecord.getCrawlDate`, formatted as YYYYMMDD
     * @param dateFormat an enum describing the portion of the date wanted
     */
-  def apply(fullDate: String, dateFormat: DateComponent): String =
-    val start = 0
-    val endyear = 4
-    val endmonth = 6
-    val endday = 8
+  def apply(fullDate: String, dateFormat: DateComponent): String = {
     if (fullDate == null) { fullDate }
     else dateFormat match {
       case YYYY => fullDate.substring(start, endyear)
@@ -42,4 +42,5 @@ object ExtractDate {
       case YYYYMM => fullDate.substring(start, endmonth)
       case _ => fullDate.substring(start, endday)
     }
+  }
 }
