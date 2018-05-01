@@ -344,6 +344,29 @@
         <artifactId>build-helper-maven-plugin</artifactId>
         <version>${build-helper.plugin.version}</version>
       </plugin>
+
+      <!-- this is to create a zip of PySpark modules -->
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <descriptors>
+            <descriptor>src/main/assembly/python.xml</descriptor>
+          </descriptors>
+          <finalName>aut</finalName>
+          <appendAssemblyId>false</appendAssemblyId>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
   </build>
 
