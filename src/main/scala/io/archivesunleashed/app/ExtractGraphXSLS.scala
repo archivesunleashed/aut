@@ -35,10 +35,10 @@ object ExtractGraphXSLS {
   }
 
   case class VertexData(url: String)
-  case class EdgeData(edgeCount: Int)
+  case class EdgeData(edgeCount: Int) //: Graph[VertexData, EdgeData] 
 
  
-  def apply(records: RDD[ArchiveRecord]): Graph[VertexData, EdgeData] = {
+  def apply(records: RDD[ArchiveRecord]) : Unit= {
     val extractedLinks = records.keepValidPages().flatMap(r => ExtractLinks(r.getUrl,r.getContentString)).map(r =>(ExtractDomain(r._1).removePrefixWWW(),ExtractDomain(r._2).removePrefixWWW())).filter(r => r._1 != "" && r._2 != "").distinct.persist()
 
     val vertices: RDD[(VertexId, VertexData)] = extractedLinks
@@ -50,6 +50,6 @@ object ExtractGraphXSLS {
       .map(r => Edge(pageHash(r._1), pageHash(r._2), EdgeData(1)))
 
     val graph = Graph(vertices, edges)
-    return graph
+    //return graph
   }
 }
