@@ -14,11 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.archivesunleashed.app
+package io.archivesunleashed.matchbox
 
 import io.archivesunleashed._
-import io.archivesunleashed.matchbox._
-import io.archivesunleashed.util.JsonUtils
 import org.apache.spark.graphx._
 import org.apache.spark.rdd.RDD
 
