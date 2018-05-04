@@ -39,7 +39,7 @@ object ExtractGraphXSLS {
 
  
   def apply(records: RDD[ArchiveRecord]): Graph[VertexData, EdgeData] = {
-    val extractedLinks = records.keepValidPages().flatMap(r => ExtractLinks(r.getUrl,r.getContentString)).map(r =>(ExtractDomain(r._1).removePrefixWWW(),ExtractDomain(r._2).removePrefixWWW())).filter(r => r._1 != "" && r._2 != "").flatMap(r => List(r._1, r._2)).distinct.persist()
+    val extractedLinks = records.keepValidPages().flatMap(r => ExtractLinks(r.getUrl,r.getContentString)).map(r =>(ExtractDomain(r._1).removePrefixWWW(),ExtractDomain(r._2).removePrefixWWW())).filter(r => r._1 != "" && r._2 != "").distinct.persist()
 
     val vertices: RDD[(VertexId, VertexData)] = extractedLinks
       .flatMap(r => List(r._1, r._2))
