@@ -50,8 +50,9 @@ object ExtractGraphXSLS {
 
     val graph = Graph(vertices, edges)
     
-    print("Vertex count" + graph.vertices.count)
-    print("Edge count" + graph.edges.count)
+    val mappedTuple = graph.triplets.map(t => (t.srcAttr, t.dstAttr, t.attr))
+    
+    mappedTuple.saveAsTextFile("links-all-graphX/")
     //return graph
   }
 }
