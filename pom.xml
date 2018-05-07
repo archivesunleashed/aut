@@ -5,7 +5,7 @@
   <groupId>io.archivesunleashed</groupId>
   <artifactId>aut</artifactId>
   <packaging>jar</packaging>
-  <version>0.16.1-SNAPSHOT</version>
+  <version>0.17.1-SNAPSHOT</version>
   <name>Archives Unleashed Toolkit</name>
   <description>An open-source platform for managing and analyzing web archives</description>
   <url>https://github.com/archivesunleashed/aut</url>
