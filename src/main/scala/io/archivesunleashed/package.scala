@@ -47,11 +47,14 @@ package object archivesunleashed {
       * @param sc the apache spark context
       * @return an RDD of ArchiveRecords for mapping.
       */
-    def loadArchives(path: String, sc: SparkContext): RDD[ArchiveRecord] =
+    def loadArchives(path: String, sc: SparkContext): RDD[ArchiveRecord] = {
+      print("Hello!")
       sc.newAPIHadoopFile(path, classOf[ArchiveRecordInputFormat], classOf[LongWritable], classOf[ArchiveRecordWritable])
         .filter(r => (r._2.getFormat == ArchiveFormat.ARC) ||
           ((r._2.getFormat == ArchiveFormat.WARC) && r._2.getRecord.getHeader.getHeaderValue("WARC-Type").equals("response")))
         .map(r => new ArchiveRecordImpl(new SerializableWritable(r._2)))
+    }
+      
 
     /** Creates an Archive Record RDD from tweets.
       *
