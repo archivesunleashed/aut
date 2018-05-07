@@ -49,8 +49,8 @@ object ExtractGraphXSLS {
 
     val graph = Graph(vertices, edges)
     
-    graph.vertices.saveAsTextFile("vertexSet/")
-    graph.edges.saveAsTextFile("edgeSet/")
+    print("Vertex count" + graph.vertices.count)
+    print("Edge count" + graph.edges.count)
     //return graph
   }
 }
