@@ -48,6 +48,9 @@ object ExtractGraphXSLS {
       .map(r => Edge(pageHash(r._1), pageHash(r._2), EdgeData(1)))
 
     val graph = Graph(vertices, edges)
+    
+    graph.vertices.saveAsTextFile("vertexSet/")
+    graph.edges.saveAsTextFile("edgeSet/")
     //return graph
   }
 }
