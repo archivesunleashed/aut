@@ -34,7 +34,7 @@ object ExtractGraphXSLS {
   }
 
   case class VertexData(url: String)
-  case class EdgeData(edgeCount: Int) //: Graph[VertexData, EdgeData] 
+  case class EdgeData(edgeCount: Int)
 
  
   def apply(records: RDD[ArchiveRecord]) : Unit= {
