@@ -22,7 +22,7 @@ import org.apache.spark.graphx._
 import org.apache.spark.rdd.RDD
 
 /** Extracts a site link structure using Spark's GraphX utility. */
-object ExtractGraphXSLS {
+object ExtractGraphXSLS2 {
 
   /** Creates a hashcode from a url to use as a unique id.
    *
@@ -34,11 +34,11 @@ object ExtractGraphXSLS {
   }
 
   case class VertexData(url: String)
-  case class EdgeData(edgeCount: Int) //: Graph[VertexData, EdgeData] 
+  case class EdgeData(edgeCount: Int)
 
  
-  def apply(records: RDD[ArchiveRecord]) : Unit= {
-    val extractedLinks = records.keepValidPages().flatMap(r => ExtractLinks(r.getUrl,r.getContentString)).map(r =>(ExtractDomain(r._1).removePrefixWWW(),ExtractDomain(r._2).removePrefixWWW())).filter(r => r._1 != "" && r._2 != "").persist()
+  def apply(records: RDD[(String, String)]) : Graph[VertexData, EdgeData]= {
+    val extractedLinks = records.persist()
 
     val vertices: RDD[(VertexId, VertexData)] = extractedLinks
       .flatMap(r => List(r._1, r._2))
@@ -51,9 +51,6 @@ object ExtractGraphXSLS {
 
     val graph = Graph(vertices, edges).partitionBy(PartitionStrategy.RandomVertexCut).groupEdges((e1,e2) => EdgeData(e1.edgeCount+e2.edgeCount))
     
-    val mappedTuple = graph.triplets.map(t => (t.srcAttr.url, t.dstAttr.url, t.attr.edgeCount))
-    
-    mappedTuple.saveAsTextFile("links-all-graphX/")
-    //return graph
+    return graph
   }
 }
