@@ -47,10 +47,10 @@ object ExtractGraphXSLS {
 
     val edges: RDD[Edge[EdgeData]] = extractedLinks
       .map(r => Edge(pageHash(r._1), pageHash(r._2), EdgeData(1)))
+    
 
     val graph = Graph(vertices, edges).partitionBy(PartitionStrategy.RandomVertexCut).groupEdges((e1,e2) => EdgeData(e1.edgeCount+e2.edgeCount))
-    print("Number of edges in the graphX:" + graph.edges.count)
-    print("Number of vertices in the graphX:" + graph.vertices.count)
+    
     
     val mappedTuple = graph.triplets.map(t => (t.srcAttr.url, t.dstAttr.url, t.attr.edgeCount))
     
