@@ -35,7 +35,8 @@ object ExtractGraphXSLS {
 
   case class VertexData(url: String)
   case class EdgeData(edgeCount: Int)
-
+  
+  case class VertexDataPR(url: String, pageRank: Double)
  
   def extractGraphX(records: RDD[(String, String)]) :Graph[VertexData, EdgeData] = {
     val extractedLinks = records.persist()
@@ -52,5 +53,23 @@ object ExtractGraphXSLS {
     val graph = Graph(vertices, edges).partitionBy(PartitionStrategy.RandomVertexCut).groupEdges((e1,e2) => EdgeData(e1.edgeCount+e2.edgeCount))
     
     return graph
+  }
+  
+  def runPageRankAlgorithm(graph: Graph[VertexData, EdgeData], dynamic: Boolean = false,
+            tolerance: Double = 0.005, numIter: Int = 20, resetProb: Double = 0.15): Graph[VertexDataPR, EdgeData] ={
+    if(dynamic){
+      print("Into dynamic")
+      graph.outerJoinVertices(graph.pageRank(tolerance, resetProb).vertices){
+        case (id, vd, pr) => VertexDataPR(vd.url, pr.getOrElse(0.0))
+      }
+      
+    }
+    else{
+      print("Into Static")
+      graph.outerJoinVertices(graph.staticPageRank(numIter, resetProb).vertices){
+        case (id, vd, pr) => VertexDataPR(vd.url, pr.getOrElse(0.0))
+      }
+    }
+    
   }
 }
