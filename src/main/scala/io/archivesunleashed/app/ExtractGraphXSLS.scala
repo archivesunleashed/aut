@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.archivesunleashed.matchbox
+package io.archivesunleashed.app
 
 import io.archivesunleashed._
 import io.archivesunleashed.matchbox._
@@ -22,7 +22,7 @@ import org.apache.spark.graphx._
 import org.apache.spark.rdd.RDD
 
 /** Extracts a site link structure using Spark's GraphX utility. */
-object ExtractGraphXSLS2 {
+object ExtractGraphXSLS {
 
   /** Creates a hashcode from a url to use as a unique id.
    *
@@ -37,7 +37,7 @@ object ExtractGraphXSLS2 {
   case class EdgeData(edgeCount: Int)
 
  
-  def apply(records: RDD[(String, String)]) : Graph[VertexData, EdgeData]= {
+  def apply(records: RDD[(String, String)]) :Graph[VertexData, EdgeData] = { //Graph[VertexData, EdgeData]
     val extractedLinks = records.persist()
 
     val vertices: RDD[(VertexId, VertexData)] = extractedLinks
