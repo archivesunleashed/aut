@@ -37,7 +37,7 @@ object ExtractGraphXSLS {
   case class EdgeData(edgeCount: Int)
 
  
-  def apply(records: RDD[(String, String)]) :Graph[VertexData, EdgeData] = { //Graph[VertexData, EdgeData]
+  def extractGraphX(records: RDD[(String, String)]) :Graph[VertexData, EdgeData] = {
     val extractedLinks = records.persist()
 
     val vertices: RDD[(VertexId, VertexData)] = extractedLinks
