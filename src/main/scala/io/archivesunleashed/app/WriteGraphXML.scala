@@ -20,7 +20,8 @@ import io.archivesunleashed.matchbox._
 
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
-
+import io.archivesunleashed.app.ExtractGraphXSLS.{VertexData,EdgeData,VertexDataPR}
+import org.apache.spark.graphx._
 import org.apache.spark.rdd.RDD
 
 /**
@@ -28,8 +29,8 @@ import org.apache.spark.rdd.RDD
   */
 object WriteGraphXML {
   
-  case class EdgeData(edgeCount: Int)
-  case class VertexDataPR(url: String, pageRank: Double)
+  //case class EdgeData(edgeCount: Int)
+  //case class VertexDataPR(url: String, pageRank: Double)
   
   
   /** Writes graphX object nodes and edges to file.
@@ -59,7 +60,7 @@ object WriteGraphXML {
       "<data key=\"label\">" + triplet.srcAttr.url + "</data>\n</node>\n",
       "<node id=\"" + triplet.dstId + "\">\n" +
       "<data key=\"pageRank\">" + triplet.dstAttr.pageRank + "</data>\n"+
-      "<data key=\"label\">" + triplet.dstAttr.url + "</data>\n</node>\n"))
+      "<data key=\"label\">" + triplet.dstAttr.url + "</data>\n</node>\n")).distinct.collect
     
     
     outFile.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
