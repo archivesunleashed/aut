@@ -30,7 +30,9 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 
 import scala.util.Try
 
- @RunWith(classOf[JUnitRunner])
+ // TODO:
+ // See: https://github.com/archivesunleashed/aut/pull/204/files#diff-4541b9834513985c360b64093fd45073
+ //@RunWith(classOf[JUnitRunner])
  class ExtractGraphTest extends FunSuite with BeforeAndAfter {
      private val arcPath = Resources.getResource("arc/example.arc.gz").getPath
      private var sc: SparkContext = _
@@ -43,6 +45,7 @@ import scala.util.Try
        val conf = new SparkConf()
          .setMaster(master)
          .setAppName(appName)
+         conf.set("spark.driver.allowMultipleContexts", "true");
          sc = new SparkContext(conf)
        }
 
