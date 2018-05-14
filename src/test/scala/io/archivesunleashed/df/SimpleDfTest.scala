@@ -46,7 +46,7 @@ class SimpleDfTest extends FunSuite with BeforeAndAfter {
 
     // We need this in order to use the $-notation
     val spark = SparkSession.builder().master("local").getOrCreate()
-    import spark.implicits._
+    import spark.implicits._ // scalastyle:off ImportGroupingChecker
 
     val results = df.select(ExtractDomain($"Url").as("Domain"))
       .groupBy("Domain").count().orderBy(desc("count")).head(3)

@@ -38,10 +38,12 @@ class ArchiveRecordImpl(r: SerializableWritable[ArchiveRecordWritable]) extends 
   var arcRecord: ARCRecord = null
   var warcRecord: WARCRecord = null
 
-  if (r.t.getFormat == ArchiveFormat.ARC)
+  if (r.t.getFormat == ArchiveFormat.ARC) {
     arcRecord = r.t.getRecord.asInstanceOf[ARCRecord]
-  else if (r.t.getFormat == ArchiveFormat.WARC)
+  }
+  else if (r.t.getFormat == ArchiveFormat.WARC) {
     warcRecord = r.t.getRecord.asInstanceOf[WARCRecord]
+  }
 
   val ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX")
 
@@ -94,11 +96,13 @@ class ArchiveRecordImpl(r: SerializableWritable[ArchiveRecordWritable]) extends 
   }
 
   val getImageBytes: Array[Byte] = {
-    if (getContentString.startsWith("HTTP/"))
+    if (getContentString.startsWith("HTTP/")) {
       getContentBytes.slice(
         getContentString.indexOf(RemoveHttpHeader.headerEnd)
           + RemoveHttpHeader.headerEnd.length, getContentBytes.length)
-    else
+    }
+    else {
       getContentBytes
+    }
   }
 }

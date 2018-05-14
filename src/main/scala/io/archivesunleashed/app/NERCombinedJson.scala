@@ -52,9 +52,10 @@ class NERCombinedJson extends Serializable {
     val hadoopConfig = new Configuration()
     val hdfs = FileSystem.get(hadoopConfig)
     val rnd = new Random
+    val TMP_FILE_LENGTH : Int = 8
 
     val srcPath = new Path(srcDir)
-    val tmpFile = rnd.alphanumeric.take(8).mkString + ".almostjson"
+    val tmpFile = rnd.alphanumeric.take(TMP_FILE_LENGTH).mkString + ".almostjson"
     val tmpPath = new Path(tmpFile)
 
     // Merge part-files into single file.
@@ -86,7 +87,7 @@ class NERCombinedJson extends Serializable {
     * @param outputFile path of output file (e.g., "entities.json")
     * @param sc Spark context object
     */
-  def classify(iNerClassifierFile: String, inputFile: String, outputFile: String, sc: SparkContext) {
+  def classify(iNerClassifierFile: String, inputFile: String, outputFile: String, sc: SparkContext): Unit = {
     val out = sc.textFile(inputFile)
       .mapPartitions(iter => {
         NER3Classifier.apply(iNerClassifierFile)

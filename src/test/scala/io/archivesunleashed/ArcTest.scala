@@ -31,6 +31,8 @@ class ArcTest extends FunSuite with BeforeAndAfter {
   private val master = "local[4]"
   private val appName = "example-spark"
   private var sc: SparkContext = _
+  private val start = 0
+  private val monthend = 6
 
   before {
     val conf = new SparkConf()
@@ -55,8 +57,8 @@ class ArcTest extends FunSuite with BeforeAndAfter {
       .map(r => r.getCrawlDate)
       .collect()
 
-    four.foreach(date => assert(date.substring(0, 6) == "200804"))
-    five.foreach(date => assert(date.substring(0, 6) == "200805"))
+    four.foreach(date => assert(date.substring(start, monthend) == "200804"))
+    five.foreach(date => assert(date.substring(start, monthend) == "200805"))
   }
 
   test("filter url pattern") {
@@ -69,10 +71,11 @@ class ArcTest extends FunSuite with BeforeAndAfter {
   }
 
   test("count links") {
+    val linkssize = 664
     val links = RecordLoader.loadArchives(arcPath, sc)
       .map(r => ExtractLinks(r.getUrl, r.getContentString))
       .reduce((a, b) => a ++ b)
-    assert(links.size == 664)
+    assert(links.size == linkssize)
   }
 
   test("detect language") {
@@ -101,7 +104,6 @@ class ArcTest extends FunSuite with BeforeAndAfter {
       .map(r => RemoveHTML(r.getContentString))
       .groupBy(content => DetectMimeTypeTika(content))
       .map(f => {
-        println(f._1 + " : " + f._2.size)
         (f._1, f._2.size)
       }).collect
 
@@ -126,4 +128,3 @@ class ArcTest extends FunSuite with BeforeAndAfter {
     }
   }
 }
-

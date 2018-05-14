@@ -35,8 +35,8 @@ object WriteGEXF {
    * @return Unit().
    */
   def apply(rdd: RDD[((String, String, String), Int)], gexfPath: String): Boolean = {
-    if (gexfPath.isEmpty()) false
-    else makeFile (rdd, gexfPath)
+    if (gexfPath.isEmpty()) { false }
+    else { makeFile (rdd, gexfPath) }
   }
 
   /** Produces the GEXF output from an RDD of tuples and outputs it to graphmlPath.
@@ -76,6 +76,6 @@ object WriteGEXF {
     edges.foreach(r => outFile.write(r))
     outFile.write("</edges>\n</graph>\n</gexf>")
     outFile.close()
-    return true
+    true
   }
 }

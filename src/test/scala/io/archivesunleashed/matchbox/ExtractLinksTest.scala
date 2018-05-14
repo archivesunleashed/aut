@@ -50,9 +50,9 @@ class ExtractLinksTest extends FunSuite {
   test("errors") {
     val fragment: String = "Here is <a href=\"http://www.google.com\">a search engine</a>.\n" + "Here is <a href=\"page.html\">a relative URL</a>.\n"
     val invalid: String = "Here is a fake url <a href=\"http://www.google.com\"> bogus search engine</a>."
-    assert(ExtractLinks(null, fragment, "http://www.foobar.org/index.html") == mutable.MutableList[(String, String, String)]())
+    assert(ExtractLinks(null, fragment, "http://www.foobar.org/index.html") == mutable.MutableList[(String, String, String)]()) // scalastyle:off NullChecker
     assert(ExtractLinks("", "", "http://www.foobar.org/index.html") == mutable.MutableList[(String, String, String)]())
     // invalid url should throw exception - need more information here
-    intercept[IOException] { ExtractLinks("", null, "FROTSTEDwww.foobar.org/index.html") }
+    intercept[IOException] { ExtractLinks("", null, "FROTSTEDwww.foobar.org/index.html") } // scalastyle:off NullChecker
   }
 }

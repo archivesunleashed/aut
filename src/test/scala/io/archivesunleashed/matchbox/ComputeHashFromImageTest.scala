@@ -16,26 +16,28 @@
  */
 
 package io.archivesunleashed.matchbox
+import java.security.MessageDigest
+import java.awt.image.BufferedImage
+import java.io.ByteArrayOutputStream
+import javax.imageio.ImageIO
 
-import io.archivesunleashed.util.JsonUtils
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class JsonUtilsTest extends FunSuite {
-  test("proper Map") {
-    val map: Map[Symbol, Any] = Map('a -> 1, 'b -> 2, 'c -> 3)
-    assert(JsonUtils.toJson(map) == """{"a":1,"b":2,"c":3}""")
-  }
+class ComputeHashFromImageTest extends FunSuite {
+  val width: Int = 5
+  val height: Int = 5
+  var ios: ByteArrayOutputStream = new ByteArrayOutputStream();
+  val img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
+  ImageIO.write(img, "png", ios)
+  ios.flush()
+  var image: Array [Byte] = ios.toByteArray();
+  ios.close()
 
-  test("any value") {
-    val value: Int = 12345
-    assert(JsonUtils.toJson(value) == "12345")
-  }
-
-  test("json string") {
-    val jsonString = """{"a":1,"b":2,"c":3}"""
-    assert(JsonUtils.fromJson(jsonString) == Map("a" -> 1, "b" -> 2, "c" -> 3))
+  test ("check images") {
+    val hash = ComputeHashFromImage(image)
+    assert(hash.length == 15)
   }
 }

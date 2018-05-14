@@ -25,6 +25,11 @@ import org.scalatest.junit.JUnitRunner
 @RunWith(classOf[JUnitRunner])
 class ExtractDateTest extends FunSuite {
 
+  val start: Int = 0
+  val endyear: Int = 4
+  val endmonth: Int = 6
+  val endday: Int = 8
+
   test("simple") {
     assert(ExtractDate("20151204", YYYY) == "2015")
     assert(ExtractDate("20151204", MM) == "12")
@@ -35,10 +40,10 @@ class ExtractDateTest extends FunSuite {
   }
 
   test("more perfect") {
-    assert(ExtractDate("20151204", YYYY) == "20151204".substring(0, 4))
-    assert(ExtractDate("20151204", MM) == "20151204".substring(4, 6))
-    assert(ExtractDate("20151204", DD) == "20151204".substring(6, 8))
-    assert(ExtractDate("20151204", YYYYMM) == "20151204".substring(0, 6))
-    assert(ExtractDate("20151204", YYYYMMDD) == "20151204".substring(0, 8))
+    assert(ExtractDate("20151204", YYYY) == "20151204".substring(start, endyear))
+    assert(ExtractDate("20151204", MM) == "20151204".substring(endyear, endmonth))
+    assert(ExtractDate("20151204", DD) == "20151204".substring(endmonth, endday))
+    assert(ExtractDate("20151204", YYYYMM) == "20151204".substring(start, endmonth))
+    assert(ExtractDate("20151204", YYYYMMDD) == "20151204".substring(start, endday))
   }
 }

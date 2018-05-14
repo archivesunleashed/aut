@@ -42,7 +42,7 @@ class TweetUtilsTest extends FunSuite {
     assert(tweet.text() == "some text")
     assert(tweet.lang == "en")
     assert(tweet.username() == "twitteruser")
-    assert(tweet.isVerifiedUser() == true)
+    assert(tweet.isVerifiedUser())
     assert(tweet.followerCount == 45)
     assert(tweet.friendCount == 758)
   }
@@ -63,7 +63,7 @@ class TweetUtilsTest extends FunSuite {
       assert(tweet.text() == null)
       assert(tweet.lang == null)
       assert(tweet.username() == null)
-      assert(tweet.isVerifiedUser() == false)
+      assert(!tweet.isVerifiedUser())
       assert(tweet.followerCount == 0)
       assert(tweet.friendCount == 0)
   }

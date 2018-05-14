@@ -29,8 +29,8 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 
 import scala.collection.mutable
 
-// There must be a valid classifier file with path `iNerClassifierFile` for this test to pass
-//@RunWith(classOf[JUnitRunner])
+ // There must be a valid classifier file with path `iNerClassifierFile` for this test to pass
+ //@RunWith(classOf[JUnitRunner])
 class ExtractEntitiesTest extends FunSuite with BeforeAndAfter {
   private val LOG = LogFactory.getLog(classOf[ExtractEntitiesTest])
   private val scrapePath = Resources.getResource("ner/example.txt").getPath
