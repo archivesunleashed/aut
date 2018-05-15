@@ -105,7 +105,7 @@ package object archivesunleashed {
     }
 
     def extractHyperlinksDF(): DataFrame = {
-      val records = rdd.keepValidPages()
+      val records = rdd
         .keepValidPages()
         .flatMap(r => ExtractLinks(r.getUrl, r.getContentString).map(t => (r.getCrawlDate, t._1, t._2, t._3)))
         .map(t => Row(t._1, t._2, t._3, t._4))
