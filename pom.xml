@@ -595,6 +595,12 @@
       <artifactId>lintools-datatypes</artifactId>
       <version>1.0.0</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.rogach/scallop -->
+    <dependency>
+      <groupId>org.rogach</groupId>
+      <artifactId>scallop_2.12</artifactId>
+      <version>3.1.2</version>
+    </dependency>
     <!--START issue #113-->
     <dependency>
       <groupId>joda-time</groupId>
