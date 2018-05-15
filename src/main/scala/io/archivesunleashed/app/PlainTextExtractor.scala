@@ -1,6 +1,6 @@
 package io.archivesunleashed.app
 
-import io.archivesunleashed.app.DomainFrequencyExtractor.{Conf, applyAndSave, log}
+import io.archivesunleashed.app.DomainFrequencyExtractor.{Conf, log}
 import io.archivesunleashed.{ArchiveRecord, RecordLoader}
 import io.archivesunleashed.matchbox.RemoveHTML
 import org.apache.spark.{SparkConf, SparkContext}
