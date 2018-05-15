@@ -19,7 +19,7 @@ package io
 
 import io.archivesunleashed.data.{ArchiveRecordWritable, ArchiveRecordInputFormat}
 import ArchiveRecordWritable.ArchiveFormat
-import io.archivesunleashed.matchbox.{DetectLanguage, ExtractDate, ExtractLinks, ExtractDomain, RemoveHTML}
+import io.archivesunleashed.matchbox.{DetectLanguage, ExtractDate, ExtractLinks, ExtractImageLinks, ExtractDomain, RemoveHTML}
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent._
 
@@ -115,6 +115,25 @@ package object archivesunleashed {
         .add(StructField("Src", StringType, true))
         .add(StructField("Dest", StringType, true))
         .add(StructField("Anchor", StringType, true))
+
+      val sqlContext = SparkSession.builder();
+      sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
+    /* Extracts all the images from a source page */
+    def extractImageLinksDF(): DataFrame = {
+      val records = rdd
+        .keepValidPages()
+        .flatMap(r => {
+          val src = r.getUrl
+          val imageUrls = ExtractImageLinks(src, r.getContentString)
+          imageUrls.map(url => (src, url))
+        })
+        .map(t => Row(t._1, t._2))
+
+      val schema = new StructType()
+        .add(StructField("Src", StringType, true))
+        .add(StructField("ImageUrl", StringType, true))
 
       val sqlContext = SparkSession.builder();
       sqlContext.getOrCreate().createDataFrame(records, schema)
