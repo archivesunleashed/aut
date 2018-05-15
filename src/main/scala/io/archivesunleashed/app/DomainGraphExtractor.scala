@@ -17,10 +17,6 @@ object DomainGraphExtractor {
       .filter(r => r._2 > 5)
   }
 
-  def applyAndSave(records: RDD[ArchiveRecord], file: String) = {
-    apply(records).saveAsTextFile(file)
-  }
-
   def main(argv: Array[String]): Unit = {
     var args = new Conf(argv)
 
@@ -32,6 +28,6 @@ object DomainGraphExtractor {
     conf.set("spark.driver.allowMultipleContexts", "true")
     val sc = new SparkContext(conf)
 
-    applyAndSave(RecordLoader.loadArchives(args.input(), sc), args.output())
+    RecordLoader.loadArchives(args.input(), sc).saveAsTextFile(args.output())
   }
 }
