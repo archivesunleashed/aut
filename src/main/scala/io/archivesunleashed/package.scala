@@ -19,9 +19,10 @@ package io
 
 import io.archivesunleashed.data.{ArchiveRecordWritable, ArchiveRecordInputFormat}
 import ArchiveRecordWritable.ArchiveFormat
-import io.archivesunleashed.matchbox.{DetectLanguage, ExtractDate, ExtractLinks, ExtractImageLinks, ExtractDomain, RemoveHTML}
+import io.archivesunleashed.matchbox.{DetectLanguage, ExtractDate, ExtractLinks, ExtractImageLinks, ExtractImageDetails, ExtractDomain, RemoveHTML, ComputeMD5}
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent._
+import io.archivesunleashed.matchbox.ImageDetails
 
 import org.apache.spark.sql._
 import org.apache.spark.sql.types._
@@ -134,6 +135,27 @@ package object archivesunleashed {
       val schema = new StructType()
         .add(StructField("Src", StringType, true))
         .add(StructField("ImageUrl", StringType, true))
+
+      val sqlContext = SparkSession.builder();
+      sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
+    def extractImageDetailsDF(): DataFrame = {
+      val records = rdd
+        .keepImages()
+        .map(r => {
+          val details = ExtractImageDetails(r.getUrl, r.getImageBytes)
+          (r.getUrl, r.getMimeType, details.width, details.height, ComputeMD5(r.getImageBytes), r.getImageBytes)
+        })
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6))
+      
+      val schema = new StructType()
+        .add(StructField("ImageUrl", StringType, true))
+        .add(StructField("Type", StringType, true))
+        .add(StructField("Width", StringType, true))
+        .add(StructField("Height", StringType, true))
+        .add(StructField("MD5", StringType, true))
+        .add(StructField("Bytes", BinaryType, true))
 
       val sqlContext = SparkSession.builder();
       sqlContext.getOrCreate().createDataFrame(records, schema)
