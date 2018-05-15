@@ -120,6 +120,7 @@ package object archivesunleashed {
       sqlContext.getOrCreate().createDataFrame(records, schema)
     }
 
+    /* Extracts all the images from a source page */
     def extractImageLinksDF(): DataFrame = {
       val records = rdd
         .keepValidPages()

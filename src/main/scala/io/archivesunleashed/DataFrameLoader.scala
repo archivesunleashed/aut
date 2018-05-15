@@ -14,6 +14,7 @@ class DataFrameLoader(sc: SparkContext) {
       .extractHyperlinksDF()
   }
 
+  /* Create a dataframe with (source page, image url) pairs */
   def extractImageLinks(path: String): DataFrame = {
   	RecordLoader.loadArchives(path, sc)
   		.extractImageLinksDF()
