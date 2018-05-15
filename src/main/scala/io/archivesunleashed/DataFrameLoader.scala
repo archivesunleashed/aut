@@ -13,4 +13,9 @@ class DataFrameLoader(sc: SparkContext) {
     RecordLoader.loadArchives(path, sc)
       .extractHyperlinksDF()
   }
+
+  def extractImageLinks(path: String): DataFrame = {
+  	RecordLoader.loadArchives(path, sc)
+  		.extractImageLinksDF()
+  }
 }
