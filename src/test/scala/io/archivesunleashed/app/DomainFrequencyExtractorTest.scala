@@ -1,0 +1,61 @@
+/*
+ * Archives Unleashed Toolkit (AUT):
+ * An open-source platform for analyzing web archives.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package io.archivesunleashed.app
+
+import com.google.common.io.Resources
+import io.archivesunleashed.RecordLoader
+import org.apache.spark.{SparkConf, SparkContext}
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
+import org.scalatest.{BeforeAndAfter, FunSuite}
+
+@RunWith(classOf[JUnitRunner])
+class DomainFrequencyExtractorTest extends FunSuite with BeforeAndAfter {
+  private val arcPath = Resources.getResource("warc/example.warc.gz").getPath
+  private var sc: SparkContext = _
+  private val master = "local[4]"
+  private val appName = "example-spark"
+
+  before {
+    val conf = new SparkConf()
+      .setMaster(master)
+      .setAppName(appName)
+    conf.set("spark.driver.allowMultipleContexts", "true")
+    sc = new SparkContext(conf)
+  }
+
+  test("extract list of domains with their frequencies in RDD with UDF") {
+    val examplerdd = RecordLoader.loadArchives(arcPath, sc)
+    var domainFreq = DomainFrequencyExtractor.apply(examplerdd).collect()
+
+    assert(domainFreq(0)._1 == "www.archive.org")
+    assert(domainFreq(0)._2 == 132)
+
+    assert(domainFreq(1)._1 == "deadlists.com")
+    assert(domainFreq(1)._2 == 2)
+
+    assert(domainFreq(2)._1 == "www.hideout.com.br")
+    assert(domainFreq(2)._2 == 1)
+  }
+
+  after {
+    if (sc != null) {
+      sc.stop()
+    }
+  }
+}
