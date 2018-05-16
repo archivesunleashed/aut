@@ -26,34 +26,34 @@ import org.apache.tika.sax.BodyContentHandler;
 
 /** Information about an image. e.g. width, height*/
 class ImageDetails(w: String, h: String) {
-	val width: String = w
-	val height: String = h
+  val width: String = w
+  val height: String = h
 }
 
 /** Extracts image details given raw bytes (using Apache Tika) */
 object ExtractImageDetails {
 
-	/**
-	 * @param bytes the raw bytes of the image
-	 * @return A tuple containing the width and height of the image
-	*/
-	def apply(url: String, mimetype: String, bytes: Array[Byte]): ImageDetails = {
-		val inputStream = new ByteArrayInputStream(bytes)
-		val handler = new BodyContentHandler();
-  	val metadata = new Metadata();
-  	val pcontext = new ParseContext();
+  /**
+   * @param bytes the raw bytes of the image
+   * @return A tuple containing the width and height of the image
+  */
+  def apply(url: String, mimetype: String, bytes: Array[Byte]): ImageDetails = {
+    val inputStream = new ByteArrayInputStream(bytes)
+    val handler = new BodyContentHandler();
+    val metadata = new Metadata();
+    val pcontext = new ParseContext();
 
-  	// different parsers for different file formats
-  	if ((mimetype != null && mimetype.contains("image/jpeg")) || url.endsWith("jpg") || url.endsWith("jpeg")) {
-  		val parser = new JpegParser();
-  		val results = parser.parse(inputStream, handler, metadata, pcontext)
-  	} else if ((mimetype != null && mimetype.contains("image/tiff")) || url.endsWith("tiff")) {
-  		val parser = new TiffParser();
-  		val results = parser.parse(inputStream, handler, metadata, pcontext)
-  	} else {
-  		val parser = new ImageParser();
-			val results = parser.parse(inputStream, handler, metadata, pcontext)
+    // different parsers for different image formats
+    if ((mimetype != null && mimetype.contains("image/jpeg")) || url.endsWith("jpg") || url.endsWith("jpeg")) {
+      val parser = new JpegParser();
+      val results = parser.parse(inputStream, handler, metadata, pcontext)
+    } else if ((mimetype != null && mimetype.contains("image/tiff")) || url.endsWith("tiff")) {
+      val parser = new TiffParser();
+      val results = parser.parse(inputStream, handler, metadata, pcontext)
+    } else {
+      val parser = new ImageParser();
+      val results = parser.parse(inputStream, handler, metadata, pcontext)
     }
     return new ImageDetails(metadata.get("Image Width"), metadata.get("Image Height"))
-	}
+  }
 }
