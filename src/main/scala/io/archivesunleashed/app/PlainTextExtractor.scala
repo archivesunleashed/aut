@@ -17,9 +17,8 @@
 
 package io.archivesunleashed.app
 
-import io.archivesunleashed.{ArchiveRecord, RecordLoader}
+import io.archivesunleashed.ArchiveRecord
 import io.archivesunleashed.matchbox.RemoveHTML
-import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.rdd.RDD
 
 object PlainTextExtractor {

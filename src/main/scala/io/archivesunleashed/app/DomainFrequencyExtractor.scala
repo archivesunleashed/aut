@@ -17,14 +17,9 @@
 
 package io.archivesunleashed.app
 
-import java.nio.file.Path
-
 import io.archivesunleashed._
 import io.archivesunleashed.matchbox.ExtractDomain
-import org.apache.log4j.Logger
-import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.rdd.RDD
-import org.rogach.scallop._
 
 object DomainFrequencyExtractor {
   def apply(records: RDD[ArchiveRecord]) = {

@@ -19,7 +19,6 @@ package io.archivesunleashed.app
 
 import io.archivesunleashed._
 import io.archivesunleashed.matchbox.{ExtractDomain, ExtractLinks}
-import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.rdd.RDD
 
 object DomainGraphExtractor {

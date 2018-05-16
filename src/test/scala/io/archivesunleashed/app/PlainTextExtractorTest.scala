@@ -48,7 +48,6 @@ class PlainTextExtractorTest extends FunSuite with BeforeAndAfter {
     assert(plainText(0)._2 == "www.archive.org")
     assert(plainText(0)._3 == "http://www.archive.org/")
     assert(plainText(0)._4 == "HTTP/1.1 200 OK Date: Wed, 30 Apr 2008 20:48:25 GMT Server: Apache/2.0.54 (Ubuntu) PHP/5.0.5-2ubuntu1.4 mod_ssl/2.0.54 OpenSSL/0.9.7g Last-Modified: Wed, 09 Jan 2008 23:18:29 GMT ETag: \"47ac-16e-4f9e5b40\" Accept-Ranges: bytes Content-Length: 366 Connection: close Content-Type: text/html; charset=UTF-8 Please visit our website at: http://www.archive.org")
-
   }
 
   after {
