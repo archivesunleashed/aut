@@ -43,6 +43,7 @@ object ExtractImageDetails {
   	val metadata = new Metadata();
   	val pcontext = new ParseContext();
 
+  	// different parsers for different file formats
   	if ((mimetype != null && mimetype.contains("image/jpeg")) || url.endsWith("jpg") || url.endsWith("jpeg")) {
   		val parser = new JpegParser();
   		val results = parser.parse(inputStream, handler, metadata, pcontext)
