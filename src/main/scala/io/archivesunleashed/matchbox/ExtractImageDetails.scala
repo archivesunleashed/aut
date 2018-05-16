@@ -19,7 +19,7 @@ package io.archivesunleashed.matchbox
 import java.io.ByteArrayInputStream
 import java.io.IOException;
 import org.apache.tika.metadata.Metadata;
-import org.apache.tika.parser.image.ImageParser;
+import org.apache.tika.parser.image.{ImageParser, TiffParser};
 import org.apache.tika.parser.jpeg.JpegParser;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.sax.BodyContentHandler;
@@ -42,8 +42,12 @@ object ExtractImageDetails {
 		val handler = new BodyContentHandler();
   	val metadata = new Metadata();
   	val pcontext = new ParseContext();
+
   	if ((mimetype != null && mimetype.contains("image/jpeg")) || url.endsWith("jpg") || url.endsWith("jpeg")) {
   		val parser = new JpegParser();
+  		val results = parser.parse(inputStream, handler, metadata, pcontext)
+  	} else if ((mimetype != null && mimetype.contains("image/tiff")) || url.endsWith("tiff")) {
+  		val parser = new TiffParser();
   		val results = parser.parse(inputStream, handler, metadata, pcontext)
   	} else {
   		val parser = new ImageParser();
