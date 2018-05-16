@@ -48,7 +48,7 @@ class ExtractImageDetailsTest extends FunSuite with BeforeAndAfter {
     val spark = SparkSession.builder().master("local").getOrCreate()
     import spark.implicits._
 
-    val extracted = df.select($"ImageUrl", $"Type", $"Width", $"Height", $"MD5")
+    val extracted = df.select($"Url", $"Type", $"Width", $"Height", $"MD5")
       .orderBy(desc("MD5")).head(2).toList
     assert(extracted.size == 2)
     assert("http://www.archive.org/images/LOCLogoSmall.jpg" == extracted(0)(0))

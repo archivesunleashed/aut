@@ -21,7 +21,7 @@ class DataFrameLoader(sc: SparkContext) {
   }
 
   /** Create a dataframe with (image url, type, width, height, md5, raw bytes) pairs */
-  def extractImageDetails(path: String): DataFrame = {
+  def extractImages(path: String): DataFrame = {
     RecordLoader.loadArchives(path, sc)
       .extractImageDetailsDF()
   }

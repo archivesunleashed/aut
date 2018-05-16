@@ -144,13 +144,13 @@ package object archivesunleashed {
       val records = rdd
         .keepImages()
         .map(r => {
-          val details = ExtractImageDetails(r.getUrl, r.getImageBytes)
+          val details = ExtractImageDetails(r.getUrl, r.getMimeType, r.getImageBytes)
           (r.getUrl, r.getMimeType, details.width, details.height, ComputeMD5(r.getImageBytes), r.getImageBytes)
         })
         .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6))
       
       val schema = new StructType()
-        .add(StructField("ImageUrl", StringType, true))
+        .add(StructField("Url", StringType, true))
         .add(StructField("Type", StringType, true))
         .add(StructField("Width", StringType, true))
         .add(StructField("Height", StringType, true))

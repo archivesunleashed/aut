@@ -37,18 +37,18 @@ object ExtractImageDetails {
 	 * @param bytes the raw bytes of the image
 	 * @return A tuple containing the width and height of the image
 	*/
-	def apply(url: String, bytes: Array[Byte]): ImageDetails = {
+	def apply(url: String, mimetype: String, bytes: Array[Byte]): ImageDetails = {
 		val inputStream = new ByteArrayInputStream(bytes)
 		val handler = new BodyContentHandler();
-      	val metadata = new Metadata();
-      	val pcontext = new ParseContext();
-      	if (url.endsWith("jpg") || url.endsWith("jpeg")) {
-      		val parser = new JpegParser();
-      		val results = parser.parse(inputStream, handler, metadata, pcontext)
-      	} else {
-      		val parser = new ImageParser();
+  	val metadata = new Metadata();
+  	val pcontext = new ParseContext();
+  	if ((mimetype != null && mimetype.contains("image/jpeg")) || url.endsWith("jpg") || url.endsWith("jpeg")) {
+  		val parser = new JpegParser();
+  		val results = parser.parse(inputStream, handler, metadata, pcontext)
+  	} else {
+  		val parser = new ImageParser();
 			val results = parser.parse(inputStream, handler, metadata, pcontext)
-      	}
-      	return new ImageDetails(metadata.get("Image Width"), metadata.get("Image Height"))
+    }
+    return new ImageDetails(metadata.get("Image Width"), metadata.get("Image Height"))
 	}
 }
