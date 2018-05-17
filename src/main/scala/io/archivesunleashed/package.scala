@@ -152,8 +152,8 @@ package object archivesunleashed {
       val schema = new StructType()
         .add(StructField("Url", StringType, true))
         .add(StructField("Type", StringType, true))
-        .add(StructField("Width", StringType, true))
-        .add(StructField("Height", StringType, true))
+        .add(StructField("Width", IntegerType, true))
+        .add(StructField("Height", IntegerType, true))
         .add(StructField("MD5", StringType, true))
         .add(StructField("Bytes", BinaryType, true))
 

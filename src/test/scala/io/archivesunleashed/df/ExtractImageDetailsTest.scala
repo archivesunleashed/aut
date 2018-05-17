@@ -53,12 +53,12 @@ class ExtractImageDetailsTest extends FunSuite with BeforeAndAfter {
     assert(extracted.size == 2)
     assert("http://www.archive.org/images/LOCLogoSmall.jpg" == extracted(0)(0))
     assert("image/jpeg" == extracted(0)(1))
-    assert("275 pixels" == extracted(0)(2))
-    assert("300 pixels" == extracted(0)(3))
+    assert(275 == extracted(0)(2))
+    assert(300 == extracted(0)(3))
     assert("http://www.archive.org/images/lma.jpg" == extracted(1)(0))
     assert("image/jpeg" == extracted(1)(1))
-    assert("215 pixels" == extracted(1)(2))
-    assert("71 pixels" == extracted(1)(3))
+    assert(215 == extracted(1)(2))
+    assert(71 == extracted(1)(3))
   }
 
   after {
