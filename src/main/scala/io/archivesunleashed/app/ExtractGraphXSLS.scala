@@ -58,14 +58,12 @@ object ExtractGraphXSLS {
   def runPageRankAlgorithm(graph: Graph[VertexData, EdgeData], dynamic: Boolean = false,
             tolerance: Double = 0.005, numIter: Int = 20, resetProb: Double = 0.15): Graph[VertexDataPR, EdgeData] ={
     if(dynamic){
-      print("Into dynamic")
       graph.outerJoinVertices(graph.pageRank(tolerance, resetProb).vertices){
         case (id, vd, pr) => VertexDataPR(vd.url, pr.getOrElse(0.0))
       }
       
     }
     else{
-      print("Into Static")
       graph.outerJoinVertices(graph.staticPageRank(numIter, resetProb).vertices){
         case (id, vd, pr) => VertexDataPR(vd.url, pr.getOrElse(0.0))
       }
