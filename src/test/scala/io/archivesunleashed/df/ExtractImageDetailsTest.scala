@@ -51,14 +51,14 @@ class ExtractImageDetailsTest extends FunSuite with BeforeAndAfter {
     val extracted = df.select($"Url", $"Type", $"Width", $"Height", $"MD5")
       .orderBy(desc("MD5")).head(2).toList
     assert(extracted.size == 2)
-    assert("http://www.archive.org/images/LOCLogoSmall.jpg" == extracted(0)(0))
-    assert("image/jpeg" == extracted(0)(1))
-    assert(275 == extracted(0)(2))
-    assert(300 == extracted(0)(3))
-    assert("http://www.archive.org/images/lma.jpg" == extracted(1)(0))
+    assert("http://www.archive.org/images/mediatype_movies.gif" == extracted(0)(0))
+    assert("image/gif" == extracted(0)(1))
+    assert(21 == extracted(0)(2))
+    assert(21 == extracted(0)(3))
+    assert("http://www.archive.org/images/LOCLogoSmall.jpg" == extracted(1)(0))
     assert("image/jpeg" == extracted(1)(1))
-    assert(215 == extracted(1)(2))
-    assert(71 == extracted(1)(3))
+    assert(275 == extracted(1)(2))
+    assert(300 == extracted(1)(3))
   }
 
   after {
