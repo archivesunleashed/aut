@@ -16,10 +16,21 @@
  */
 package io.archivesunleashed.matchbox
 
+import java.security.MessageDigest
+import java.util.Base64
+import java.nio.charset.StandardCharsets
+import org.apache.commons.codec.binary.Hex
+
+
 /** Information about an image. e.g. width, height*/
-class ImageDetails(w: Int, h: Int) {
-  val width: Int = w
-  val height: Int = h
+class ImageDetails(imageUrl: String, imageType: String, bytes: Array[Byte]) {
+  val dimensions = ComputeImageSize(bytes);
+  val width = dimensions._1
+  val height = dimensions._2
+  val url: String = imageUrl
+  val mimeType: String = imageType
+  val hash: String = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+  val body: String = Base64.getEncoder.encodeToString(bytes)
 }
 
 /** Extracts image details given raw bytes (using Apache Tika) */
@@ -29,10 +40,7 @@ object ExtractImageDetails {
    * @param bytes the raw bytes of the image
    * @return A tuple containing the width and height of the image
   */
-  def apply(bytes: Array[Byte]): ImageDetails = {
-    val dimensions = ComputeImageSize(bytes);
-    val width = dimensions._1
-    val height = dimensions._2
-    return new ImageDetails(width, height)
+  def apply(url: String, mimeType: String, bytes: Array[Byte]): ImageDetails = {
+    return new ImageDetails(url, mimeType, bytes)
   }
 }

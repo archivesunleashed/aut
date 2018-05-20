@@ -30,6 +30,7 @@ import org.apache.spark.sql.types._
 import org.apache.hadoop.io.LongWritable
 import org.apache.spark.{SerializableWritable, SparkContext}
 import org.apache.spark.rdd.RDD
+
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
 
@@ -144,8 +145,8 @@ package object archivesunleashed {
       val records = rdd
         .keepImages()
         .map(r => {
-          val details = ExtractImageDetails(r.getImageBytes)
-          (r.getUrl, r.getMimeType, details.width, details.height, ComputeMD5(r.getImageBytes), r.getImageBytes)
+          val image = ExtractImageDetails(r.getUrl, r.getMimeType, r.getImageBytes)
+          (r.getUrl, r.getMimeType, image.width, image.height, image.hash, image.body)
         })
         .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6))
       
@@ -155,7 +156,7 @@ package object archivesunleashed {
         .add(StructField("Width", IntegerType, true))
         .add(StructField("Height", IntegerType, true))
         .add(StructField("MD5", StringType, true))
-        .add(StructField("Bytes", BinaryType, true))
+        .add(StructField("Body", StringType, true))
 
       val sqlContext = SparkSession.builder();
       sqlContext.getOrCreate().createDataFrame(records, schema)
