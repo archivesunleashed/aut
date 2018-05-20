@@ -48,7 +48,7 @@ class ExtractImageLinksTest extends FunSuite with BeforeAndAfter {
     val spark = SparkSession.builder().master("local").getOrCreate()
     import spark.implicits._
 
-    val extracted = df.select($"Src".as("Domain"), $"ImageUrl".as("Image"))
+    val extracted = df.select($"src".as("Domain"), $"image_url".as("Image"))
       .orderBy(desc("Image")).head(2).toList
     assert(extracted.size == 2)
     assert("http://www.archive.org/index.php" == extracted(0)(0))

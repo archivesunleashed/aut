@@ -134,8 +134,8 @@ package object archivesunleashed {
         .map(t => Row(t._1, t._2))
 
       val schema = new StructType()
-        .add(StructField("Src", StringType, true))
-        .add(StructField("ImageUrl", StringType, true))
+        .add(StructField("src", StringType, true))
+        .add(StructField("image_url", StringType, true))
 
       val sqlContext = SparkSession.builder();
       sqlContext.getOrCreate().createDataFrame(records, schema)
@@ -151,12 +151,12 @@ package object archivesunleashed {
         .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6))
       
       val schema = new StructType()
-        .add(StructField("Url", StringType, true))
-        .add(StructField("Type", StringType, true))
-        .add(StructField("Width", IntegerType, true))
-        .add(StructField("Height", IntegerType, true))
-        .add(StructField("MD5", StringType, true))
-        .add(StructField("Body", StringType, true))
+        .add(StructField("url", StringType, true))
+        .add(StructField("mime_type", StringType, true))
+        .add(StructField("width", IntegerType, true))
+        .add(StructField("height", IntegerType, true))
+        .add(StructField("md5", StringType, true))
+        .add(StructField("bytes", StringType, true))
 
       val sqlContext = SparkSession.builder();
       sqlContext.getOrCreate().createDataFrame(records, schema)
