@@ -19,9 +19,10 @@ package io
 
 import io.archivesunleashed.data.{ArchiveRecordWritable, ArchiveRecordInputFormat}
 import ArchiveRecordWritable.ArchiveFormat
-import io.archivesunleashed.matchbox.{DetectLanguage, ExtractDate, ExtractLinks, ExtractImageLinks, ExtractDomain, RemoveHTML}
+import io.archivesunleashed.matchbox.{DetectLanguage, ExtractDate, ExtractLinks, ExtractImageLinks, ExtractImageDetails, ExtractDomain, RemoveHTML, ComputeMD5}
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent._
+import io.archivesunleashed.matchbox.ImageDetails
 
 import org.apache.spark.sql._
 import org.apache.spark.sql.types._
@@ -29,6 +30,7 @@ import org.apache.spark.sql.types._
 import org.apache.hadoop.io.LongWritable
 import org.apache.spark.{SerializableWritable, SparkContext}
 import org.apache.spark.rdd.RDD
+
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
 
@@ -132,8 +134,30 @@ package object archivesunleashed {
         .map(t => Row(t._1, t._2))
 
       val schema = new StructType()
-        .add(StructField("Src", StringType, true))
-        .add(StructField("ImageUrl", StringType, true))
+        .add(StructField("src", StringType, true))
+        .add(StructField("image_url", StringType, true))
+
+      val sqlContext = SparkSession.builder();
+      sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
+    /* Extract image bytes and metadata*/
+    def extractImageDetailsDF(): DataFrame = {
+      val records = rdd
+        .keepImages()
+        .map(r => {
+          val image = ExtractImageDetails(r.getUrl, r.getMimeType, r.getImageBytes)
+          (r.getUrl, r.getMimeType, image.width, image.height, image.hash, image.body)
+        })
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6))
+      
+      val schema = new StructType()
+        .add(StructField("url", StringType, true))
+        .add(StructField("mime_type", StringType, true))
+        .add(StructField("width", IntegerType, true))
+        .add(StructField("height", IntegerType, true))
+        .add(StructField("md5", StringType, true))
+        .add(StructField("bytes", StringType, true))
 
       val sqlContext = SparkSession.builder();
       sqlContext.getOrCreate().createDataFrame(records, schema)

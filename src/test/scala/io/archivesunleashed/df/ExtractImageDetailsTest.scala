@@ -27,7 +27,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
-class ExtractImageLinksTest extends FunSuite with BeforeAndAfter {
+class ExtractImageDetailsTest extends FunSuite with BeforeAndAfter {
   private val arcPath = Resources.getResource("arc/example.arc.gz").getPath
   private val master = "local[4]"
   private val appName = "example-df"
@@ -40,21 +40,25 @@ class ExtractImageLinksTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Fetch image links") {
+  test("Fetch image") {
     val df = RecordLoader.loadArchives(arcPath, sc)
-      .extractImageLinksDF()
+      .extractImageDetailsDF()
 
     // We need this in order to use the $-notation
     val spark = SparkSession.builder().master("local").getOrCreate()
     import spark.implicits._
 
-    val extracted = df.select($"src".as("Domain"), $"image_url".as("Image"))
-      .orderBy(desc("Image")).head(2).toList
+    val extracted = df.select($"url", $"mime_type", $"width", $"height", $"md5")
+      .orderBy(desc("md5")).head(2).toList
     assert(extracted.size == 2)
-    assert("http://www.archive.org/index.php" == extracted(0)(0))
-    assert("http://www.archive.org/services/get-item-image.php?identifier=zh27814&collection=zh27&mediatype=audio" == extracted(0)(1))
-    assert("http://www.archive.org/index.php" == extracted(1)(0))
-    assert("http://www.archive.org/services/get-item-image.php?identifier=secretarmiesb00spivrich&collection=americana&mediatype=texts" == extracted(1)(1))
+    assert("http://www.archive.org/images/mediatype_movies.gif" == extracted(0)(0))
+    assert("image/gif" == extracted(0)(1))
+    assert(21 == extracted(0)(2))
+    assert(21 == extracted(0)(3))
+    assert("http://www.archive.org/images/LOCLogoSmall.jpg" == extracted(1)(0))
+    assert("image/jpeg" == extracted(1)(1))
+    assert(275 == extracted(1)(2))
+    assert(300 == extracted(1)(3))
   }
 
   after {
