@@ -141,6 +141,7 @@ package object archivesunleashed {
       sqlContext.getOrCreate().createDataFrame(records, schema)
     }
 
+    /* Extract image bytes and metadata*/
     def extractImageDetailsDF(): DataFrame = {
       val records = rdd
         .keepImages()
