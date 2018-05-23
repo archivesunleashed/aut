@@ -17,14 +17,23 @@
 
 package io.archivesunleashed.app
 
-import io.archivesunleashed.ArchiveRecord
+import io.archivesunleashed.{ArchiveRecord, df}
 import io.archivesunleashed.matchbox.RemoveHTML
 import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.functions.desc
+import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
 object PlainTextExtractor {
   def apply(records: RDD[ArchiveRecord]) = {
     records
       .keepValidPages()
       .map(r => (r.getCrawlDate, r.getDomain, r.getUrl, RemoveHTML(r.getContentString)))
+  }
+  def apply(d: DataFrame): Dataset[Row] = {
+    val spark = SparkSession.builder().master("local").getOrCreate()
+    import spark.implicits._
+
+    d.select($"CrawlDate", df.ExtractDomain($"Url").as("Domain"),
+      $"Url", df.RemoveHTML($"Content").as("Text"))
   }
 }

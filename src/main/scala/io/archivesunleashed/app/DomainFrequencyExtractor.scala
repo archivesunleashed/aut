@@ -18,14 +18,24 @@
 package io.archivesunleashed.app
 
 import io.archivesunleashed._
-import io.archivesunleashed.matchbox.ExtractDomain
+import io.archivesunleashed.matchbox
+import io.archivesunleashed.df
 import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.functions.desc
+import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
 object DomainFrequencyExtractor {
   def apply(records: RDD[ArchiveRecord]) = {
       records
         .keepValidPages()
-        .map(r => ExtractDomain(r.getUrl))
+        .map(r => matchbox.ExtractDomain(r.getUrl))
         .countItems()
+  }
+  def apply(d: DataFrame): Dataset[Row] = {
+    val spark = SparkSession.builder().master("local").getOrCreate()
+    import spark.implicits._
+
+    d.select(df.ExtractDomain($"Url").as("Domain"))
+      .groupBy("Domain").count().orderBy(desc("count"))
   }
 }

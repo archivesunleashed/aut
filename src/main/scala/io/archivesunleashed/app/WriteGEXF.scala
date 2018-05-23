@@ -17,11 +17,11 @@
 package io.archivesunleashed.app
 
 import io.archivesunleashed.matchbox._
-
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 
 import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.{Dataset, Row}
 
 /**
   * UDF for exporting an RDD representing a collection of links to a GEXF file.
@@ -37,6 +37,11 @@ object WriteGEXF {
   def apply(rdd: RDD[((String, String, String), Int)], gexfPath: String): Boolean = {
     if (gexfPath.isEmpty()) false
     else makeFile (rdd, gexfPath)
+  }
+
+  def apply(ds: Dataset[Row], gexfPath: String): Boolean = {
+    if (gexfPath.isEmpty()) false
+    else makeFile (ds, gexfPath)
   }
 
   /** Produces the GEXF output from an RDD of tuples and outputs it to graphmlPath.
@@ -77,5 +82,17 @@ object WriteGEXF {
     outFile.write("</edges>\n</graph>\n</gexf>")
     outFile.close()
     return true
+  }
+
+  def makeFile(ds: Dataset[Row], gexfPath: String): Boolean = {
+    /*
+     * To be implemented. Ideally we would have a function that takes
+     * Seq[((String, String, String), Int)] and converts it into GEXF format.
+     *
+     * Then it is up to the two separate functions, that take Dataset and RDD respectively,
+     * to convert them from a specific representation to a generic format.
+     *
+     */
+    return false
   }
 }

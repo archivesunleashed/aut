@@ -13,4 +13,6 @@ package object df {
   val ExtractDomain = udf(io.archivesunleashed.matchbox.ExtractDomain.apply(_: String, ""))
 
   val RemovePrefixWWW = udf[String, String](_.replaceAll("^\\s*www\\.", ""))
+
+  var RemoveHTML = udf(io.archivesunleashed.matchbox.RemoveHTML.apply(_:String))
 }
