@@ -62,7 +62,6 @@ package object matchbox {
      * e.g. fileName = "foo" => images are saved as foo0.jpg, foo1.jpg
     */
     def saveToDisk(bytesColumnName: String, fileName: String) = {
-      var count = 0;
       df.select(bytesColumnName).foreach(row => {
         try {
           // assumes the bytes are base64 encoded already as returned by ExtractImageDetails
@@ -78,14 +77,17 @@ package object matchbox {
             val image = reader.read(0)
 
             val format = reader.getFormatName()
-            val file = new File(fileName + count + "." + format);
-            count += 1
+            val suffix = encodedBytes.computeHash()
+            val file = new File(fileName + "-" + suffix + "." + format);
             if (image != null) {
               ImageIO.write(image, format, file);
             }
           }
+          row
         } catch {
-          case e: Throwable => {}
+          case e: Throwable => {
+            row
+          }
         }
       })
     }
