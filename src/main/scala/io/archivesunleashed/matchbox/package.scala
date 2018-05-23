@@ -19,8 +19,14 @@ package io.archivesunleashed
 
 import java.io.IOException
 import java.security.MessageDigest
+import java.io.ByteArrayInputStream
+import java.io.File
+import javax.imageio.{ImageIO, ImageReader}
+import java.util.Base64
 
 import scala.xml.Utility._
+
+import org.apache.spark.sql.DataFrame
 
 /** Package object which supplies implicits providing common UDF-related functionalities. */
 package object matchbox {
@@ -42,6 +48,46 @@ package object matchbox {
     def computeHash(): String = {
       val md5 = MessageDigest.getInstance("MD5")
       return md5.digest(s.getBytes).map("%02x".format(_)).mkString
+    }
+  }
+
+  /**
+   * Given a dataframe, serializes the images and saves to disk
+   * @param df the input dataframe
+  */
+  implicit class SaveImage(df: DataFrame) {
+    /** 
+     * @param bytesColumnName the name of the column containing the image bytes
+     * @param fileName the name of the file to save the images to (without extension)
+     * e.g. fileName = "foo" => images are saved as foo0.jpg, foo1.jpg
+    */
+    def saveToDisk(bytesColumnName: String, fileName: String) = {
+      var count = 0;
+      df.select(bytesColumnName).foreach(row => {
+        try {
+          // assumes the bytes are base64 encoded already as returned by ExtractImageDetails
+          val encodedBytes: String = row.getAs(bytesColumnName);
+          val bytes = Base64.getDecoder.decode(encodedBytes);
+          val in = new ByteArrayInputStream(bytes);
+
+          val input = ImageIO.createImageInputStream(in);
+          val readers = ImageIO.getImageReaders(input);
+          if (readers.hasNext()) {
+            val reader = readers.next()
+            reader.setInput(input)
+            val image = reader.read(0)
+
+            val format = reader.getFormatName()
+            val file = new File(fileName + count + "." + format);
+            count += 1
+            if (image != null) {
+              ImageIO.write(image, format, file);
+            }
+          }
+        } catch {
+          case e: Throwable => {}
+        }
+      })
     }
   }
 }
