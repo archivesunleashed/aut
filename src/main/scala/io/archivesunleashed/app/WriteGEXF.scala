@@ -81,18 +81,47 @@ object WriteGEXF {
     edges.foreach(r => outFile.write(r))
     outFile.write("</edges>\n</graph>\n</gexf>")
     outFile.close()
-    return true
+    true
   }
 
   def makeFile(ds: Dataset[Row], gexfPath: String): Boolean = {
-    /*
-     * To be implemented. Ideally we would have a function that takes
-     * Seq[((String, String, String), Int)] and converts it into GEXF format.
-     *
-     * Then it is up to the two separate functions, that take Dataset and RDD respectively,
-     * to convert them from a specific representation to a generic format.
-     *
-     */
-    return false
+    val data = ds.collect()
+    val outFile = Files.newBufferedWriter(Paths.get(gexfPath), StandardCharsets.UTF_8)
+    val vertices = scala.collection.mutable.Set[String]()
+
+    data foreach { d =>
+      vertices.add(d.get(1).asInstanceOf[String])
+      vertices.add(d.get(2).asInstanceOf[String])
+    }
+    outFile.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+      "<gexf xmlns=\"http://www.gexf.net/1.3draft\"\n" +
+      "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+      "  xsi:schemaLocation=\"http://www.gexf.net/1.3draft\n" +
+      "                       http://www.gexf.net/1.3draft/gexf.xsd\"\n" +
+      "  version=\"1.3\">\n" +
+      "<graph mode=\"static\" defaultedgetype=\"directed\">\n" +
+      "<attributes class=\"edge\">\n" +
+      "  <attribute id=\"0\" title=\"crawlDate\" type=\"string\" />\n" +
+      "</attributes>\n" +
+      "<nodes>\n")
+    vertices foreach { v =>
+      outFile.write("<node id=\"" +
+        v.computeHash() + "\" label=\"" +
+        v.escapeInvalidXML() + "\" />\n")
+    }
+    outFile.write("</nodes>\n<edges>\n")
+    data foreach { e =>
+      outFile.write("<edge source=\"" + e.get(1).asInstanceOf[String].computeHash() + "\" target=\"" +
+        e.get(2).asInstanceOf[String].computeHash() + "\" weight=\"" + e.get(3) +
+        "\" type=\"directed\">\n" +
+        "<attvalues>\n" +
+        "<attvalue for=\"0\" value=\"" + e.get(0) + "\" />\n" +
+        "</attvalues>\n" +
+        "</edge>\n")
+    }
+    outFile.write("</edges>\n</graph>\n</gexf>")
+    outFile.close()
+
+    true
   }
 }

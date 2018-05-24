@@ -23,20 +23,22 @@ import java.nio.file.{Files, Paths}
 import io.archivesunleashed.{ArchiveRecord, RecordLoader}
 import org.apache.log4j.Logger
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.{Dataset, Row}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.rogach.scallop.ScallopConf
 
 /* Usage:
  *
  * PATH_TO_SPARK 
- *   --class io.archivesunleashed.app.CmdAppMain
+ *   --class io.archivesunleashed.app.CommandLinAppRunner
  *   PATH_TO_AUT_JAR
  *   --extractor EXTRACTOR
  *   --input INPUT_FILE ...
  *   --output OUTPUT_DIRECTORY
  *   [--output-format FORMAT]
- *   [--use-df]
+ *   [--df]
+ *   [--split]
+ *   [--partiton]
  *   
  * where EXTRACTOR is one of
  * DomainFrequencyExtractor, DomainGraphExtractor or PlainTextExtractor
@@ -47,7 +49,12 @@ import org.rogach.scallop.ScallopConf
  * FORMAT is meant to work with DomainGraphExtractor
  * Two supported options are TEXT (default) or GEXF
  *
- * If --use-df is present, the program will use data frame to carry out analysis
+ * If --df is present, the program will use data frame to carry out analysis
+ *
+ * If --split is present, the program will put results for each input file in its own folder. Otherwise they will be merged.
+ *
+ * If --partition N is present, the program will partition RDD or Data Frame according to N before writing results. Otherwise,
+ * partition is left as is.
  */
 
 class CmdAppConf(args: Seq[String]) extends ScallopConf(args) {
@@ -57,54 +64,85 @@ class CmdAppConf(args: Seq[String]) extends ScallopConf(args) {
   val output = opt[String](descr = "output directory path", required = true)
   val outputFormat = opt[String](descr =
     "output format for DomainGraphExtractor, one of TEXT or GEXF")
-  val useDF = opt[Boolean]()
+  val split = opt[Boolean]()
+  val df = opt[Boolean]()
+  val partition = opt[Int]()
   verify()
 }
 
-class CommandLineApp(conf: CmdAppConf, ctx: SparkContext) {
+class CommandLineApp(conf: CmdAppConf) {
   private val logger = Logger.getLogger(getClass().getName())
   private val configuration = conf
   private var saveTarget = ""
-  private val sparkCtx = ctx
+  private var sparkCtx : Option[SparkContext] = None
 
   private val rddExtractors = Map[String, RDD[ArchiveRecord] => Any](
     "DomainFrequencyExtractor" ->
       ((rdd: RDD[ArchiveRecord]) => {
-        DomainFrequencyExtractor(rdd).saveAsTextFile(saveTarget)}),
+        save(DomainFrequencyExtractor(rdd))
+      }),
     "DomainGraphExtractor" ->
       ((rdd: RDD[ArchiveRecord]) => {
         if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "GEXF") {
           new File(saveTarget).mkdirs()
           WriteGEXF(DomainGraphExtractor(rdd), Paths.get(saveTarget).toString + "/GEXF.xml")
         } else {
-          DomainGraphExtractor(rdd).saveAsTextFile(saveTarget)
+          save(DomainGraphExtractor(rdd))
         }
       }),
     "PlainTextExtractor" ->
       ((rdd: RDD[ArchiveRecord]) => {
-        PlainTextExtractor(rdd).saveAsTextFile(saveTarget)}))
+        save(PlainTextExtractor(rdd))
+      })
+  )
 
-  private var dfExtractors = Map[String, String => Any](
+  private val dfExtractors = Map[String, List[String] => Any](
     "DomainFrequencyExtractor" ->
-      ((inputFile: String) => {
-        val df = RecordLoader.loadArchives(inputFile, sparkCtx).extractValidPagesDF()
-        DomainFrequencyExtractor(df).write.csv(saveTarget)
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).extractValidPagesDF()
+        inputFiles.tail foreach { f =>
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).extractValidPagesDF())
+        }
+        save(DomainFrequencyExtractor(df))
       }),
     "DomainGraphExtractor" ->
-      ((inputFile: String) => {
-        val df = RecordLoader.loadArchives(inputFile, sparkCtx).extractHyperlinksDF()
-
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).extractHyperlinksDF()
+        inputFiles.tail foreach { f =>
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).extractHyperlinksDF())
+        }
         if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "GEXF") {
           new File(saveTarget).mkdirs()
           WriteGEXF(DomainGraphExtractor(df), Paths.get(saveTarget).toString + "/GEXF.xml")
         } else {
-          DomainGraphExtractor(df).write.csv(saveTarget)
+          save(DomainGraphExtractor(df))
         }
       }),
     "PlainTextExtractor" ->
-      ((inputFile: String) => {
-        val df = RecordLoader.loadArchives(inputFile, sparkCtx).extractValidPagesDF()
-        PlainTextExtractor(df)}))
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).extractValidPagesDF()
+        inputFiles.tail foreach { f =>
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).extractValidPagesDF())
+        }
+        save(PlainTextExtractor(df))
+      })
+  )
+
+  def save(d: Dataset[Row]): Unit = {
+    if (!configuration.partition.isEmpty) {
+      d.coalesce(configuration.partition()).write.csv(saveTarget)
+    } else {
+      d.write.csv(saveTarget)
+    }
+  }
+
+  def save[T](r: RDD[T]): Unit = {
+    if (!configuration.partition.isEmpty) {
+      r.coalesce(configuration.partition()).saveAsTextFile(saveTarget)
+    } else {
+      r.saveAsTextFile(saveTarget)
+    }
+  }
 
   def verifyArgumentsOrExit() = {
     configuration.input() foreach { f =>
@@ -127,16 +165,21 @@ class CommandLineApp(conf: CmdAppConf, ctx: SparkContext) {
       System.exit(1)
     }
 
-    val extractFunction: String => Any =
+    val extractFunction: List[String] => Any =
       dfExtractors get configuration.extractor() match {
         case Some(func) => func
         case None =>
           throw new InternalError()
       }
 
-    configuration.input() foreach { f =>
-      saveTarget =  Paths.get(configuration.output(), Paths.get(f).getFileName.toString).toString
-      extractFunction(f)
+    if (!configuration.split.isEmpty && configuration.split()) {
+      configuration.input() foreach { f =>
+        saveTarget =  Paths.get(configuration.output(), Paths.get(f).getFileName.toString).toString
+        extractFunction(List[String](f))
+      }
+    } else {
+      saveTarget = Paths.get(configuration.output()).toString
+      extractFunction(configuration.input())
     }
   }
 
@@ -154,15 +197,29 @@ class CommandLineApp(conf: CmdAppConf, ctx: SparkContext) {
           throw new InternalError()
       }
 
-    configuration.input() foreach { f =>
-      val archive = RecordLoader.loadArchives(f, sparkCtx)
-      saveTarget =  Paths.get(configuration.output(), Paths.get(f).getFileName.toString).toString
-      extractFunction(archive)
+    if (!configuration.split.isEmpty && configuration.split()) {
+      configuration.input() foreach { f =>
+        val archive = RecordLoader.loadArchives(f, sparkCtx.get)
+        saveTarget =  Paths.get(configuration.output(), Paths.get(f).getFileName.toString).toString
+        extractFunction(archive)
+      }
+    } else {
+      var nameList = configuration.input()
+      var rdd =  RecordLoader.loadArchives(nameList.head, sparkCtx.get)
+      nameList.tail foreach { f =>
+        rdd = rdd.union(RecordLoader.loadArchives(f, sparkCtx.get))
+      }
+      saveTarget = Paths.get(configuration.output()).toString
+      extractFunction(rdd)
     }
   }
 
   def process() = {
-    if (!configuration.useDF.isEmpty && configuration.useDF()) {
+    val conf = new SparkConf().setAppName("AUTCommandLineApp")
+    conf.set("spark.driver.allowMultipleContexts", "true")
+    sparkCtx = Some(new SparkContext(conf))
+
+    if (!configuration.df.isEmpty && configuration.df()) {
       dfHandler()
     } else {
       rddHandler()
@@ -170,12 +227,9 @@ class CommandLineApp(conf: CmdAppConf, ctx: SparkContext) {
   }
 }
 
-object CmdAppMain {
+object CommandLineAppRunner {
   def main(argv: Array[String]): Unit = {
-    val conf = new SparkConf().setAppName("AUTCommandLineApp")
-    conf.set("spark.driver.allowMultipleContexts", "true")
-
-    val app = new CommandLineApp(new CmdAppConf(argv), new SparkContext(conf))
+    val app = new CommandLineApp(new CmdAppConf(argv))
 
     app.verifyArgumentsOrExit()
     app.process()

@@ -39,18 +39,35 @@ class DomainFrequencyExtractorTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("extract list of domains with their frequencies in RDD with UDF") {
-    val examplerdd = RecordLoader.loadArchives(arcPath, sc)
-    var domainFreq = DomainFrequencyExtractor.apply(examplerdd).collect()
+  test("DomainFrequencyExtractor") {
+    val rdd = RecordLoader.loadArchives(arcPath, sc).keepValidPages()
+    val df = RecordLoader.loadArchives(arcPath, sc).extractValidPagesDF()
 
-    assert(domainFreq(0)._1 == "www.archive.org")
-    assert(domainFreq(0)._2 == 132)
+    val dfResults = DomainFrequencyExtractor(df).collect()
+    val rddResults = DomainFrequencyExtractor(rdd).collect()
 
-    assert(domainFreq(1)._1 == "deadlists.com")
-    assert(domainFreq(1)._2 == 2)
+    // Results should be:
+    // +------------------+-----+
+    // |            Domain|count|
+    // +------------------+-----+
+    // |   www.archive.org|  132|
+    // |     deadlists.com|    2|
+    // |www.hideout.com.br|    1|
+    // +------------------+-----+
 
-    assert(domainFreq(2)._1 == "www.hideout.com.br")
-    assert(domainFreq(2)._2 == 1)
+    assert(dfResults(0).get(0) == "www.archive.org")
+    assert(dfResults(0).get(1) == 132)
+    assert(dfResults(1).get(0) == "deadlists.com")
+    assert(dfResults(1).get(1) == 2)
+    assert(dfResults(2).get(0) == "www.hideout.com.br")
+    assert(dfResults(2).get(1) == 1)
+
+    assert(rddResults(0)._1 == "www.archive.org")
+    assert(rddResults(0)._2 == 132)
+    assert(rddResults(1)._1 == "deadlists.com")
+    assert(rddResults(1)._2 == 2)
+    assert(rddResults(2)._1 == "www.hideout.com.br")
+    assert(rddResults(2)._2 == 1)
   }
 
   after {

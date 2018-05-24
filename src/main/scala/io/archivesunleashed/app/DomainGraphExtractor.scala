@@ -21,6 +21,7 @@ import io.archivesunleashed._
 import io.archivesunleashed.matchbox.{ExtractDomain, ExtractLinks}
 import io.archivesunleashed.df
 import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.functions.desc
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
 object DomainGraphExtractor {
@@ -45,6 +46,6 @@ object DomainGraphExtractor {
              df.RemovePrefixWWW(df.ExtractDomain($"Src")).as("SrcDomain"),
              df.RemovePrefixWWW(df.ExtractDomain($"Dest")).as("DestDomain"))
      .filter("SrcDomain != ''").filter("DestDomain != ''")
-     .groupBy("xx").count().
+     .groupBy($"CrawlDate", $"SrcDomain", $"DestDomain").count().orderBy(desc("count"))
   }
 }
