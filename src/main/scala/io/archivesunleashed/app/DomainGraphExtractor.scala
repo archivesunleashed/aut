@@ -19,16 +19,45 @@ package io.archivesunleashed.app
 
 import io.archivesunleashed._
 import io.archivesunleashed.matchbox.{ExtractDomain, ExtractLinks}
+import io.archivesunleashed.df
 import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.functions.desc
+import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
 object DomainGraphExtractor {
+  /** Extract domain graph from web archive using MapReduce.
+    *
+    * @param records RDD[ArchiveRecord] obtained from RecordLoader
+    * @return RDD[(String, String, String), Int],
+    *         which holds ((CrawlDate, SourceDomain, DestinationDomain), Frequency)
+    */
   def apply(records: RDD[ArchiveRecord]) = {
     records
       .keepValidPages()
       .map(r => (r.getCrawlDate, ExtractLinks(r.getUrl, r.getContentString)))
-      .flatMap(r => r._2.map(f => (r._1, ExtractDomain(f._1).replaceAll("^\\\\s*www\\\\.", ""), ExtractDomain(f._2).replaceAll("^\\\\s*www\\\\.", ""))))
+      .flatMap(r => r._2.map(f =>
+        (r._1,
+          ExtractDomain(f._1).replaceAll("^\\\\s*www\\\\.", ""),
+          ExtractDomain(f._2).replaceAll("^\\\\s*www\\\\.", ""))
+        ))
       .filter(r => r._2 != "" && r._3 != "")
       .countItems()
       .filter(r => r._2 > 5)
+  }
+
+  /** Extract domain graph from web archive using Data Frame and Spark SQL.
+    *
+    * @param d Data frame obtained from RecordLoader
+    * @return Dataset[Row], where the schema is (CrawlDate, SrcDomain, DestDomain, count)
+    */
+  def apply(d: DataFrame): Dataset[Row] = {
+    val spark = SparkSession.builder().master("local").getOrCreate()
+    import spark.implicits._
+
+    d.select($"CrawlDate",
+      df.RemovePrefixWWW(df.ExtractBaseDomain($"Src")).as("SrcDomain"),
+      df.RemovePrefixWWW(df.ExtractBaseDomain($"Dest")).as("DestDomain"))
+      .filter("SrcDomain != ''").filter("DestDomain != ''")
+      .groupBy($"CrawlDate", $"SrcDomain", $"DestDomain").count().orderBy(desc("count"))
   }
 }

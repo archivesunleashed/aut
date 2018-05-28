@@ -17,11 +17,11 @@
 package io.archivesunleashed.app
 
 import io.archivesunleashed.matchbox._
-
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 
 import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.Row
 
 /**
   * UDF for exporting an RDD representing a collection of links to a GEXF file.
@@ -39,9 +39,14 @@ object WriteGEXF {
     else makeFile (rdd, gexfPath)
   }
 
-  /** Produces the GEXF output from an RDD of tuples and outputs it to graphmlPath.
+  def apply(ds: Array[Row], gexfPath: String): Boolean = {
+    if (gexfPath.isEmpty()) false
+    else makeFile (ds, gexfPath)
+  }
+
+  /** Produces the GEXF output from a RDD of tuples and outputs it to gexfPath.
    *
-   * @param rdd an RDD of elements in format ((datestring, source, target), count)
+   * @param rdd a RDD of elements in format ((datestring, source, target), count)
    * @param gexfPath output file
    * @return true on success.
    */
@@ -76,6 +81,52 @@ object WriteGEXF {
     edges.foreach(r => outFile.write(r))
     outFile.write("</edges>\n</graph>\n</gexf>")
     outFile.close()
-    return true
+    true
+  }
+
+  /** Produces the GEXF output from an Array[Row] and outputs it to gexfPath.
+    *
+    * @param data a Dataset[Row] of elements in format (datestring, source, target, count)
+    * @param gexfPath output file
+    * @return true on success.
+    */
+  def makeFile(data: Array[Row], gexfPath: String): Boolean = {
+    val outFile = Files.newBufferedWriter(Paths.get(gexfPath), StandardCharsets.UTF_8)
+    val vertices = scala.collection.mutable.Set[String]()
+
+    data foreach { d =>
+      vertices.add(d.get(1).asInstanceOf[String])
+      vertices.add(d.get(2).asInstanceOf[String])
+    }
+    outFile.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+      "<gexf xmlns=\"http://www.gexf.net/1.3draft\"\n" +
+      "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+      "  xsi:schemaLocation=\"http://www.gexf.net/1.3draft\n" +
+      "                       http://www.gexf.net/1.3draft/gexf.xsd\"\n" +
+      "  version=\"1.3\">\n" +
+      "<graph mode=\"static\" defaultedgetype=\"directed\">\n" +
+      "<attributes class=\"edge\">\n" +
+      "  <attribute id=\"0\" title=\"crawlDate\" type=\"string\" />\n" +
+      "</attributes>\n" +
+      "<nodes>\n")
+    vertices foreach { v =>
+      outFile.write("<node id=\"" +
+        v.computeHash() + "\" label=\"" +
+        v.escapeInvalidXML() + "\" />\n")
+    }
+    outFile.write("</nodes>\n<edges>\n")
+    data foreach { e =>
+      outFile.write("<edge source=\"" + e.get(1).asInstanceOf[String].computeHash() + "\" target=\"" +
+        e.get(2).asInstanceOf[String].computeHash() + "\" weight=\"" + e.get(3) +
+        "\" type=\"directed\">\n" +
+        "<attvalues>\n" +
+        "<attvalue for=\"0\" value=\"" + e.get(0) + "\" />\n" +
+        "</attvalues>\n" +
+        "</edge>\n")
+    }
+    outFile.write("</edges>\n</graph>\n</gexf>")
+    outFile.close()
+
+    true
   }
 }

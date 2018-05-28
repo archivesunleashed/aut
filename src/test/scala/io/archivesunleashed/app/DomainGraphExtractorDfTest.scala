@@ -25,7 +25,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
-class DomainFrequencyExtractorTest extends FunSuite with BeforeAndAfter {
+class DomainGraphExtractorDfTest extends FunSuite with BeforeAndAfter {
   private val arcPath = Resources.getResource("warc/example.warc.gz").getPath
   private var sc: SparkContext = _
   private val master = "local[4]"
@@ -39,35 +39,14 @@ class DomainFrequencyExtractorTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("DomainFrequencyExtractor") {
-    val rdd = RecordLoader.loadArchives(arcPath, sc).keepValidPages()
-    val df = RecordLoader.loadArchives(arcPath, sc).extractValidPagesDF()
-
-    val dfResults = DomainFrequencyExtractor(df).collect()
-    val rddResults = DomainFrequencyExtractor(rdd).collect()
-
-    // Results should be:
-    // +------------------+-----+
-    // |            Domain|count|
-    // +------------------+-----+
-    // |   www.archive.org|  132|
-    // |     deadlists.com|    2|
-    // |www.hideout.com.br|    1|
-    // +------------------+-----+
-
-    assert(dfResults(0).get(0) == "www.archive.org")
-    assert(dfResults(0).get(1) == 132)
-    assert(dfResults(1).get(0) == "deadlists.com")
-    assert(dfResults(1).get(1) == 2)
-    assert(dfResults(2).get(0) == "www.hideout.com.br")
-    assert(dfResults(2).get(1) == 1)
-
-    assert(rddResults(0)._1 == "www.archive.org")
-    assert(rddResults(0)._2 == 132)
-    assert(rddResults(1)._1 == "deadlists.com")
-    assert(rddResults(1)._2 == 2)
-    assert(rddResults(2)._1 == "www.hideout.com.br")
-    assert(rddResults(2)._2 == 1)
+  test("DomainGraphExtractor") {
+    val df = RecordLoader.loadArchives(arcPath, sc).extractHyperlinksDF()
+    val dfResult = DomainGraphExtractor(df).collect()
+    assert(dfResult.length == 166)
+    assert(dfResult(0).get(0) == "20080430")
+    assert(dfResult(0).get(1) == "archive.org")
+    assert(dfResult(0).get(2) == "archive.org")
+    assert(dfResult(0).get(3) == 316)
   }
 
   after {

@@ -39,16 +39,16 @@ class DomainGraphExtractorTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("extract domain graph in RDD with UDF") {
-    val examplerdd = RecordLoader.loadArchives(arcPath, sc)
-    var domainGraph = DomainGraphExtractor.apply(examplerdd).collect()
+  test("DomainGraphExtractor") {
+    val rdd = RecordLoader.loadArchives(arcPath, sc)
+    val rddResult = DomainGraphExtractor(rdd).collect()
 
-    assert(domainGraph.length == 9)
+    assert(rddResult.length == 9)
 
-    assert(domainGraph(0)._1._1 == "20080430")
-    assert(domainGraph(0)._1._2 == "www.archive.org")
-    assert(domainGraph(0)._1._3 == "www.archive.org")
-    assert(domainGraph(0)._2 == 305)
+    assert(rddResult(0)._1._1 == "20080430")
+    assert(rddResult(0)._1._2 == "www.archive.org")
+    assert(rddResult(0)._1._3 == "www.archive.org")
+    assert(rddResult(0)._2 == 305)
   }
 
   after {

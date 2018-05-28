@@ -39,15 +39,23 @@ class PlainTextExtractorTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("extract plain text from html in RDD with UDF") {
-    val examplerdd = RecordLoader.loadArchives(arcPath, sc)
-    var plainText = PlainTextExtractor.apply(examplerdd).collect()
+  test("PlainTextExtractorTest") {
+    val rdd = RecordLoader.loadArchives(arcPath, sc).keepValidPages()
+    val df = RecordLoader.loadArchives(arcPath, sc).extractValidPagesDF()
+    val rddResults = PlainTextExtractor(rdd).collect()
+    val dfResults = PlainTextExtractor(df).collect()
 
-    assert(plainText.length == 135)
-    assert(plainText(0)._1 == "20080430")
-    assert(plainText(0)._2 == "www.archive.org")
-    assert(plainText(0)._3 == "http://www.archive.org/")
-    assert(plainText(0)._4 == "HTTP/1.1 200 OK Date: Wed, 30 Apr 2008 20:48:25 GMT Server: Apache/2.0.54 (Ubuntu) PHP/5.0.5-2ubuntu1.4 mod_ssl/2.0.54 OpenSSL/0.9.7g Last-Modified: Wed, 09 Jan 2008 23:18:29 GMT ETag: \"47ac-16e-4f9e5b40\" Accept-Ranges: bytes Content-Length: 366 Connection: close Content-Type: text/html; charset=UTF-8 Please visit our website at: http://www.archive.org")
+    assert(rddResults.length == 135)
+    assert(rddResults(0)._1 == "20080430")
+    assert(rddResults(0)._2 == "www.archive.org")
+    assert(rddResults(0)._3 == "http://www.archive.org/")
+    assert(rddResults(0)._4 == "HTTP/1.1 200 OK Date: Wed, 30 Apr 2008 20:48:25 GMT Server: Apache/2.0.54 (Ubuntu) PHP/5.0.5-2ubuntu1.4 mod_ssl/2.0.54 OpenSSL/0.9.7g Last-Modified: Wed, 09 Jan 2008 23:18:29 GMT ETag: \"47ac-16e-4f9e5b40\" Accept-Ranges: bytes Content-Length: 366 Connection: close Content-Type: text/html; charset=UTF-8 Please visit our website at: http://www.archive.org")
+
+    assert(dfResults.length == 135)
+    assert(dfResults(0).get(0) == "20080430")
+    assert(dfResults(0).get(1) == "www.archive.org")
+    assert(dfResults(0).get(2) == "http://www.archive.org/")
+    assert(dfResults(0).get(3) == "HTTP/1.1 200 OK Date: Wed, 30 Apr 2008 20:48:25 GMT Server: Apache/2.0.54 (Ubuntu) PHP/5.0.5-2ubuntu1.4 mod_ssl/2.0.54 OpenSSL/0.9.7g Last-Modified: Wed, 09 Jan 2008 23:18:29 GMT ETag: \"47ac-16e-4f9e5b40\" Accept-Ranges: bytes Content-Length: 366 Connection: close Content-Type: text/html; charset=UTF-8 Please visit our website at: http://www.archive.org")
   }
 
   after {

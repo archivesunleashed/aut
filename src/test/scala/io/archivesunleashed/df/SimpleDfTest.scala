@@ -48,7 +48,7 @@ class SimpleDfTest extends FunSuite with BeforeAndAfter {
     val spark = SparkSession.builder().master("local").getOrCreate()
     import spark.implicits._
 
-    val results = df.select(ExtractDomain($"Url").as("Domain"))
+    val results = df.select(ExtractBaseDomain($"Url").as("Domain"))
       .groupBy("Domain").count().orderBy(desc("count")).head(3)
 
     // Results should be:
