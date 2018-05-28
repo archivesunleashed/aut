@@ -23,6 +23,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
+import org.apache.spark.sql.Row
 
 import scala.io.Source
 
@@ -34,6 +35,9 @@ class WriteGEXFTest extends FunSuite with BeforeAndAfter{
   private val network = Seq((("Date1", "Source1", "Destination1"), 3),
                          (("Date2", "Source2", "Destination2"), 4),
                          (("Date3", "Source3", "Destination3"), 100))
+  private val networkDf = Seq(("Date1", "Source1", "Destination1", 3),
+                         ("Date2", "Source2", "Destination2", 4),
+                         ("Date3", "Source3", "Destination3", 100))
   private val testFile = "temporaryTestFile.txt"
 
   before {
@@ -54,6 +58,23 @@ class WriteGEXFTest extends FunSuite with BeforeAndAfter{
     assert(lines(12) == """<node id="f61def1ec71cd27401b8c821f04b7c27" label="Destination1" />""")
     assert(lines(22) == """</attvalues>""")
     assert(lines(34) == """</edges>""")
+  }
+
+  test("creates the file from Array[Row]") {
+    if (Files.exists(Paths.get(testFile))) {
+      new File(testFile).delete()
+    }
+    val networkarray = Array(Row.fromTuple(networkDf(0)),
+      Row.fromTuple(networkDf(1)), Row.fromTuple(networkDf(2)))
+    val ret = WriteGEXF(networkarray, testFile)
+    assert(ret)
+    val lines = Source.fromFile(testFile).getLines.toList
+    println(lines)
+    assert(lines(0) == """<?xml version="1.0" encoding="UTF-8"?>""")
+    assert(lines(12) == """<node id="8d3ab53ec817a1e5bf9ffd6e749b3983" label="Destination2" />""")
+    assert(lines(22) == """</attvalues>""")
+    assert(lines(34) == """</edges>""")
+    assert(!WriteGEXF(networkarray ,""))
   }
 
   test ("returns a Bool depending on pass or failure") {

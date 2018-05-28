@@ -25,17 +25,28 @@ import org.apache.spark.sql.functions.desc
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
 object DomainFrequencyExtractor {
+  /** Extract domain frequency from web archive using MapReduce.
+    *
+    * @param records RDD[ArchiveRecord] obtained from RecordLoader
+    * @return RDD[(String,Int))], which holds (DomainName, DomainFrequency)
+    */
   def apply(records: RDD[ArchiveRecord]) = {
       records
         .keepValidPages()
         .map(r => matchbox.ExtractDomain(r.getUrl))
         .countItems()
   }
+
+  /** Extract domain frequency from web archive using Data Frame and Spark SQL
+    *
+    * @param d Data frame obtained from RecordLoader
+    * @return Dataset[Row], where the schema is (Domain, count)
+    */
   def apply(d: DataFrame): Dataset[Row] = {
     val spark = SparkSession.builder().master("local").getOrCreate()
     import spark.implicits._
 
-    d.select(df.ExtractDomain($"Url").as("Domain"))
+    d.select(df.ExtractBaseDomain($"Url").as("Domain"))
       .groupBy("Domain").count().orderBy(desc("count"))
   }
 }

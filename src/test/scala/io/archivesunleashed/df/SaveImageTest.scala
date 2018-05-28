@@ -19,6 +19,7 @@ package io.archivesunleashed
 
 import com.google.common.io.Resources
 import io.archivesunleashed.df._
+import io.archivesunleashed.matchbox._
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
 import org.apache.spark.{SparkConf, SparkContext}
@@ -26,8 +27,13 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
+import java.nio.file.{Paths, Files}
+import java.io.{File, ByteArrayInputStream}
+import javax.imageio.ImageIO
+import java.util.Base64
+
 @RunWith(classOf[JUnitRunner])
-class SimpleDfTest extends FunSuite with BeforeAndAfter {
+class SaveImageTest extends FunSuite with BeforeAndAfter {
   private val arcPath = Resources.getResource("arc/example.arc.gz").getPath
   private val master = "local[4]"
   private val appName = "example-df"
@@ -40,34 +46,38 @@ class SimpleDfTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("count records") {
+  test("Save image") {
     val df = RecordLoader.loadArchives(arcPath, sc)
-      .extractValidPagesDF()
+      .extractImageDetailsDF()
 
     // We need this in order to use the $-notation
     val spark = SparkSession.builder().master("local").getOrCreate()
     import spark.implicits._
 
-    val results = df.select(ExtractBaseDomain($"Url").as("Domain"))
-      .groupBy("Domain").count().orderBy(desc("count")).head(3)
+    val extracted = df.select($"bytes")
+      .orderBy(desc("bytes")).limit(1)
+    extracted.saveToDisk("bytes", "/tmp/foo")
 
-    // Results should be:
-    // +------------------+-----+
-    // |            Domain|count|
-    // +------------------+-----+
-    // |   www.archive.org|  132|
-    // |     deadlists.com|    2|
-    // |www.hideout.com.br|    1|
-    // +------------------+-----+
+    val encodedBytes: String = extracted.take(1)(0).getAs("bytes")
 
-    assert(results(0).get(0) == "www.archive.org")
-    assert(results(0).get(1) == 132)
+    val suffix = encodedBytes.computeHash()
+    val fileName = "/tmp/foo-" + suffix + ".png"
+    assert(Files.exists(Paths.get(fileName)))
 
-    assert(results(1).get(0) == "deadlists.com")
-    assert(results(1).get(1) == 2)
+    val originalBytes = Base64.getDecoder.decode(encodedBytes)
+    val bis = new ByteArrayInputStream(originalBytes)
+    val originalImage = ImageIO.read(bis)
 
-    assert(results(2).get(0) == "www.hideout.com.br")
-    assert(results(2).get(1) == 1)
+    val savedImage = ImageIO.read(new File(fileName))
+
+    assert(originalImage.getHeight() == savedImage.getHeight())
+    assert(originalImage.getWidth() == savedImage.getWidth())
+    for (y <- 0 until originalImage.getHeight()) {
+      for (x <- 0 until originalImage.getWidth()) {
+        assert(originalImage.getRGB(x, y) == savedImage.getRGB(x, y))
+      }
+    }
+    
   }
 
   after {

@@ -25,6 +25,12 @@ import org.apache.spark.sql.functions.desc
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
 object DomainGraphExtractor {
+  /** Extract domain graph from web archive using MapReduce.
+    *
+    * @param records RDD[ArchiveRecord] obtained from RecordLoader
+    * @return RDD[(String, String, String), Int],
+    *         which holds ((CrawlDate, SourceDomain, DestinationDomain), Frequency)
+    */
   def apply(records: RDD[ArchiveRecord]) = {
     records
       .keepValidPages()
@@ -38,14 +44,20 @@ object DomainGraphExtractor {
       .countItems()
       .filter(r => r._2 > 5)
   }
+
+  /** Extract domain graph from web archive using Data Frame and Spark SQL
+    *
+    * @param d Data frame obtained from RecordLoader
+    * @return Dataset[Row], where the schema is (CrawlDate, SrcDomain, DestDomain, count)
+    */
   def apply(d: DataFrame): Dataset[Row] = {
     val spark = SparkSession.builder().master("local").getOrCreate()
     import spark.implicits._
 
     d.select($"CrawlDate",
-             df.RemovePrefixWWW(df.ExtractDomain($"Src")).as("SrcDomain"),
-             df.RemovePrefixWWW(df.ExtractDomain($"Dest")).as("DestDomain"))
-     .filter("SrcDomain != ''").filter("DestDomain != ''")
-     .groupBy($"CrawlDate", $"SrcDomain", $"DestDomain").count().orderBy(desc("count"))
+      df.RemovePrefixWWW(df.ExtractBaseDomain($"Src")).as("SrcDomain"),
+      df.RemovePrefixWWW(df.ExtractBaseDomain($"Dest")).as("DestDomain"))
+      .filter("SrcDomain != ''").filter("DestDomain != ''")
+      .groupBy($"CrawlDate", $"SrcDomain", $"DestDomain").count().orderBy(desc("count"))
   }
 }

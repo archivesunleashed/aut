@@ -26,6 +26,7 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{Dataset, Row}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.rogach.scallop.ScallopConf
+import org.rogach.scallop.exceptions.ScallopException
 
 /* Usage:
  *
@@ -53,11 +54,29 @@ import org.rogach.scallop.ScallopConf
  *
  * If --split is present, the program will put results for each input file in its own folder. Otherwise they will be merged.
  *
- * If --partition N is present, the program will partition RDD or Data Frame according to N before writing results. Otherwise,
- * partition is left as is.
+ * If --partition N is present, the program will partition RDD or Data Frame according to N before writing results.
+ * Otherwise, the partition is left as is.
  */
 
+/** Construct a Scallop option reader from command line argument string list
+  *
+  * @param args list of command line arguments passed as is from argv
+  */
+
 class CmdAppConf(args: Seq[String]) extends ScallopConf(args) {
+
+  /** Register callbacks when Scallop detects errors.
+    * Useful in unit tests.
+    *
+    * @param e exception that Scallop throws
+    */
+  override def onError(e: Throwable): Unit = e match {
+    case ScallopException(message) =>
+      println(message)
+      throw new IllegalArgumentException()
+    case other => throw other
+  }
+
   mainOptions = Seq(input, output)
   var extractor = opt[String](descr = "extractor", required = true)
   val input = opt[List[String]](descr = "input file path", required = true)
@@ -70,11 +89,23 @@ class CmdAppConf(args: Seq[String]) extends ScallopConf(args) {
   verify()
 }
 
+/** Main application that parse
+  *
+  * @param conf Scallop option reader constructed with class CmdAppConf
+  */
+
 class CommandLineApp(conf: CmdAppConf) {
   private val logger = Logger.getLogger(getClass().getName())
   private val configuration = conf
   private var saveTarget = ""
   private var sparkCtx : Option[SparkContext] = None
+
+  /** Maps extractor type string to RDD extractors.
+    *
+    * Each closure takes a RDD[ArchiveRecord] obtained from RecordLoader, performs the extraction, and
+    * saves results to file by calling save method of CommandLineApp class.
+    * Closures return nothing.
+    */
 
   private val rddExtractors = Map[String, RDD[ArchiveRecord] => Any](
     "DomainFrequencyExtractor" ->
@@ -96,6 +127,14 @@ class CommandLineApp(conf: CmdAppConf) {
       })
   )
 
+  /** Maps extractor type string to Data Frame Extractors
+    *
+    * Each closure takes a list of file names to be extracted, loads them using RecordLoader,
+    * performs the extraction, and saves results to file by calling save method of
+    * CommandLineApp class.
+    * Closures return nothing.
+    */
+
   private val dfExtractors = Map[String, List[String] => Any](
     "DomainFrequencyExtractor" ->
       ((inputFiles: List[String]) => {
@@ -113,7 +152,7 @@ class CommandLineApp(conf: CmdAppConf) {
         }
         if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "GEXF") {
           new File(saveTarget).mkdirs()
-          WriteGEXF(DomainGraphExtractor(df), Paths.get(saveTarget).toString + "/GEXF.xml")
+          WriteGEXF(DomainGraphExtractor(df).collect(), Paths.get(saveTarget).toString + "/GEXF.xml")
         } else {
           save(DomainGraphExtractor(df))
         }
@@ -128,6 +167,13 @@ class CommandLineApp(conf: CmdAppConf) {
       })
   )
 
+  /** Generic routine for saving Dataset obtained from querying Data Frames to file.
+    * Files may be merged according to options specified in 'partition' setting.
+    *
+    * @param d generic dataset obtained from querying Data Frame
+    * @return Unit
+    */
+
   def save(d: Dataset[Row]): Unit = {
     if (!configuration.partition.isEmpty) {
       d.coalesce(configuration.partition()).write.csv(saveTarget)
@@ -135,6 +181,13 @@ class CommandLineApp(conf: CmdAppConf) {
       d.write.csv(saveTarget)
     }
   }
+
+  /** Generic routine for saving RDD obtained from Map Reduce operation of extractors
+    *
+    * @param r RDD obtained by applying RDD extractors to original RDD
+    * @tparam T template class name for RDD. Not used.
+    * @return Unit
+    */
 
   def save[T](r: RDD[T]): Unit = {
     if (!configuration.partition.isEmpty) {
@@ -144,25 +197,38 @@ class CommandLineApp(conf: CmdAppConf) {
     }
   }
 
+  /** Verify the validity of command line arguments regarding input and output files.
+    *
+    * All input files need to exist, and ouput files should not exist, for this to pass.
+    * Throws exception if condition is not met.
+    * @return Unit
+    * @throws IllegalArgumentException exception thrown
+    */
+
   def verifyArgumentsOrExit() = {
     configuration.input() foreach { f =>
       if (!Files.exists(Paths.get(f))) {
         logger.error(f + " not found")
-        System.exit(1)
+        throw new IllegalArgumentException()
       }}
 
     if (Files.exists(Paths.get(configuration.output()))) {
       logger.error(configuration.output() + " already exists")
-      System.exit(1)
+      throw new IllegalArgumentException()
     }
   }
+
+  /** Prepare for invoking Data Frame implementation of extractors
+    *
+    * @return Any
+    */
 
   def dfHandler() = {
     if (!(dfExtractors contains configuration.extractor())) {
       logger.error(configuration.extractor() + " not supported with data frame. " +
         "The following extractors are supported: ")
       dfExtractors foreach { tuple => logger.error(tuple._1) }
-      System.exit(1)
+      throw new IllegalArgumentException()
     }
 
     val extractFunction: List[String] => Any =
@@ -183,11 +249,16 @@ class CommandLineApp(conf: CmdAppConf) {
     }
   }
 
+  /** Prepare for invoking RDD implementation of extractors
+    *
+    * @return Any
+    */
+
   def rddHandler() = {
     if (!(rddExtractors contains configuration.extractor())) {
       logger.error(configuration.extractor() + " not supported with RDD. The following extractors are supported: ")
       rddExtractors foreach { tuple => logger.error(tuple._1) }
-      System.exit(1)
+      throw new IllegalArgumentException()
     }
 
     val extractFunction: RDD[ArchiveRecord] => Any =
@@ -214,24 +285,59 @@ class CommandLineApp(conf: CmdAppConf) {
     }
   }
 
-  def process() = {
-    val conf = new SparkConf().setAppName("AUTCommandLineApp")
-    conf.set("spark.driver.allowMultipleContexts", "true")
-    sparkCtx = Some(new SparkContext(conf))
+  /** Choose either Data Frame implementation or RDD implementation of extractors
+    * depending on the option specified in command line arguments
+    *
+    * @return Any
+    */
 
+  def process() = {
     if (!configuration.df.isEmpty && configuration.df()) {
       dfHandler()
     } else {
       rddHandler()
     }
   }
+
+  def setSparkContext(sc: SparkContext): Unit = {
+    sparkCtx = Some(sc)
+  }
 }
 
 object CommandLineAppRunner {
+
+  /** Entry point for command line application
+    *
+    * @param argv command line arguments passed by the OS
+    */
   def main(argv: Array[String]): Unit = {
     val app = new CommandLineApp(new CmdAppConf(argv))
 
+    try {
+      app.verifyArgumentsOrExit()
+    } catch {
+      case e: IllegalArgumentException => System.exit(1)
+      case x: Throwable => throw x
+    }
+
+    val conf = new SparkConf().setAppName("AUTCommandLineApp")
+    conf.set("spark.driver.allowMultipleContexts", "true")
+    app.setSparkContext(new SparkContext(conf))
+    app.process()
+  }
+
+  /** Entry point for testing.
+    * Takes an existed spark session to prevent new ones from being created
+    *
+    * @param argv command line arguments (array of strings) .
+    * @param sc spark context to be used for this session
+    */
+
+  def test(argv: Array[String], sc: SparkContext): Unit = {
+    val app = new CommandLineApp(new CmdAppConf(argv))
+
     app.verifyArgumentsOrExit()
+    app.setSparkContext(sc)
     app.process()
   }
 }

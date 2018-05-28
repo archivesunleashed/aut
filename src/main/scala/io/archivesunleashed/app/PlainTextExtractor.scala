@@ -23,16 +23,28 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
 object PlainTextExtractor {
+  /** Extract plain text from web archive using MapReduce.
+    *
+    * @param records RDD[ArchiveRecord] obtained from RecordLoader
+    * @return RDD[(String, String, String, String)], which holds
+    *         (CrawlDate, Domain, Url, Text)
+    */
   def apply(records: RDD[ArchiveRecord]) = {
     records
       .keepValidPages()
       .map(r => (r.getCrawlDate, r.getDomain, r.getUrl, RemoveHTML(r.getContentString)))
   }
+
+  /** Extract plain text from web archive using Data Frame and Spark SQL
+    *
+    * @param d Data frame obtained from RecordLoader
+    * @return Dataset[Row], where the schema is (CrawlDate, Domain, Url, Text)
+    */
   def apply(d: DataFrame): Dataset[Row] = {
     val spark = SparkSession.builder().master("local").getOrCreate()
     import spark.implicits._
 
-    d.select($"CrawlDate", df.ExtractDomain($"Url").as("Domain"),
+    d.select($"CrawlDate", df.ExtractBaseDomain($"Url").as("Domain"),
       $"Url", df.RemoveHTML($"Content").as("Text"))
   }
 }

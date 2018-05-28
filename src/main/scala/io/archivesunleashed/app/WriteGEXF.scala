@@ -21,7 +21,7 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.{Dataset, Row}
+import org.apache.spark.sql.Row
 
 /**
   * UDF for exporting an RDD representing a collection of links to a GEXF file.
@@ -39,14 +39,14 @@ object WriteGEXF {
     else makeFile (rdd, gexfPath)
   }
 
-  def apply(ds: Dataset[Row], gexfPath: String): Boolean = {
+  def apply(ds: Array[Row], gexfPath: String): Boolean = {
     if (gexfPath.isEmpty()) false
     else makeFile (ds, gexfPath)
   }
 
-  /** Produces the GEXF output from an RDD of tuples and outputs it to graphmlPath.
+  /** Produces the GEXF output from a RDD of tuples and outputs it to gexfPath.
    *
-   * @param rdd an RDD of elements in format ((datestring, source, target), count)
+   * @param rdd a RDD of elements in format ((datestring, source, target), count)
    * @param gexfPath output file
    * @return true on success.
    */
@@ -84,8 +84,13 @@ object WriteGEXF {
     true
   }
 
-  def makeFile(ds: Dataset[Row], gexfPath: String): Boolean = {
-    val data = ds.collect()
+  /** Produces the GEXF output from an Array[Row] and outputs it to gexfPath.
+    *
+    * @param data a Dataset[Row] of elements in format (datestring, source, target, count)
+    * @param gexfPath output file
+    * @return true on success.
+    */
+  def makeFile(data: Array[Row], gexfPath: String): Boolean = {
     val outFile = Files.newBufferedWriter(Paths.get(gexfPath), StandardCharsets.UTF_8)
     val vertices = scala.collection.mutable.Set[String]()
 
