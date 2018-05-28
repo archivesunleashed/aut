@@ -35,7 +35,7 @@ object PlainTextExtractor {
       .map(r => (r.getCrawlDate, r.getDomain, r.getUrl, RemoveHTML(r.getContentString)))
   }
 
-  /** Extract plain text from web archive using Data Frame and Spark SQL
+  /** Extract plain text from web archive using Data Frame and Spark SQL.
     *
     * @param d Data frame obtained from RecordLoader
     * @return Dataset[Row], where the schema is (CrawlDate, Domain, Url, Text)

@@ -89,7 +89,7 @@ class CmdAppConf(args: Seq[String]) extends ScallopConf(args) {
   verify()
 }
 
-/** Main application that parse
+/** Main application that parse command line arguments and invoke appropriate extractor.
   *
   * @param conf Scallop option reader constructed with class CmdAppConf
   */
@@ -127,7 +127,7 @@ class CommandLineApp(conf: CmdAppConf) {
       })
   )
 
-  /** Maps extractor type string to Data Frame Extractors
+  /** Maps extractor type string to Data Frame Extractors.
     *
     * Each closure takes a list of file names to be extracted, loads them using RecordLoader,
     * performs the extraction, and saves results to file by calling save method of
@@ -182,7 +182,7 @@ class CommandLineApp(conf: CmdAppConf) {
     }
   }
 
-  /** Generic routine for saving RDD obtained from Map Reduce operation of extractors
+  /** Generic routine for saving RDD obtained from Map Reduce operation of extractors.
     *
     * @param r RDD obtained by applying RDD extractors to original RDD
     * @tparam T template class name for RDD. Not used.
@@ -218,7 +218,7 @@ class CommandLineApp(conf: CmdAppConf) {
     }
   }
 
-  /** Prepare for invoking Data Frame implementation of extractors
+  /** Prepare for invoking Data Frame implementation of extractors.
     *
     * @return Any
     */
@@ -249,7 +249,7 @@ class CommandLineApp(conf: CmdAppConf) {
     }
   }
 
-  /** Prepare for invoking RDD implementation of extractors
+  /** Prepare for invoking RDD implementation of extractors.
     *
     * @return Any
     */
@@ -286,11 +286,10 @@ class CommandLineApp(conf: CmdAppConf) {
   }
 
   /** Choose either Data Frame implementation or RDD implementation of extractors
-    * depending on the option specified in command line arguments
+    * depending on the option specified in command line arguments.
     *
     * @return Any
     */
-
   def process() = {
     if (!configuration.df.isEmpty && configuration.df()) {
       dfHandler()
@@ -299,6 +298,10 @@ class CommandLineApp(conf: CmdAppConf) {
     }
   }
 
+  /** Set Spark context to be used.
+    *
+    * @param sc either a brand new or existing Spark context
+    */
   def setSparkContext(sc: SparkContext): Unit = {
     sparkCtx = Some(sc)
   }
@@ -306,7 +309,7 @@ class CommandLineApp(conf: CmdAppConf) {
 
 object CommandLineAppRunner {
 
-  /** Entry point for command line application
+  /** Entry point for command line application.
     *
     * @param argv command line arguments passed by the OS
     */
@@ -327,12 +330,11 @@ object CommandLineAppRunner {
   }
 
   /** Entry point for testing.
-    * Takes an existed spark session to prevent new ones from being created
+    * Takes an existed spark session to prevent new ones from being created.
     *
-    * @param argv command line arguments (array of strings) .
+    * @param argv command line arguments (array of strings).
     * @param sc spark context to be used for this session
     */
-
   def test(argv: Array[String], sc: SparkContext): Unit = {
     val app = new CommandLineApp(new CmdAppConf(argv))
 

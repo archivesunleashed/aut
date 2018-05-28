@@ -37,7 +37,7 @@ object DomainFrequencyExtractor {
         .countItems()
   }
 
-  /** Extract domain frequency from web archive using Data Frame and Spark SQL
+  /** Extract domain frequency from web archive using Data Frame and Spark SQL.
     *
     * @param d Data frame obtained from RecordLoader
     * @return Dataset[Row], where the schema is (Domain, count)

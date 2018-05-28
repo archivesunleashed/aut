@@ -45,7 +45,7 @@ object DomainGraphExtractor {
       .filter(r => r._2 > 5)
   }
 
-  /** Extract domain graph from web archive using Data Frame and Spark SQL
+  /** Extract domain graph from web archive using Data Frame and Spark SQL.
     *
     * @param d Data frame obtained from RecordLoader
     * @return Dataset[Row], where the schema is (CrawlDate, SrcDomain, DestDomain, count)
