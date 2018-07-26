@@ -65,15 +65,21 @@ import scala.util.Try
        assert(pRank(0)._2.strong == -649648005)
      }
 
-     test("creates a network without pagerank scores") {
+     test("creates a network using dynamic PR") {
        val examplerdd = RecordLoader.loadArchives(arcPath, sc)
          .keepValidPages()
          .keepContent(Set("apple".r))
          .flatMap(r => ExtractLinks(r.getUrl, r.getContentString))
          .map(r => (ExtractDomain(r._1).removePrefixWWW(), ExtractDomain(r._2).removePrefixWWW()))
          .filter(r => r._1 != "" && r._2 != "")
+       ExtractGraphX.dynamic = true
        val graph = ExtractGraphX.extractGraphX(examplerdd)
          .subgraph(epred = eTriplet => eTriplet.attr.edgeCount > 5)
+       val pRank = ExtractGraphX.runPageRankAlgorithm(graph).vertices.take(3)
+
+       assert(pRank(0)._2.pageRank == 0.9999999999999986)
+       assert(pRank(0)._2.weak == -1054421350)
+       assert(pRank(0)._2.strong == -1054421350)
      }
 
      after {
