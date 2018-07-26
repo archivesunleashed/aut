@@ -16,13 +16,14 @@
  */
 package io.archivesunleashed.app
 
-import io.archivesunleashed._
-import io.archivesunleashed.matchbox._
+import io.archivesunleashed.ArchiveRecord
+import io.archivesunleashed.matchbox.{ExtractLinks, ExtractDomain, WWWLink}
 import io.archivesunleashed.util.JsonUtils
 import org.apache.spark.graphx._
 import org.apache.spark.rdd.RDD
 
 /** Extracts a network graph using Spark's GraphX utility. */
+@deprecated("Use ExtractGraphX instead.", "0.16.1")
 object ExtractGraph {
   val TOLERANCE: Double = 0.005
   val NUM_ITER: Int = 20

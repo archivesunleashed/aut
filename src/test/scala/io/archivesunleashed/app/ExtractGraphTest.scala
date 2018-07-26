@@ -33,6 +33,7 @@ import scala.util.Try
  // TODO:
  // See: https://github.com/archivesunleashed/aut/pull/204/files#diff-4541b9834513985c360b64093fd45073
  //@RunWith(classOf[JUnitRunner])
+ @deprecated("Replaced with ExtractGraphX", "0.16.1")
  class ExtractGraphTest extends FunSuite with BeforeAndAfter {
      private val arcPath = Resources.getResource("arc/example.arc.gz").getPath
      private var sc: SparkContext = _
