@@ -34,9 +34,7 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 
 import scala.util.Try
 
- // TODO:
- // See: https://github.com/archivesunleashed/aut/pull/204/files#diff-4541b9834513985c360b64093fd45073
- //@RunWith(classOf[JUnitRunner])
+ @RunWith(classOf[JUnitRunner])
  class ExtractGraphXTest extends FunSuite with BeforeAndAfter {
      private val arcPath = Resources.getResource("arc/example.arc.gz").getPath
      private var sc: SparkContext = _
@@ -62,22 +60,12 @@ import scala.util.Try
        val graph = ExtractGraphX.extractGraphX(examplerdd)
          .subgraph(epred = eTriplet => eTriplet.attr.edgeCount > 5)
        val pRank = ExtractGraphX.runPageRankAlgorithm(graph).vertices.take(3)
-       println(pRank)
-       assert(pRank(0)._2.pageRank == 6.0)
+       assert(pRank(0)._2.pageRank == 0.9943090942904987)
+       assert(pRank(0)._2.weak == -649648005)
+       assert(pRank(0)._2.strong == -649648005)
      }
 
      test("creates a network without pagerank scores") {
-       val examplerdd = RecordLoader.loadArchives(arcPath, sc)
-         .keepValidPages()
-         .keepContent(Set("apple".r))
-         .flatMap(r => ExtractLinks(r.getUrl, r.getContentString))
-         .map(r => (ExtractDomain(r._1).removePrefixWWW(), ExtractDomain(r._2).removePrefixWWW()))
-         .filter(r => r._1 != "" && r._2 != "")
-       val graph = ExtractGraphX.extractGraphX(examplerdd)
-         .subgraph(epred = eTriplet => eTriplet.attr.edgeCount > 5)
-     }
-
-     test("writes a json file") {
        val examplerdd = RecordLoader.loadArchives(arcPath, sc)
          .keepValidPages()
          .keepContent(Set("apple".r))
