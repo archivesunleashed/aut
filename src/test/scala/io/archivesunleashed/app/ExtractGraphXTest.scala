@@ -51,6 +51,18 @@ import scala.util.Try
          sc = new SparkContext(conf)
        }
 
+    test ("Case classes are empty") {
+      val testPR = ExtractGraphX.VertexDataPR("url", 0.56, 4, 5)
+      val testVertexData = ExtractGraphX.VertexData("url")
+      val testEdgeData = ExtractGraphX.EdgeData(100)
+      assert(testVertexData.url == "url")
+      assert(testEdgeData.edgeCount == 100)
+      assert(testPR.url == "url")
+      assert(testPR.pageRank == 0.56)
+      assert(testPR.weak == 4)
+      assert(testPR.strong == 5)
+    }
+
      test("creates a network with pagerank scores") {
        val examplerdd = RecordLoader.loadArchives(arcPath, sc)
          .keepValidPages()
