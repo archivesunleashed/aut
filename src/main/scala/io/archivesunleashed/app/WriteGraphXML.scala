@@ -58,7 +58,7 @@ object WriteGraphXML {
     "</edge>\n", "<node id=\"" + triplet.srcId + "\">\n" +
       "<data key=\"pageRank\">" + triplet.srcAttr.pageRank + END_DATA_XML +
       "<data key=\"connectedComponent\">" + triplet.srcAttr.weak + END_DATA_XML +
-      "<data key=\"stronglyConnectedComponent\"" + triplet.srcAttr.strong + END_DATA_XML +
+      "<data key=\"stronglyConnectedComponent\">" + triplet.srcAttr.strong + END_DATA_XML +
       "<data key=\"label\">" + triplet.srcAttr.url + END_DATA_XML + "</node>\n",
       "<node id=\"" + triplet.dstId + "\">\n" +
       "<data key=\"pageRank\">" + triplet.dstAttr.pageRank + END_DATA_XML +
@@ -75,11 +75,11 @@ object WriteGraphXML {
       "<key id=\"weight\" for=\"edge\" attr.name=\"weight\" attr.type=\"double\">\n" +
       "<default>0.0</default>\n" +
       "</key>\n" +
-      "<key id=\"pageRank\" for=\"node\" attr.name=\"pageRank\"" +
+      "<key id=\"pageRank\" for=\"node\" attr.name=\"pageRank\" " +
       "attr.type=\"double\" />\n" +
-      "<key id=\"stronglyConnectedComponent\" for=\"node\"" +
+      "<key id=\"stronglyConnectedComponent\" for=\"node\" " +
       "attr.name=\"stronglyConnectedComponent\" attr.type=\"int\" />\n" +
-      "<key id=\"connectedComponent\" for=\"node\"" +
+      "<key id=\"connectedComponent\" for=\"node\" " +
       "attr.name=\"connectedComponent\" attr.type=\"int\" />\n" +
       "<graph mode=\"static\" edgedefault=\"directed\">\n")
     outFile.write("<nodes>\n")
