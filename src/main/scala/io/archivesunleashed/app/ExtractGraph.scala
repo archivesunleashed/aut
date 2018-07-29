@@ -16,14 +16,17 @@
  */
 package io.archivesunleashed.app
 
-import io.archivesunleashed._
-import io.archivesunleashed.matchbox._
+import io.archivesunleashed.ArchiveRecord
+import io.archivesunleashed.matchbox.{ExtractLinks, ExtractDomain, WWWLink}
 import io.archivesunleashed.util.JsonUtils
 import org.apache.spark.graphx._
 import org.apache.spark.rdd.RDD
 
 /** Extracts a network graph using Spark's GraphX utility. */
+@deprecated("Use ExtractGraphX instead.", "0.16.1")
 object ExtractGraph {
+  val TOLERANCE: Double = 0.005
+  val NUM_ITER: Int = 20
 
   /** Creates a hashcode from a url to use as a unique id.
    *
@@ -48,7 +51,7 @@ object ExtractGraph {
    * @return a Graph object containing data for vertices and edges as extracted.
    */
   def apply(records: RDD[ArchiveRecord], dynamic: Boolean = false,
-            tolerance: Double = 0.005, numIter: Int = 20): Graph[VertexData, EdgeData] = {
+            tolerance: Double = TOLERANCE, numIter: Int = NUM_ITER): Graph[VertexData, EdgeData] = {
     val extractedLinks = records.keepValidPages()
       .map(r => (r.getCrawlDate, ExtractLinks(r.getUrl, r.getContentString)))
       .flatMap(r => r._2.map(f => (r._1, ExtractDomain(f._1).removePrefixWWW(), ExtractDomain(f._2).removePrefixWWW())))
@@ -94,7 +97,7 @@ object ExtractGraph {
       * @param edgesPath Filepath for edges output
       * @return Unit().
       */
-    def writeAsJson(verticesPath: String, edgesPath: String) = {
+    def writeAsJson(verticesPath: String, edgesPath: String): Unit = {
       // Combine edges of a given (date, src, dst) combination into single record with count value.
       val edgesCounted = graph.edges.countItems().map {
         r => Map("date" -> r._1.attr.date,

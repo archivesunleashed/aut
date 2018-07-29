@@ -26,7 +26,7 @@ package object df {
    * @param df the input dataframe
   */
   implicit class SaveImage(df: DataFrame) {
-    /** 
+    /**
      * @param bytesColumnName the name of the column containing the image bytes
      * @param fileName the name of the file to save the images to (without extension)
      * e.g. fileName = "foo" => images are saved as foo0.jpg, foo1.jpg
@@ -53,10 +53,8 @@ package object df {
               ImageIO.write(image, format, file);
             }
           }
-          row
         } catch {
           case e: Throwable => {
-            row
           }
         }
       })

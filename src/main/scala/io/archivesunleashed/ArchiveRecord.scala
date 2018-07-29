@@ -98,14 +98,14 @@ class ArchiveRecordImpl(r: SerializableWritable[ArchiveRecordWritable]) extends 
     new String(getContentBytes)
   }
 
-  val getMimeType = {
+  val getMimeType: String = {
     if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC)
       arcRecord.getMetaData.getMimetype
     else
       WarcRecordUtils.getWarcResponseMimeType(getContentBytes)
   }
 
-  val getUrl = {
+  val getUrl: String = {
     if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC)
       arcRecord.getMetaData.getUrl
     else

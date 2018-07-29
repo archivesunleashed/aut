@@ -23,17 +23,18 @@ import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
+import org.apache.spark.graphx._
 
 import scala.io.Source
 
 @RunWith(classOf[JUnitRunner])
-class WriteGraphMLTest extends FunSuite with BeforeAndAfter{
+class WriteGraphXMLTest extends FunSuite with BeforeAndAfter{
   private var sc: SparkContext = _
   private val master = "local[4]"
   private val appName = "example-spark"
-  private val network = Seq((("Date1", "Source1", "Destination1"), 3),
-                         (("Date2", "Source2", "Destination2"), 4),
-                         (("Date3", "Source3", "Destination3"), 100))
+  private val network = Seq(("Source1", "Destination1"),
+                         ("Source2", "Destination2"),
+                         ("Source3", "Destination3"))
   private val testFile = "temporaryTestFile.txt"
 
   before {
@@ -45,21 +46,21 @@ class WriteGraphMLTest extends FunSuite with BeforeAndAfter{
     }
 
   test("creates the file") {
-    val networkrdd = sc.parallelize(network)
-    WriteGraphML(networkrdd, testFile)
+    val networkrdd = ExtractGraphX.extractGraphX(sc.parallelize(network))
+    val pRank = ExtractGraphX.runPageRankAlgorithm(networkrdd)
+    WriteGraphXML(pRank, testFile)
     assert(Files.exists(Paths.get(testFile)) == true)
     val lines = Source.fromFile(testFile).getLines.toList
     assert(lines(0) == """<?xml version="1.0" encoding="UTF-8"?>""")
-    assert(lines(15) == """<data key="label">Source1</data>""")
-    assert(lines(22) == """</node>""")
-    assert(lines(30) == """<data key="weight">3</data>""")
+    assert(lines(13) == """<nodes>""")
   }
 
   test ("returns a Bool depending on pass or failure") {
-    val networkrdd = sc.parallelize(network)
-    val graphml = WriteGraphML(networkrdd, testFile)
+    val networkrdd = ExtractGraphX.extractGraphX(sc.parallelize(network))
+    val pRank = ExtractGraphX.runPageRankAlgorithm(networkrdd)
+    val graphml = WriteGraphXML(pRank, testFile)
     assert(graphml == true)
-    assert(WriteGraphML(networkrdd, "") == false)
+    assert(WriteGraphXML(pRank, "") == false)
   }
 
   after {

@@ -71,6 +71,6 @@ object WriteGraphML {
     outFile.write("</graph>\n" +
     "</graphml>")
     outFile.close()
-    return true
+    true
   }
 }
