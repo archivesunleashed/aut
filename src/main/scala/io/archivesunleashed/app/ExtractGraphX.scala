@@ -16,9 +16,11 @@
  */
 package io.archivesunleashed.app
 
+// scalastyle:off underscore.import
 import io.archivesunleashed._
-import io.archivesunleashed.matchbox._
+import io.archivesunleashed.matchbox
 import org.apache.spark.graphx._
+// scalastyle:on underscore.import
 import org.apache.spark.rdd.RDD
 
 /** Extracts a site link structure using Spark's GraphX utility. */

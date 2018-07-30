@@ -16,7 +16,9 @@
  */
 package io.archivesunleashed.util
 
+// scalastyle:off underscore.import
 import org.json4s.JsonAST._
+// scalastyle:on underscore.import
 
 /** Utilities for working with Twitter JSON. */
 object TweetUtils {

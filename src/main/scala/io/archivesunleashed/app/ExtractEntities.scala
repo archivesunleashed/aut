@@ -16,10 +16,13 @@
  */
 package io.archivesunleashed.app
 
+// scalastyle:off underscore.import
 import io.archivesunleashed._
+// scalastyle:on underscore.import
 import io.archivesunleashed.matchbox.{NER3Classifier, RemoveHTML}
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
+
 
 /** Performs Named Entity Recognition (NER) on a WARC or ARC file.
   *

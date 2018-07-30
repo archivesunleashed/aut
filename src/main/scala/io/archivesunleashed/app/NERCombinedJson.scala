@@ -21,7 +21,9 @@ import java.io.{BufferedReader, BufferedWriter, InputStreamReader, OutputStreamW
 import io.archivesunleashed.matchbox.NER3Classifier
 import io.archivesunleashed.util.JsonUtils
 import org.apache.hadoop.conf.Configuration
+// scalastyle:off underscore.import
 import org.apache.hadoop.fs._
+// scalastyle:on underscore.import
 import org.apache.spark.SparkContext
 
 import scala.collection.mutable.MutableList
@@ -42,19 +44,20 @@ class NERCombinedJson extends Serializable {
     }.toList
   }
 
-  /** Combines directory of part-files containing one JSON array per line into a single file containing a single JSON array of arrays.
+  /** Combines directory of part-files containing one JSON array per line into a
+    * single file containing a single JSON array of arrays.
     *
     * @param srcDir name of directory holding files, also name that will
     *               be given to JSON file
     * @return Unit().
     */
   def partDirToFile(srcDir: String): Unit = {
+    val randomSample = 8
     val hadoopConfig = new Configuration()
     val hdfs = FileSystem.get(hadoopConfig)
     val rnd = new Random
-
     val srcPath = new Path(srcDir)
-    val tmpFile = rnd.alphanumeric.take(8).mkString + ".almostjson"
+    val tmpFile = rnd.alphanumeric.take(randomSample).mkString + ".almostjson"
     val tmpPath = new Path(tmpFile)
 
     // Merge part-files into single file.
@@ -86,7 +89,8 @@ class NERCombinedJson extends Serializable {
     * @param outputFile path of output file (e.g., "entities.json")
     * @param sc Spark context object
     */
-  def classify(iNerClassifierFile: String, inputFile: String, outputFile: String, sc: SparkContext) {
+  def classify(iNerClassifierFile: String, inputFile: String, outputFile: String,
+    sc: SparkContext): Unit = {
     val out = sc.textFile(inputFile)
       .mapPartitions(iter => {
         NER3Classifier.apply(iNerClassifierFile)

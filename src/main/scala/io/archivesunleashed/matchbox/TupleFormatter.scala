@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 package io.archivesunleashed.matchbox
-
+// scalastyle:off underscore.import
 import shapeless._
+import syntax.std.tuple._
+// scalastyle:on underscore.import
 import ops.tuple.FlatMapper
 import ops.tuple.ToList
-import syntax.std.tuple._
-
 /** Tuple formatter utility. */
 object TupleFormatter {
   /** Borrowed from shapeless' flatten.scala example. */

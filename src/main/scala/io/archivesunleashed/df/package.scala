@@ -1,8 +1,10 @@
 package io.archivesunleashed
 
+// scalastyle:off underscore.import
+import io.archivesunleashed.matchbox._
+// scalastyle:on underscore.import
 import org.apache.spark.sql.functions.udf
 import org.apache.spark.sql.DataFrame
-import io.archivesunleashed.matchbox._
 import java.io.ByteArrayInputStream
 import java.io.File
 import javax.imageio.{ImageIO, ImageReader}

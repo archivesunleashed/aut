@@ -19,7 +19,9 @@ package io.archivesunleashed.app
 import io.archivesunleashed.ArchiveRecord
 import io.archivesunleashed.matchbox.{ExtractLinks, ExtractDomain, WWWLink}
 import io.archivesunleashed.util.JsonUtils
+// scalastyle:off underscore.imports
 import org.apache.spark.graphx._
+// scalastyle:on underscore.imports
 import org.apache.spark.rdd.RDD
 
 /** Extracts a network graph using Spark's GraphX utility. */

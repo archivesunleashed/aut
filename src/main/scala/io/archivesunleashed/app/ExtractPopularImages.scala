@@ -16,7 +16,9 @@
  */
 package io.archivesunleashed.app
 
+// scalastyle:off underscore.import
 import io.archivesunleashed._
+// scalastyle:on underscore.import
 import io.archivesunleashed.matchbox.{ComputeImageSize, ComputeMD5}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{RangePartitioner, SparkContext}
@@ -45,7 +47,6 @@ object ExtractPopularImages {
       .reduceByKey((image1, image2) => (image1._1, image1._2, image1._3 + image2._3))
       .map(x=> (x._2._3, x._2._2))
       .takeOrdered(limit)(Ordering[Int].on(x => -x._1))
-    res.foreach(x => println(x._1 + "\t" + x._2))
     val numPartitions = if (limit <= LIMIT_MAXIMUM) 1 else Math.ceil(limit / LIMIT_DENOMINATOR).toInt
     val rdd = sc.parallelize(res)
     rdd.repartitionAndSortWithinPartitions(

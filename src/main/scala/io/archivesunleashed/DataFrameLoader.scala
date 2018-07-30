@@ -1,7 +1,9 @@
 package io.archivesunleashed
 
 import org.apache.spark.SparkContext
+// scalastyle:off underscore.import
 import org.apache.spark.sql._
+// scalastyle:on underscore.import
 
 class DataFrameLoader(sc: SparkContext) {
   def extractValidPages(path: String): DataFrame = {
