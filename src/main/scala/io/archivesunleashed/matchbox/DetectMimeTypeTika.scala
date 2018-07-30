@@ -30,8 +30,9 @@ object DetectMimeTypeTika {
    * @return MIME type (e.g. "text/html" or "application/xml") or "N/A".
    */
   def apply(content: String): String = {
-    if (content.isEmpty) "N/A"
-    else {
+    if (content.isEmpty) {
+      "N/A"
+    } else {
       val is = new ByteArrayInputStream(content.getBytes)
       val detector = new DefaultDetector()
       val parser = new AutoDetectParser(detector)

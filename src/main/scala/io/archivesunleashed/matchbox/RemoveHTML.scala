@@ -27,7 +27,7 @@ object RemoveHTML {
    * @param content an html or text string
    * @return content without html markup.
    */
-  def apply(content: String) = {
+  def apply(content: String): String = {
     try {
       Jsoup.parse(content).text().replaceAll("[\\r\\n]+", " ")
     }

@@ -21,11 +21,13 @@ import java.io.File
 import java.nio.file.{Files, Paths}
 
 import com.google.common.io.Resources
+// scalastyle:off underscore.import
 import io.archivesunleashed._
 import io.archivesunleashed.matchbox._
 import io.archivesunleashed.app._
 import io.archivesunleashed.util._
 import org.apache.spark.graphx._
+// scalastyle:on underscore.import
 import org.apache.commons.io.FileUtils
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
@@ -52,32 +54,45 @@ import scala.util.Try
        }
 
     test ("Case classes are empty") {
-      val testPR = ExtractGraphX.VertexDataPR("url", 0.56, 4, 5)
-      val testVertexData = ExtractGraphX.VertexData("url")
-      val testEdgeData = ExtractGraphX.EdgeData(100)
-      assert(testVertexData.url == "url")
-      assert(testEdgeData.edgeCount == 100)
-      assert(testPR.url == "url")
-      assert(testPR.pageRank == 0.56)
-      assert(testPR.weak == 4)
-      assert(testPR.strong == 5)
+      val pageRank = 0.56
+      val weak = 4
+      val strong = 5
+      val edgeCount = 100
+      val label = "url"
+      val testPR = ExtractGraphX.VertexDataPR("url", pageRank, weak, strong)
+      val testVertexData = ExtractGraphX.VertexData(label)
+      val testEdgeData = ExtractGraphX.EdgeData(edgeCount)
+      assert(testVertexData.url == label)
+      assert(testEdgeData.edgeCount == edgeCount)
+      assert(testPR.url == label)
+      assert(testPR.pageRank == pageRank)
+      assert(testPR.weak == weak)
+      assert(testPR.strong == strong)
     }
 
      test("creates a network with pagerank scores") {
+       val pageRank = 0.9943090942904987
+       val connected = -649648005
+       val minEdges = 5
+       val minTake = 3
        val examplerdd = RecordLoader.loadArchives(arcPath, sc)
          .keepValidPages()
          .flatMap(r => ExtractLinks(r.getUrl, r.getContentString))
          .map(r => (ExtractDomain(r._1).removePrefixWWW(), ExtractDomain(r._2).removePrefixWWW()))
          .filter(r => r._1 != "" && r._2 != "")
        val graph = ExtractGraphX.extractGraphX(examplerdd)
-         .subgraph(epred = eTriplet => eTriplet.attr.edgeCount > 5)
-       val pRank = ExtractGraphX.runPageRankAlgorithm(graph).vertices.take(3)
-       assert(pRank(0)._2.pageRank == 0.9943090942904987)
-       assert(pRank(0)._2.weak == -649648005)
-       assert(pRank(0)._2.strong == -649648005)
+         .subgraph(epred = eTriplet => eTriplet.attr.edgeCount > minEdges)
+       val pRank = ExtractGraphX.runPageRankAlgorithm(graph).vertices.take(minTake)
+       assert(pRank(0)._2.pageRank == pageRank)
+       assert(pRank(0)._2.weak == connected)
+       assert(pRank(0)._2.strong == connected)
      }
 
      test("creates a network using dynamic PR") {
+       val dynPageRank = 0.9999999999999986
+       val connected = -1054421350
+       val minEdges = 5
+       val minTake = 3
        val examplerdd = RecordLoader.loadArchives(arcPath, sc)
          .keepValidPages()
          .keepContent(Set("apple".r))
@@ -86,12 +101,12 @@ import scala.util.Try
          .filter(r => r._1 != "" && r._2 != "")
        ExtractGraphX.dynamic = true
        val graph = ExtractGraphX.extractGraphX(examplerdd)
-         .subgraph(epred = eTriplet => eTriplet.attr.edgeCount > 5)
-       val pRank = ExtractGraphX.runPageRankAlgorithm(graph).vertices.take(3)
+         .subgraph(epred = eTriplet => eTriplet.attr.edgeCount > minEdges)
+       val pRank = ExtractGraphX.runPageRankAlgorithm(graph).vertices.take(minTake)
 
-       assert(pRank(0)._2.pageRank == 0.9999999999999986)
-       assert(pRank(0)._2.weak == -1054421350)
-       assert(pRank(0)._2.strong == -1054421350)
+       assert(pRank(0)._2.pageRank == dynPageRank)
+       assert(pRank(0)._2.weak == connected)
+       assert(pRank(0)._2.strong == connected)
      }
 
      after {

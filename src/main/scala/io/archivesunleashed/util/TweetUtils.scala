@@ -28,6 +28,7 @@ object TweetUtils {
     * @param tweet JValue/JSON object containing Twitter API data (JSON)
     */
   implicit class JsonTweet(tweet: JValue) {
+    val userBranch = "user"
     implicit lazy val formats = org.json4s.DefaultFormats
     /** Get Twitter status id. */
     def id(): String = try { (tweet \ "id_str").extract[String] } catch { case e: Exception => null}
@@ -38,12 +39,12 @@ object TweetUtils {
     /** Get the language code (ISO 639-1). */
     def lang: String = try { (tweet \ "lang").extract[String] } catch { case e: Exception => null}
     /** Get the username of the user who wrote the status. */
-    def username(): String = try { (tweet \ "user" \ "screen_name").extract[String] } catch { case e: Exception => null}
+    def username(): String = try { (tweet \ userBranch \ "screen_name").extract[String] } catch { case e: Exception => null}
     /** Check if user of status is "verified" (true or false). */
-    def isVerifiedUser(): Boolean = try { (tweet \ "user" \ "verified").extract[Boolean] } catch { case e: Exception => false}
+    def isVerifiedUser(): Boolean = try { (tweet \ userBranch \ "verified").extract[Boolean] } catch { case e: Exception => false}
     /** Get the number of followers the user has. */
-    def followerCount: Int = try { (tweet \ "user" \ "followers_count").extract[Int] } catch { case e: Exception => 0}
+    def followerCount: Int = try { (tweet \ userBranch \ "followers_count").extract[Int] } catch { case e: Exception => 0}
     /** Get the number of friends (people the person follows) of the user. */
-    def friendCount: Int = try { (tweet \ "user" \ "friends_count").extract[Int] } catch { case e: Exception => 0}
+    def friendCount: Int = try { (tweet \ userBranch \ "friends_count").extract[Int] } catch { case e: Exception => 0}
   }
 }

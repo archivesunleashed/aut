@@ -35,10 +35,14 @@ class ExtractDateTest extends FunSuite {
   }
 
   test("more perfect") {
-    assert(ExtractDate("20151204", YYYY) == "20151204".substring(0, 4))
-    assert(ExtractDate("20151204", MM) == "20151204".substring(4, 6))
-    assert(ExtractDate("20151204", DD) == "20151204".substring(6, 8))
-    assert(ExtractDate("20151204", YYYYMM) == "20151204".substring(0, 6))
-    assert(ExtractDate("20151204", YYYYMMDD) == "20151204".substring(0, 8))
+    val startSS = 0
+    val yearSS = 4
+    val monthSS = 6
+    val daySS = 8
+    assert(ExtractDate("20151204", YYYY) == "20151204".substring(startSS, yearSS))
+    assert(ExtractDate("20151204", MM) == "20151204".substring(yearSS, monthSS))
+    assert(ExtractDate("20151204", DD) == "20151204".substring(monthSS, daySS))
+    assert(ExtractDate("20151204", YYYYMM) == "20151204".substring(startSS, monthSS))
+    assert(ExtractDate("20151204", YYYYMMDD) == "20151204".substring(startSS, daySS))
   }
 }
