@@ -26,7 +26,7 @@ import java.util
 import scala.collection.mutable
 
 /** Reads in a text string, and returns entities identified by the configured Stanford NER classifier. */
-object NER3Classifier {
+object NERClassifier {
 
   var serializedClassifier: String = _
   var classifier: AbstractSequenceClassifier[CoreLabel] = _
@@ -45,9 +45,9 @@ object NER3Classifier {
   /** Reads the NER Classifier file.
    *
    * @param file path to NER Classifier
-   * @return Unit().
+   * @return Unit.
    */
-  def apply(file: String) = {
+  def apply(file: String): Unit = {
     serializedClassifier = file
   }
 
@@ -64,7 +64,9 @@ object NER3Classifier {
     }
     var prevEntityType = NERClassType.O
     var entityBuffer: String = ""
-    if (input == null) return emptyString
+    if (input == null) {
+      emptyString
+    }
     try {
       if (classifier == null) classifier = CRFClassifier.getClassifier(serializedClassifier)
       val out: util.List[util.List[CoreLabel]] = classifier.classify(input)

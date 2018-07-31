@@ -22,13 +22,13 @@ import ArchiveRecordWritable.ArchiveFormat
 import io.archivesunleashed.matchbox.{DetectLanguage, ExtractDate, ExtractLinks, ExtractImageLinks, ExtractImageDetails, ExtractDomain, RemoveHTML, ComputeMD5}
 import io.archivesunleashed.matchbox.ImageDetails
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent
-//scalastyle:off underscore.import
+// scalastyle:off underscore.import
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent._
 import org.apache.spark.sql._
 import org.apache.spark.sql.types._
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
-//scalastyle:on: underscore.import
+// scalastyle:on: underscore.import
 import org.apache.hadoop.io.LongWritable
 import org.apache.spark.{SerializableWritable, SparkContext}
 import org.apache.spark.rdd.RDD
@@ -39,7 +39,7 @@ import scala.util.matching.Regex
   * Package object which supplies implicits to augment generic RDDs with AUT-specific transformations.
   */
 package object archivesunleashed {
-  /** Loads records from either WARCs, ARCs or Twitter API data (JSON). **/
+  /** Loads records from either WARCs, ARCs or Twitter API data (JSON). */
   object RecordLoader {
     /** Creates an Archive Record RDD from a WARC or ARC file.
       *
@@ -139,7 +139,7 @@ package object archivesunleashed {
       sqlContext.getOrCreate().createDataFrame(records, schema)
     }
 
-    /* Extract image bytes and metadata*/
+    /* Extract image bytes and metadata */
     def extractImageDetailsDF(): DataFrame = {
       val records = rdd
         .keepImages()

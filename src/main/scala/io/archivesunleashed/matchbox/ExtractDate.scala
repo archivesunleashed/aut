@@ -39,12 +39,13 @@ object ExtractDate {
     val daySS = 8
     if (fullDate == null) {
       fullDate
-    } else dateFormat match {
+    } else {dateFormat match {
       case YYYY => fullDate.substring(startSS, yearSS)
       case MM => fullDate.substring(yearSS, monthSS)
       case DD => fullDate.substring(monthSS, daySS)
       case YYYYMM => fullDate.substring(startSS, monthSS)
       case _ => fullDate.substring(startSS, daySS)
+      }
     }
   }
 }

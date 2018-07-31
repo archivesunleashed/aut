@@ -31,15 +31,17 @@ object ComputeImageSize {
    * @return size of image as a tuple (width, height) or (0,0).
    */
   def apply(bytes: Array[Byte]): (Int, Int) = {
+    val nullImage = (0, 0)
     try {
       val in = new ByteArrayInputStream(bytes)
       val image = ImageIO.read(in)
-      if (image == null)
-        return (0, 0)
+      if (image == null) {
+        nullImage
+      }    
       (image.getWidth(), image.getHeight())
     } catch {
       case e: Throwable => {
-        return (0, 0)
+        nullImage
       }
     }
   }

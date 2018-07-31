@@ -21,7 +21,7 @@ import java.io.File
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.google.common.io.{Files, Resources}
-import io.archivesunleashed.matchbox.NER3Classifier.NERClassType
+import io.archivesunleashed.matchbox.NERClassifier.NERClassType
 import org.apache.commons.io.FileUtils
 import org.apache.commons.logging.LogFactory
 import org.apache.spark.{SparkConf, SparkContext}

@@ -29,14 +29,19 @@ object TupleFormatter {
   }
 
   /** Flattens nested tuples, taking an argument a tuple of any size. */
+  // scalastyle:off
   object flatten extends LowPriorityFlatten {
+  // scalastyle:on
     implicit def caseTuple[T <: Product](implicit fm: FlatMapper[T, flatten.type]) =
       at[T](_.flatMap(flatten))
   }
 
-  /** Transforms a tuple into a tab-delimited string, flattening any nesting, taking an argument a tuple of any size. */
+  /** Transforms a tuple into a tab-delimited string, flattening any nesting,
+    * taking an argument a tuple of any size. */
+  // scalastyle:off
   object tabDelimit extends Poly1 {
     implicit def caseTuple[T <: Product, Lub](implicit tl: ToList[T, Lub], fm: FlatMapper[T, flatten.type]) =
       at[T](flatten(_).asInstanceOf[Product].productIterator.mkString("\t"))
   }
+  // scalastyle:on
 }

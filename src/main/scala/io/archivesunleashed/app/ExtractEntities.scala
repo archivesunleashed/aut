@@ -19,7 +19,7 @@ package io.archivesunleashed.app
 // scalastyle:off underscore.import
 import io.archivesunleashed._
 // scalastyle:on underscore.import
-import io.archivesunleashed.matchbox.{NER3Classifier, RemoveHTML}
+import io.archivesunleashed.matchbox.{NERClassifier, RemoveHTML}
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 
@@ -75,8 +75,8 @@ object ExtractEntities {
     */
   def extractAndOutput(iNerClassifierFile: String, rdd: RDD[(String, String, String)], outputFile: String): RDD[(String, String, String)] = {
     val r = rdd.mapPartitions(iter => {
-      NER3Classifier.apply(iNerClassifierFile)
-      iter.map(r => (r._1, r._2, NER3Classifier.classify(r._3)))
+      NERClassifier.apply(iNerClassifierFile)
+      iter.map(r => (r._1, r._2, NERClassifier.classify(r._3)))
     })
     r.saveAsTextFile(outputFile)
     r

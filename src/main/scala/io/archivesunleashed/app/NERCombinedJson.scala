@@ -18,7 +18,7 @@ package io.archivesunleashed.app
 
 import java.io.{BufferedReader, BufferedWriter, InputStreamReader, OutputStreamWriter}
 
-import io.archivesunleashed.matchbox.NER3Classifier
+import io.archivesunleashed.matchbox.NERClassifier
 import io.archivesunleashed.util.JsonUtils
 import org.apache.hadoop.conf.Configuration
 // scalastyle:off underscore.import
@@ -93,13 +93,13 @@ class NERCombinedJson extends Serializable {
     sc: SparkContext): Unit = {
     val out = sc.textFile(inputFile)
       .mapPartitions(iter => {
-        NER3Classifier.apply(iNerClassifierFile)
+        NERClassifier.apply(iNerClassifierFile)
         iter.map(line => {
             val substrs = line.split(",", 3)
             (substrs(0), substrs(1), substrs(2))
           })
           .map(r => {
-            val classifiedJson = NER3Classifier.classify(r._3)
+            val classifiedJson = NERClassifier.classify(r._3)
             val classifiedMap = JsonUtils.fromJson(classifiedJson)
             val classifiedMapCountTuples: Map[String, List[(String, Int)]] = classifiedMap.map {
               case (nerType, entities: List[String @unchecked]) => (nerType, entities.groupBy(identity).mapValues(_.size).toList)
