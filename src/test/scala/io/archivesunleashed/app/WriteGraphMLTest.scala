@@ -31,9 +31,12 @@ class WriteGraphMLTest extends FunSuite with BeforeAndAfter{
   private var sc: SparkContext = _
   private val master = "local[4]"
   private val appName = "example-spark"
-  private val network = Seq((("Date1", "Source1", "Destination1"), 3),
-                         (("Date2", "Source2", "Destination2"), 4),
-                         (("Date3", "Source3", "Destination3"), 100))
+  private val linkCountOne = 3
+  private val linkCountTwo = 4
+  private val linkCountThree = 100
+  private val network = Seq((("Date1", "Source1", "Destination1"), linkCountOne),
+                         (("Date2", "Source2", "Destination2"), linkCountTwo),
+                         (("Date3", "Source3", "Destination3"), linkCountThree))
   private val testFile = "temporaryTestFile.txt"
 
   before {
@@ -58,8 +61,8 @@ class WriteGraphMLTest extends FunSuite with BeforeAndAfter{
   test ("returns a Bool depending on pass or failure") {
     val networkrdd = sc.parallelize(network)
     val graphml = WriteGraphML(networkrdd, testFile)
-    assert(graphml == true)
-    assert(WriteGraphML(networkrdd, "") == false)
+    assert(graphml)
+    assert(!WriteGraphML(networkrdd, ""))
   }
 
   after {

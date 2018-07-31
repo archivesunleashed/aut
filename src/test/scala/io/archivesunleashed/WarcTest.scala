@@ -47,13 +47,15 @@ class WarcTest extends FunSuite with BeforeAndAfter {
   }
 
   test("warc extract domain") {
+    val take = 10
+    val expectedLength
     val r = records
       .keepValidPages()
       .map(r => r.getDomain)
       .countItems()
-      .take(10)
+      .take(take)
 
-    assert(r.length == 3)
+    assert(r.length == expectedLength)
   }
 
   test("warc get content") {
@@ -69,4 +71,3 @@ class WarcTest extends FunSuite with BeforeAndAfter {
     }
   }
 }
-

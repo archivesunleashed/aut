@@ -37,7 +37,7 @@ object ComputeImageSize {
       val image = ImageIO.read(in)
       if (image == null) {
         nullImage
-      }    
+      }
       (image.getWidth(), image.getHeight())
     } catch {
       case e: Throwable => {

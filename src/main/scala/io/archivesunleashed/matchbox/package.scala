@@ -32,7 +32,7 @@ package object matchbox {
         null
       } else {
         s.replaceAll("^\\s*www\\.", "")
-      }  
+      }
     }
 
     def escapeInvalidXML(): String = {

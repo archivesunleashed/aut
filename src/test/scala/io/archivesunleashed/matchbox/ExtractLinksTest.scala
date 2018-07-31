@@ -27,31 +27,36 @@ import scala.collection.mutable
 
 @RunWith(classOf[JUnitRunner])
 class ExtractLinksTest extends FunSuite {
+
+  val fragment: String = "Here is <a href=\"http://www.google.com\">a search engine</a>.\n"
+  + "Here is <a href=\"http://www.twitter.com/\">Twitter</a>.\n"
+  val fooFragment: String = "http://www.foobar.org/index.html"
+  val url = "http://www.google.com"
+  val twitter = "http://www.twitter.com"
+  val head = "a search engine"
+
   test("simple") {
-    val fragment: String = "Here is <a href=\"http://www.google.com\">a search engine</a>.\n" + "Here is <a href=\"http://www.twitter.com/\">Twitter</a>.\n"
     val extracted: Seq[(String, String, String)] = ExtractLinks("", fragment)
     assert(extracted.size == 2)
-    assert("http://www.google.com" == extracted.head._2)
-    assert("a search engine" == extracted.head._3)
-    assert("http://www.twitter.com/" == extracted.last._2)
+    assert(url == extracted.head._2)
+    assert(head == extracted.head._3)
+    assert(twitter == extracted.last._2)
     assert("Twitter" == extracted.last._3)
   }
 
   test("relative") {
-    val fragment: String = "Here is <a href=\"http://www.google.com\">a search engine</a>.\n" + "Here is <a href=\"page.html\">a relative URL</a>.\n"
-    val extracted: Seq[(String, String, String)] = ExtractLinks("", fragment, "http://www.foobar.org/index.html")
+    val extracted: Seq[(String, String, String)] = ExtractLinks("", fragment, fooFragment)
     assert(extracted.size == 2)
-    assert("http://www.google.com" == extracted.head._2)
-    assert("a search engine" == extracted.head._3)
-    assert("http://www.foobar.org/page.html" == extracted.last._2)
+    assert(url == extracted.head._2)
+    assert(head == extracted.head._3)
+    assert(fooFragment == extracted.last._2)
     assert("a relative URL" == extracted.last._3)
   }
 
   test("errors") {
-    val fragment: String = "Here is <a href=\"http://www.google.com\">a search engine</a>.\n" + "Here is <a href=\"page.html\">a relative URL</a>.\n"
     val invalid: String = "Here is a fake url <a href=\"http://www.google.com\"> bogus search engine</a>."
-    assert(ExtractLinks(null, fragment, "http://www.foobar.org/index.html") == mutable.MutableList[(String, String, String)]())
-    assert(ExtractLinks("", "", "http://www.foobar.org/index.html") == mutable.MutableList[(String, String, String)]())
+    assert(ExtractLinks(null, fragment, fooFragment) == mutable.MutableList[(String, String, String)]())
+    assert(ExtractLinks("", "", fooFragment) == mutable.MutableList[(String, String, String)]())
     // invalid url should throw exception - need more information here
     intercept[IOException] { ExtractLinks("", null, "FROTSTEDwww.foobar.org/index.html") }
   }
