@@ -42,7 +42,7 @@ class ArcTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  val dayMonthTestA
+  val dayMonthTestA = "200805"
 
   test("count records") {
     assert(RecordLoader.loadArchives(arcPath, sc).count == 300L)

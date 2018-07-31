@@ -23,8 +23,9 @@ import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
+// scalastyle:off underscore.import
 import org.apache.spark.graphx._
-
+// scalastyle:on underscore.import
 import scala.io.Source
 
 @RunWith(classOf[JUnitRunner])
@@ -53,7 +54,7 @@ class WriteGraphXMLTest extends FunSuite with BeforeAndAfter{
     WriteGraphXML(pRank, testFile)
     assert(Files.exists(Paths.get(testFile)))
     val lines = Source.fromFile(testFile).getLines.toList
-    assert(lines(header) == """<?xml version="1.0" encoding="UTF-8"?>""")
+    assert(lines(headerLocation) == """<?xml version="1.0" encoding="UTF-8"?>""")
     assert(lines(expectedLine) == """<nodes>""")
   }
 

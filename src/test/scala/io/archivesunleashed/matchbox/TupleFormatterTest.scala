@@ -17,15 +17,16 @@
 
 package io.archivesunleashed.matchbox
 
-import org.junit.runner.RunWith
-import org.scalatest.{ FunSuite, Matchers }
-import org.scalatest.junit.JUnitRunner
-import ops.tuple.FlatMapper
-import ops.tuple.ToList
 // scalastyle:off underscore.import
 import shapeless._
 import syntax.std.tuple._
 // scalastyle:on underscore.import
+import org.junit.runner.RunWith
+import org.scalatest.{ FunSuite, Matchers }
+import org.scalatest.junit.JUnitRunner
+
+import ops.tuple.FlatMapper
+import ops.tuple.ToList
 
 @RunWith(classOf[JUnitRunner])
 class TupleFormatterTest extends FunSuite with Matchers {

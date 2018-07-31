@@ -28,11 +28,11 @@ import scala.collection.mutable
 @RunWith(classOf[JUnitRunner])
 class ExtractLinksTest extends FunSuite {
 
-  val fragment: String = "Here is <a href=\"http://www.google.com\">a search engine</a>.\n"
-  + "Here is <a href=\"http://www.twitter.com/\">Twitter</a>.\n"
+  val fragment: String = "Here is <a href=\"http://www.google.com\">a search engine</a>.\n" +
+    "Here is <a href=\"http://www.twitter.com/\">Twitter</a>.\n"
   val fooFragment: String = "http://www.foobar.org/index.html"
   val url = "http://www.google.com"
-  val twitter = "http://www.twitter.com"
+  val twitter = "http://www.twitter.com/"
   val head = "a search engine"
 
   test("simple") {
@@ -45,11 +45,14 @@ class ExtractLinksTest extends FunSuite {
   }
 
   test("relative") {
-    val extracted: Seq[(String, String, String)] = ExtractLinks("", fragment, fooFragment)
+    val fragmentLocal: String = "Here is <a href=\"http://www.google.com\">" +
+    "a search engine</a>.\nHere is a <a href=\"page.html\">a relative URL</a>.\n"
+    val fooFragmentLocal = "http://www.foobar.org/page.html"
+    val extracted: Seq[(String, String, String)] = ExtractLinks("", fragmentLocal, fooFragment)
     assert(extracted.size == 2)
     assert(url == extracted.head._2)
     assert(head == extracted.head._3)
-    assert(fooFragment == extracted.last._2)
+    assert(fooFragmentLocal == extracted.last._2)
     assert("a relative URL" == extracted.last._3)
   }
 

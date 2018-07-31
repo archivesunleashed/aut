@@ -49,13 +49,14 @@ class WriteGraphMLTest extends FunSuite with BeforeAndAfter{
 
   test("creates the file") {
     val networkrdd = sc.parallelize(network)
+    val lineCheck = (0, 15, 22, 30)
     WriteGraphML(networkrdd, testFile)
-    assert(Files.exists(Paths.get(testFile)) == true)
+    assert(Files.exists(Paths.get(testFile)))
     val lines = Source.fromFile(testFile).getLines.toList
-    assert(lines(0) == """<?xml version="1.0" encoding="UTF-8"?>""")
-    assert(lines(15) == """<data key="label">Source1</data>""")
-    assert(lines(22) == """</node>""")
-    assert(lines(30) == """<data key="weight">3</data>""")
+    assert(lines(lineCheck._1) == """<?xml version="1.0" encoding="UTF-8"?>""")
+    assert(lines(lineCheck._2) == """<data key="label">Source1</data>""")
+    assert(lines(lineCheck._3) == """</node>""")
+    assert(lines(lineCheck._4) == """<data key="weight">3</data>""")
   }
 
   test ("returns a Bool depending on pass or failure") {

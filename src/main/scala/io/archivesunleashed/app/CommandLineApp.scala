@@ -72,11 +72,12 @@ class CmdAppConf(args: Seq[String]) extends ScallopConf(args) {
     */
   override def onError(e: Throwable): Unit = e match {
     case ScallopException(message) =>
-// scalastyle:off
+      // scalastyle:off
       println(message)
+      // scalastyle:on
       throw new IllegalArgumentException()
-    case other => throw other
-// scalastyle:on
+    case other: Any => throw other
+
   }
 
   mainOptions = Seq(input, output)

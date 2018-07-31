@@ -59,7 +59,7 @@ class SaveImageTest extends FunSuite with BeforeAndAfter {
     import spark.implicits._
     // scalastyle:on
 
-    val extracted = df.select($testString)
+    val extracted = df.select($"bytes")
       .orderBy(desc(testString)).limit(1)
     extracted.saveToDisk(testString, "/tmp/foo")
 
