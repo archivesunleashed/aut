@@ -23,7 +23,6 @@ import io.archivesunleashed.matchbox.{NERClassifier, RemoveHTML}
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 
-
 /** Performs Named Entity Recognition (NER) on a WARC or ARC file.
   *
   * [[http://nlp.stanford.edu/software/CRF-NER.html Named Entity Recognition]]

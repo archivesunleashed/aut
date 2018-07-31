@@ -77,7 +77,6 @@ class CmdAppConf(args: Seq[String]) extends ScallopConf(args) {
       // scalastyle:on
       throw new IllegalArgumentException()
     case other: Any => throw other
-
   }
 
   mainOptions = Seq(input, output)

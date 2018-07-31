@@ -29,7 +29,7 @@ class ExtractBoilerPipeTextTest extends FunSuite {
    <footer>Copyright 2017</footer>"""
   var boiler = """Copyright 2017"""
 
-  test("Collects boilerpiep") {
+  test("Collects boilerpipe") {
     assert(ExtractBoilerpipeText(text) == boiler)
     assert(ExtractBoilerpipeText("") == null)
     assert(ExtractBoilerpipeText("All Rights Reserved.") == null)
