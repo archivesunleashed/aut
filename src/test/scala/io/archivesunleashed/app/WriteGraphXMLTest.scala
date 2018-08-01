@@ -23,8 +23,9 @@ import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
+// scalastyle:off underscore.import
 import org.apache.spark.graphx._
-
+// scalastyle:on underscore.import
 import scala.io.Source
 
 @RunWith(classOf[JUnitRunner])
@@ -46,21 +47,23 @@ class WriteGraphXMLTest extends FunSuite with BeforeAndAfter{
     }
 
   test("creates the file") {
+    val headerLocation = 0
+    val expectedLine = 13
     val networkrdd = ExtractGraphX.extractGraphX(sc.parallelize(network))
     val pRank = ExtractGraphX.runPageRankAlgorithm(networkrdd)
     WriteGraphXML(pRank, testFile)
-    assert(Files.exists(Paths.get(testFile)) == true)
+    assert(Files.exists(Paths.get(testFile)))
     val lines = Source.fromFile(testFile).getLines.toList
-    assert(lines(0) == """<?xml version="1.0" encoding="UTF-8"?>""")
-    assert(lines(13) == """<nodes>""")
+    assert(lines(headerLocation) == """<?xml version="1.0" encoding="UTF-8"?>""")
+    assert(lines(expectedLine) == """<nodes>""")
   }
 
   test ("returns a Bool depending on pass or failure") {
     val networkrdd = ExtractGraphX.extractGraphX(sc.parallelize(network))
     val pRank = ExtractGraphX.runPageRankAlgorithm(networkrdd)
     val graphml = WriteGraphXML(pRank, testFile)
-    assert(graphml == true)
-    assert(WriteGraphXML(pRank, "") == false)
+    assert(graphml)
+    assert(!WriteGraphXML(pRank, ""))
   }
 
   after {

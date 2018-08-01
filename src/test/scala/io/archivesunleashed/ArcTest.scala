@@ -19,7 +19,9 @@ package io.archivesunleashed
 
 import com.google.common.io.Resources
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent
+// scalastyle:off underscore.import
 import io.archivesunleashed.matchbox._
+// scalastyle:on underscore.import
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -40,23 +42,27 @@ class ArcTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
+  val dayMonthTestA = "200805"
+
   test("count records") {
     assert(RecordLoader.loadArchives(arcPath, sc).count == 300L)
   }
 
   test("filter date") {
+    val startSS = 0
+    val monthSS = 6
     val four = RecordLoader.loadArchives(arcPath, sc)
-      .keepDate(List("200804","200805"), DateComponent.YYYYMM)
+      .keepDate(List("200804", dayMonthTestA), DateComponent.YYYYMM)
       .map(r => r.getCrawlDate)
       .collect()
 
     val five = RecordLoader.loadArchives(arcPath, sc)
-      .keepDate(List("200805","200807"), DateComponent.YYYYMM)
+      .keepDate(List(dayMonthTestA,"200807"), DateComponent.YYYYMM)
       .map(r => r.getCrawlDate)
       .collect()
 
-    four.foreach(date => assert(date.substring(0, 6) == "200804"))
-    five.foreach(date => assert(date.substring(0, 6) == "200805"))
+    four.foreach(date => assert(date.substring(startSS, monthSS) == "200804"))
+    five.foreach(date => assert(date.substring(startSS, monthSS) == dayMonthTestA))
   }
 
   test("filter url pattern") {
@@ -101,7 +107,6 @@ class ArcTest extends FunSuite with BeforeAndAfter {
       .map(r => RemoveHTML(r.getContentString))
       .groupBy(content => DetectMimeTypeTika(content))
       .map(f => {
-        println(f._1 + " : " + f._2.size)
         (f._1, f._2.size)
       }).collect
 
@@ -126,4 +131,3 @@ class ArcTest extends FunSuite with BeforeAndAfter {
     }
   }
 }
-

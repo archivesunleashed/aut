@@ -31,9 +31,12 @@ class WriteGraphMLTest extends FunSuite with BeforeAndAfter{
   private var sc: SparkContext = _
   private val master = "local[4]"
   private val appName = "example-spark"
-  private val network = Seq((("Date1", "Source1", "Destination1"), 3),
-                         (("Date2", "Source2", "Destination2"), 4),
-                         (("Date3", "Source3", "Destination3"), 100))
+  private val linkCountOne = 3
+  private val linkCountTwo = 4
+  private val linkCountThree = 100
+  private val network = Seq((("Date1", "Source1", "Destination1"), linkCountOne),
+                         (("Date2", "Source2", "Destination2"), linkCountTwo),
+                         (("Date3", "Source3", "Destination3"), linkCountThree))
   private val testFile = "temporaryTestFile.txt"
 
   before {
@@ -46,20 +49,21 @@ class WriteGraphMLTest extends FunSuite with BeforeAndAfter{
 
   test("creates the file") {
     val networkrdd = sc.parallelize(network)
+    val lineCheck = (0, 15, 22, 30)
     WriteGraphML(networkrdd, testFile)
-    assert(Files.exists(Paths.get(testFile)) == true)
+    assert(Files.exists(Paths.get(testFile)))
     val lines = Source.fromFile(testFile).getLines.toList
-    assert(lines(0) == """<?xml version="1.0" encoding="UTF-8"?>""")
-    assert(lines(15) == """<data key="label">Source1</data>""")
-    assert(lines(22) == """</node>""")
-    assert(lines(30) == """<data key="weight">3</data>""")
+    assert(lines(lineCheck._1) == """<?xml version="1.0" encoding="UTF-8"?>""")
+    assert(lines(lineCheck._2) == """<data key="label">Source1</data>""")
+    assert(lines(lineCheck._3) == """</node>""")
+    assert(lines(lineCheck._4) == """<data key="weight">3</data>""")
   }
 
   test ("returns a Bool depending on pass or failure") {
     val networkrdd = sc.parallelize(network)
     val graphml = WriteGraphML(networkrdd, testFile)
-    assert(graphml == true)
-    assert(WriteGraphML(networkrdd, "") == false)
+    assert(graphml)
+    assert(!WriteGraphML(networkrdd, ""))
   }
 
   after {

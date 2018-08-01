@@ -21,7 +21,7 @@ import java.io.File
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.google.common.io.{Files, Resources}
-import io.archivesunleashed.matchbox.NER3Classifier.NERClassType
+import io.archivesunleashed.matchbox.NERClassifier.NERClassType
 import org.apache.commons.io.FileUtils
 import org.apache.commons.logging.LogFactory
 import org.apache.spark.{SparkConf, SparkContext}
@@ -30,7 +30,7 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 import scala.collection.mutable
 
 // There must be a valid classifier file with path `iNerClassifierFile` for this test to pass
-//@RunWith(classOf[JUnitRunner])
+// @RunWith(classOf[JUnitRunner])
 class ExtractEntitiesTest extends FunSuite with BeforeAndAfter {
   private val LOG = LogFactory.getLog(classOf[ExtractEntitiesTest])
   private val scrapePath = Resources.getResource("ner/example.txt").getPath

@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 package io.archivesunleashed.app
-
+// scalastyle:off underscore.import
 import io.archivesunleashed.matchbox._
+// scalastyle:on underscore.import
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 
@@ -35,13 +36,20 @@ object WriteGEXF {
    * @return Unit().
    */
   def apply(rdd: RDD[((String, String, String), Int)], gexfPath: String): Boolean = {
-    if (gexfPath.isEmpty()) false
-    else makeFile (rdd, gexfPath)
+    if (gexfPath.isEmpty()) {
+      false
+    } else
+    {
+      makeFile (rdd, gexfPath)
+    }
   }
 
   def apply(ds: Array[Row], gexfPath: String): Boolean = {
-    if (gexfPath.isEmpty()) false
-    else makeFile (ds, gexfPath)
+    if (gexfPath.isEmpty())  {
+      false
+    } else {
+      makeFile (ds, gexfPath)
+    }
   }
 
   /** Produces the GEXF output from a RDD of tuples and outputs it to gexfPath.
@@ -52,19 +60,22 @@ object WriteGEXF {
    */
   def makeFile (rdd: RDD[((String, String, String), Int)], gexfPath: String): Boolean = {
     val outFile = Files.newBufferedWriter(Paths.get(gexfPath), StandardCharsets.UTF_8)
+    val endAttribute = "\" />\n"
+    val nodeStart = "<node id=\""
+    val labelStart = "\" label=\""
     val edges = rdd.map(r => "<edge source=\"" + r._1._2.computeHash() + "\" target=\"" +
       r._1._3.computeHash() + "\" weight=\"" + r._2 +
       "\" type=\"directed\">\n" +
       "<attvalues>\n" +
-      "<attvalue for=\"0\" value=\"" + r._1._1 + "\" />\n" +
+      "<attvalue for=\"0\" value=\"" + r._1._1 + endAttribute +
       "</attvalues>\n" +
       "</edge>\n").collect
-    val nodes = rdd.flatMap(r => List("<node id=\"" +
-      r._1._2.computeHash() + "\" label=\"" +
-      r._1._2.escapeInvalidXML() + "\" />\n",
-      "<node id=\"" +
-      r._1._3.computeHash() + "\" label=\"" +
-      r._1._3.escapeInvalidXML() + "\" />\n")).distinct.collect
+    val nodes = rdd.flatMap(r => List(nodeStart +
+      r._1._2.computeHash() + labelStart +
+      r._1._2.escapeInvalidXML() + endAttribute,
+      nodeStart +
+      r._1._3.computeHash() + labelStart +
+      r._1._3.escapeInvalidXML() + endAttribute)).distinct.collect
     outFile.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
       "<gexf xmlns=\"http://www.gexf.net/1.3draft\"\n" +
       "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
@@ -92,6 +103,7 @@ object WriteGEXF {
     */
   def makeFile(data: Array[Row], gexfPath: String): Boolean = {
     val outFile = Files.newBufferedWriter(Paths.get(gexfPath), StandardCharsets.UTF_8)
+    val endAttribute = "\" />\n"
     val vertices = scala.collection.mutable.Set[String]()
 
     data foreach { d =>
@@ -112,7 +124,7 @@ object WriteGEXF {
     vertices foreach { v =>
       outFile.write("<node id=\"" +
         v.computeHash() + "\" label=\"" +
-        v.escapeInvalidXML() + "\" />\n")
+        v.escapeInvalidXML() + endAttribute)
     }
     outFile.write("</nodes>\n<edges>\n")
     data foreach { e =>
@@ -120,7 +132,7 @@ object WriteGEXF {
         e.get(2).asInstanceOf[String].computeHash() + "\" weight=\"" + e.get(3) +
         "\" type=\"directed\">\n" +
         "<attvalues>\n" +
-        "<attvalue for=\"0\" value=\"" + e.get(0) + "\" />\n" +
+        "<attvalue for=\"0\" value=\"" + e.get(0) + endAttribute +
         "</attvalues>\n" +
         "</edge>\n")
     }

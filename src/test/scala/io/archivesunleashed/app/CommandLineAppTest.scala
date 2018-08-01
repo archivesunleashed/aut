@@ -35,27 +35,33 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
   private var outputDir = "_AUTCmdTestOutputDir"
   private val master = "local[4]"
   private val appName = "example-df"
+  private val inputOpt = "--input"
+  private val outputOpt = "--output"
+  private val extractOpt = "--extractor"
+  private val dfOpt = "--df"
+  private val plainTextOpt = "PlainTextExtractor"
+  private val domainGraphOpt = "DomainGraphExtractor"
   private var sc: SparkContext = _
   private val testSuccessCmds = Array(
-    Array("--input", arcPath, warcPath, "--output", outputDir, "--extractor", "DomainFrequencyExtractor"),
-    Array("--input", arcPath, warcPath, "--output", outputDir, "--extractor", "DomainGraphExtractor"),
-    Array("--input", arcPath, warcPath, "--output", outputDir, "--extractor", "DomainGraphExtractor", "--output-format", "GEXF"),
-    Array("--input", arcPath, warcPath, "--output", outputDir, "--extractor", "PlainTextExtractor"),
-    Array("--input", arcPath, warcPath, "--output", outputDir, "--extractor", "DomainFrequencyExtractor", "--df"),
-    Array("--input", arcPath, warcPath, "--output", outputDir, "--extractor", "DomainGraphExtractor", "--df"),
-    Array("--input", arcPath, warcPath, "--output", outputDir, "--extractor", "DomainGraphExtractor", "--df", "--output-format", "GEXF"),
-    Array("--input", arcPath, warcPath, "--output", outputDir, "--extractor", "PlainTextExtractor", "--df"),
-    Array("--input", arcPath, warcPath, "--output", outputDir, "--extractor", "PlainTextExtractor", "--df", "--split"),
-    Array("--input", arcPath, warcPath, "--output", outputDir, "--extractor", "PlainTextExtractor", "--df", "--partition", "1"),
-    Array("--input", arcPath, warcPath, "--output", outputDir, "--extractor", "PlainTextExtractor", "--split"),
-    Array("--input", arcPath, warcPath, "--output", outputDir, "--partition", "1", "--extractor", "PlainTextExtractor")
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, "DomainFrequencyExtractor"),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, domainGraphOpt),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, domainGraphOpt, "--output-format", "GEXF"),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, plainTextOpt),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, "DomainFrequencyExtractor", dfOpt),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, domainGraphOpt, dfOpt),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, domainGraphOpt, dfOpt, "--output-format", "GEXF"),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, plainTextOpt, dfOpt),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, plainTextOpt, dfOpt, "--split"),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, plainTextOpt, dfOpt, "--partition", "1"),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, plainTextOpt, "--split"),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, "--partition", "1", extractOpt, plainTextOpt)
   )
 
   private val testFailCmds = Array(
-    Array("--input", "_abracadabra", "--output", outputDir),
-    Array("--output", outputDir),
-    Array("--input", "_abracadabra"),
-    Array("--input", arcPath, warcPath, "--output", outputDir, "--extractor", "abracadabra")
+    Array(inputOpt, "_abracadabra", outputOpt, outputDir),
+    Array(outputOpt, outputDir),
+    Array(inputOpt, "_abracadabra"),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, "abracadabra")
   )
 
   before {

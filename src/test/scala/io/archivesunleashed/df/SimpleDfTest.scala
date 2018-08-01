@@ -18,9 +18,11 @@
 package io.archivesunleashed
 
 import com.google.common.io.Resources
+// scalastyle:off underscore.import
 import io.archivesunleashed.df._
-import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
+// scalastyle:on underscore.import
+import org.apache.spark.sql.SparkSession
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -46,7 +48,9 @@ class SimpleDfTest extends FunSuite with BeforeAndAfter {
 
     // We need this in order to use the $-notation
     val spark = SparkSession.builder().master("local").getOrCreate()
+    // scalastyle:off
     import spark.implicits._
+    // scalastyle:on
 
     val results = df.select(ExtractBaseDomain($"Url").as("Domain"))
       .groupBy("Domain").count().orderBy(desc("count")).head(3)

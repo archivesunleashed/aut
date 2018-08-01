@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 package io.archivesunleashed.app
-
+// scalastyle:off underscore.import
 import io.archivesunleashed.matchbox._
-
+import org.apache.spark.graphx._
+// scalastyle:on underscore.import
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 import io.archivesunleashed.app.ExtractGraphX.{VertexData,EdgeData,VertexDataPR}
-import org.apache.spark.graphx._
+
 import org.apache.spark.rdd.RDD
 
 /**

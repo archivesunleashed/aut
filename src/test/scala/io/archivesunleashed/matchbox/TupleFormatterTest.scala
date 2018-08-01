@@ -17,31 +17,34 @@
 
 package io.archivesunleashed.matchbox
 
-import org.junit.runner.RunWith
-import org.scalatest.FunSuite
-import org.scalatest.junit.JUnitRunner
+// scalastyle:off underscore.import
 import shapeless._
+import syntax.std.tuple._
+// scalastyle:on underscore.import
+import org.junit.runner.RunWith
+import org.scalatest.{ FunSuite, Matchers }
+import org.scalatest.junit.JUnitRunner
+
 import ops.tuple.FlatMapper
 import ops.tuple.ToList
-import syntax.std.tuple._
-import org.scalatest.Matchers._
 
 @RunWith(classOf[JUnitRunner])
-class TupleFormatterTest extends FunSuite {
+class TupleFormatterTest extends FunSuite with Matchers {
   test("tab delimit") {
-    val tuple = (("a", "b", ("c", 9)), "d", 5, ("hi", 1))
-    assert(TupleFormatter.tabDelimit(tuple) == "a\tb\tc\t9\td\t5\thi\t1")
+    val tuple = (("ab", "bl", ("c", 9)), "d", 5, ("hi", 1))
+    assert(TupleFormatter.tabDelimit(tuple) == "ab\tbl\tc\t9\td\t5\thi\t1")
     assert(TupleFormatter.tabDelimit.isInstanceOf[Poly1])
   }
   test("just flatten") {
-    val tuple = ("a", 1, "c", ("x", 3, ("NO", "YES")), "perhaps", "maybe", 3, (0,1))
-    assert(TupleFormatter.flatten(tuple) == ("a", 1, "c", "x", 3, "NO", "YES", "perhaps", "maybe", 3, 0, 1))
+    val tuple = ("an", 1, "cr", ("x", 3, ("NO", "YES")), "perhaps", "maybe", 3, (0,1))
+    val flatTuple = ("an", 1, "cr", "x", 3, "NO", "YES", "perhaps", "maybe", 3, 0, 1)
+    assert(TupleFormatter.flatten(tuple) == flatTuple)
     assert(TupleFormatter.flatten.isInstanceOf[TupleFormatter.LowPriorityFlatten])
-    TupleFormatter.flatten.default shouldBe a [Poly1$CaseBuilder$$anon$1]
+    TupleFormatter.flatten.default shouldBe a[Poly1$CaseBuilder$$anon$1]
   }
 
   test ("Object extensions") {
-    TupleFormatter.flatten shouldBe a [TupleFormatter.LowPriorityFlatten]
-    TupleFormatter.tabDelimit shouldBe a [Poly1]
+    TupleFormatter.flatten shouldBe a[TupleFormatter.LowPriorityFlatten]
+    TupleFormatter.tabDelimit shouldBe a[Poly1]
   }
 }
