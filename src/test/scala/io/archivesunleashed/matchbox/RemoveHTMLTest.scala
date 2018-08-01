@@ -38,9 +38,16 @@ class RemoveHTMLTest extends FunSuite {
 
     val removed = RemoveHTML(html)
     assert(removed == "Here is some... HTML")
-    val caught = intercept[IOException] {
-      RemoveHTML(null)
-    }
-    assert(caught.getMessage == "Caught exception processing input row ")
+    // scalastyle:off null
+    val empty = RemoveHTML(null)
+    // scalastyle:on null
+    assert(empty == "aut_empty")
+  }
+  test ("default value") {
+    RemoveHTML.defaultReturn = "default_return"
+    // scalastyle:off null
+    val empty = RemoveHTML(null)
+    // scalastyle:on null
+    assert (empty == "default_return")
   }
 }
