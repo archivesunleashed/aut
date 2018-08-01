@@ -24,6 +24,7 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
 import scala.collection.mutable
+import scala.Byte
 
 @RunWith(classOf[JUnitRunner])
 class ExtractLinksTest extends FunSuite {
@@ -57,10 +58,9 @@ class ExtractLinksTest extends FunSuite {
   }
 
   test("errors") {
+    val bytes: Array[Byte] = "wronglyTyped".getBytes()
     val invalid: String = "Here is a fake url <a href=\"http://www.google.com\"> bogus search engine</a>."
     assert(ExtractLinks(null, fragment, fooFragment) == mutable.MutableList[(String, String, String)]())
     assert(ExtractLinks("", "", fooFragment) == mutable.MutableList[(String, String, String)]())
-    // invalid url should throw exception - need more information here
-    intercept[IOException] { ExtractLinks("", null, "FROTSTEDwww.foobar.org/index.html") }
   }
 }
