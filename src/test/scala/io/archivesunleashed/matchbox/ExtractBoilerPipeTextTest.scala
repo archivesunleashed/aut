@@ -31,7 +31,9 @@ class ExtractBoilerPipeTextTest extends FunSuite {
 
   test("Collects boilerpipe") {
     assert(ExtractBoilerpipeText(text) == boiler)
-    assert(ExtractBoilerpipeText("") == "")
+    // scalastyle:off null
+    assert(ExtractBoilerpipeText(null) == "")
+    // scalastyle:on null
     assert(ExtractBoilerpipeText("All Rights Reserved.") == "")
   }
 }

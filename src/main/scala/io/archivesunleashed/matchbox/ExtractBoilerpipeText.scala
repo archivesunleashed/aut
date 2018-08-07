@@ -29,26 +29,11 @@ object ExtractBoilerpipeText {
    * @return text with boilerplate removed or Nil if the text is empty.
    */
   def apply(input: String): String = {
-    val maybeInput: Option[String] = Option(input)
+    val maybeInput = Option(input)
     maybeInput match {
-      case Some(input) =>
-        extract(input)
-      case None =>
-        ""
-    }
-  }
-
-  /** Extracts boilerplate.
-   *
-   * @param input an html string possibly containing boilerpipe text
-   * @return filtered text or Nil if the text is empty.
-   */
-  def extract (input: String): String = {
-    val maybeText: Option[String] = Option(DefaultExtractor.INSTANCE
-      .getText(input).replaceAll("[\\r\\n]+", " ").trim())
-    maybeText match {
       case Some(text) =>
-        text
+        DefaultExtractor.INSTANCE
+          .getText(input).replaceAll("[\\r\\n]+", " ").trim()
       case None =>
         ""
     }
