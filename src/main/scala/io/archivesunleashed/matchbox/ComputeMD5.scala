@@ -19,8 +19,9 @@ package io.archivesunleashed.matchbox
 import java.security.MessageDigest
 
 /** Compute MD5 checksum. */
+// scalastyle: off
 object ComputeMD5 {
-
+// scalastyle: on
   /** Computes the MD5 checksum of a byte array (eg. an image).
     *
     * For string data, it is better to use `StringUtils.computeHash()`.

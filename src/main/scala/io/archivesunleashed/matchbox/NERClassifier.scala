@@ -26,7 +26,7 @@ import java.util
 import scala.collection.mutable
 
 /** Reads in a text string, and returns entities identified by the configured Stanford NER classifier. */
-object NER3Classifier {
+object NERClassifier {
 
   var serializedClassifier: String = _
   var classifier: AbstractSequenceClassifier[CoreLabel] = _
@@ -45,9 +45,9 @@ object NER3Classifier {
   /** Reads the NER Classifier file.
    *
    * @param file path to NER Classifier
-   * @return Unit().
+   * @return Unit.
    */
-  def apply(file: String) = {
+  def apply(file: String): Unit = {
     serializedClassifier = file
   }
 
@@ -60,11 +60,13 @@ object NER3Classifier {
     val emptyString: String = "{\"PERSON\":[],\"ORGANIZATION\"=[],\"LOCATION\"=[]}"
     val entitiesByType = mutable.LinkedHashMap[NERClassType.Value, mutable.Seq[String]]()
     for (t <- NERClassType.values) {
-      if (t != NERClassType.O) entitiesByType.put(t, mutable.Seq())
+      if (t != NERClassType.O) { entitiesByType.put(t, mutable.Seq()) }
     }
     var prevEntityType = NERClassType.O
     var entityBuffer: String = ""
-    if (input == null) return emptyString
+    if (input == null) {
+      emptyString
+    }
     try {
       if (classifier == null) classifier = CRFClassifier.getClassifier(serializedClassifier)
       val out: util.List[util.List[CoreLabel]] = classifier.classify(input)
@@ -105,7 +107,9 @@ object NER3Classifier {
       mapper.writeValueAsString(entitiesByType)
     } catch {
       case e: Exception =>
-        if (classifier == null) throw new ExceptionInInitializerError("Unable to load classifier " + e)
+        if (classifier == null) {
+          throw new ExceptionInInitializerError("Unable to load classifier " + e)
+        }
         emptyString
     }
   }

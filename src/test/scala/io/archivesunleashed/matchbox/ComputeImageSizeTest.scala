@@ -16,8 +16,10 @@
  */
 
 package io.archivesunleashed.matchbox
-
-import java.awt.image.BufferedImage
+// awt.image is the only way to create generic image from scratch
+// scalastyle:off illegal.imports
+import java.awt.image.{BufferedImage}
+// scalastyle:on illegal.imports
 import java.io.ByteArrayOutputStream
 import javax.imageio.ImageIO
 
@@ -27,16 +29,19 @@ import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class ComputeImageSizeTest extends FunSuite {
+  val testImageSize = 10
   var ios: ByteArrayOutputStream = new ByteArrayOutputStream();
-  val img = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB)
+  val img = new BufferedImage(testImageSize, testImageSize, BufferedImage.TYPE_INT_RGB)
   ImageIO.write(img, "png", ios)
   ios.flush()
   var image: Array[Byte] = ios.toByteArray();
   ios.close()
 
   test ("check images") {
-    assert(ComputeImageSize(image) == (10, 10))
-    assert(ComputeImageSize(Array[Byte](0,0,0)) == (0, 0))
-    assert(ComputeImageSize(null) == (0,0))
+    val imageSize = (10, 10)
+    val emptyImageSize = (0, 0)
+    assert(ComputeImageSize(image) == imageSize)
+    assert(ComputeImageSize(Array[Byte](0,0,0)) == emptyImageSize)
+    assert(ComputeImageSize(null) == emptyImageSize)
   }
 }

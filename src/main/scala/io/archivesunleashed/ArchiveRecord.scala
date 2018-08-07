@@ -62,54 +62,60 @@ class ArchiveRecordImpl(r: SerializableWritable[ArchiveRecordWritable]) extends 
   var arcRecord: ARCRecord = null
   var warcRecord: WARCRecord = null
 
-  if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC)
+  if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {
     arcRecord = r.t.getRecord.asInstanceOf[ARCRecord]
-  else if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.WARC)
-    warcRecord = r.t.getRecord.asInstanceOf[WARCRecord]
-
+  } else if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.WARC) {
+      warcRecord = r.t.getRecord.asInstanceOf[WARCRecord]
+  }
   val ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX")
 
   val getCrawlDate: String = {
-    if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC)
+    if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC){
       ExtractDate(arcRecord.getMetaData.getDate, ExtractDate.DateComponent.YYYYMMDD)
-    else
+    } else {
       ExtractDate(
         ArchiveUtils.get14DigitDate(
           ISO8601.parse(warcRecord.getHeader.getDate)), ExtractDate.DateComponent.YYYYMMDD)
+    }
   }
 
   val getCrawlMonth: String = {
-    if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC)
+    if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {
       ExtractDate(arcRecord.getMetaData.getDate, ExtractDate.DateComponent.YYYYMM)
-    else
+    } else {
       ExtractDate(
         ArchiveUtils.get14DigitDate(
           ISO8601.parse(warcRecord.getHeader.getDate)), ExtractDate.DateComponent.YYYYMM)
+    }
   }
 
   val getContentBytes: Array[Byte] = {
     if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC)
+    {
       ArcRecordUtils.getBodyContent(arcRecord)
-    else
+    } else {
       WarcRecordUtils.getContent(warcRecord)
+    }
   }
 
   val getContentString: String = {
     new String(getContentBytes)
   }
 
-  val getMimeType = {
-    if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC)
+  val getMimeType: String = {
+    if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {
       arcRecord.getMetaData.getMimetype
-    else
+    } else {
       WarcRecordUtils.getWarcResponseMimeType(getContentBytes)
+    }
   }
 
-  val getUrl = {
-    if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC)
+  val getUrl: String = {
+    if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {
       arcRecord.getMetaData.getUrl
-    else
+    } else {
       warcRecord.getHeader.getUrl
+    }
   }
 
   val getDomain: String = {
@@ -117,11 +123,12 @@ class ArchiveRecordImpl(r: SerializableWritable[ArchiveRecordWritable]) extends 
   }
 
   val getImageBytes: Array[Byte] = {
-    if (getContentString.startsWith("HTTP/"))
+    if (getContentString.startsWith("HTTP/")) {
       getContentBytes.slice(
         getContentString.indexOf(RemoveHttpHeader.headerEnd)
           + RemoveHttpHeader.headerEnd.length, getContentBytes.length)
-    else
+    } else {
       getContentBytes
+    }
   }
 }

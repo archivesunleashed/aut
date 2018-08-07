@@ -29,7 +29,7 @@ object PlainTextExtractor {
     * @return RDD[(String, String, String, String)], which holds
     *         (CrawlDate, Domain, Url, Text)
     */
-  def apply(records: RDD[ArchiveRecord]) = {
+  def apply(records: RDD[ArchiveRecord]): RDD[(String, String, String, String)] = {
     records
       .keepValidPages()
       .map(r => (r.getCrawlDate, r.getDomain, r.getUrl, RemoveHTML(r.getContentString)))
@@ -42,8 +42,9 @@ object PlainTextExtractor {
     */
   def apply(d: DataFrame): Dataset[Row] = {
     val spark = SparkSession.builder().master("local").getOrCreate()
+    // scalastyle:off
     import spark.implicits._
-
+    // scalastyle:on
     d.select($"CrawlDate", df.ExtractBaseDomain($"Url").as("Domain"),
       $"Url", df.RemoveHTML($"Content").as("Text"))
   }

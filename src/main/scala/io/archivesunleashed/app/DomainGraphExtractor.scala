@@ -17,7 +17,7 @@
 
 package io.archivesunleashed.app
 
-import io.archivesunleashed._
+import io.archivesunleashed.{ArchiveRecord, DataFrameLoader, CountableRDD}
 import io.archivesunleashed.matchbox.{ExtractDomain, ExtractLinks}
 import io.archivesunleashed.df
 import org.apache.spark.rdd.RDD
@@ -31,7 +31,7 @@ object DomainGraphExtractor {
     * @return RDD[(String, String, String), Int],
     *         which holds ((CrawlDate, SourceDomain, DestinationDomain), Frequency)
     */
-  def apply(records: RDD[ArchiveRecord]) = {
+  def apply(records: RDD[ArchiveRecord]): RDD[((String, String, String), Int)] = {
     records
       .keepValidPages()
       .map(r => (r.getCrawlDate, ExtractLinks(r.getUrl, r.getContentString)))
@@ -52,8 +52,9 @@ object DomainGraphExtractor {
     */
   def apply(d: DataFrame): Dataset[Row] = {
     val spark = SparkSession.builder().master("local").getOrCreate()
+    // scalastyle:off
     import spark.implicits._
-
+    // scalastyle:on
     d.select($"CrawlDate",
       df.RemovePrefixWWW(df.ExtractBaseDomain($"Src")).as("SrcDomain"),
       df.RemovePrefixWWW(df.ExtractBaseDomain($"Dest")).as("DestDomain"))

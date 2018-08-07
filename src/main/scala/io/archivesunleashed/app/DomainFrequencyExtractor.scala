@@ -17,7 +17,7 @@
 
 package io.archivesunleashed.app
 
-import io.archivesunleashed._
+import io.archivesunleashed.{ArchiveRecord, DataFrameLoader, CountableRDD}
 import io.archivesunleashed.matchbox
 import io.archivesunleashed.df
 import org.apache.spark.rdd.RDD
@@ -30,7 +30,7 @@ object DomainFrequencyExtractor {
     * @param records RDD[ArchiveRecord] obtained from RecordLoader
     * @return RDD[(String,Int))], which holds (DomainName, DomainFrequency)
     */
-  def apply(records: RDD[ArchiveRecord]) = {
+  def apply(records: RDD[ArchiveRecord]): RDD[(String, Int)] = {
       records
         .keepValidPages()
         .map(r => matchbox.ExtractDomain(r.getUrl))
@@ -44,7 +44,9 @@ object DomainFrequencyExtractor {
     */
   def apply(d: DataFrame): Dataset[Row] = {
     val spark = SparkSession.builder().master("local").getOrCreate()
-    import spark.implicits._
+    // scalastyle:off
+    import spark.implicits._ 
+    // scalastyle:on
 
     d.select(df.ExtractBaseDomain($"Url").as("Domain"))
       .groupBy("Domain").count().orderBy(desc("count"))

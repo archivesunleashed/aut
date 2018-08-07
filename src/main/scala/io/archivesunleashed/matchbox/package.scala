@@ -19,20 +19,25 @@ package io.archivesunleashed
 
 import java.io.IOException
 import java.security.MessageDigest
-
+// scalastyle:off underscore.import
 import scala.xml.Utility._
+// scalastyle:on underscore.import
+
 
 /** Package object which supplies implicits providing common UDF-related functionalities. */
 package object matchbox {
   implicit class WWWLink(s: String) {
     def removePrefixWWW(): String = {
-      if (s == null) return null
-      s.replaceAll("^\\s*www\\.", "")
+      if (s == null) {
+        null
+      } else {
+        s.replaceAll("^\\s*www\\.", "")
+      }
     }
 
     def escapeInvalidXML(): String = {
       try {
-        return escape(s)
+        escape(s)
       }
       catch {
         case e: Exception => throw new IOException("Caught exception processing input row ", e)
@@ -41,7 +46,7 @@ package object matchbox {
 
     def computeHash(): String = {
       val md5 = MessageDigest.getInstance("MD5")
-      return md5.digest(s.getBytes).map("%02x".format(_)).mkString
+      md5.digest(s.getBytes).map("%02x".format(_)).mkString
     }
   }
 }

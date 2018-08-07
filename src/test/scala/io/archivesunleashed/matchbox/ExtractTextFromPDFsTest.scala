@@ -20,11 +20,13 @@ package io.archivesunleashed.matchbox
 import org.apache.tika.parser.pdf.PDFParser
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
-import org.scalatest.Matchers._
+// scalastyle:off underscore.import
+import org.scalatest.Matchers
+// scalastyle:on underscore.import
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class ExtractTextFromPDFsTest extends FunSuite {
+class ExtractTextFromPDFsTest extends FunSuite with Matchers {
   test("get parser") {
     ExtractTextFromPDFs.pdfParser shouldBe a[PDFParser]
   }

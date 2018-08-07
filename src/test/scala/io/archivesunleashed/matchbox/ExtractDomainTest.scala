@@ -23,16 +23,18 @@ import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class ExtractDomainTest extends FunSuite {
+  private val index = "index.html"
+  private val umiacs = "www.umiacs.umd.edu"
 
   private val data1: Seq[(String, String)] = Seq.newBuilder.+=(
-    ("http://www.umiacs.umd.edu/~jimmylin/", "www.umiacs.umd.edu"),
+    ("http://www.umiacs.umd.edu/~jimmylin/", umiacs),
     ("https://github.com/lintool", "github.com"),
     ("http://ianmilligan.ca/2015/05/04/iipc-2015-slides-for-warcs-wats-and-wgets-presentation/", "ianmilligan.ca"),
-    ("index.html", null)).result()
+    (index, null)).result()
 
   private val data2 = Seq.newBuilder.+=(
-    ("index.html", "http://www.umiacs.umd.edu/~jimmylin/", "www.umiacs.umd.edu"),
-    ("index.html", "lintool/", null)).result()
+    (index, "http://www.umiacs.umd.edu/~jimmylin/", umiacs),
+    (index, "lintool/", null)).result()
 
   test("simple") {
     data1.foreach {
@@ -48,6 +50,6 @@ class ExtractDomainTest extends FunSuite {
 
   test("error") {
     assert(ExtractDomain(null) == null)
-    assert(ExtractDomain("index.html", null) == null)
+    assert(ExtractDomain(index, null) == null)
   }
 }

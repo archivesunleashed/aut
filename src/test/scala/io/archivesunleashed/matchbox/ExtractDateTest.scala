@@ -17,7 +17,9 @@
 
 package io.archivesunleashed.matchbox
 
+// scalastyle:off underscore.import
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent._
+// scalastyle:on underscore.import
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
@@ -26,19 +28,25 @@ import org.scalatest.junit.JUnitRunner
 class ExtractDateTest extends FunSuite {
 
   test("simple") {
-    assert(ExtractDate("20151204", YYYY) == "2015")
-    assert(ExtractDate("20151204", MM) == "12")
-    assert(ExtractDate("20151204", DD) == "04")
-    assert(ExtractDate("20151204", YYYYMM) == "201512")
-    assert(ExtractDate("20151204", YYYYMMDD) == "20151204")
+    val date = "20151204"
+    assert(ExtractDate(date, YYYY) == "2015")
+    assert(ExtractDate(date, MM) == "12")
+    assert(ExtractDate(date, DD) == "04")
+    assert(ExtractDate(date, YYYYMM) == "201512")
+    assert(ExtractDate(date, YYYYMMDD) == date)
     assert(ExtractDate(null, YYYYMMDD) == null)
   }
 
   test("more perfect") {
-    assert(ExtractDate("20151204", YYYY) == "20151204".substring(0, 4))
-    assert(ExtractDate("20151204", MM) == "20151204".substring(4, 6))
-    assert(ExtractDate("20151204", DD) == "20151204".substring(6, 8))
-    assert(ExtractDate("20151204", YYYYMM) == "20151204".substring(0, 6))
-    assert(ExtractDate("20151204", YYYYMMDD) == "20151204".substring(0, 8))
+    val date = "20151204"
+    val startSS = 0
+    val yearSS = 4
+    val monthSS = 6
+    val daySS = 8
+    assert(ExtractDate(date, YYYY) == date.substring(startSS, yearSS))
+    assert(ExtractDate(date, MM) == date.substring(yearSS, monthSS))
+    assert(ExtractDate(date, DD) == date.substring(monthSS, daySS))
+    assert(ExtractDate(date, YYYYMM) == date.substring(startSS, monthSS))
+    assert(ExtractDate(date, YYYYMMDD) == date.substring(startSS, daySS))
   }
 }

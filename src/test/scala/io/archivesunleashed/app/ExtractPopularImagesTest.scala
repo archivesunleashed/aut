@@ -25,36 +25,35 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
 class ExtractPopularImagesTest extends FunSuite with BeforeAndAfter {
-    private val arcPath = Resources.getResource("arc/example.arc.gz").getPath
-    private var sc: SparkContext = _
-    private val master = "local[4]"
-    private val appName = "example-spark"
-    private val testVertexFile = "temporaryTestVertexDir"
-    private val testEdgesFile = "temporaryTestEdgesDir"
+  private val arcPath = Resources.getResource("arc/example.arc.gz").getPath
+  private var sc: SparkContext = _
+  private val master = "local[4]"
+  private val appName = "example-spark"
+  private val testVertexFile = "temporaryTestVertexDir"
+  private val testEdgesFile = "temporaryTestEdgesDir"
 
-    before {
-      val conf = new SparkConf()
-        .setMaster(master)
-        .setAppName(appName)
-        conf.set("spark.driver.allowMultipleContexts", "true");
-        sc = new SparkContext(conf)
-      }
+  before {
+    val conf = new SparkConf()
+    .setMaster(master)
+    .setAppName(appName)
+    conf.set("spark.driver.allowMultipleContexts", "true");
+    sc = new SparkContext(conf)
+  }
 
-    test("extracts popular images") {
-
-      val examplerdd = RecordLoader.loadArchives(arcPath, sc)
-      val imagesLowLimit = ExtractPopularImages(examplerdd, 3, sc)
-      val imagesHighLimit = ExtractPopularImages(examplerdd, 507, sc)
-      val response = Array("1	http://creativecommons.org/images/public/somerights20.gif",
-        "1	http://www.archive.org/images/blendbar.jpg",
-        "1	http://www.archive.org/images/main-header.jpg")
-      assert (imagesLowLimit.take(3).deep == response.deep)
-      assert (imagesHighLimit.take(3).deep == response.deep)
+  test("extracts popular images") {
+    val highTest = 507
+    val examplerdd = RecordLoader.loadArchives(arcPath, sc)
+    val imagesLowLimit = ExtractPopularImages(examplerdd, 3, sc)
+    val imagesHighLimit = ExtractPopularImages(examplerdd, highTest, sc)
+    val response = Array("1\thttp://creativecommons.org/images/public/somerights20.gif",
+      "1\thttp://www.archive.org/images/blendbar.jpg",
+      "1\thttp://www.archive.org/images/main-header.jpg")
+    assert (imagesLowLimit.take(3).deep == response.deep)
+    assert (imagesHighLimit.take(3).deep == response.deep)
+  }
+  after {
+    if (sc != null) {
+      sc.stop()
     }
-
-    after {
-      if (sc != null) {
-        sc.stop()
-      }
-    }
+  }
 }

@@ -27,13 +27,13 @@ object RemoveHttpHeader {
    */
   def apply(content: String): String = {
     try {
-      if (content.startsWith("HTTP/"))
+      if (content.startsWith("HTTP/")){
         content.substring(content.indexOf(headerEnd) + headerEnd.length)
-      else
+      } else {
         content
+      }
     } catch {
       case e: Exception => {
-        println(e)
         null
       }
     }

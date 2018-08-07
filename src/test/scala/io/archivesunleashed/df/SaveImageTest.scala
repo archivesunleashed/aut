@@ -18,10 +18,12 @@
 package io.archivesunleashed
 
 import com.google.common.io.Resources
+// scalastyle:off underscore.import
 import io.archivesunleashed.df._
-import io.archivesunleashed.matchbox._
-import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
+import io.archivesunleashed.matchbox._
+// scalastyle:on underscore.import
+import org.apache.spark.sql.SparkSession
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -47,18 +49,21 @@ class SaveImageTest extends FunSuite with BeforeAndAfter {
   }
 
   test("Save image") {
+    val testString = "bytes"
     val df = RecordLoader.loadArchives(arcPath, sc)
       .extractImageDetailsDF()
 
     // We need this in order to use the $-notation
     val spark = SparkSession.builder().master("local").getOrCreate()
+    // scalastyle:off
     import spark.implicits._
+    // scalastyle:on
 
     val extracted = df.select($"bytes")
-      .orderBy(desc("bytes")).limit(1)
-    extracted.saveToDisk("bytes", "/tmp/foo")
+      .orderBy(desc(testString)).limit(1)
+    extracted.saveToDisk(testString, "/tmp/foo")
 
-    val encodedBytes: String = extracted.take(1)(0).getAs("bytes")
+    val encodedBytes: String = extracted.take(1)(0).getAs(testString)
 
     val suffix = encodedBytes.computeHash()
     val fileName = "/tmp/foo-" + suffix + ".png"
@@ -77,7 +82,7 @@ class SaveImageTest extends FunSuite with BeforeAndAfter {
         assert(originalImage.getRGB(x, y) == savedImage.getRGB(x, y))
       }
     }
-    
+
   }
 
   after {

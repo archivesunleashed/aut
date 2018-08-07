@@ -30,7 +30,7 @@ import org.rogach.scallop.exceptions.ScallopException
 
 /* Usage:
  *
- * PATH_TO_SPARK 
+ * PATH_TO_SPARK
  *   --class io.archivesunleashed.app.CommandLinAppRunner
  *   PATH_TO_AUT_JAR
  *   --extractor EXTRACTOR
@@ -40,7 +40,7 @@ import org.rogach.scallop.exceptions.ScallopException
  *   [--df]
  *   [--split]
  *   [--partiton]
- *   
+ *
  * where EXTRACTOR is one of
  * DomainFrequencyExtractor, DomainGraphExtractor or PlainTextExtractor
  *
@@ -72,9 +72,11 @@ class CmdAppConf(args: Seq[String]) extends ScallopConf(args) {
     */
   override def onError(e: Throwable): Unit = e match {
     case ScallopException(message) =>
+      // scalastyle:off
       println(message)
+      // scalastyle:on
       throw new IllegalArgumentException()
-    case other => throw other
+    case other: Any => throw other
   }
 
   mainOptions = Seq(input, output)
@@ -205,7 +207,7 @@ class CommandLineApp(conf: CmdAppConf) {
     * @throws IllegalArgumentException exception thrown
     */
 
-  def verifyArgumentsOrExit() = {
+  def verifyArgumentsOrExit(): Unit = {
     configuration.input() foreach { f =>
       if (!Files.exists(Paths.get(f))) {
         logger.error(f + " not found")
@@ -223,7 +225,7 @@ class CommandLineApp(conf: CmdAppConf) {
     * @return Any
     */
 
-  def dfHandler() = {
+  def dfHandler(): Any = {
     if (!(dfExtractors contains configuration.extractor())) {
       logger.error(configuration.extractor() + " not supported with data frame. " +
         "The following extractors are supported: ")
@@ -254,9 +256,10 @@ class CommandLineApp(conf: CmdAppConf) {
     * @return Any
     */
 
-  def rddHandler() = {
+  def rddHandler(): Any = {
     if (!(rddExtractors contains configuration.extractor())) {
-      logger.error(configuration.extractor() + " not supported with RDD. The following extractors are supported: ")
+      logger.error(configuration.extractor() +
+      " not supported with RDD. The following extractors are supported: ")
       rddExtractors foreach { tuple => logger.error(tuple._1) }
       throw new IllegalArgumentException()
     }
@@ -290,7 +293,7 @@ class CommandLineApp(conf: CmdAppConf) {
     *
     * @return Any
     */
-  def process() = {
+  def process(): Any = {
     if (!configuration.df.isEmpty && configuration.df()) {
       dfHandler()
     } else {

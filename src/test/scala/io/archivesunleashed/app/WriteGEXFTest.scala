@@ -49,18 +49,19 @@ class WriteGEXFTest extends FunSuite with BeforeAndAfter{
     }
 
   test("creates the file") {
+    val testLines = (0, 12, 22, 34)
     val networkrdd = sc.parallelize(network)
     WriteGEXF(networkrdd, testFile)
-    assert(Files.exists(Paths.get(testFile)) == true)
+    assert(Files.exists(Paths.get(testFile)))
     val lines = Source.fromFile(testFile).getLines.toList
-    println(lines)
-    assert(lines(0) == """<?xml version="1.0" encoding="UTF-8"?>""")
-    assert(lines(12) == """<node id="f61def1ec71cd27401b8c821f04b7c27" label="Destination1" />""")
-    assert(lines(22) == """</attvalues>""")
-    assert(lines(34) == """</edges>""")
+    assert(lines(testLines._1) == """<?xml version="1.0" encoding="UTF-8"?>""")
+    assert(lines(testLines._2) == """<node id="f61def1ec71cd27401b8c821f04b7c27" label="Destination1" />""")
+    assert(lines(testLines._3) == """</attvalues>""")
+    assert(lines(testLines._4) == """</edges>""")
   }
 
   test("creates the file from Array[Row]") {
+    val testLines = (0, 12, 22, 34)
     if (Files.exists(Paths.get(testFile))) {
       new File(testFile).delete()
     }
@@ -69,20 +70,18 @@ class WriteGEXFTest extends FunSuite with BeforeAndAfter{
     val ret = WriteGEXF(networkarray, testFile)
     assert(ret)
     val lines = Source.fromFile(testFile).getLines.toList
-    println(lines)
-    assert(lines(0) == """<?xml version="1.0" encoding="UTF-8"?>""")
-    assert(lines(12) == """<node id="8d3ab53ec817a1e5bf9ffd6e749b3983" label="Destination2" />""")
-    assert(lines(22) == """</attvalues>""")
-    assert(lines(34) == """</edges>""")
+    assert(lines(testLines._1) == """<?xml version="1.0" encoding="UTF-8"?>""")
+    assert(lines(testLines._2) == """<node id="8d3ab53ec817a1e5bf9ffd6e749b3983" label="Destination2" />""")
+    assert(lines(testLines._3) == """</attvalues>""")
+    assert(lines(testLines._4) == """</edges>""")
     assert(!WriteGEXF(networkarray ,""))
   }
 
   test ("returns a Bool depending on pass or failure") {
     val networkrdd = sc.parallelize(network)
     val gexf = WriteGEXF(networkrdd, testFile)
-    println (gexf)
-    assert(gexf == true)
-    assert(WriteGEXF(networkrdd, "") == false)
+    assert(gexf)
+    assert(!WriteGEXF(networkrdd, ""))
   }
 
   after {

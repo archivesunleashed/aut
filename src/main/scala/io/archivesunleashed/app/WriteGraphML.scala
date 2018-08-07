@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 package io.archivesunleashed.app
-
+// scalastyle:off underscore.import
 import io.archivesunleashed.matchbox._
-
+// scalastyle: on underscore.import
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
-
 import org.apache.spark.rdd.RDD
 
 /**
@@ -34,8 +33,11 @@ object WriteGraphML {
    * @param graphmlPath output file
    */
   def apply(rdd: RDD[((String, String, String), Int)], graphmlPath: String): Boolean = {
-    if (graphmlPath.isEmpty()) false
-    else makeFile (rdd, graphmlPath)
+    if (graphmlPath.isEmpty()) {
+      false
+    } else {
+      makeFile (rdd, graphmlPath)
+    }
   }
 
   /** Produces the GraphML output from an RDD of tuples and outputs it to graphmlPath.
@@ -71,6 +73,6 @@ object WriteGraphML {
     outFile.write("</graph>\n" +
     "</graphml>")
     outFile.close()
-    return true
+    true
   }
 }

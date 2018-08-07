@@ -27,7 +27,10 @@ object DetectLanguage {
    * @return ISO 639-2 language code (eg. "en", "fr" or "it").
    */
   def apply(input: String): String = {
-    if (input.isEmpty) ""
-    else new LanguageIdentifier(input).getLanguage
+    if (input.isEmpty) {
+      ""
+    } else {
+      new LanguageIdentifier(input).getLanguage
+    }
   }
 }

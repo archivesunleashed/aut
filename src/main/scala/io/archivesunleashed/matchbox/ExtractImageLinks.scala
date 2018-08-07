@@ -31,7 +31,7 @@ object ExtractImageLinks {
     * @return a sequence of image links.
     */
   def apply(src: String, html: String): Seq[String] = {
-    if (html.isEmpty) return Nil
+    if (html.isEmpty) Nil
     try {
       val output = mutable.MutableList[String]()
       val doc = Jsoup.parse(html)

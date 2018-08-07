@@ -16,10 +16,11 @@
  */
 
 package io.archivesunleashed.util
-
+// scalastyle:off underscore.import
 import io.archivesunleashed.util.TweetUtils._
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
+// scalastyle:on underscore.import
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
@@ -36,15 +37,16 @@ class TweetUtilsTest extends FunSuite {
       "verified": true,
       "followers_count": 45,
       "friends_count": 758}}""")
-
+    val expectedFollowers = 45
+    val expectedFriends = 758
     assert(tweet.id() == "123")
     assert(tweet.createdAt() == "20150702")
     assert(tweet.text() == "some text")
     assert(tweet.lang == "en")
     assert(tweet.username() == "twitteruser")
-    assert(tweet.isVerifiedUser() == true)
-    assert(tweet.followerCount == 45)
-    assert(tweet.friendCount == 758)
+    assert(tweet.isVerifiedUser())
+    assert(tweet.followerCount == expectedFollowers)
+    assert(tweet.friendCount == expectedFriends)
   }
 
   test("errors") {
@@ -57,14 +59,15 @@ class TweetUtilsTest extends FunSuite {
       "verified" : null,
       "followers_count": null,
       "friends_count": null}}""")
+    val expected = 0
 
       assert(tweet.id() == null)
       assert(tweet.createdAt() == null)
       assert(tweet.text() == null)
       assert(tweet.lang == null)
       assert(tweet.username() == null)
-      assert(tweet.isVerifiedUser() == false)
-      assert(tweet.followerCount == 0)
-      assert(tweet.friendCount == 0)
+      assert(!tweet.isVerifiedUser())
+      assert(tweet.followerCount == expected)
+      assert(tweet.friendCount == expected)
   }
 }

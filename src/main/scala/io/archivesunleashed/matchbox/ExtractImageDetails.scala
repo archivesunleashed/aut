@@ -22,7 +22,7 @@ import java.nio.charset.StandardCharsets
 import org.apache.commons.codec.binary.Hex
 
 
-/** Information about an image. e.g. width, height*/
+/** Information about an image. e.g. width, height. */
 class ImageDetails(imageUrl: String, imageType: String, bytes: Array[Byte]) {
   val dimensions = ComputeImageSize(bytes);
   val width = dimensions._1
@@ -33,14 +33,14 @@ class ImageDetails(imageUrl: String, imageType: String, bytes: Array[Byte]) {
   val body: String = Base64.getEncoder.encodeToString(bytes)
 }
 
-/** Extracts image details given raw bytes (using Apache Tika) */
+/** Extracts image details given raw bytes (using Apache Tika). */
 object ExtractImageDetails {
 
   /**
    * @param bytes the raw bytes of the image
    * @return A tuple containing the width and height of the image
-  */
+   */
   def apply(url: String, mimeType: String, bytes: Array[Byte]): ImageDetails = {
-    return new ImageDetails(url, mimeType, bytes)
+    new ImageDetails(url, mimeType, bytes)
   }
 }

@@ -23,19 +23,29 @@ object ExtractDate {
     type DateComponent = Value
     val YYYY, MM, DD, YYYYMM, YYYYMMDD = Value
   }
+  // scalastyle:off underscore.import
   import DateComponent._
+  // scalastyle:on underscore.import
+
   /** Extracts the wanted date component from a date.
     *
     * @param fullDate date returned by `WARecord.getCrawlDate`, formatted as YYYYMMDD
     * @param dateFormat an enum describing the portion of the date wanted
     */
-  def apply(fullDate: String, dateFormat: DateComponent): String =
-    if (fullDate == null) fullDate
-    else dateFormat match {
-      case YYYY => fullDate.substring(0, 4)
-      case MM => fullDate.substring(4, 6)
-      case DD => fullDate.substring(6, 8)
-      case YYYYMM => fullDate.substring(0, 6)
-      case _ => fullDate.substring(0, 8)
+  def apply(fullDate: String, dateFormat: DateComponent): String = {
+    val startSS = 0
+    val yearSS = 4
+    val monthSS = 6
+    val daySS = 8
+    if (fullDate == null) {
+      fullDate
+    } else {dateFormat match {
+      case YYYY => fullDate.substring(startSS, yearSS)
+      case MM => fullDate.substring(yearSS, monthSS)
+      case DD => fullDate.substring(monthSS, daySS)
+      case YYYYMM => fullDate.substring(startSS, monthSS)
+      case _ => fullDate.substring(startSS, daySS)
+      }
     }
+  }
 }
