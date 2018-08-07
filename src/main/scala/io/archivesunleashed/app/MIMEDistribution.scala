@@ -28,7 +28,10 @@ class Conf(args: Seq[String]) extends ScallopConf(args) {
   mainOptions = Seq(input, output)
   val input: ScallopOption[String] = opt[String](descr = "input path", required = true)
   val output: ScallopOption[String] = opt[String](descr = "output path", required = true)
-  val files: ScallopOption[Int] = opt[Int](descr = "number of warc files", required = true)
+  val format: ScallopOption[String] = opt[String](descr = "format of archive files")
+  val files: ScallopOption[Int] = opt[Int](descr = "number of warc files")
+  val prefix: ScallopOption[String] = opt[String](descr = "prefix")
+  val exclude: ScallopOption[String] = opt[String](descr = "exclude")
   verify()
 }
 
@@ -40,20 +43,10 @@ class MyPartitioner(numPars: Int) extends Partitioner {
   }
 }
 
-
 /**
   * Calculate MIME Distribution of a web archive
   */
 object MIMEDistribution {
-
-  def getFiles(dir: Path, numFiles: Option[Int], fs: FileSystem): String = {
-    val indexFiles = fs.listStatus(dir)
-    var arcFiles = indexFiles.filter(f => f.isFile).map(f => f.getPath)
-    if (numFiles.isDefined) {
-      arcFiles = arcFiles.take(numFiles.get)
-    }
-    arcFiles.mkString(",")
-  }
 
   val log: Logger = Logger.getLogger(getClass.getName)
 
@@ -72,38 +65,16 @@ object MIMEDistribution {
     fs.delete(outputDir, true)
 
     val path = new Path(args.input())
-    val indexFiles = fs.listStatus(path)
-    //var arcFiles = indexFiles.filter(f => f.isFile && f.getPath.getName.endsWith(".gz")).map(f => f.getPath)
-    var arcFiles = indexFiles.filter(f => f.isFile && f.getPath.toString.contains("DOTGOV-EXTRACTION-1995-FY2013-MIME-VIDEO-ARCS-PART-00021")).map(f => f.getPath)
-    log.info("Number of ARC files:" + arcFiles.length)
-
-
-    //val warcCollections = warcFiles.sliding(10, 10).toList.map(c => c.mkString(",")).take(args.files())
-    //val warcCollection = warcFiles.toList.take(args.files()).mkString(",")
-    val arcCollection = arcFiles.mkString(",")
 
     // you can specify input as a list of comma separated files or a directory
-    //val files = getFiles(path, args.files.toOption, fs) else args.input()
     log.info("Perform analysis on: " + args.input())
 
-//    var i = 0
-//    for (warcCollection <- warcCollections) {
-//      i += 1
-//      RecordLoader.loadArchives(warcCollection, sc)
-//        .filter(r => r.getMimeType != null && !r.getMimeType.contains("NullType"))
-//        .map(r => (r.getMimeType, 1))
-//        .reduceByKey(_ + _)
-//        .sortBy(_._2, ascending = false)
-//        .saveAsTextFile(args.output() + i)
-//    }
-
-
-    RecordLoader.loadArchives(arcCollection, sc)
+    RecordLoader.loadArchive(path.toString, sc, args.format.toOption, args.prefix.toOption, args.files.toOption, args.exclude.toOption)
       .filter(r => r.getMimeType != null && !r.getMimeType.contains("NullType"))
       .map(r => (r.getMimeType, 1))
       .repartitionAndSortWithinPartitions(new MyPartitioner(88))
       .reduceByKey(_ + _)
-//      .sortBy(_._2, ascending = false)
+      .sortBy(_._2, ascending = false)
       .saveAsTextFile(args.output())
   }
 }

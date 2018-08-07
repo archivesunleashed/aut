@@ -17,20 +17,19 @@
 
 package io
 
-import io.archivesunleashed.data.{ArchiveRecordWritable, ArchiveRecordInputFormat}
+import io.archivesunleashed.data.{ArchiveRecordInputFormat, ArchiveRecordWritable}
 import ArchiveRecordWritable.ArchiveFormat
-import io.archivesunleashed.matchbox.{DetectLanguage, ExtractDate, ExtractLinks, ExtractImageLinks, ExtractImageDetails, ExtractDomain, RemoveHTML, ComputeMD5}
+import io.archivesunleashed.matchbox.{ComputeMD5, DetectLanguage, ExtractDate, ExtractDomain, ExtractImageDetails, ExtractImageLinks, ExtractLinks, RemoveHTML}
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent._
 import io.archivesunleashed.matchbox.ImageDetails
-
+import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.spark.sql._
 import org.apache.spark.sql.types._
-
 import org.apache.hadoop.io.LongWritable
+import org.apache.log4j.Logger
 import org.apache.spark.{SerializableWritable, SparkContext}
 import org.apache.spark.rdd.RDD
-
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
 
@@ -43,6 +42,22 @@ import scala.util.matching.Regex
 package object archivesunleashed {
   /** Loads records from either WARCs, ARCs or Twitter API data (JSON). **/
   object RecordLoader {
+
+    val log: Logger = Logger.getLogger(getClass.getName)
+
+    def getFiles(dir: Path, fs: FileSystem, prefix: Option[String], numFiles: Option[Int], exclude: Option[String]): String = {
+      val indexFiles = fs.listStatus(dir)
+      var files = indexFiles.filter(f => {
+        val path = f.getPath.getName
+        f.isFile && (exclude.isEmpty || path.endsWith(exclude.get)) && (prefix.isEmpty || path.startsWith(prefix.get)) && path.endsWith(".gz")
+      }).map(f => f.getPath)
+      if (numFiles.isDefined) {
+        files = files.take(numFiles.get)
+      }
+      log.info("Number of archive files:" + files.length)
+      files.mkString(",")
+    }
+
     /** Creates an Archive Record RDD from a WARC or ARC file.
       *
       * @param path the path to the WARC(s)
@@ -54,6 +69,18 @@ package object archivesunleashed {
         .filter(r => (r._2.getFormat == ArchiveFormat.ARC) ||
           ((r._2.getFormat == ArchiveFormat.WARC) && r._2.getRecord.getHeader.getHeaderValue("WARC-Type").equals("response")))
         .map(r => new ArchiveRecordImpl(new SerializableWritable(r._2)))
+
+    def loadArchive(path: String, sc: SparkContext, format: Option[String], prefix: Option[String], numFiles: Option[Int], exclude : Option[String]): RDD[ArchiveRecord] = {
+
+      val fs = FileSystem.get(sc.hadoopConfiguration)
+      val p = new Path(path)
+
+      sc.newAPIHadoopFile(getFiles(p, fs, prefix, numFiles, exclude), classOf[ArchiveRecordInputFormat], classOf[LongWritable], classOf[ArchiveRecordWritable])
+        .filter(r =>
+          format.isEmpty && (r._2.getFormat == ArchiveFormat.ARC || ((r._2.getFormat == ArchiveFormat.WARC) && r._2.getRecord.getHeader.getHeaderValue("WARC-Type").equals("response"))) ||
+          format.isDefined && r._2.getFormat == ArchiveFormat.valueOf(format.get.toUpperCase) && ((ArchiveFormat.valueOf(format.get.toUpperCase) != ArchiveFormat.WARC) || r._2.getRecord.getHeader.getHeaderValue("WARC-Type").equals("response")))
+        .map(r => new ArchiveRecordImpl(new SerializableWritable(r._2)))
+    }
 
     /** Creates an Archive Record RDD from tweets.
       *
