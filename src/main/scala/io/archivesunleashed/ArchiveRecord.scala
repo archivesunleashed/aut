@@ -59,8 +59,11 @@ trait ArchiveRecord extends Serializable {
  *  @param r the serialized record
  */
 class ArchiveRecordImpl(r: SerializableWritable[ArchiveRecordWritable]) extends ArchiveRecord {
+  // Option<t> would require refactor of methods. Ignore.
+  // scalastyle:off null
   var arcRecord: ARCRecord = null
   var warcRecord: WARCRecord = null
+  // scalastyle:on null
 
   if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {
     arcRecord = r.t.getRecord.asInstanceOf[ARCRecord]

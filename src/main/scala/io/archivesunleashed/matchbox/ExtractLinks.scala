@@ -55,7 +55,7 @@ object ExtractLinks {
             // do nothing
           }
       case None =>
-        //do nothing
+        // do nothing
       }
     output
   }

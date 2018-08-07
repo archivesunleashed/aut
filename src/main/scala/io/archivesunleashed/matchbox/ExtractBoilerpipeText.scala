@@ -29,15 +29,12 @@ object ExtractBoilerpipeText {
    * @return text with boilerplate removed or Nil if the text is empty.
    */
   def apply(input: String): String = {
-    try {
-      if (input.isEmpty) {
-        null
-      } else {
+    val maybeInput: Option[String] = Option(input)
+    maybeInput match {
+      case Some(input) =>
         extract(input)
-      }
-    } catch {
-      case e: Exception =>
-        throw new IOException("Caught exception processing input row " + e)
+      case None =>
+        ""
     }
   }
 
@@ -47,11 +44,13 @@ object ExtractBoilerpipeText {
    * @return filtered text or Nil if the text is empty.
    */
   def extract (input: String): String = {
-    val text = DefaultExtractor.INSTANCE.getText(input).replaceAll("[\\r\\n]+", " ").trim()
-    if (text.isEmpty) {
-      null
-    } else {
-      text
+    val maybeText: Option[String] = Option(DefaultExtractor.INSTANCE
+      .getText(input).replaceAll("[\\r\\n]+", " ").trim())
+    maybeText match {
+      case Some(text) =>
+        text
+      case None =>
+        ""
     }
   }
 }

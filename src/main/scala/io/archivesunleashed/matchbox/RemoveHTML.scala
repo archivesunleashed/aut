@@ -21,7 +21,6 @@ import org.jsoup.Jsoup
 
 /** Removes HTML markup with JSoup. */
 object RemoveHTML {
-  var defaultReturn = "aut_empty"
 
   /** Removes HTML markup.
    *
@@ -34,7 +33,7 @@ object RemoveHTML {
       case Some(content) =>
         Jsoup.parse(content).text().replaceAll("[\\r\\n]+", " ")
       case None =>
-        defaultReturn
+        ""
     }
   }
 }

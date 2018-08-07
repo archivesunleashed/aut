@@ -30,11 +30,11 @@ class ExtractDomainTest extends FunSuite {
     ("http://www.umiacs.umd.edu/~jimmylin/", umiacs),
     ("https://github.com/lintool", "github.com"),
     ("http://ianmilligan.ca/2015/05/04/iipc-2015-slides-for-warcs-wats-and-wgets-presentation/", "ianmilligan.ca"),
-    (index, null)).result()
+    (index, "")).result()
 
   private val data2 = Seq.newBuilder.+=(
     (index, "http://www.umiacs.umd.edu/~jimmylin/", umiacs),
-    (index, "lintool/", null)).result()
+    (index, "lintool/", "")).result()
 
   test("simple") {
     data1.foreach {
@@ -49,7 +49,9 @@ class ExtractDomainTest extends FunSuite {
   }
 
   test("error") {
-    assert(ExtractDomain(null) == null)
-    assert(ExtractDomain(index, null) == null)
+    // scalastyle:off null
+    assert(ExtractDomain(null) == "")
+    assert(ExtractDomain(index, null) == "")
+    // scalastyle:on null
   }
 }

@@ -25,6 +25,7 @@ import edu.stanford.nlp.ling.{CoreAnnotations, CoreLabel}
 import java.util
 import scala.collection.mutable
 
+// scalastyle:off
 /** Reads in a text string, and returns entities identified by the configured Stanford NER classifier. */
 object NERClassifier {
 
@@ -114,3 +115,4 @@ object NERClassifier {
     }
   }
 }
+// scalastyle:on

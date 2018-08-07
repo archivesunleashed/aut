@@ -35,9 +35,11 @@ object ComputeImageSize {
     try {
       val in = new ByteArrayInputStream(bytes)
       val image = ImageIO.read(in)
+      // scalastyle:off null
       if (image == null) {
         nullImage
       }
+      // scalastyle:on null
       (image.getWidth(), image.getHeight())
     } catch {
       case e: Throwable => {

@@ -77,7 +77,7 @@ class SaveImageTest extends FunSuite with BeforeAndAfter {
 
     assert(originalImage.getHeight() == savedImage.getHeight())
     assert(originalImage.getWidth() == savedImage.getWidth())
-    for (y <- 0 until originalImage.getHeight()) {
+    for {y <- 0 until originalImage.getHeight()} {
       for (x <- 0 until originalImage.getWidth()) {
         assert(originalImage.getRGB(x, y) == savedImage.getRGB(x, y))
       }

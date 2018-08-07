@@ -42,6 +42,8 @@ class ComputeImageSizeTest extends FunSuite {
     val emptyImageSize = (0, 0)
     assert(ComputeImageSize(image) == imageSize)
     assert(ComputeImageSize(Array[Byte](0,0,0)) == emptyImageSize)
+    // scalastyle:off null
     assert(ComputeImageSize(null) == emptyImageSize)
+    // scalastyle:on null
   }
 }

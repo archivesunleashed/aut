@@ -31,11 +31,7 @@ class ExtractBoilerPipeTextTest extends FunSuite {
 
   test("Collects boilerpipe") {
     assert(ExtractBoilerpipeText(text) == boiler)
-    assert(ExtractBoilerpipeText("") == null)
-    assert(ExtractBoilerpipeText("All Rights Reserved.") == null)
-    val caught = intercept[IOException] {
-      ExtractBoilerpipeText(null)
-    }
-    assert(caught.getMessage == "Caught exception processing input row java.lang.NullPointerException")
+    assert(ExtractBoilerpipeText("") == "")
+    assert(ExtractBoilerpipeText("All Rights Reserved.") == "")
   }
 }

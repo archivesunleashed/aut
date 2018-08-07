@@ -41,13 +41,6 @@ class RemoveHTMLTest extends FunSuite {
     // scalastyle:off null
     val empty = RemoveHTML(null)
     // scalastyle:on null
-    assert(empty == "aut_empty")
-  }
-  test ("default value") {
-    RemoveHTML.defaultReturn = "default_return"
-    // scalastyle:off null
-    val empty = RemoveHTML(null)
-    // scalastyle:on null
-    assert (empty == "default_return")
+    assert(empty == "")
   }
 }

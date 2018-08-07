@@ -60,7 +60,9 @@ class ExtractLinksTest extends FunSuite {
   test("errors") {
     val bytes: Array[Byte] = "wronglyTyped".getBytes()
     val invalid: String = "Here is a fake url <a href=\"http://www.google.com\"> bogus search engine</a>."
+    // scalastyle:off null
     assert(ExtractLinks(null, fragment, fooFragment) == mutable.MutableList[(String, String, String)]())
+    // scalastyle:on null
     assert(ExtractLinks("", "", fooFragment) == mutable.MutableList[(String, String, String)]())
   }
 }
