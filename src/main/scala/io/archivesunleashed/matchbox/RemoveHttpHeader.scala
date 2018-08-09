@@ -26,16 +26,16 @@ object RemoveHttpHeader {
    * @return string with HTTP headers removed.
    */
   def apply(content: String): String = {
-    try {
-      if (content.startsWith("HTTP/")){
-        content.substring(content.indexOf(headerEnd) + headerEnd.length)
-      } else {
-        content
-      }
-    } catch {
-      case e: Exception => {
-        null
-      }
+    val maybeContent: Option[String] = Option(content)
+    maybeContent match {
+      case Some(content) =>
+        if (content.startsWith("HTTP/")){
+          content.substring(content.indexOf(headerEnd) + headerEnd.length)
+        } else {
+          content
+        }
+      case None =>
+        ""
     }
   }
 }

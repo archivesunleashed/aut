@@ -34,7 +34,9 @@ class ExtractDateTest extends FunSuite {
     assert(ExtractDate(date, DD) == "04")
     assert(ExtractDate(date, YYYYMM) == "201512")
     assert(ExtractDate(date, YYYYMMDD) == date)
-    assert(ExtractDate(null, YYYYMMDD) == null)
+    // scalastyle:off null
+    assert(ExtractDate(null, YYYYMMDD) == "")
+    // scalastyle:on null
   }
 
   test("more perfect") {

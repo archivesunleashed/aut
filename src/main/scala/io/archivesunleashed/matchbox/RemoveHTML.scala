@@ -28,11 +28,12 @@ object RemoveHTML {
    * @return content without html markup.
    */
   def apply(content: String): String = {
-    try {
-      Jsoup.parse(content).text().replaceAll("[\\r\\n]+", " ")
-    }
-    catch {
-      case e: Exception => throw new IOException("Caught exception processing input row ", e)
+    val maybeContent: Option[String] = Option(content)
+    maybeContent match {
+      case Some(content) =>
+        Jsoup.parse(content).text().replaceAll("[\\r\\n]+", " ")
+      case None =>
+        ""
     }
   }
 }

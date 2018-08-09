@@ -27,14 +27,18 @@ import org.scalatest.junit.JUnitRunner
 class StringUtilsTest extends FunSuite {
   test("remove prefix") {
     val s: String = "www.example.com"
+    // scalastyle:off null
     val n: String = null
+    // scalastyle:on null
     assert(s.removePrefixWWW() == "example.com")
-    assert(n.removePrefixWWW() == null)
+    assert(n.removePrefixWWW() == "")
   }
 
   test("create hash") {
     val invalid: String = "A<B>C&D\"";
+    // scalastyle:off null
     val except: String = null;
+    // scalastyle:on null
     assert(invalid.escapeInvalidXML() == "A&lt;B&gt;C&amp;D&quot;");
     val caught = intercept[IOException] {except.escapeInvalidXML()}
     assert (caught.getMessage == "Caught exception processing input row ");

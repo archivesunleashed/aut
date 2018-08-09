@@ -60,8 +60,10 @@ package object archivesunleashed {
       * @return an RDD of JValue (json objects) for mapping.
       */
     def loadTweets(path: String, sc: SparkContext): RDD[JValue] =
+      // scalastyle:off null
       sc.textFile(path).filter(line => !line.startsWith("{\"delete\":"))
         .map(line => try { parse(line) } catch { case e: Exception => null }).filter(x => x != null)
+      // scalastyle:on null
   }
 
   /** A Wrapper class around RDD to simplify counting. */

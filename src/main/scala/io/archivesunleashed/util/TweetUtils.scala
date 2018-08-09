@@ -31,15 +31,15 @@ object TweetUtils {
     val user = "user"
     implicit lazy val formats = org.json4s.DefaultFormats
     /** Get Twitter status id. */
-    def id(): String = try { (tweet \ "id_str").extract[String] } catch { case e: Exception => null}
+    def id(): String = try { (tweet \ "id_str").extract[String] } catch { case e: Exception => ""}
     /** Get the date a status was created. */
-    def createdAt(): String = try { (tweet \ "created_at").extract[String] } catch { case e: Exception => null}
+    def createdAt(): String = try { (tweet \ "created_at").extract[String] } catch { case e: Exception => ""}
     /** Get the status text. */
-    def text(): String = try { (tweet \ "text").extract[String] } catch { case e: Exception => null}
+    def text(): String = try { (tweet \ "text").extract[String] } catch { case e: Exception => ""}
     /** Get the language code (ISO 639-1). */
-    def lang: String = try { (tweet \ "lang").extract[String] } catch { case e: Exception => null}
+    def lang: String = try { (tweet \ "lang").extract[String] } catch { case e: Exception => ""}
     /** Get the username of the user who wrote the status. */
-    def username(): String = try { (tweet \ user \ "screen_name").extract[String] } catch { case e: Exception => null}
+    def username(): String = try { (tweet \ user \ "screen_name").extract[String] } catch { case e: Exception => ""}
     /** Check if user of status is "verified" (true or false). */
     def isVerifiedUser(): Boolean = try { (tweet \ user \ "verified").extract[Boolean] } catch { case e: Exception => false}
     /** Get the number of followers the user has. */

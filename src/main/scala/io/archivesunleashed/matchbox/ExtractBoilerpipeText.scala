@@ -29,29 +29,13 @@ object ExtractBoilerpipeText {
    * @return text with boilerplate removed or Nil if the text is empty.
    */
   def apply(input: String): String = {
-    try {
-      if (input.isEmpty) {
-        null
-      } else {
-        extract(input)
-      }
-    } catch {
-      case e: Exception =>
-        throw new IOException("Caught exception processing input row " + e)
-    }
-  }
-
-  /** Extracts boilerplate.
-   *
-   * @param input an html string possibly containing boilerpipe text
-   * @return filtered text or Nil if the text is empty.
-   */
-  def extract (input: String): String = {
-    val text = DefaultExtractor.INSTANCE.getText(input).replaceAll("[\\r\\n]+", " ").trim()
-    if (text.isEmpty) {
-      null
-    } else {
-      text
+    val maybeInput = Option(input)
+    maybeInput match {
+      case Some(text) =>
+        DefaultExtractor.INSTANCE
+          .getText(input).replaceAll("[\\r\\n]+", " ").trim()
+      case None =>
+        ""
     }
   }
 }

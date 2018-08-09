@@ -28,10 +28,10 @@ import scala.xml.Utility._
 package object matchbox {
   implicit class WWWLink(s: String) {
     def removePrefixWWW(): String = {
-      if (s == null) {
-        null
-      } else {
-        s.replaceAll("^\\s*www\\.", "")
+      val maybeString: Option[String] = Option(s)
+      maybeString match {
+        case Some(s) => s.replaceAll("^\\s*www\\.", "")
+        case None => ""
       }
     }
 

@@ -28,10 +28,11 @@ class RemoveHttpHeaderTest extends FunSuite {
     val nohttp = "This has no Http"
     val removed = RemoveHttpHeader(header)
     val unchanged = RemoveHttpHeader(nohttp)
+    // scalastyle:off null
     val error = RemoveHttpHeader(null)
-
+    // scalastyle:on null
     assert(removed == "Hello content")
     assert(unchanged == nohttp)
-    assert( error == null )
+    assert( error == "" )
   }
 }
