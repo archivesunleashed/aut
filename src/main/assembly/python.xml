@@ -7,7 +7,7 @@
   <fileSets>
     <fileSet>
       <directory>src/main/python/aut/</directory>
-      <outputDirectory>/</outputDirectory>
+      <outputDirectory></outputDirectory>
     </fileSet>
   </fileSets>
 </assembly>
