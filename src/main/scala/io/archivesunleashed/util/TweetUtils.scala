@@ -36,6 +36,8 @@ object TweetUtils {
     def createdAt(): String = try { (tweet \ "created_at").extract[String] } catch { case e: Exception => ""}
     /** Get the status text. */
     def text(): String = try { (tweet \ "text").extract[String] } catch { case e: Exception => ""}
+    /** Get the full_text. */
+    def fullText(): String = try { (tweet \ "full_text").extract[String] } catch { case e: Exception => ""}
     /** Get the language code (ISO 639-1). */
     def lang: String = try { (tweet \ "lang").extract[String] } catch { case e: Exception => ""}
     /** Get the username of the user who wrote the status. */
