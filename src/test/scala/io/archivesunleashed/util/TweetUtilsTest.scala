@@ -31,6 +31,7 @@ class TweetUtilsTest extends FunSuite {
     var tweet:org.json4s.JValue = parse("""{"id_str":"123",
       "created_at":"20150702",
       "text": "some text",
+      "full_text": "some full text",
       "lang": "en",
       "user": {
       "screen_name": "twitteruser",
@@ -42,6 +43,7 @@ class TweetUtilsTest extends FunSuite {
     assert(tweet.id() == "123")
     assert(tweet.createdAt() == "20150702")
     assert(tweet.text() == "some text")
+    assert(tweet.fullText() == "some full text")
     assert(tweet.lang == "en")
     assert(tweet.username() == "twitteruser")
     assert(tweet.isVerifiedUser())
@@ -53,6 +55,7 @@ class TweetUtilsTest extends FunSuite {
     var tweet:org.json4s.JValue = parse("""{"id_str": null,
       "created_at":null,
       "text": null,
+      "full_text": null,
       "lang": null,
       "user": {
       "screen_name": null,
@@ -64,6 +67,7 @@ class TweetUtilsTest extends FunSuite {
       assert(tweet.id() == null)
       assert(tweet.createdAt() == null)
       assert(tweet.text() == null)
+      assert(tweet.fullText() == null)
       assert(tweet.lang == null)
       assert(tweet.username() == null)
       assert(!tweet.isVerifiedUser())
