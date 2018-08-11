@@ -28,12 +28,17 @@ object ExtractBoilerpipeText {
    * @param input an html string possibly containing boilerpipe text
    * @return text with boilerplate removed or Nil if the text is empty.
    */
+
   def apply(input: String): String = {
-    val maybeInput = Option(input)
+    removeBoilerplate(RemoveHttpHeader(input))
+  }
+
+  private def removeBoilerplate(input: String): String = {
+    val maybeInput = Option(DefaultExtractor.INSTANCE
+      .getText(input).replaceAll("[\\r\\n]+", " ").trim())
     maybeInput match {
       case Some(text) =>
-        DefaultExtractor.INSTANCE
-          .getText(input).replaceAll("[\\r\\n]+", " ").trim()
+        text
       case None =>
         ""
     }
