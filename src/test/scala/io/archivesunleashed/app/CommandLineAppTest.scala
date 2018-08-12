@@ -72,13 +72,13 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
   }
 
   test("command line app tests") {
-    for (a <- testSuccessCmds) {
+    for {a <- testSuccessCmds} {
       app.CommandLineAppRunner.test(a, sc)
       assert(Files.exists(Paths.get(outputDir)))
       FileUtils.deleteDirectory(new File(outputDir))
     }
 
-    for (a <- testFailCmds)  {
+    for {a <- testFailCmds}  {
       try {
         app.CommandLineAppRunner.test(a, sc)
         assert(false)

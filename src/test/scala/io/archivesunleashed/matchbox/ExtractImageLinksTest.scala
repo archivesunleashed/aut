@@ -49,7 +49,9 @@ class ExtractImageLinksTest extends FunSuite {
       """Image here: <img src="pic.png"> and another <img src="http://baz.org/a/b/banner.jpg"/> and <img src="../logo.gif"/>"""
     assert(ExtractImageLinks("", "") == Nil)
     // Need way of creating an exception here
+    // scalastyle:off null
     val invalid = null
+    // scalastyle:on null
     intercept[IOException] {
       ExtractImageLinks(invalid, fragment)
     }

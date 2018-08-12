@@ -70,14 +70,14 @@ class CmdAppConf(args: Seq[String]) extends ScallopConf(args) {
     *
     * @param e exception that Scallop throws
     */
+  // scalastyle:off regex
   override def onError(e: Throwable): Unit = e match {
     case ScallopException(message) =>
-      // scalastyle:off
       println(message)
-      // scalastyle:on
       throw new IllegalArgumentException()
     case other: Any => throw other
   }
+  // scalastyle:on regex
 
   mainOptions = Seq(input, output)
   var extractor = opt[String](descr = "extractor", required = true)

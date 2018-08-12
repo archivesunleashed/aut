@@ -20,7 +20,7 @@ The toolkit grew out of a previous project called [Warcbase](https://github.com/
 If you have Apache Spark ready to go, it's as easy as:
 
 ```
-$ spark-shell --packages "io.archivesunleashed:aut:0.16.0"`
+$ spark-shell --packages "io.archivesunleashed:aut:0.16.0"
 ```
 
 ### A little less easy
@@ -28,7 +28,7 @@ $ spark-shell --packages "io.archivesunleashed:aut:0.16.0"`
 You can download the [latest release here](https://github.com/archivesunleashed/aut/releases) and include it like so:
 
 ```
-$ spark-shell --jars /path/to/aut-0.16.0-fatjar.jar"`
+$ spark-shell --jars /path/to/aut-0.16.0-fatjar.jar"
 ```
 
 ### Even less easy

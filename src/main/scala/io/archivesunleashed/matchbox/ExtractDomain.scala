@@ -27,18 +27,28 @@ object ExtractDomain {
    * @return domain host, source or null if url is null.
    */
   def apply(url: String, source: String = ""): String = {
-    if (url == null) return null
-    var host: String = null
-    try {
-      host = new URL(url).getHost
-    } catch {
-      case e: Exception => // it's okay
+    val maybeSource: Option[URL] = checkUrl(source)
+    val maybeHost: Option[URL] = checkUrl(url)
+    maybeSource match {
+      case Some(source) =>
+        source.getHost
+
+      case None =>
+        maybeHost match {
+          case Some(host) =>
+            host.getHost
+          case None =>
+            ""
+      }
     }
-    if (host != null || source == null) return host
+  }
+
+  def checkUrl(url: String): Option[URL] = {
     try {
-      new URL(source).getHost
+      Some(new URL(url))
     } catch {
-      case e: Exception => null
+      case e: Exception =>
+        None
     }
   }
 }

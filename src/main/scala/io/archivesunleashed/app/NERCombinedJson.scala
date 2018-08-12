@@ -61,7 +61,7 @@ class NERCombinedJson extends Serializable {
     val tmpPath = new Path(tmpFile)
 
     // Merge part-files into single file.
-    FileUtil.copyMerge(hdfs, srcPath, hdfs, tmpPath, false, hadoopConfig, null)
+    FileUtil.copyMerge(hdfs, srcPath, hdfs, tmpPath, false, hadoopConfig, "")
 
     // Read file of JSON arrays, write into single JSON array of arrays.
     val fsInStream = hdfs.open(tmpPath)
@@ -71,9 +71,14 @@ class NERCombinedJson extends Serializable {
                                                  // now is a file of JSON
     val outFile = new BufferedWriter(new OutputStreamWriter(fsOutStream))
     outFile.write("[")
-    val line = inFile.readLine()
-    if (line != null) outFile.write(line)
-    Iterator.continually(inFile.readLine()).takeWhile(_ != null).foreach(s => {outFile.write(", " + s)})
+    val line: Option[String] = Option(inFile.readLine())
+    line match {
+      case Some(line) =>
+        outFile.write(line)
+      case None =>
+    }
+    Iterator.continually(inFile.readLine()).takeWhile(Option(_) != None)
+      .foreach(s => {outFile.write(", " + s)})
     outFile.write("]")
     outFile.close()
 

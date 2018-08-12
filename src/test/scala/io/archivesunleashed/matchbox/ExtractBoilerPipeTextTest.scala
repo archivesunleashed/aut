@@ -25,17 +25,22 @@ import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class ExtractBoilerPipeTextTest extends FunSuite {
+  val header = "HTTP/1.0 200 OK Content-Type: text/html;" +
+   "charset=UTF-8 Expires: Fri, 20 Jul 2018 19:09:28 GMT Date:" +
+   "Fri, 20 Jul 2018 19:09:28 GMT Cache-Control: private,;\r\n\r\n"
   var text = """<p>Text with a boiler plate.<p>
    <footer>Copyright 2017</footer>"""
   var boiler = """Copyright 2017"""
 
   test("Collects boilerpipe") {
     assert(ExtractBoilerpipeText(text) == boiler)
-    assert(ExtractBoilerpipeText("") == null)
-    assert(ExtractBoilerpipeText("All Rights Reserved.") == null)
-    val caught = intercept[IOException] {
-      ExtractBoilerpipeText(null)
-    }
-    assert(caught.getMessage == "Caught exception processing input row java.lang.NullPointerException")
+    // scalastyle:off null
+    assert(ExtractBoilerpipeText(null) == "")
+    // scalastyle:on null
+    assert(ExtractBoilerpipeText("All Rights Reserved.") == "")
+  }
+
+  test("Removes Header information") {
+    assert(ExtractBoilerpipeText(header + text) == boiler)
   }
 }

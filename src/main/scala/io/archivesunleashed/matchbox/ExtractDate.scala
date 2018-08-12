@@ -37,15 +37,18 @@ object ExtractDate {
     val yearSS = 4
     val monthSS = 6
     val daySS = 8
-    if (fullDate == null) {
-      fullDate
-    } else {dateFormat match {
-      case YYYY => fullDate.substring(startSS, yearSS)
-      case MM => fullDate.substring(yearSS, monthSS)
-      case DD => fullDate.substring(monthSS, daySS)
-      case YYYYMM => fullDate.substring(startSS, monthSS)
-      case _ => fullDate.substring(startSS, daySS)
-      }
+    val maybeFullDate: Option[String] = Option(fullDate)
+    maybeFullDate match {
+      case Some(fulldate) =>
+        dateFormat match {
+          case YYYY => fullDate.substring(startSS, yearSS)
+          case MM => fullDate.substring(yearSS, monthSS)
+          case DD => fullDate.substring(monthSS, daySS)
+          case YYYYMM => fullDate.substring(startSS, monthSS)
+          case _ => fullDate.substring(startSS, daySS)
+        }
+      case None =>
+        ""
     }
   }
 }

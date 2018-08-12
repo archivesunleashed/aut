@@ -20,6 +20,7 @@ import java.io.IOException
 import org.jsoup.Jsoup
 import org.jsoup.select.Elements
 import scala.collection.mutable
+import scala.Option
 
 /** Extracts links from a webpage given the HTML content (using Jsoup). */
 object ExtractLinks {
@@ -32,28 +33,30 @@ object ExtractLinks {
     * @return a sequence of (source, target, anchortext).
     */
   def apply(src: String, html: String, base: String = ""): Seq[(String, String, String)] = {
-    try {
-      val output = mutable.MutableList[(String, String, String)]()
-
-      // Basic input checking, return empty list if we fail.
-      if (src == null) return output
-      if (html.isEmpty) return output
-
-      val doc = Jsoup.parse(html)
-      val links: Elements = doc.select("a[href]")
-      val it = links.iterator()
-      while (it.hasNext) {
-        val link = it.next()
-        if (base.nonEmpty) link.setBaseUri(base)
-        val target = link.attr("abs:href")
-        if (target.nonEmpty) {
-          output += ((src, target, link.text))
-        }
+    val srcMaybe: Option[String] = Option(src)
+    val htmlMaybe: Option[String] = Option(html)
+    val output = mutable.MutableList[(String, String, String)]()
+    srcMaybe match {
+      case Some(valid_src) =>
+        htmlMaybe match {
+          case Some (valid_html) =>
+            val doc = Jsoup.parse(valid_html)
+            val links: Elements = doc.select("a[href]")
+            val it = links.iterator()
+            while (it.hasNext) {
+              val link = it.next()
+              if (base.nonEmpty) link.setBaseUri(base)
+              val target = link.attr("abs:href")
+              if (target.nonEmpty) {
+                output += ((valid_src, target, link.text))
+              }
+            }
+          case None =>
+            // do nothing
+          }
+      case None =>
+        // do nothing
       }
-      output
-    } catch {
-      case e: Exception =>
-        throw new IOException("Caught exception processing input ", e);
-    }
+    output
   }
 }
