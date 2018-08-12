@@ -48,16 +48,26 @@ package object archivesunleashed {
 
     val log: Logger = Logger.getLogger(getClass.getName)
 
-    def getFiles(dir: Path, fs: FileSystem, prefix: Option[String], numFiles: Option[Int], exclude: Option[String]): String = {
+    /** Gets all archive files by applying filters prefix, numFiles and maxSize
+      *
+      * @param dir the path to the directory containing archive files
+      * @param fs filesystem
+      * @param prefix prefix of archive files
+      * @param numFiles number of archive files
+      * @param maxSize maximu size of archive files
+      * @return a String consisting of all archive files path
+      */
+    def getFiles(dir: Path, fs: FileSystem, prefix: Option[String], numFiles: Option[Int], maxSize: Option[Long]): String = {
       val indexFiles = fs.listStatus(dir)
       var files = indexFiles.filter(f => {
         val path = f.getPath.getName
-        f.isFile && (exclude.isEmpty || path.endsWith(exclude.get)) && (prefix.isEmpty || path.startsWith(prefix.get)) && path.endsWith(".gz")
+        val fileSize = fs.getContentSummary(f.getPath).getLength
+        f.isFile && (prefix.isEmpty || path.startsWith(prefix.get)) && path.endsWith(".gz") && (maxSize.isEmpty || fileSize <= maxSize.get * 1000000)
       }).map(f => f.getPath)
       if (numFiles.isDefined) {
         files = files.take(numFiles.get)
       }
-      log.info("Number of archive files:" + files.length)
+      log.info("Number of archive files: " + files.length)
       files.mkString(",")
     }
 
@@ -65,20 +75,18 @@ package object archivesunleashed {
       *
       * @param path the path to the WARC(s)
       * @param sc the apache spark context
+      * @param format format of archive files
+      * @param prefix prefix of archive files
+      * @param numFiles number of archives files
+      * @param maxSize maximum size of archive files
       * @return an RDD of ArchiveRecords for mapping.
       */
-    def loadArchives(path: String, sc: SparkContext): RDD[ArchiveRecord] =
-      sc.newAPIHadoopFile(path, classOf[ArchiveRecordInputFormat], classOf[LongWritable], classOf[ArchiveRecordWritable])
-        .filter(r => (r._2.getFormat == ArchiveFormat.ARC) ||
-          ((r._2.getFormat == ArchiveFormat.WARC) && r._2.getRecord.getHeader.getHeaderValue("WARC-Type").equals("response")))
-        .map(r => new ArchiveRecordImpl(new SerializableWritable(r._2)))
-
-    def loadArchive(path: String, sc: SparkContext, format: Option[String], prefix: Option[String], numFiles: Option[Int], exclude : Option[String]): RDD[ArchiveRecord] = {
+    def loadArchives(path: String, sc: SparkContext, format: Option[String] = None, prefix: Option[String] = None, numFiles: Option[Int] = None, maxSize : Option[Long] = None): RDD[ArchiveRecord] = {
 
       val fs = FileSystem.get(sc.hadoopConfiguration)
       val p = new Path(path)
 
-      sc.newAPIHadoopFile(getFiles(p, fs, prefix, numFiles, exclude), classOf[ArchiveRecordInputFormat], classOf[LongWritable], classOf[ArchiveRecordWritable])
+      sc.newAPIHadoopFile(getFiles(p, fs, prefix, numFiles, maxSize), classOf[ArchiveRecordInputFormat], classOf[LongWritable], classOf[ArchiveRecordWritable])
         .filter(r =>
           format.isEmpty && (r._2.getFormat == ArchiveFormat.ARC || ((r._2.getFormat == ArchiveFormat.WARC) && r._2.getRecord.getHeader.getHeaderValue("WARC-Type").equals("response"))) ||
           format.isDefined && r._2.getFormat == ArchiveFormat.valueOf(format.get.toUpperCase) && ((ArchiveFormat.valueOf(format.get.toUpperCase) != ArchiveFormat.WARC) || r._2.getRecord.getHeader.getHeaderValue("WARC-Type").equals("response")))

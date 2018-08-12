@@ -28,10 +28,10 @@ class Conf(args: Seq[String]) extends ScallopConf(args) {
   mainOptions = Seq(input, output)
   val input: ScallopOption[String] = opt[String](descr = "input path", required = true)
   val output: ScallopOption[String] = opt[String](descr = "output path", required = true)
+  val size: ScallopOption[Long] = opt[Long](descr = "maximum file size (bytes)")
   val format: ScallopOption[String] = opt[String](descr = "format of archive files")
   val files: ScallopOption[Int] = opt[Int](descr = "number of warc files")
   val prefix: ScallopOption[String] = opt[String](descr = "prefix")
-  val exclude: ScallopOption[String] = opt[String](descr = "exclude")
   verify()
 }
 
@@ -69,7 +69,7 @@ object MIMEDistribution {
     // you can specify input as a list of comma separated files or a directory
     log.info("Perform analysis on: " + args.input())
 
-    RecordLoader.loadArchive(path.toString, sc, args.format.toOption, args.prefix.toOption, args.files.toOption, args.exclude.toOption)
+    RecordLoader.loadArchives(path.toString, sc, args.format.toOption, args.prefix.toOption, args.files.toOption, args.size.toOption)
       .filter(r => r.getMimeType != null && !r.getMimeType.contains("NullType"))
       .map(r => (r.getMimeType, 1))
       .repartitionAndSortWithinPartitions(new MyPartitioner(88))
