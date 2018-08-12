@@ -82,7 +82,6 @@ package object archivesunleashed {
       * @return an RDD of ArchiveRecords for mapping.
       */
     def loadArchives(path: String, sc: SparkContext, format: Option[String] = None, prefix: Option[String] = None, numFiles: Option[Int] = None, maxSize : Option[Long] = None): RDD[ArchiveRecord] = {
-
       val fs = FileSystem.get(sc.hadoopConfiguration)
       val p = new Path(path)
 
