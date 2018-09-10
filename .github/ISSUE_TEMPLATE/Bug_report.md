@@ -20,16 +20,13 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Desktop/Laptop (please complete the following information):**
- - OS: [e.g. MacOS 10.13.3]
- - Browser: [e.g. chrome, safari]
- - Version: [e.g. 22]
-
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser: [e.g. stock browser, safari]
- - Version: [e.g. 22]
+**Environment information**
+ - AUT version: [e.g. 0.16.0, HEAD]
+ - OS: [e.g. MacOS 10.13.3, Ubuntu 18.04]
+ - Java version: [e.g. Java 8]
+ - Apache Spark version: [e.g. 2.1.3, 2.3.1]
+ - Apache Spark w/aut: [e.g. --jars, --packages]
+ - Apache Spark command used to run AUT: [e.g. ./spark-shell --driver-memory 55G --packages "io.archivesunleashed:aut:0.16.0"]
 
 **Additional context**
 Add any other context about the problem here.
