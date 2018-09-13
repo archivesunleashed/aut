@@ -17,22 +17,26 @@
 
 package io
 
-import io.archivesunleashed.data.{ArchiveRecordWritable, ArchiveRecordInputFormat}
+import io.archivesunleashed.data.{ArchiveRecordInputFormat, ArchiveRecordWritable}
 import ArchiveRecordWritable.ArchiveFormat
-import io.archivesunleashed.matchbox.{DetectLanguage, ExtractDate, ExtractLinks, ExtractImageLinks, ExtractImageDetails, ExtractDomain, RemoveHTML, ComputeMD5}
+import io.archivesunleashed.matchbox.{ComputeMD5, DetectLanguage, ExtractDate, ExtractDomain, ExtractImageDetails, ExtractImageLinks, ExtractLinks, RemoveHTML}
 import io.archivesunleashed.matchbox.ImageDetails
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent
+import org.apache.hadoop.fs.FileStatus
 // scalastyle:off underscore.import
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent._
+import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.spark.sql._
 import org.apache.spark.sql.types._
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
 // scalastyle:on: underscore.import
 import org.apache.hadoop.io.LongWritable
+import org.apache.log4j.Logger
 import org.apache.spark.{SerializableWritable, SparkContext}
 import org.apache.spark.rdd.RDD
 import scala.reflect.ClassTag
+import scala.math.pow
 import scala.util.matching.Regex
 
 /**
@@ -41,17 +45,65 @@ import scala.util.matching.Regex
 package object archivesunleashed {
   /** Loads records from either WARCs, ARCs or Twitter API data (JSON). */
   object RecordLoader {
+
+    val log: Logger = Logger.getLogger(getClass.getName)
+
+    /** Convert MB to Bytes. **/
+    def mbToBytes(size: Long): Long = {
+      size * pow(1024.0, 2.0).toLong
+    }
+
+    /** Determine whether the given file f is valid or not according to the prefix and maxSize requirements. **/
+    def isValidFile(f: FileStatus, fs: FileSystem, prefix: Option[String], maxSize: Option[Long]): Boolean = {
+      val fileName = f.getPath.getName
+      val fileSize = fs.getContentSummary(f.getPath).getLength
+      f.isFile && (prefix.isEmpty || fileName.startsWith(prefix.get)) && fileName.endsWith(".gz") && (maxSize.isEmpty || fileSize <= mbToBytes(maxSize.get))
+    }
+
+    /** Gets all archive files by applying filters prefix, numFiles and maxSize.
+      *
+      * @param dir the path to the directory containing archive files
+      * @param fs filesystem
+      * @param prefix prefix of archive files
+      * @param numFiles number of archive files
+      * @param maxSize maximum size (in terms of MB) of archive files
+      * @return a String consisting of all archive files path
+      */
+    def getFiles(dir: Path, fs: FileSystem, prefix: Option[String], numFiles: Option[Int], maxSize: Option[Long]): String = {
+      val indexFiles = fs.listStatus(dir)
+      var files = indexFiles.filter(f => isValidFile(f, fs, prefix, maxSize)).map(f => f.getPath)
+      if (numFiles.isDefined) {
+        files = files.take(numFiles.get)
+      }
+      log.info("Number of archive files: " + files.length)
+      files.mkString(",")
+    }
+
     /** Creates an Archive Record RDD from a WARC or ARC file.
       *
       * @param path the path to the WARC(s)
       * @param sc the apache spark context
+      * @param format format of archive files
+      * @param prefix prefix of archive files
+      * @param numFiles number of archives files
+      * @param maxSize maximum size (in terms of MB) of archive files
       * @return an RDD of ArchiveRecords for mapping.
       */
-    def loadArchives(path: String, sc: SparkContext): RDD[ArchiveRecord] =
-      sc.newAPIHadoopFile(path, classOf[ArchiveRecordInputFormat], classOf[LongWritable], classOf[ArchiveRecordWritable])
-        .filter(r => (r._2.getFormat == ArchiveFormat.ARC) ||
-          ((r._2.getFormat == ArchiveFormat.WARC) && r._2.getRecord.getHeader.getHeaderValue("WARC-Type").equals("response")))
+    def loadArchives(path: String,
+                     sc: SparkContext,
+                     format: Option[String] = None,
+                     prefix: Option[String] = None,
+                     numFiles: Option[Int] = None,
+                     maxSize : Option[Long] = None): RDD[ArchiveRecord] = {
+      val fs = FileSystem.get(sc.hadoopConfiguration)
+      val p = new Path(path)
+
+      sc.newAPIHadoopFile(getFiles(p, fs, prefix, numFiles, maxSize), classOf[ArchiveRecordInputFormat], classOf[LongWritable], classOf[ArchiveRecordWritable])
+        .filter(r =>
+          format.isEmpty && (r._2.getFormat == ArchiveFormat.ARC || ((r._2.getFormat == ArchiveFormat.WARC) && r._2.getRecord.getHeader.getHeaderValue("WARC-Type").equals("response"))) ||
+          format.isDefined && r._2.getFormat == ArchiveFormat.valueOf(format.get.toUpperCase) && ((ArchiveFormat.valueOf(format.get.toUpperCase) != ArchiveFormat.WARC) || r._2.getRecord.getHeader.getHeaderValue("WARC-Type").equals("response")))
         .map(r => new ArchiveRecordImpl(new SerializableWritable(r._2)))
+    }
 
     /** Creates an Archive Record RDD from tweets.
       *
