@@ -17,11 +17,12 @@
 
 package io
 
-import io.archivesunleashed.data.{ArchiveRecordWritable, ArchiveRecordInputFormat}
+import io.archivesunleashed.data.{ArchiveRecordInputFormat, ArchiveRecordWritable}
 import ArchiveRecordWritable.ArchiveFormat
-import io.archivesunleashed.matchbox.{DetectLanguage, ExtractDate, ExtractLinks, ExtractImageLinks, ExtractImageDetails, ExtractDomain, RemoveHTML, ComputeMD5}
+import io.archivesunleashed.matchbox.{ComputeMD5, DetectLanguage, ExtractDate, ExtractDomain, ExtractImageDetails, ExtractImageLinks, ExtractLinks, RemoveHTML}
 import io.archivesunleashed.matchbox.ImageDetails
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent
+import org.apache.hadoop.fs.{FileSystem, Path}
 // scalastyle:off underscore.import
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent._
 import org.apache.spark.sql._
@@ -41,17 +42,32 @@ import scala.util.matching.Regex
 package object archivesunleashed {
   /** Loads records from either WARCs, ARCs or Twitter API data (JSON). */
   object RecordLoader {
+    /** Gets all non-empty archive files
+      *
+      * @param dir the path to the directory containing archive files
+      * @param fs filesystem
+      * @return a String consisting of all non-empty archive files path
+      */
+    def getFiles(dir: Path, fs: FileSystem): String = {
+      val indexFiles = fs.listStatus(dir)
+      val files = indexFiles.filter(f => fs.getContentSummary(f.getPath).getLength > 0).map(f => f.getPath)
+      files.mkString(",")
+    }
+
     /** Creates an Archive Record RDD from a WARC or ARC file.
       *
       * @param path the path to the WARC(s)
       * @param sc the apache spark context
       * @return an RDD of ArchiveRecords for mapping.
       */
-    def loadArchives(path: String, sc: SparkContext): RDD[ArchiveRecord] =
-      sc.newAPIHadoopFile(path, classOf[ArchiveRecordInputFormat], classOf[LongWritable], classOf[ArchiveRecordWritable])
+    def loadArchives(path: String, sc: SparkContext): RDD[ArchiveRecord] = {
+      val fs = FileSystem.get(sc.hadoopConfiguration)
+      val p = new Path(path)
+      sc.newAPIHadoopFile(getFiles(p, fs), classOf[ArchiveRecordInputFormat], classOf[LongWritable], classOf[ArchiveRecordWritable])
         .filter(r => (r._2.getFormat == ArchiveFormat.ARC) ||
           ((r._2.getFormat == ArchiveFormat.WARC) && r._2.getRecord.getHeader.getHeaderValue("WARC-Type").equals("response")))
         .map(r => new ArchiveRecordImpl(new SerializableWritable(r._2)))
+    }
 
     /** Creates an Archive Record RDD from tweets.
       *
