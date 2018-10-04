@@ -114,8 +114,13 @@ public final class ArcRecordUtils {
               + "URL IP-address Archive-date Content-type Archive-length";
     }
 
-    return copyToByteArray(record, (int) meta.getLength()
-            - versionEtc.length(), true);
+    try {
+      return copyToByteArray(record, (int) meta.getLength()
+              - versionEtc.length(), true);
+    } catch (Exception e) {
+      // Catch exceptions related to any corrupt archive files.
+      return new byte[0];
+    }
   }
 
   /**
