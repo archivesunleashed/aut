@@ -42,11 +42,11 @@ import scala.util.matching.Regex
 package object archivesunleashed {
   /** Loads records from either WARCs, ARCs or Twitter API data (JSON). */
   object RecordLoader {
-    /** Gets all non-empty archive files
+    /** Gets all non-empty archive files.
       *
       * @param dir the path to the directory containing archive files
       * @param fs filesystem
-      * @return a String consisting of all non-empty archive files path
+      * @return a String consisting of all non-empty archive files path.
       */
     def getFiles(dir: Path, fs: FileSystem): String = {
       val statuses = fs.globStatus(dir)
