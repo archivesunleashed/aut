@@ -49,8 +49,8 @@ package object archivesunleashed {
       * @return a String consisting of all non-empty archive files path
       */
     def getFiles(dir: Path, fs: FileSystem): String = {
-      val indexFiles = fs.listStatus(dir)
-      val files = indexFiles.filter(f => fs.getContentSummary(f.getPath).getLength > 0).map(f => f.getPath)
+      val statuses = fs.globStatus(dir)
+      val files = statuses.filter(f => fs.getContentSummary(f.getPath).getLength > 0).map(f => f.getPath)
       files.mkString(",")
     }
 
