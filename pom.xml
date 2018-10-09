@@ -38,7 +38,6 @@
     <project-info-reports.plugin.version>2.7</project-info-reports.plugin.version>
     <doxia-markdown.plugin.version>1.7</doxia-markdown.plugin.version>
     <failsafe.plugin.version>2.18.1</failsafe.plugin.version>
-    <javadoc.plugin.version>2.10.3</javadoc.plugin.version>
     <jxr.plugin.version>2.5</jxr.plugin.version>
     <surefire.plugin.version>2.18.1</surefire.plugin.version>
     <jacoco.plugin.version>0.7.5.201505241946</jacoco.plugin.version>
@@ -737,6 +736,7 @@
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-javadoc-plugin</artifactId>
+              <version>${javadoc.plugin.version}</version>
             </plugin>
             <plugin>
               <artifactId>maven-gpg-plugin</artifactId>
@@ -760,6 +760,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
+            <version>${gpg.plugin.version}</version>
           </plugin>
         </plugins>
       </build>
