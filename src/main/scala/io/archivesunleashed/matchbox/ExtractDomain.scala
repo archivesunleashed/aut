@@ -45,7 +45,7 @@ object ExtractDomain {
 
   def checkUrl(url: String): Option[URL] = {
     try {
-      Some(new URL(url))
+      Some(new URL(url.replace("\\", "/")))
     } catch {
       case e: Exception =>
         None
