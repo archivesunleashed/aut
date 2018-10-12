@@ -23,6 +23,7 @@ import io.archivesunleashed.matchbox.{ComputeMD5, DetectLanguage, ExtractDate, E
 import io.archivesunleashed.matchbox.ImageDetails
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent
 import org.apache.hadoop.fs.{FileSystem, Path}
+import org.apache.log4j.Logger
 // scalastyle:off underscore.import
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent._
 import org.apache.spark.sql._
@@ -42,6 +43,9 @@ import scala.util.matching.Regex
 package object archivesunleashed {
   /** Loads records from either WARCs, ARCs or Twitter API data (JSON). */
   object RecordLoader {
+
+    val log: Logger = Logger.getLogger(getClass.getName)
+
     /** Gets all non-empty archive files.
       *
       * @param dir the path to the directory containing archive files
@@ -51,6 +55,7 @@ package object archivesunleashed {
     def getFiles(dir: Path, fs: FileSystem): String = {
       val statuses = fs.globStatus(dir)
       val files = statuses.filter(f => fs.getContentSummary(f.getPath).getLength > 0).map(f => f.getPath)
+      log.info("Number of archive files: " + files.length)
       files.mkString(",")
     }
 
@@ -58,14 +63,17 @@ package object archivesunleashed {
       *
       * @param path the path to the WARC(s)
       * @param sc the apache spark context
+      * @param maxRecordSize the maximum size of a record in terms of bytes
       * @return an RDD of ArchiveRecords for mapping.
       */
-    def loadArchives(path: String, sc: SparkContext): RDD[ArchiveRecord] = {
+    def loadArchives(path: String, sc: SparkContext, maxRecordSize: Option[Long] = None): RDD[ArchiveRecord] = {
       val fs = FileSystem.get(sc.hadoopConfiguration)
       val p = new Path(path)
       sc.newAPIHadoopFile(getFiles(p, fs), classOf[ArchiveRecordInputFormat], classOf[LongWritable], classOf[ArchiveRecordWritable])
-        .filter(r => (r._2.getFormat == ArchiveFormat.ARC) ||
-          ((r._2.getFormat == ArchiveFormat.WARC) && r._2.getRecord.getHeader.getHeaderValue("WARC-Type").equals("response")))
+        .filter(r => (maxRecordSize.isEmpty || r._2.getRecord.getHeader.getLength <= maxRecordSize.get) &&
+          (r._2.getFormat == ArchiveFormat.ARC ||
+           r._2.getFormat == ArchiveFormat.WARC &&
+           r._2.getRecord.getHeader.getHeaderValue("WARC-Type").equals("response")))
         .map(r => new ArchiveRecordImpl(new SerializableWritable(r._2)))
     }
 
