@@ -34,7 +34,8 @@ class ExtractDomainTest extends FunSuite {
 
   private val data2 = Seq.newBuilder.+=(
     (index, "http://www.umiacs.umd.edu/~jimmylin/", umiacs),
-    (index, "lintool/", "")).result()
+    ("https://github.com/lintool", "http://www.umiacs.umd.edu/~jimmylin/", "github.com"),
+    (index, "https://github.com/lintool", "github.com")).result()
 
   test("simple") {
     data1.foreach {
