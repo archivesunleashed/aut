@@ -36,6 +36,9 @@ class ExtractDomainTest extends FunSuite {
     (index, "http://www.umiacs.umd.edu/~jimmylin/", umiacs),
     (index, "lintool/", "")).result()
 
+  private val data3 = Seq.newBuilder.+=(
+    ("http://www.seetorontonow.canada-booknow.com\\booking_results.php", "www.seetorontonow.canada-booknow.com")).result()
+
   test("simple") {
     data1.foreach {
       case (link, domain) => assert(ExtractDomain(link) == domain)
@@ -53,5 +56,11 @@ class ExtractDomainTest extends FunSuite {
     assert(ExtractDomain(null) == "")
     assert(ExtractDomain(index, null) == "")
     // scalastyle:on null
+  }
+
+  test("backslash") {
+    data3.foreach {
+      case (link, domain) => assert(ExtractDomain(link) == domain)
+    }
   }
 }
