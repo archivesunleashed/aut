@@ -7,7 +7,7 @@
   <packaging>jar</packaging>
   <version>0.17.1-SNAPSHOT</version>
   <name>Archives Unleashed Toolkit</name>
-  <description>An open-source platform for managing and analyzing web archives</description>
+  <description>An open-source toolkit for analyzing web archives.</description>
   <url>https://github.com/archivesunleashed/aut</url>
 
   <organization>
