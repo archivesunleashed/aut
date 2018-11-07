@@ -31,7 +31,7 @@ object WriteGraph {
   val nodeStart = "<node id=\""
   val edgeStart = "<edge source=\""
   val targetChunk = "\" target=\""
-  val directedChunk = " type=\"directed\">\n"
+  val directedChunk = "\" type=\"directed\">\n"
   val endAttribute = "\" />\n"
   val labelStart = "\" label=\""
   val xmlHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -139,7 +139,7 @@ object WriteGraph {
         edgeStart  +
         sid + targetChunk +
         did + "\" weight=\"" + weight +
-        "\" type=\"directed\">\n" +
+        directedChunk +
         "<attvalues>\n" +
         "<attvalue for=\"0\" value=\"" + date + endAttribute +
         "</attvalues>\n" +

@@ -132,7 +132,7 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
     assert(lines(testLines._1) == """<?xml version="1.0" encoding="UTF-8"?>""")
     assert(lines(testLines._2) == """<data key="label">Source3"</data>""")
     assert(lines(testLines._3) == """<data key="weight">3</data>""")
-    assert(lines(testLines._4) == """<edge source="0" target="5 type="directed">""")
+    assert(lines(testLines._4) == """<edge source="0" target="5" type="directed">""")
   }
 
   after {
