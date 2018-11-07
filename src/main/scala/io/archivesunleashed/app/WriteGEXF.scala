@@ -117,7 +117,7 @@ object WriteGEXF {
       "<edge source=\"" +
       sid + "\" target=\"" +
       did + "\" weight=\"" + weight +
-      "\" type=\"directed\"\n" +
+      "\" type=\"directed\">\n" +
       "<attvalues>\n" +
       "<attvalue for=\"0\" value=\"" + date + endAttribute +
       "</attvalues>\n" +
