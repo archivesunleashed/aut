@@ -123,6 +123,18 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
     assert(edges.collect.deep == expected)
   }
 
+  test ("Graphml produces correct output") {
+    val testLines = (0, 12, 30, 37)
+    val networkrdd = sc.parallelize(network)
+    WriteGraph.asGraphml(networkrdd, testFile)
+    assert(Files.exists(Paths.get(testFile)))
+    val lines = Source.fromFile(testFile).getLines.toList
+    assert(lines(testLines._1) == """<?xml version="1.0" encoding="UTF-8"?>""")
+    assert(lines(testLines._2) == """<data key="label">Source3"</data>""")
+    assert(lines(testLines._3) == """<data key="weight">3</data>""")
+    assert(lines(testLines._4) == """<edge source="0" target="5 type="directed">""")
+  }
+
   after {
     if (sc != null) {
       sc.stop()
