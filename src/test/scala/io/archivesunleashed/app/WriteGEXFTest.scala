@@ -18,13 +18,11 @@ package io.archivesunleashed.app
 
 import java.io.File
 import java.nio.file.{Files, Paths}
-
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 import org.apache.spark.sql.Row
-
 import scala.io.Source
 
 @RunWith(classOf[JUnitRunner])
@@ -38,9 +36,6 @@ class WriteGEXFTest extends FunSuite with BeforeAndAfter{
   private val networkDf = Seq(("Date1", "Source1", "Destination1", 3),
                          ("Date2", "Source2", "Destination2", 4),
                          ("Date3", "Source3", "Destination3", 100))
-  private val networkWithDuplication = Seq((("Date1", "Source1", "Destination1"), 3),
-                         (("Date2", "Source2", "Source2"), 4),
-                         (("Date3", "Source3", "Destination3"), 100))
   private val testFile = "temporaryTestFile.txt"
 
   before {
@@ -58,7 +53,7 @@ class WriteGEXFTest extends FunSuite with BeforeAndAfter{
     assert(Files.exists(Paths.get(testFile)))
     val lines = Source.fromFile(testFile).getLines.toList
     assert(lines(testLines._1) == """<?xml version="1.0" encoding="UTF-8"?>""")
-    assert(lines(testLines._2) == """<node id="3" label="Destination1" />""")
+    assert(lines(testLines._2) == """<node id="f61def1ec71cd27401b8c821f04b7c27" label="Destination1" />""")
     assert(lines(testLines._3) == """</attvalues>""")
     assert(lines(testLines._4) == """</edges>""")
   }
@@ -85,39 +80,6 @@ class WriteGEXFTest extends FunSuite with BeforeAndAfter{
     val gexf = WriteGEXF(networkrdd, testFile)
     assert(gexf)
     assert(!WriteGEXF(networkrdd, ""))
-  }
-
-  test ("Nodes zip with ids") {
-    val networkrdd = sc.parallelize(networkWithDuplication)
-    val expected = WriteGEXF.nodesWithIds(networkrdd).collect
-    assert (expected.length == 5)
-    assert (expected(0) == ("Source3", 0))
-  }
-
-  test ("Nodelookup returns a option") {
-    val networkrdd = sc.parallelize(network)
-    val nodes = WriteGEXF.nodesWithIds(networkrdd)
-    val lookup = "Source1"
-    val badlookup = "NOTHERE"
-    assert (WriteGEXF.nodeLookup(nodes, badlookup) == None)
-    assert (WriteGEXF.nodeLookup(nodes, lookup) == Some(("Source1", 6)))
-  }
-
-  test ("Gets the id from a lookup") {
-    val nodes = WriteGEXF.nodesWithIds(sc.parallelize(network))
-    val empty = -1
-    val expected = 6
-    val lookup = WriteGEXF.nodeLookup(nodes, "Source1")
-    val badlookup = WriteGEXF.nodeLookup(nodes, "NOTTHERE")
-    assert (WriteGEXF.nodeIdFromLabel(lookup) == expected)
-    assert (WriteGEXF.nodeIdFromLabel(badlookup) == -1)
-  }
-
-  test ("Edge ids are captured from lookup") {
-    val edges = WriteGEXF.edgeNodes(sc.parallelize(network))
-    assert(edges.collect.deep == Array(("Date1", 6, 3, 3),
-      ("Date2", 7, 4, 4),
-      ("Date3", 0, 5, 100)).deep)
   }
 
   after {

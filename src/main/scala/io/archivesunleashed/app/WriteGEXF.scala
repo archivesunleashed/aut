@@ -20,7 +20,6 @@ import io.archivesunleashed.matchbox._
 // scalastyle:on underscore.import
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
-
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.Row
 
@@ -51,55 +50,6 @@ object WriteGEXF {
       makeFile (ds, gexfPath)
     }
   }
-  /** Produces a zipped RDD with ids and labels from an network-based RDD, rdd.
-   * @param rdd a RDD of elements in format ((datestring, source, target), count)
-   * @return an RDD containing (Label, UniqueId)
-   */
-  def nodesWithIds (rdd: RDD[((String, String, String), Int)]): RDD[(String, Long)] = {
-    rdd.map(r => r._1._2.escapeInvalidXML())
-      .union(rdd.map(r => r._1._3.escapeInvalidXML()))
-      .distinct
-      .zipWithUniqueId()
-  }
-
-  /** Produces the (label, id) combination from a nodeslist of an RDD that has the
-   * same label as lookup.
-   * @param rdd an RDD of elements in format ((datestring, source, target), count)
-   * @param lookup the label to lookup.
-   * @return an Option containing Some(Label, UniqueId) or None
-   */
-  def nodeLookup (rdd: RDD[(String, Long)], lookup: String): Option[(String, Long)] = {
-    rdd.filter(r => r._1 contains lookup)
-      .collect
-      .lift(0)
-  }
-
-  /** Produces the id from Nodelookup
-   * @param id an Option containing the lookup.
-   * @return a long representing the id or -1 if no id exists from the lookup.
-   */
-  def nodeIdFromLabel (id: Option[(String, Long)]): Long = {
-    id match {
-      case Some(x) => x._2
-      case None => -1
-    }
-  }
-
-  /**  Produces uniqueIds for edge lists from a flatMapped rdd, using nodesWithIds
-   * @param rdd an RDD of elements in format ((datestring, source, target), count)
-   * @return an RDD in format (date, sourceid, destinationid, count)
-   */
-  def edgeNodes (rdd: RDD[((String, String, String), Int)]) : RDD[(String, Long, Long, Int)] = {
-    val nodes = nodesWithIds(rdd)
-    rdd.map(r => (r._1._2, (r._1._3, r._1._1, r._2)))
-       .rightOuterJoin(nodes)
-       .filter(r => r._2._1 != None)
-       .map( { case (source, (Some((destination, date, weight)), sid))
-         => (destination, (sid, source, date, weight)) })
-      .leftOuterJoin(nodes).filter( r => r._2._1 != None)
-      .map ({ case (dest, ((sid, source, date, weight), Some(did)))
-        => (date, sid, did, weight)})
-  }
 
   /** Produces the GEXF output from a RDD of tuples and outputs it to gexfPath.
    *
@@ -112,16 +62,19 @@ object WriteGEXF {
     val endAttribute = "\" />\n"
     val nodeStart = "<node id=\""
     val labelStart = "\" label=\""
-    val nodes = nodesWithIds(rdd)
-    val edges = edgeNodes(rdd).map({ case (date, sid, did, weight) =>
-      "<edge source=\"" +
-      sid + "\" target=\"" +
-      did + "\" weight=\"" + weight +
+    val edges = rdd.map(r => "<edge source=\"" + r._1._2.computeHash() + "\" target=\"" +
+      r._1._3.computeHash() + "\" weight=\"" + r._2 +
       "\" type=\"directed\">\n" +
       "<attvalues>\n" +
-      "<attvalue for=\"0\" value=\"" + date + endAttribute +
+      "<attvalue for=\"0\" value=\"" + r._1._1 + endAttribute +
       "</attvalues>\n" +
-      "</edge>\n"}).collect
+      "</edge>\n").collect
+    val nodes = rdd.flatMap(r => List(nodeStart +
+      r._1._2.computeHash() + labelStart +
+      r._1._2.escapeInvalidXML() + endAttribute,
+      nodeStart +
+      r._1._3.computeHash() + labelStart +
+      r._1._3.escapeInvalidXML() + endAttribute)).distinct.collect
     outFile.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
       "<gexf xmlns=\"http://www.gexf.net/1.3draft\"\n" +
       "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
@@ -133,11 +86,7 @@ object WriteGEXF {
       "  <attribute id=\"0\" title=\"crawlDate\" type=\"string\" />\n" +
       "</attributes>\n" +
       "<nodes>\n")
-    nodes.map(r => nodeStart +
-      r._2 + labelStart +
-      r._1 + endAttribute)
-      .collect
-      .foreach(r => outFile.write(r))
+    nodes.foreach(r => outFile.write(r))
     outFile.write("</nodes>\n<edges>\n")
     edges.foreach(r => outFile.write(r))
     outFile.write("</edges>\n</graph>\n</gexf>")
@@ -188,7 +137,6 @@ object WriteGEXF {
     }
     outFile.write("</edges>\n</graph>\n</gexf>")
     outFile.close()
-
     true
   }
 }
