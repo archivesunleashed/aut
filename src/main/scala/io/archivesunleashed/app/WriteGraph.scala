@@ -55,20 +55,11 @@ object WriteGraph {
    * @return Unit().
    */
   def apply(rdd: RDD[((String, String, String), Int)], gexfPath: String): Boolean = {
-    if (gexfPath.isEmpty()) {
-      false
-    } else
-    {
-      asGexf (rdd, gexfPath)
-    }
+    if (!gexfPath.isEmpty()) { asGexf (rdd, gexfPath) } else { false }
   }
 
   def apply(ds: Array[Row], gexfPath: String): Boolean = {
-    if (gexfPath.isEmpty())  {
-      false
-    } else {
-      asGexf (ds, gexfPath)
-    }
+    if (!gexfPath.isEmpty())  { asGexf(ds, gexfPath) } else { false }
   }
 
   /** Produces a zipped RDD with ids and labels from an network-based RDD, rdd.
@@ -129,10 +120,9 @@ object WriteGraph {
    * @return true on success.
    */
   def asGexf (rdd: RDD[((String, String, String), Int)], gexfPath: String): Boolean = {
-    if (gexfPath.isEmpty()) {
+    if (!gexfPath.isEmpty()) {
       false
-    } else
-    {
+    } else {
       val nodes = nodesWithIds(rdd)
       val outFile = Files.newBufferedWriter(Paths.get(gexfPath), StandardCharsets.UTF_8)
       val edges = edgeNodes(rdd).map({ case (date, sid, did, weight) =>
@@ -171,11 +161,10 @@ object WriteGraph {
   def asGexf (data: Array[Row], gexfPath: String): Boolean = {
     if (gexfPath.isEmpty()) {
       false
-    } else
-    {
+    } else {
       val outFile = Files.newBufferedWriter(Paths.get(gexfPath), StandardCharsets.UTF_8)
       val vertices = scala.collection.mutable.Set[String]()
-      data foreach { d =>
+      data.foreach { d =>
         vertices.add(d.get(1).asInstanceOf[String])
         vertices.add(d.get(2).asInstanceOf[String])
       }
@@ -185,13 +174,13 @@ object WriteGraph {
         "  <attribute id=\"0\" title=\"crawlDate\" type=\"string\" />\n" +
         "</attributes>\n" +
         "<nodes>\n")
-      vertices foreach { v =>
+      vertices.foreach { v =>
         outFile.write(nodeStart +
           v.computeHash() + "\" label=\"" +
           v.escapeInvalidXML() + endAttribute)
       }
       outFile.write("</nodes>\n<edges>\n")
-      data foreach { e =>
+      data.foreach { e =>
         outFile.write(edgeStart + e.get(1).asInstanceOf[String].computeHash() + targetChunk +
           e.get(2).asInstanceOf[String].computeHash() + "\" weight=\"" + e.get(3) +
           "\" type=\"directed\">\n" +
@@ -209,8 +198,7 @@ object WriteGraph {
   def asGraphml (rdd: RDD[((String, String, String), Int)], graphmlPath: String): Boolean = {
     if (graphmlPath.isEmpty()) {
       false
-    } else
-    {
+    } else {
       val nodes = nodesWithIds(rdd)
       val outFile = Files.newBufferedWriter(Paths.get(graphmlPath), StandardCharsets.UTF_8)
       val edges = edgeNodes(rdd).map({ case (date, sid, did, weight) =>

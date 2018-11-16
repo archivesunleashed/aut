@@ -49,7 +49,7 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
       .setAppName(appName)
       conf.set("spark.driver.allowMultipleContexts", "true");
       sc = new SparkContext(conf)
-    }
+  }
 
   test("creates the file") {
     val testLines = (0, 12, 22, 34)
