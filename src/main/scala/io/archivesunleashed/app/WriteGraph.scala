@@ -59,7 +59,7 @@ object WriteGraph {
   }
 
   def apply(ds: Array[Row], gexfPath: String): Boolean = {
-    if (!gexfPath.isEmpty())  { asGexf(ds, gexfPath) } else { false }
+    if (!gexfPath.isEmpty())  { asGexf (ds, gexfPath) } else { false }
   }
 
   /** Produces a zipped RDD with ids and labels from an network-based RDD, rdd.
@@ -120,7 +120,7 @@ object WriteGraph {
    * @return true on success.
    */
   def asGexf (rdd: RDD[((String, String, String), Int)], gexfPath: String): Boolean = {
-    if (!gexfPath.isEmpty()) {
+    if (gexfPath.isEmpty()) {
       false
     } else {
       val nodes = nodesWithIds(rdd)
