@@ -35,6 +35,9 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
   private val network = Seq((("Date1", "Source1", "Destination1"), 3),
                          (("Date2", "Source2", "Destination2"), 4),
                          (("Date3", "Source3", "Destination3"), 100))
+  private val unescapedNetwork = Seq((("Date1", "Source1", "Destination1"), 3),
+                        (("Date2", "Source2", "Destination2"), 4),
+                        (("Date3", "Source<3", "Destination<3"), 100))
   private val networkDf = Seq(("Date1", "Source1", "Destination1", 3),
                          ("Date2", "Source2", "Destination2", 4),
                          ("Date3", "Source3", "Destination3", 100))
@@ -130,9 +133,20 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
     assert(Files.exists(Paths.get(testFile)))
     val lines = Source.fromFile(testFile).getLines.toList
     assert(lines(testLines._1) == """<?xml version="1.0" encoding="UTF-8"?>""")
-    assert(lines(testLines._2) == """<data key="label">Source3"</data>""")
+    assert(lines(testLines._2) == """<data key="label">Source3</data>""")
     assert(lines(testLines._3) == """<data key="weight">3</data>""")
     assert(lines(testLines._4) == """<edge source="0" target="5" type="directed">""")
+  }
+  test ("Graphml and gexf work with unescaped xml date") {
+    val testLines = (0, 12, 30, 37)
+    val networkrdd = sc.parallelize(unescapedNetwork)
+    WriteGraph.asGraphml(networkrdd, testFile)
+    assert(Files.exists(Paths.get(testFile)))
+    val lines = Source.fromFile(testFile).getLines.toList
+    assert(lines(testLines._1) == """<?xml version="1.0" encoding="UTF-8"?>""")
+    assert(lines(testLines._2) == """<data key="label">Destination&lt;3</data>""")
+    assert(lines(testLines._3) == """<data key="weight">100</data>""")
+    assert(lines(testLines._4) == """<edge source="7" target="4" type="directed">""")
   }
 
   after {

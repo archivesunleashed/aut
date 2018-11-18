@@ -102,7 +102,7 @@ object WriteGraph {
    */
   def edgeNodes (rdd: RDD[((String, String, String), Int)]) : RDD[(String, Long, Long, Int)] = {
     val nodes = nodesWithIds(rdd)
-    rdd.map(r => (r._1._2, (r._1._3, r._1._1, r._2)))
+    rdd.map(r => (r._1._2.escapeInvalidXML(), (r._1._3.escapeInvalidXML(), r._1._1, r._2)))
        .rightOuterJoin(nodes) // create ids for source urls from nodes.
        .filter(r => r._2._1 != None)
        .map( { case (source, (Some((destination, date, weight)), sid))
@@ -216,7 +216,7 @@ object WriteGraph {
         "<key id=\"crawlDate\" for=\"edge\" attr.name=\"crawlDate\" attr.type=\"string\" />\n" +
         "<graph mode=\"static\" edgedefault=\"directed\">\n")
       nodes.map(r => nodeStart + r._2 + "\">\n" +
-        "<data key=\"label\">" + r._1 + "\"</data>\n</node>\n").collect
+        "<data key=\"label\">" + r._1 + "</data>\n</node>\n").collect
          .foreach(r => outFile.write(r))
       edges.collect.foreach(r => outFile.write(r))
       outFile.write("</graph>\n</graphml>")
