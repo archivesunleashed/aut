@@ -45,6 +45,7 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
                          (("Date2", "Source2", "Source2"), 4),
                          (("Date3", "Source3", "Destination3"), 100))
   private val testFile = "temporaryTestFile.txt"
+  private val testFile2 = "temporaryTestFile2.txt"
 
   before {
     val conf = new SparkConf()
@@ -137,7 +138,8 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
     assert(lines(testLines._3) == """<data key="weight">3</data>""")
     assert(lines(testLines._4) == """<edge source="0" target="5" type="directed">""")
   }
-  test ("Graphml and gexf work with unescaped xml date") {
+
+  test ("Graphml works with unescaped xml data") {
     val testLines = (0, 12, 30, 37)
     val networkrdd = sc.parallelize(unescapedNetwork)
     WriteGraph.asGraphml(networkrdd, testFile)
@@ -149,12 +151,25 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
     assert(lines(testLines._4) == """<edge source="7" target="4" type="directed">""")
   }
 
+  test( "Gexf works with unescaped xml data") {
+    val testLines = (0, 12, 29, 31)
+    val networkrdd = sc.parallelize(unescapedNetwork)
+    WriteGraph(networkrdd, testFile2)
+    assert(Files.exists(Paths.get(testFile2)))
+    val lines = Source.fromFile(testFile2).getLines.toList
+    assert(lines(testLines._1) == """<?xml version="1.0" encoding="UTF-8"?>""")
+    assert(lines(testLines._2) == """<node id="3" label="Source&lt;3" />""")
+    assert(lines(testLines._3) == """<edge source="7" target="4" weight="4" type="directed">""")
+    assert(lines(testLines._4) == """<attvalue for="0" value="Date2" />""")
+  }
+
   after {
     if (sc != null) {
       sc.stop()
     }
-    if (Files.exists(Paths.get(testFile))) {
+    if (Files.exists(Paths.get(testFile)) || Files.exists(Paths.get(testFile2))) {
       new File(testFile).delete()
+      new File(testFile2).delete()
     }
   }
 }
