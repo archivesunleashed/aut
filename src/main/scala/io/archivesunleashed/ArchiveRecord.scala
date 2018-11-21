@@ -31,6 +31,9 @@ import org.apache.commons.httpclient.{Header, HttpParser, StatusLine}
 
 /** Trait for a record in a web archive. */
 trait ArchiveRecord extends Serializable {
+  /** Returns the filename containing the Archive Records */
+  def getFileName: String
+
   /** Returns the crawl date. */
   def getCrawlDate: String
 
@@ -79,6 +82,14 @@ class ArchiveRecordImpl(r: SerializableWritable[ArchiveRecordWritable]) extends 
       warcRecord = r.t.getRecord.asInstanceOf[WARCRecord]
   }
   val ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX")
+
+  val getFileName: String = {
+    if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC){
+      arcRecord.getMetaData.getReaderIdentifier()
+    } else {
+      warcRecord.getHeader.getReaderIdentifier()
+    }
+  }
 
   val getCrawlDate: String = {
     if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC){

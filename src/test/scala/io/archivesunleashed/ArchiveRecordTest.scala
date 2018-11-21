@@ -22,6 +22,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
+import org.apache.commons.io.FilenameUtils
 
 @RunWith(classOf[JUnitRunner])
 class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
@@ -43,6 +44,18 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
   test("count records") {
     assert(RecordLoader.loadArchives(arcPath, sc).count == 300L)
     assert(RecordLoader.loadArchives(warcPath, sc).count == 299L)
+  }
+
+  test("file name") {
+    val textSampleArc = RecordLoader.loadArchives(arcPath, sc)
+     .map(x => FilenameUtils.getName(x.getFileName))
+     .take(3)
+    val textSampleWarc = RecordLoader.loadArchives(warcPath, sc)
+     .map(x => FilenameUtils.getName(x.getFileName)).take(3)
+    assert(textSampleArc.deep == Array("example.arc.gz",
+      "example.arc.gz", "example.arc.gz").deep)
+    assert(textSampleWarc.deep == Array("example.warc.gz",
+      "example.warc.gz", "example.warc.gz").deep)
   }
 
   test("Crawl Dates") {
