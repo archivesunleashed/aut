@@ -37,11 +37,59 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
       .setAppName(appName)
     conf.set("spark.driver.allowMultipleContexts", "true");
     sc = new SparkContext(conf)
+
   }
 
   test("count records") {
     assert(RecordLoader.loadArchives(arcPath, sc).count == 300L)
     assert(RecordLoader.loadArchives(warcPath, sc).count == 299L)
+  }
+
+  test("Crawl Dates") {
+    val textSampleArc = RecordLoader.loadArchives(arcPath, sc)
+     .map(x => x.getCrawlDate).take(3)
+    val textSampleWarc = RecordLoader.loadArchives(warcPath, sc)
+     .map(x => x.getCrawlDate).take(3)
+    assert(textSampleArc.deep == Array("20080430", "20080430", "20080430").deep)
+    assert(textSampleWarc.deep == Array("20080430", "20080430", "20080430").deep)
+  }
+
+  test("Domains") {
+    val textSampleArc = RecordLoader.loadArchives(arcPath, sc)
+     .map(x => x.getDomain).take(3)
+    val textSampleWarc = RecordLoader.loadArchives(warcPath, sc)
+     .map(x => x.getDomain).take(3)
+    assert(textSampleArc.deep == Array("", "", "www.archive.org").deep)
+    assert(textSampleWarc.deep == Array("", "www.archive.org", "www.archive.org").deep)
+  }
+
+  test("Urls") {
+    val textSampleArc = RecordLoader.loadArchives(arcPath, sc)
+     .map(x => x.getUrl).take(3)
+    val textSampleWarc = RecordLoader.loadArchives(warcPath, sc)
+     .map(x => x.getUrl).take(3)
+    assert(textSampleArc.deep == Array("filedesc://IAH-20080430204825-00000-blackbook.arc",
+      "dns:www.archive.org", "http://www.archive.org/robots.txt").deep)
+    assert(textSampleWarc.deep == Array("dns:www.archive.org",
+      "http://www.archive.org/robots.txt", "http://www.archive.org/").deep)
+  }
+
+  test("Mime-Type") {
+    val textSampleArc = RecordLoader.loadArchives(arcPath, sc)
+      .map(x => x.getMimeType).take(3)
+    val textSampleWarc = RecordLoader.loadArchives(warcPath, sc)
+      .map(x => x.getMimeType).take(3)
+    assert (textSampleArc.deep == Array ("text/plain", "text/dns", "text/plain").deep)
+    assert (textSampleWarc.deep == Array("unknown", "text/plain", "text/html").deep)
+  }
+
+  test("Get Http Status") {
+    val textSampleArc = RecordLoader.loadArchives(arcPath, sc)
+      .map(x => x.getHttpStatus).take(3)
+    val textSampleWarc = RecordLoader.loadArchives(warcPath, sc)
+      .map(x => x.getHttpStatus).take(3)
+    assert (textSampleArc.deep == Array("000", "000", "200").deep)
+    assert (textSampleWarc.deep == Array("000", "200", "200").deep)
   }
 
   after {
@@ -50,4 +98,3 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
     }
   }
 }
-

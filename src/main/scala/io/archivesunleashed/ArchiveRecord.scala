@@ -18,6 +18,7 @@
 package io.archivesunleashed
 
 import java.text.SimpleDateFormat
+import java.io.ByteArrayInputStream
 
 import io.archivesunleashed.data.{ArcRecordUtils, WarcRecordUtils, ArchiveRecordWritable}
 import io.archivesunleashed.matchbox.{ExtractDate, ExtractDomain, RemoveHttpHeader}
@@ -25,6 +26,8 @@ import org.apache.spark.SerializableWritable
 import org.archive.io.arc.ARCRecord
 import org.archive.io.warc.WARCRecord
 import org.archive.util.ArchiveUtils
+import scala.util.Try
+import org.apache.commons.httpclient.{Header, HttpParser, StatusLine}
 
 /** Trait for a record in a web archive. */
 trait ArchiveRecord extends Serializable {
@@ -51,6 +54,10 @@ trait ArchiveRecord extends Serializable {
 
   /** Returns a raw array of bytes for an image. */
   def getImageBytes: Array[Byte]
+
+  /** Returns the http status of the crawl. */
+  def getHttpStatus: String
+
 }
 
 /** Default implementation of a record in a web archive.
@@ -64,6 +71,7 @@ class ArchiveRecordImpl(r: SerializableWritable[ArchiveRecordWritable]) extends 
   var arcRecord: ARCRecord = null
   var warcRecord: WARCRecord = null
   // scalastyle:on null
+  var headerResponseFormat: String = "US-ASCII"
 
   if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {
     arcRecord = r.t.getRecord.asInstanceOf[ARCRecord]
@@ -107,9 +115,10 @@ class ArchiveRecordImpl(r: SerializableWritable[ArchiveRecordWritable]) extends 
 
   val getMimeType: String = {
     if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {
-      arcRecord.getMetaData.getMimetype
+      Option(arcRecord.getMetaData.getMimetype).getOrElse("unknown")
     } else {
-      WarcRecordUtils.getWarcResponseMimeType(getContentBytes)
+      Option(WarcRecordUtils.getWarcResponseMimeType(getContentBytes))
+        .getOrElse("unknown")
     }
   }
 
@@ -118,6 +127,19 @@ class ArchiveRecordImpl(r: SerializableWritable[ArchiveRecordWritable]) extends 
       arcRecord.getMetaData.getUrl
     } else {
       warcRecord.getHeader.getUrl
+    }
+  }
+
+  val getHttpStatus: String = {
+    if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {
+      Option(arcRecord.getMetaData.getStatusCode).getOrElse("000")
+    } else {
+      Try(new StatusLine(new String(HttpParser.readRawLine
+        (new ByteArrayInputStream(getContentBytes))))
+        .getStatusCode).toOption match {
+          case Some(x) => x.toString
+          case None => "000"
+        }
     }
   }
 
