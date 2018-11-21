@@ -81,7 +81,8 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
     assert(lines(testLines._2) == """<node id="8d3ab53ec817a1e5bf9ffd6e749b3983" label="Destination2" />""")
     assert(lines(testLines._3) == """</attvalues>""")
     assert(lines(testLines._4) == """</edges>""")
-    assert(!WriteGraph.asGexf(networkarray ,""))
+    assert(!WriteGraph.asGexf(networkarray, ""))
+    assert(!WriteGraph(networkarray, ""))
   }
 
   test ("returns a Bool depending on pass or failure") {
@@ -107,6 +108,7 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
     val badlookup = "NOTHERE"
     assert (WriteGraph.nodeLookup(nodes, badlookup) == None)
     assert (WriteGraph.nodeLookup(nodes, lookup) == Some((lookup, 6)))
+    assert (WriteGraph.nodeIdFromLabel(Option(null)) == -1)
   }
 
   test ("Gets the id from a lookup") {
@@ -161,6 +163,14 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
     assert(lines(testLines._2) == """<node id="3" label="Source&lt;3" />""")
     assert(lines(testLines._3) == """<edge source="7" target="4" weight="4" type="directed">""")
     assert(lines(testLines._4) == """<attvalue for="0" value="Date2" />""")
+  }
+
+  test( "False on empty path") {
+    val networkrdd = sc.parallelize(network)
+    val emptyString = ""
+    assert(!WriteGraph(networkrdd, emptyString))
+    assert(!WriteGraph.asGraphml(networkrdd, emptyString))
+    assert(!WriteGraph.asGexf(networkrdd, emptyString))
   }
 
   after {
