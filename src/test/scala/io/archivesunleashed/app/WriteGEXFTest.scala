@@ -1,6 +1,6 @@
 /*
  * Archives Unleashed Toolkit (AUT):
- * An open-source platform for analyzing web archives.
+ * An open-source toolkit for analyzing web archives.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,11 @@ package io.archivesunleashed.app
 
 import java.io.File
 import java.nio.file.{Files, Paths}
-
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 import org.apache.spark.sql.Row
-
 import scala.io.Source
 
 @RunWith(classOf[JUnitRunner])

@@ -1,6 +1,6 @@
 /*
  * Archives Unleashed Toolkit (AUT):
- * An open-source platform for analyzing web archives.
+ * An open-source toolkit for analyzing web archives.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import io.archivesunleashed.matchbox._
 // scalastyle:on underscore.import
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
-
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.Row
 
@@ -138,7 +137,6 @@ object WriteGEXF {
     }
     outFile.write("</edges>\n</graph>\n</gexf>")
     outFile.close()
-
     true
   }
 }
