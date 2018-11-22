@@ -20,7 +20,6 @@ import io.archivesunleashed.matchbox._
 // scalastyle:on underscore.import
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
-
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.Row
 
@@ -138,7 +137,6 @@ object WriteGEXF {
     }
     outFile.write("</edges>\n</graph>\n</gexf>")
     outFile.close()
-
     true
   }
 }
