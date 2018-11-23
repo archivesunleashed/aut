@@ -38,7 +38,6 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
       .setAppName(appName)
     conf.set("spark.driver.allowMultipleContexts", "true");
     sc = new SparkContext(conf)
-
   }
 
   test("count records") {
@@ -46,12 +45,12 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
     assert(RecordLoader.loadArchives(warcPath, sc).count == 299L)
   }
 
-  test("file name") {
+  test("Resource name produces expected result.") {
     val textSampleArc = RecordLoader.loadArchives(arcPath, sc)
-     .map(x => FilenameUtils.getName(x.getFilename))
+     .map(x => FilenameUtils.getName(x.getResourcename))
      .take(3)
     val textSampleWarc = RecordLoader.loadArchives(warcPath, sc)
-     .map(x => FilenameUtils.getName(x.getFilename)).take(3)
+     .map(x => FilenameUtils.getName(x.getResourcename)).take(3)
     assert(textSampleArc.deep == Array("example.arc.gz",
       "example.arc.gz", "example.arc.gz").deep)
     assert(textSampleWarc.deep == Array("example.warc.gz",
