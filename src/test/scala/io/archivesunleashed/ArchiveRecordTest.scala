@@ -47,10 +47,10 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
 
   test("Resource name produces expected result.") {
     val textSampleArc = RecordLoader.loadArchives(arcPath, sc)
-     .map(x => FilenameUtils.getName(x.getResourcename))
+     .map(x => FilenameUtils.getName(x.getArchiveFilename))
      .take(3)
     val textSampleWarc = RecordLoader.loadArchives(warcPath, sc)
-     .map(x => FilenameUtils.getName(x.getResourcename)).take(3)
+     .map(x => FilenameUtils.getName(x.getArchiveFilename)).take(3)
     assert(textSampleArc.deep == Array("example.arc.gz",
       "example.arc.gz", "example.arc.gz").deep)
     assert(textSampleWarc.deep == Array("example.warc.gz",
