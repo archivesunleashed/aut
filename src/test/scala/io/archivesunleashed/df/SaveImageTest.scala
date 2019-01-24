@@ -82,7 +82,7 @@ class SaveImageTest extends FunSuite with BeforeAndAfter {
         assert(originalImage.getRGB(x, y) == savedImage.getRGB(x, y))
       }
     }
-
+    Files.delete(Paths.get(fileName))
   }
 
   after {
