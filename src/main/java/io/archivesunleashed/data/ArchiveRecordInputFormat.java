@@ -18,6 +18,7 @@
 package io.archivesunleashed.data;
 
 import io.archivesunleashed.data.ArchiveRecordWritable.ArchiveFormat;
+import org.apache.log4j.Logger;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
@@ -46,18 +47,24 @@ import java.util.Iterator;
  * Extends FileInputFormat for Web Archive Commons InputFormat.
  */
 public class ArchiveRecordInputFormat extends FileInputFormat<LongWritable,
-  ArchiveRecordWritable> {
+        ArchiveRecordWritable> {
+  /**
+   * Setup logger.
+   */
+  private static final Logger LOG =
+          Logger.getLogger(ArchiveRecordInputFormat.class);
+
   @Override
   public final RecordReader<LongWritable,
-    ArchiveRecordWritable> createRecordReader(final InputSplit split,
-      final TaskAttemptContext context) throws IOException,
-  InterruptedException {
+          ArchiveRecordWritable> createRecordReader(final InputSplit split,
+                                                    final TaskAttemptContext context) throws IOException,
+          InterruptedException {
     return new ArchiveRecordReader();
   }
 
   @Override
   protected final boolean isSplitable(final JobContext context,
-          final Path filename) {
+                                      final Path filename) {
     return false;
   }
 
@@ -65,7 +72,7 @@ public class ArchiveRecordInputFormat extends FileInputFormat<LongWritable,
    * Extends RecordReader for Record Reader.
    */
   public class ArchiveRecordReader extends RecordReader<LongWritable,
-    ArchiveRecordWritable> {
+          ArchiveRecordWritable> {
 
     /**
      * Archive reader.
@@ -103,6 +110,11 @@ public class ArchiveRecordInputFormat extends FileInputFormat<LongWritable,
     private ArchiveRecordWritable value = null;
 
     /**
+     * Archive file name.
+     */
+    private String fileName;
+
+    /**
      * Seekable file position.
      */
     private Seekable filePosition;
@@ -114,8 +126,8 @@ public class ArchiveRecordInputFormat extends FileInputFormat<LongWritable,
 
     @Override
     public final void initialize(final InputSplit archiveRecordSplit,
-            final TaskAttemptContext context)
-    throws IOException {
+                                 final TaskAttemptContext context)
+            throws IOException {
       FileSplit split = (FileSplit) archiveRecordSplit;
       Configuration job = context.getConfiguration();
       start = split.getStart();
@@ -124,9 +136,11 @@ public class ArchiveRecordInputFormat extends FileInputFormat<LongWritable,
 
       FileSystem fs = file.getFileSystem(job);
       FSDataInputStream fileIn = fs.open(split.getPath());
+      fileName = split.getPath().toString();
 
-      reader = ArchiveReaderFactory.get(split.getPath().toString(),
-          new BufferedInputStream(fileIn), true);
+      LOG.info("Opening archive file " + fileName);
+      reader = ArchiveReaderFactory.get(fileName,
+              new BufferedInputStream(fileIn), true);
 
       if (reader instanceof ARCReader) {
         format = ArchiveFormat.ARC;
@@ -223,6 +237,7 @@ public class ArchiveRecordInputFormat extends FileInputFormat<LongWritable,
     @Override
     public final synchronized void close() throws IOException {
       reader.close();
+      LOG.info("Closed archive file " + fileName);
     }
   }
 }
