@@ -47,24 +47,24 @@ import java.util.Iterator;
  * Extends FileInputFormat for Web Archive Commons InputFormat.
  */
 public class ArchiveRecordInputFormat extends FileInputFormat<LongWritable,
-        ArchiveRecordWritable> {
+  ArchiveRecordWritable> {
   /**
    * Setup logger.
    */
-  private static final Logger LOG =
-          Logger.getLogger(ArchiveRecordInputFormat.class);
+  private static final Logger LOG = 
+    Logger.getLogger(ArchiveRecordInputFormat.class);
 
   @Override
   public final RecordReader<LongWritable,
-          ArchiveRecordWritable> createRecordReader(final InputSplit split,
-                                                    final TaskAttemptContext context) throws IOException,
-          InterruptedException {
+    ArchiveRecordWritable> createRecordReader(final InputSplit split,
+      final TaskAttemptContext context) throws IOException,
+  InterruptedException {
     return new ArchiveRecordReader();
   }
 
   @Override
   protected final boolean isSplitable(final JobContext context,
-                                      final Path filename) {
+          final Path filename) {
     return false;
   }
 
@@ -72,7 +72,7 @@ public class ArchiveRecordInputFormat extends FileInputFormat<LongWritable,
    * Extends RecordReader for Record Reader.
    */
   public class ArchiveRecordReader extends RecordReader<LongWritable,
-          ArchiveRecordWritable> {
+    ArchiveRecordWritable> {
 
     /**
      * Archive reader.
@@ -126,8 +126,8 @@ public class ArchiveRecordInputFormat extends FileInputFormat<LongWritable,
 
     @Override
     public final void initialize(final InputSplit archiveRecordSplit,
-                                 final TaskAttemptContext context)
-            throws IOException {
+            final TaskAttemptContext context)
+    throws IOException {
       FileSplit split = (FileSplit) archiveRecordSplit;
       Configuration job = context.getConfiguration();
       start = split.getStart();
@@ -140,7 +140,7 @@ public class ArchiveRecordInputFormat extends FileInputFormat<LongWritable,
 
       LOG.info("Opening archive file " + fileName);
       reader = ArchiveReaderFactory.get(fileName,
-              new BufferedInputStream(fileIn), true);
+          new BufferedInputStream(fileIn), true);
 
       if (reader instanceof ARCReader) {
         format = ArchiveFormat.ARC;
