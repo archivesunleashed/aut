@@ -51,7 +51,7 @@ public class ArchiveRecordInputFormat extends FileInputFormat<LongWritable,
   /**
    * Setup logger.
    */
-  private static final Logger LOG = 
+  private static final Logger LOG =
     Logger.getLogger(ArchiveRecordInputFormat.class);
 
   @Override
