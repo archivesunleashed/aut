@@ -138,7 +138,6 @@ public class ArchiveRecordInputFormat extends FileInputFormat<LongWritable,
       FSDataInputStream fileIn = fs.open(split.getPath());
       fileName = split.getPath().toString();
 
-      LOG.info("Opening archive file " + fileName);
       reader = ArchiveReaderFactory.get(fileName,
           new BufferedInputStream(fileIn), true);
 
