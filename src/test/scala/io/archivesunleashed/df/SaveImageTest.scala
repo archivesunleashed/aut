@@ -53,13 +53,7 @@ class SaveImageTest extends FunSuite with BeforeAndAfter {
     val df = RecordLoader.loadArchives(arcPath, sc)
       .extractImageDetailsDF()
 
-    // We need this in order to use the $-notation
-    val spark = SparkSession.builder().master("local").getOrCreate()
-    // scalastyle:off
-    import spark.implicits._
-    // scalastyle:on
-
-    val extracted = df.select($"bytes")
+    val extracted = df.select("bytes")
       .orderBy(desc(testString)).limit(1)
     extracted.saveToDisk(testString, "/tmp/foo")
 

@@ -46,13 +46,7 @@ class ExtractImageDetailsTest extends FunSuite with BeforeAndAfter {
     val df = RecordLoader.loadArchives(arcPath, sc)
       .extractImageDetailsDF()
 
-    // We need this in order to use the $-notation
-    val spark = SparkSession.builder().master("local").getOrCreate()
-    // scalastyle:off
-    import spark.implicits._
-    // scalastyle:on
-
-    val extracted = df.select($"url", $"mime_type", $"width", $"height", $"md5")
+    val extracted = df.select("url", "mime_type", "width", "height", "md5")
       .orderBy(desc("md5")).head(2).toList
     assert(extracted.size == 2)
     assert("http://www.archive.org/images/mediatype_movies.gif" == extracted(0)(0))
