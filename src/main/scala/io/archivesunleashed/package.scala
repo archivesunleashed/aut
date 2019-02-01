@@ -17,11 +17,15 @@
 
 package io
 
+import java.security.MessageDigest
+import java.util.Base64
+
 import io.archivesunleashed.data.{ArchiveRecordInputFormat, ArchiveRecordWritable}
 import ArchiveRecordWritable.ArchiveFormat
 import io.archivesunleashed.matchbox.{ComputeMD5, DetectLanguage, ExtractDate, ExtractDomain, ExtractImageDetails, ExtractImageLinks, ExtractLinks, RemoveHTML}
 import io.archivesunleashed.matchbox.ImageDetails
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent
+import org.apache.commons.codec.binary.Hex
 import org.apache.hadoop.fs.{FileSystem, Path}
 // scalastyle:off underscore.import
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent._
@@ -172,6 +176,30 @@ package object archivesunleashed {
         .add(StructField("mime_type", StringType, true))
         .add(StructField("width", IntegerType, true))
         .add(StructField("height", IntegerType, true))
+        .add(StructField("md5", StringType, true))
+        .add(StructField("bytes", StringType, true))
+
+      val sqlContext = SparkSession.builder();
+      sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
+    /* Extract PDF bytes and metadata */
+    def extractPDFDetailsDF(): DataFrame = {
+      val records = rdd
+        // for now relying just on archive record MIME type; should also filter
+        // by extension + DetectMimeType
+        .keepMimeTypes(Set("application/pdf"))
+        .map(r => {
+          val bytes = r.getImageBytes
+          val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
+          (r.getUrl, r.getMimeType, hash, encodedBytes)
+        })
+        .map(t => Row(t._1, t._2, t._3, t._4))
+
+      val schema = new StructType()
+        .add(StructField("url", StringType, true))
+        .add(StructField("mime_type", StringType, true))
         .add(StructField("md5", StringType, true))
         .add(StructField("bytes", StringType, true))
 
