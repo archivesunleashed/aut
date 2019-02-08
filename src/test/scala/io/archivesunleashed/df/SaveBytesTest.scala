@@ -35,7 +35,7 @@ import javax.imageio.ImageIO
 import java.util.Base64
 
 @RunWith(classOf[JUnitRunner])
-class SaveImageTest extends FunSuite with BeforeAndAfter {
+class SaveBytesTest extends FunSuite with BeforeAndAfter {
   private val arcPath = Resources.getResource("arc/example.arc.gz").getPath
   private val master = "local[4]"
   private val appName = "example-df"
@@ -61,7 +61,7 @@ class SaveImageTest extends FunSuite with BeforeAndAfter {
 
     val extracted = df.select($"bytes")
       .orderBy(desc(testString)).limit(1)
-    extracted.saveToDisk(testString, "/tmp/foo")
+    extracted.saveImageToDisk(testString, "/tmp/foo")
 
     val encodedBytes: String = extracted.take(1)(0).getAs(testString)
 
