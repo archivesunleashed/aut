@@ -40,17 +40,19 @@ package object df {
   val RemovePrefixWWW = udf[String, String](_.replaceAll("^\\s*www\\.", ""))
 
   var RemoveHTML = udf(io.archivesunleashed.matchbox.RemoveHTML.apply(_:String))
+
   /**
-   * Given a dataframe, serializes the images and saves to disk
+   * Given a dataframe, serializes binary object and saves to disk
    * @param df the input dataframe
-  */
-  implicit class SaveImage(df: DataFrame) {
+   */
+  implicit class SaveBytes(df: DataFrame) {
+
     /**
      * @param bytesColumnName the name of the column containing the image bytes
      * @param fileName the name of the file to save the images to (without extension)
      * e.g. fileName = "foo" => images are saved as foo0.jpg, foo1.jpg
-    */
-    def saveToDisk(bytesColumnName: String, fileName: String): Unit = {
+     */
+    def saveImageToDisk(bytesColumnName: String, fileName: String): Unit = {
       df.select(bytesColumnName).foreach(row => {
         try {
           // assumes the bytes are base64 encoded already as returned by ExtractImageDetails
