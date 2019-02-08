@@ -20,10 +20,12 @@ package io.archivesunleashed
 // scalastyle:off underscore.import
 import io.archivesunleashed.matchbox._
 // scalastyle:on underscore.import
+import org.apache.commons.io.IOUtils
 import org.apache.spark.sql.functions.udf
 import org.apache.spark.sql.DataFrame
 import java.io.ByteArrayInputStream
 import java.io.File
+import java.io.FileOutputStream
 import javax.imageio.{ImageIO, ImageReader}
 import java.util.Base64
 
@@ -50,7 +52,7 @@ package object df {
     /**
      * @param bytesColumnName the name of the column containing the image bytes
      * @param fileName the name of the file to save the images to (without extension)
-     * e.g. fileName = "foo" => images are saved as foo0.jpg, foo1.jpg
+     * e.g. fileName = "foo" => images are saved as "foo-[MD5 hash].jpg"
      */
     def saveImageToDisk(bytesColumnName: String, fileName: String): Unit = {
       df.select(bytesColumnName).foreach(row => {
@@ -74,6 +76,30 @@ package object df {
               ImageIO.write(image, format, file);
             }
           }
+        } catch {
+          case e: Throwable => {
+          }
+        }
+      })
+    }
+
+    /**
+      * @param bytesColumnName the name of the column containing the bytes
+      * @param fileName the name of the file to save the binary file to (without extension)
+      * @param extension the extension of saved files
+      * e.g. fileName = "foo", extension = "pdf" => files are saved as "foo-[MD5 hash].pdf"
+      */
+    def saveToDisk(bytesColumnName: String, fileName: String, extension: String): Unit = {
+      df.select(bytesColumnName).foreach(row => {
+        try {
+          // assumes the bytes are base64 encoded
+          val encodedBytes: String = row.getAs(bytesColumnName);
+          val bytes = Base64.getDecoder.decode(encodedBytes);
+          val in = new ByteArrayInputStream(bytes);
+
+          val suffix = encodedBytes.computeHash()
+          val file = new FileOutputStream(fileName + "-" + suffix + "." + extension)
+          IOUtils.copy(in, file)
         } catch {
           case e: Throwable => {
           }
