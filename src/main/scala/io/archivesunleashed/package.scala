@@ -22,8 +22,7 @@ import java.util.Base64
 
 import io.archivesunleashed.data.{ArchiveRecordInputFormat, ArchiveRecordWritable}
 import ArchiveRecordWritable.ArchiveFormat
-import io.archivesunleashed.matchbox.{ComputeMD5, DetectLanguage, ExtractDate, ExtractDomain, ExtractImageDetails, ExtractImageLinks, ExtractLinks, RemoveHTML}
-import io.archivesunleashed.matchbox.ImageDetails
+import io.archivesunleashed.matchbox.{ComputeMD5, DetectLanguage, DetectMimeTypeTika, ExtractDate, ExtractDomain, ExtractImageDetails, ExtractImageLinks, ExtractLinks, ImageDetails, RemoveHTML}
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent
 import org.apache.commons.codec.binary.Hex
 import org.apache.hadoop.fs.{FileSystem, Path}
@@ -186,9 +185,9 @@ package object archivesunleashed {
     /* Extract PDF bytes and metadata */
     def extractPDFDetailsDF(): DataFrame = {
       val records = rdd
-        // for now relying just on archive record MIME type; should also filter
-        // by extension + DetectMimeType
-        .keepMimeTypes(Set("application/pdf"))
+        .filter(r => r.getMimeType == "application/pdf"
+          //|| r.getUrl.toLowerCase.endsWith("pdf")
+          || DetectMimeTypeTika(r.getContentString) == "application/pdf")
         .map(r => {
           val bytes = r.getImageBytes
           val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
