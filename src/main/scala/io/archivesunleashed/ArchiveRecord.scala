@@ -69,54 +69,47 @@ trait ArchiveRecord extends Serializable {
  *  @param r the serialized record
  */
 class ArchiveRecordImpl(r: SerializableWritable[ArchiveRecordWritable]) extends ArchiveRecord {
-  // Option<t> would require refactor of methods. Ignore.
-  // scalastyle:off null
-  var arcRecord: ARCRecord = null
-  var warcRecord: WARCRecord = null
-  // scalastyle:on null
-  var headerResponseFormat: String = "US-ASCII"
-
-  if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {
-    arcRecord = r.t.getRecord.asInstanceOf[ARCRecord]
-  } else if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.WARC) {
-      warcRecord = r.t.getRecord.asInstanceOf[WARCRecord]
-  }
+  val recordFormat = r.t.getFormat
   val ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX")
 
   val getArchiveFilename: String = {
-    if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC){
-      arcRecord.getMetaData.getReaderIdentifier()
+    if (recordFormat == ArchiveRecordWritable.ArchiveFormat.ARC){
+      r.t.getRecord.asInstanceOf[ARCRecord].getMetaData.getReaderIdentifier()
     } else {
-      warcRecord.getHeader.getReaderIdentifier()
+      r.t.getRecord.asInstanceOf[WARCRecord].getHeader.getReaderIdentifier()
     }
   }
 
   val getCrawlDate: String = {
-    if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC){
-      ExtractDate(arcRecord.getMetaData.getDate, ExtractDate.DateComponent.YYYYMMDD)
+    if (recordFormat == ArchiveRecordWritable.ArchiveFormat.ARC){
+      ExtractDate(r.t.getRecord.asInstanceOf[ARCRecord].getMetaData.getDate,
+        ExtractDate.DateComponent.YYYYMMDD)
     } else {
       ExtractDate(
         ArchiveUtils.get14DigitDate(
-          ISO8601.parse(warcRecord.getHeader.getDate)), ExtractDate.DateComponent.YYYYMMDD)
+          ISO8601.parse(r.t.getRecord.asInstanceOf[WARCRecord].getHeader.getDate)),
+        ExtractDate.DateComponent.YYYYMMDD)
     }
   }
 
   val getCrawlMonth: String = {
-    if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {
-      ExtractDate(arcRecord.getMetaData.getDate, ExtractDate.DateComponent.YYYYMM)
+    if (recordFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {
+      ExtractDate(r.t.getRecord.asInstanceOf[ARCRecord].getMetaData.getDate,
+        ExtractDate.DateComponent.YYYYMM)
     } else {
       ExtractDate(
         ArchiveUtils.get14DigitDate(
-          ISO8601.parse(warcRecord.getHeader.getDate)), ExtractDate.DateComponent.YYYYMM)
+          ISO8601.parse(r.t.getRecord.asInstanceOf[WARCRecord].getHeader.getDate)),
+        ExtractDate.DateComponent.YYYYMM)
     }
   }
 
   val getContentBytes: Array[Byte] = {
-    if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC)
+    if (recordFormat == ArchiveRecordWritable.ArchiveFormat.ARC)
     {
-      ArcRecordUtils.getBodyContent(arcRecord)
+      ArcRecordUtils.getBodyContent(r.t.getRecord.asInstanceOf[ARCRecord])
     } else {
-      WarcRecordUtils.getContent(warcRecord)
+      WarcRecordUtils.getContent(r.t.getRecord.asInstanceOf[WARCRecord])
     }
   }
 
@@ -125,25 +118,24 @@ class ArchiveRecordImpl(r: SerializableWritable[ArchiveRecordWritable]) extends 
   }
 
   val getMimeType: String = {
-    if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {
-      Option(arcRecord.getMetaData.getMimetype).getOrElse("unknown")
+    if (recordFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {
+      Option(r.t.getRecord.asInstanceOf[ARCRecord].getMetaData.getMimetype).getOrElse("unknown")
     } else {
-      Option(WarcRecordUtils.getWarcResponseMimeType(getContentBytes))
-        .getOrElse("unknown")
+      Option(WarcRecordUtils.getWarcResponseMimeType(getContentBytes)).getOrElse("unknown")
     }
   }
 
   val getUrl: String = {
     if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {
-      arcRecord.getMetaData.getUrl
+      r.t.getRecord.asInstanceOf[ARCRecord].getMetaData.getUrl
     } else {
-      warcRecord.getHeader.getUrl
+      r.t.getRecord.asInstanceOf[WARCRecord].getHeader.getUrl
     }
   }
 
   val getHttpStatus: String = {
     if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {
-      Option(arcRecord.getMetaData.getStatusCode).getOrElse("000")
+      Option(r.t.getRecord.asInstanceOf[ARCRecord].getMetaData.getStatusCode).getOrElse("000")
     } else {
       Try(new StatusLine(new String(HttpParser.readRawLine
         (new ByteArrayInputStream(getContentBytes))))
