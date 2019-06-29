@@ -46,7 +46,7 @@ class SSD:
         self.category = pickle.load(open("%s/category/mscoco.pickle"%PKG_DIR, "rb"))
         self.checkpoint = "%s/graph/ssd_mobilenet_v1_fpn_640x640/frozen_inference_graph.pb"%PKG_DIR
         self.args = args
-        with tf.gfile.FastGFile(self.checkpoint, 'rb') as f:
+        with tf.io.gfile.GFile(self.checkpoint, 'rb') as f:
             model_params = f.read()
         self.model_params = model_params
 

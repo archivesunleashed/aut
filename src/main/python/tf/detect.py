@@ -31,5 +31,3 @@ if __name__ == "__main__":
     detect_udf = detector.get_detect_udf(model_broadcast)
     res = preprocessed.select("url", detect_udf(col("bytes")).alias("prediction"), "bytes")
     res.write.json(args.output_path)
-
-
