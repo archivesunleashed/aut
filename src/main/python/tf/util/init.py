@@ -2,18 +2,16 @@ import argparse
 import os
 import zipfile
 from pyspark import SparkConf, SparkContext, SQLContext
-
+import re
+import os
 
 def init_spark(master, aut_jar):
     conf = SparkConf()
     conf.set("spark.jars", aut_jar)
-    conf.set("spark.sql.execution.arrow.enabled", "true")
-    conf.set("spark.sql.execution.arrow.maxRecordsPerBatch", "320")
-    conf.set("spark.executor.memory", "16G")
-    conf.set("spark.cores.max", "48")
-    conf.set("spark.executor.cores", "6")
-    conf.set("spark.driver.memory", "64G")
-    conf.set("spark.task.cpus", "3")
+    conf_path = os.path.dirname(os.path.abspath(__file__))+"/spark.conf"
+    conf_dict = read_conf(conf_path)
+    for item, value in conf_dict.items():
+        conf.set(item, value)
     sc = SparkContext(master, "aut image analysis", conf=conf)
     sql_context = SQLContext(sc)
     return conf, sc, sql_context
@@ -36,4 +34,13 @@ def zip_model_module(PYAUT_DIR):
     zip.write(os.path.join(PYAUT_DIR, "tf", "model", "__init__.py"), os.path.join("model", "__init__.py"))
     zip.write(os.path.join(PYAUT_DIR, "tf", "model", "object_detection.py"), os.path.join("model", "object_detection.py"))
     zip.write(os.path.join(PYAUT_DIR, "tf", "model", "preprocess.py"), os.path.join("model", "preprocess.py"))
+
+
+def read_conf(conf_path):
+    conf_dict = {}
+    with open(conf_path) as f:
+        for line in f:
+            conf = re.findall(r'\S+', line.strip())
+            conf_dict[conf[0]] = conf[1]
+    return conf_dict
 

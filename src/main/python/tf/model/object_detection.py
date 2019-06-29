@@ -9,7 +9,7 @@ import tensorflow as tf
 import pandas as pd
 
 
-PKG_DIR = os.path.dirname(__file__)
+PKG_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 class ImageExtractor:
@@ -106,5 +106,4 @@ class SSDExtractor(ImageExtractor):
                 except:
                     fname = self.output_dir+ "/%s/"%cls + url_parse(rec["url"])
                     print("Failing to save:", fname)
-
 
