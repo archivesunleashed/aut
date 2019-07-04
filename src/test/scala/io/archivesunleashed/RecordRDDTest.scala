@@ -102,8 +102,8 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     val base2 = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
     val langs: Set[String] = Set("en", "fr")
-    val r = Array("http://www.archive.org/index.php",
-      "http://www.archive.org/details/DrinkingWithBob-MadonnaAdoptsAfricanBaby887")
+    val r = Array("http://www.archive.org/",
+      "http://www.archive.org/index.php")
     val r2 = base2.keepLanguages(langs)
       .map(r => r.getUrl).take(2)
     assert (r2.sameElements(r))
