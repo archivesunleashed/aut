@@ -43,7 +43,7 @@ class SSD:
     def __init__(self, sc, sql_context, args):
         self.sc = sc
         self.sql_context = sql_context
-        self.category = pickle.load(open("%s/category/mscoco.pickle"%PKG_DIR, "rb"))
+        self.category = load_cate_dict_from_pbtxt("%s/category/mscoco_label_map.pbtxt"%PKG_DIR)
         self.checkpoint = "%s/graph/ssd_mobilenet_v1_fpn_640x640/frozen_inference_graph.pb"%PKG_DIR
         self.args = args
         with tf.io.gfile.GFile(self.checkpoint, 'rb') as f:
@@ -79,7 +79,7 @@ class SSD:
 class SSDExtractor(ImageExtractor):
     def __init__(self, res_dir, output_dir):
         super().__init__(res_dir, output_dir)
-        self.cate_dict = pickle.load(open("%s/category/mscoco.pickle"%PKG_DIR, "rb"))
+        self.cate_dict = load_cate_dict_from_pbtxt("%s/category/mscoco_label_map.pbtxt"%PKG_DIR)
 
 
     def _extract_and_save(self, rec, class_ids, threshold):

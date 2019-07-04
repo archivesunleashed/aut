@@ -3,6 +3,8 @@ import io
 import base64
 import os
 import numpy as np
+import re
+
 
 def str2img(byte_str):
     return Image.open(io.BytesIO(base64.b64decode(bytes(byte_str, 'utf-8'))))
@@ -43,4 +45,17 @@ def check_dir(path, create=False):
             os.makedirs(path, exist_ok=True)
         return False
 
+
+def load_cate_dict_from_pbtxt(path, key="id", value="display_name"):
+    cate_dict = {}
+    with open(path) as f:
+        for line in f:
+            entry = line.strip().split(":")
+            if len(entry) > 1:
+                if entry[0] == key:
+                    cur_key = int(entry[1])
+                if entry[0] == value:
+                    cur_cate = re.findall(r'"(.*?)"', entry[1])[0]
+                    cate_dict[cur_key] = cur_cate
+    return cate_dict
 
