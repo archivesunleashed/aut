@@ -1,5 +1,6 @@
 from pyspark.sql import DataFrame
 
+
 class WebArchive:
     def __init__(self, sc, sqlContext, path):
         self.sc = sc
@@ -12,4 +13,3 @@ class WebArchive:
 
     def links(self):
         return DataFrame(self.loader.extractHyperlinks(self.path), self.sqlContext)
-

@@ -1,13 +1,15 @@
 import os
 import sys
-from util.init import *
+
+from pyspark.sql import DataFrame
+
 from model.object_detection import *
+from util.init import *
+
 PYAUT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(PYAUT_DIR)
 
 from aut.common import WebArchive
-from pyspark.sql import DataFrame
-
 
 if __name__ == "__main__":
     # initialization
@@ -23,11 +25,13 @@ if __name__ == "__main__":
     arc = WebArchive(sc, sql_context, args.web_archive)
     df = DataFrame(arc.loader.extractImages(arc.path), sql_context)
     filter_size = tuple(args.filter_size)
-    print("height >= %d and width >= %d"%filter_size)
-    preprocessed = df.filter("height >= %d and width >= %d"%filter_size)
+    print("height >= %d and width >= %d" % filter_size)
+    preprocessed = df.filter("height >= %d and width >= %d" % filter_size)
 
     # detection
     model_broadcast = detector.broadcast()
     detect_udf = detector.get_detect_udf(model_broadcast)
-    res = preprocessed.select("url", detect_udf(col("bytes")).alias("prediction"), "bytes")
+    res = preprocessed.select(
+        "url", detect_udf(col("bytes")).alias("prediction"), "bytes"
+    )
     res.write.json(args.output_path)
