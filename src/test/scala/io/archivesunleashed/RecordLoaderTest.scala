@@ -18,9 +18,6 @@
 package io.archivesunleashed
 
 import com.google.common.io.Resources
-// scalastyle:off underscore.import
-import io.archivesunleashed.util.TweetUtils._
-// scalastyle:on underscore.import
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -29,8 +26,6 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 @RunWith(classOf[JUnitRunner])
 class RecordLoaderTest extends FunSuite with BeforeAndAfter {
   private val warcPath = Resources.getResource("warc/example.warc.gz").getPath
-  private val tweetPath = Resources.getResource("arc/tweetsTest.json").getPath
-  private val delTweetPath = Resources.getResource("arc/delTweetsTest.json").getPath
   private val master = "local[4]"
   private val appName = "example-spark"
   private var sc: SparkContext = _
@@ -49,19 +44,6 @@ class RecordLoaderTest extends FunSuite with BeforeAndAfter {
       .map(x => x.getUrl)
       .take(1)
     assert(base(0) == "http://www.archive.org/")
-  }
-
-  test("loads Tweets") {
-    val base = RecordLoader.loadTweets(tweetPath, sc)
-      .map(x => x.text())
-      .collect()
-    assert(base(0) == "some text")
-    assert(base(1) == "some more text")
-  }
-
-  test("does not load deleted") {
-    val base = RecordLoader.loadTweets(delTweetPath, sc).collect()
-    assert(base.deep == Array().deep)
   }
 
   after {
