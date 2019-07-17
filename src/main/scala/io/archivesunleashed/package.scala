@@ -99,10 +99,10 @@ package object archivesunleashed {
         .map(r => Row(r.getCrawlDate, r.getUrl, r.getMimeType, r.getContentString))
 
       val schema = new StructType()
-        .add(StructField("CrawlDate", StringType, true))
-        .add(StructField("Url", StringType, true))
-        .add(StructField("MimeType", StringType, true))
-        .add(StructField("Content", StringType, true))
+        .add(StructField("crawl_date", StringType, true))
+        .add(StructField("url", StringType, true))
+        .add(StructField("mime_type", StringType, true))
+        .add(StructField("content", StringType, true))
 
       val sqlContext = SparkSession.builder()
       sqlContext.getOrCreate().createDataFrame(records, schema)
@@ -115,10 +115,10 @@ package object archivesunleashed {
         .map(t => Row(t._1, t._2, t._3, t._4))
 
       val schema = new StructType()
-        .add(StructField("CrawlDate", StringType, true))
-        .add(StructField("Src", StringType, true))
-        .add(StructField("Dest", StringType, true))
-        .add(StructField("Anchor", StringType, true))
+        .add(StructField("crawl_date", StringType, true))
+        .add(StructField("src", StringType, true))
+        .add(StructField("dest", StringType, true))
+        .add(StructField("anchor", StringType, true))
 
       val sqlContext = SparkSession.builder();
       sqlContext.getOrCreate().createDataFrame(records, schema)
