@@ -7,7 +7,7 @@ import re
 
 
 def str2img(byte_str):
-    return Image.open(io.BytesIO(base64.b64decode(bytes(byte_str, 'utf-8'))))
+    return Image.open(io.BytesIO(base64.b64decode(bytes(byte_str, "utf-8"))))
 
 
 def img2np(byte_str, resize=None):
@@ -22,7 +22,7 @@ def img2np(byte_str, resize=None):
         if len(img_shape) == 2:
             img = np.stack([img, img, img], axis=-1)
         elif img_shape[-1] >= 3:
-            img = img[:,:,:3]
+            img = img[:, :, :3]
 
         return img
 
@@ -58,4 +58,3 @@ def load_cate_dict_from_pbtxt(path, key="id", value="display_name"):
                     cur_cate = re.findall(r'"(.*?)"', entry[1])[0]
                     cate_dict[cur_key] = cur_cate
     return cate_dict
-

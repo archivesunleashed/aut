@@ -13,3 +13,8 @@ workbench.xmi
 build
 derby.log
 metastore_db
+__pycache__/
+src/main/python/tf/model.zip
+src/main/python/tf/util/spark.conf
+src/main/python/tf/model/graph/
+src/main/python/tf/model/category/
