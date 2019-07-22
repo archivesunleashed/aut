@@ -16,10 +16,8 @@
  */
 package io.archivesunleashed.app
 
-// scalastyle:off underscore.import
-import io.archivesunleashed._
-// scalastyle:on underscore.import
-import io.archivesunleashed.matchbox.{NERClassifier, RemoveHTML}
+import io.archivesunleashed.{RecordLoader}
+import io.archivesunleashed.matchbox.{ComputeMD5, NERClassifier, RemoveHTML}
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 
@@ -39,9 +37,9 @@ object ExtractEntities {
     * @param sc the Apache Spark context
     * @return an rdd with classification entities.
     */
-  def extractFromRecords(iNerClassifierFile: String, inputRecordFile: String, outputFile: String, sc: SparkContext): RDD[(String, String, String)] = {
+  def extractFromRecords(iNerClassifierFile: String, inputRecordFile: String, outputFile: String, sc: SparkContext): RDD[(String, String, String, String)] = {
     val rdd = RecordLoader.loadArchives(inputRecordFile, sc)
-      .map(r => (r.getCrawlDate, r.getUrl, RemoveHTML(r.getContentString)))
+      .map(r => (r.getCrawlDate, r.getUrl, RemoveHTML(r.getContentString), ComputeMD5((RemoveHTML(r.getContentString)).getBytes)))
     extractAndOutput(iNerClassifierFile, rdd, outputFile)
   }
 
@@ -53,29 +51,31 @@ object ExtractEntities {
     * @param outputFile path of output directory
     * @return an rdd with classification entities.
     */
-  def extractFromScrapeText(iNerClassifierFile: String, inputFile: String, outputFile: String, sc: SparkContext): RDD[(String, String, String)] = {
+  def extractFromScrapeText(iNerClassifierFile: String, inputFile: String, outputFile: String, sc: SparkContext): RDD[(String, String, String, String)] = {
     val rdd = sc.textFile(inputFile)
       .map(line => {
         val ind1 = line.indexOf(",")
         val ind2 = line.indexOf(",", ind1 + 1)
         (line.substring(1, ind1),
           line.substring(ind1 + 1, ind2),
-          line.substring(ind2 + 1, line.length - 1))
-      })
+          line.substring(ind2 + 1, line.length - 1),
+          ComputeMD5((line.substring(ind2 + 1, line.length - 1)).getBytes))
+        })
     extractAndOutput(iNerClassifierFile, rdd, outputFile)
   }
 
   /** Saves the NER output to file from a given RDD.
     *
     * @param iNerClassifierFile path of classifier file
-    * @param rdd with values (date, url, content)
+    * @param rdd with values (date, url, content, content digest)
     * @param outputFile path of output directory
     * @return an rdd of tuples with classification entities extracted.
     */
-  def extractAndOutput(iNerClassifierFile: String, rdd: RDD[(String, String, String)], outputFile: String): RDD[(String, String, String)] = {
+  def extractAndOutput(iNerClassifierFile: String, rdd: RDD[(String, String, String, String)], outputFile: String): RDD[(String, String, String, String)] = {
     val r = rdd.mapPartitions(iter => {
+
       NERClassifier.apply(iNerClassifierFile)
-      iter.map(r => (r._1, r._2, NERClassifier.classify(r._3)))
+      iter.map(r => (r._1, r._2, NERClassifier.classify(r._3), r._4))
     })
     r.saveAsTextFile(outputFile)
     r

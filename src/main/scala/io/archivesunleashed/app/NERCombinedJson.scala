@@ -117,7 +117,7 @@ class NERCombinedJson extends Serializable {
         iter.map(r => {
           val nerRec = new NerRecord(r._1._1, r._1._2)
           r._2.foreach(entityMap => {
-            // e.g., entityMap = "PERSON" -> List(("Jack", 1), ("Diane", 3))
+            // e.g., entityMap = "persons" -> List(("Jack", 1), ("Diane", 3))
             val ec = new EntityCounts(entityMap._1)
             entityMap._2.foreach(e => {
               ec.entities += new Entity(e._1, e._2)
