@@ -20,7 +20,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <project_name>${project.artifactId}</project_name>
     <project_organization>The Archives Unleashed Project</project_organization>
-    <scala.version>2.11.8</scala.version>
+    <scala.version>2.11.12</scala.version>
     <hadoop.version>2.6.5</hadoop.version>
     <spark.version>2.4.3</spark.version>
     <github.global.server>github</github.global.server>
@@ -456,7 +456,7 @@
     <dependency>
       <groupId>org.scalatest</groupId>
       <artifactId>scalatest_2.11</artifactId>
-      <version>3.0.1</version>
+      <version>3.0.8</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -472,7 +472,7 @@
     <dependency>
       <groupId>com.chuusai</groupId>
       <artifactId>shapeless_2.11</artifactId>
-      <version>2.3.2</version>
+      <version>2.3.3</version>
       <exclusions>
         <exclusion>
           <groupId>org.typelevel</groupId>
@@ -483,7 +483,7 @@
     <dependency>
       <groupId>org.scala-lang.modules</groupId>
       <artifactId>scala-parser-combinators_2.11</artifactId>
-      <version>1.0.5</version>
+      <version>1.1.1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.hadoop</groupId>
@@ -587,11 +587,6 @@
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-graphx_2.11</artifactId>
       <version>${spark.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>15.0</version>
     </dependency>
     <dependency>
       <groupId>org.xerial.snappy</groupId>
