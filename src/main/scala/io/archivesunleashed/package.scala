@@ -22,6 +22,7 @@ import ArchiveRecordWritable.ArchiveFormat
 import io.archivesunleashed.matchbox.{ComputeMD5, DetectLanguage, ExtractDate, ExtractDomain, ExtractImageDetails, ExtractImageLinks, ExtractLinks, RemoveHTML}
 import io.archivesunleashed.matchbox.ImageDetails
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent
+import java.net.URI
 import org.apache.hadoop.fs.{FileSystem, Path}
 // scalastyle:off underscore.import
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent._
@@ -59,7 +60,8 @@ package object archivesunleashed {
       * @return an RDD of ArchiveRecords for mapping.
       */
     def loadArchives(path: String, sc: SparkContext): RDD[ArchiveRecord] = {
-      val fs = FileSystem.get(sc.hadoopConfiguration)
+      val uri = new URI(path)
+      val fs = FileSystem.get(uri, sc.hadoopConfiguration)
       val p = new Path(path)
       sc.newAPIHadoopFile(getFiles(p, fs), classOf[ArchiveRecordInputFormat], classOf[LongWritable], classOf[ArchiveRecordWritable])
         .filter(r => (r._2.getFormat == ArchiveFormat.ARC) ||
