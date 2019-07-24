@@ -30,8 +30,6 @@ import org.apache.hadoop.fs.{FileSystem, Path}
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent._
 import org.apache.spark.sql._
 import org.apache.spark.sql.types._
-import org.json4s._
-import org.json4s.jackson.JsonMethods._
 // scalastyle:on: underscore.import
 import org.apache.hadoop.io.LongWritable
 import org.apache.spark.{SerializableWritable, SparkContext}
@@ -71,18 +69,6 @@ package object archivesunleashed {
           ((r._2.getFormat == ArchiveFormat.WARC) && r._2.getRecord.getHeader.getHeaderValue("WARC-Type").equals("response")))
         .map(r => new ArchiveRecordImpl(new SerializableWritable(r._2)))
     }
-
-    /** Creates an Archive Record RDD from tweets.
-      *
-      * @param path the path to the Tweets file
-      * @param sc the apache spark context
-      * @return an RDD of JValue (json objects) for mapping.
-      */
-    def loadTweets(path: String, sc: SparkContext): RDD[JValue] =
-      // scalastyle:off null
-      sc.textFile(path).filter(line => !line.startsWith("{\"delete\":"))
-        .map(line => try { parse(line) } catch { case e: Exception => null }).filter(x => x != null)
-      // scalastyle:on null
   }
 
   /** A Wrapper class around RDD to simplify counting. */
@@ -116,10 +102,10 @@ package object archivesunleashed {
         .map(r => Row(r.getCrawlDate, r.getUrl, r.getMimeType, r.getContentString))
 
       val schema = new StructType()
-        .add(StructField("CrawlDate", StringType, true))
-        .add(StructField("Url", StringType, true))
-        .add(StructField("MimeType", StringType, true))
-        .add(StructField("Content", StringType, true))
+        .add(StructField("crawl_date", StringType, true))
+        .add(StructField("url", StringType, true))
+        .add(StructField("mime_type", StringType, true))
+        .add(StructField("content", StringType, true))
 
       val sqlContext = SparkSession.builder()
       sqlContext.getOrCreate().createDataFrame(records, schema)
@@ -132,10 +118,10 @@ package object archivesunleashed {
         .map(t => Row(t._1, t._2, t._3, t._4))
 
       val schema = new StructType()
-        .add(StructField("CrawlDate", StringType, true))
-        .add(StructField("Src", StringType, true))
-        .add(StructField("Dest", StringType, true))
-        .add(StructField("Anchor", StringType, true))
+        .add(StructField("crawl_date", StringType, true))
+        .add(StructField("src", StringType, true))
+        .add(StructField("dest", StringType, true))
+        .add(StructField("anchor", StringType, true))
 
       val sqlContext = SparkSession.builder();
       sqlContext.getOrCreate().createDataFrame(records, schema)

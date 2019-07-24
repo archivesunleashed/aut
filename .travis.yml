@@ -1,14 +1,17 @@
-dist: trusty
+dist: xenial
 language: java
-sudo: false
 
 branches:
   only:
     - master
 
 jdk:
-  - oraclejdk8
   - openjdk8
+  - openjdk11
+
+matrix:
+  allow_failures:
+    - jdk: openjdk11
 
 before_install:
  - "echo $JAVA_OPTS"
