@@ -21,7 +21,7 @@
     <project_name>${project.artifactId}</project_name>
     <project_organization>The Archives Unleashed Project</project_organization>
     <scala.version>2.11.12</scala.version>
-    <hadoop.version>2.6.5</hadoop.version>
+    <hadoop.version>3.1.2</hadoop.version>
     <spark.version>2.4.3</spark.version>
     <github.global.server>github</github.global.server>
     <checkstyle.plugin.version>2.17</checkstyle.plugin.version>
@@ -43,6 +43,9 @@
     <jacoco.plugin.version>0.7.5.201505241946</jacoco.plugin.version>
     <versions.plugin.version>2.1</versions.plugin.version>
     <tika.version>1.20</tika.version>
+    <codehaus.jackson.version>1.9.13</codehaus.jackson.version>
+    <fasterxml.jackson.version>2.6.7</fasterxml.jackson.version>
+    <fasterxml.jackson.databind.version>2.6.7.1</fasterxml.jackson.databind.version>
   </properties>
 
   <licenses>
@@ -64,10 +67,6 @@
     <repository>
       <id>maven</id>
       <url>http://repo.maven.apache.org/maven2/</url>
-    </repository>
-    <repository>
-      <id>jitpack.io</id>
-      <url>https://jitpack.io</url>
     </repository>
   </repositories>
 
@@ -499,8 +498,20 @@
           <artifactId>slf4j-api</artifactId>
         </exclusion>
         <exclusion>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>javax.xml.bind</groupId>
           <artifactId>jaxb-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-annotations</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-codec</groupId>
+          <artifactId>commons-codec</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -537,6 +548,22 @@
           <groupId>org.apache.commons</groupId>
           <artifactId>commons-math3</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-lang3</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.ws.rs</groupId>
+          <artifactId>javax.ws.rs-api</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -544,10 +571,6 @@
       <artifactId>spark-core_2.11</artifactId>
       <version>${spark.version}</version>
       <exclusions>
-        <exclusion>
-          <groupId>org.apache.commons</groupId>
-          <artifactId>commons-lang3</artifactId>
-        </exclusion>
         <exclusion>
           <groupId>org.apache.commons</groupId>
           <artifactId>commons-compress</artifactId>
@@ -573,6 +596,14 @@
           <artifactId>jcl-over-slf4j</artifactId>
         </exclusion>
         <exclusion>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-lang3</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>javax.ws.rs</groupId>
           <artifactId>javax.ws.rs-api</artifactId>
         </exclusion>
@@ -587,6 +618,36 @@
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-graphx_2.11</artifactId>
       <version>${spark.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${fasterxml.jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${fasterxml.jackson.databind.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-jaxrs</artifactId>
+      <version>${codehaus.jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-xc</artifactId>
+      <version>${codehaus.jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.11</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.5.6</version>
     </dependency>
     <dependency>
       <groupId>org.xerial.snappy</groupId>
@@ -634,6 +695,10 @@
           <groupId>org.slf4j</groupId>
           <artifactId>slf4j-api</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -648,11 +713,7 @@
       <exclusions>
         <exclusion>
           <groupId>com.fasterxml.jackson.core</groupId>
-          <artifactId>jackson-databind</artifactId>
-        </exclusion>
-         <exclusion>
-          <groupId>javax.xml.bind</groupId>
-          <artifactId>jaxb-api</artifactId>
+          <artifactId>jackson-annotations</artifactId>
         </exclusion>
         <exclusion>
           <groupId>javax.ws.rs</groupId>
@@ -664,12 +725,6 @@
       <groupId>org.apache.tika</groupId>
       <artifactId>tika-langdetect</artifactId>
       <version>${tika.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.optimaize.languagedetector</groupId>
-          <artifactId>language-detector</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.rogach</groupId>
@@ -691,19 +746,7 @@
       <artifactId>lintools-datatypes</artifactId>
       <version>1.0.0</version>
     </dependency>
-    <!--START pull #321-->
-    <dependency>
-      <groupId>com.github.netarchivesuite</groupId>
-      <artifactId>language-detector</artifactId>
-      <version>language-detector-0.6a</version>
-    </dependency>
-    <!--END pull #321-->
     <!--START issue #113-->
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-compress</artifactId>
-      <version>1.18</version>
-    </dependency>
     <dependency>
       <groupId>jline</groupId>
       <artifactId>jline</artifactId>

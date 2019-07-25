@@ -19,7 +19,7 @@ package io.archivesunleashed.app
 import java.io.{BufferedReader, BufferedWriter, InputStreamReader, OutputStreamWriter}
 
 import io.archivesunleashed.matchbox.NERClassifier
-import io.archivesunleashed.util.JsonUtils
+import io.archivesunleashed.util.{CopyMerge, JsonUtils}
 import org.apache.hadoop.conf.Configuration
 // scalastyle:off underscore.import
 import org.apache.hadoop.fs._
@@ -61,7 +61,7 @@ class NERCombinedJson extends Serializable {
     val tmpPath = new Path(tmpFile)
 
     // Merge part-files into single file.
-    FileUtil.copyMerge(hdfs, srcPath, hdfs, tmpPath, false, hadoopConfig, "")
+    CopyMerge.copyMerge(hdfs, srcPath, hdfs, tmpPath, false, hadoopConfig)
 
     // Read file of JSON arrays, write into single JSON array of arrays.
     val fsInStream = hdfs.open(tmpPath)
