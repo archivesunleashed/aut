@@ -86,7 +86,7 @@ package object archivesunleashed {
     * To load such an RDD, please see [[RecordLoader]].
     */
   implicit class WARecordRDD(rdd: RDD[ArchiveRecord]) extends java.io.Serializable {
-    /** Removes all non-html-based data (images, executables etc.) from html text. */
+    /** Removes all non-html-based data (images, executables, etc.) from html text. */
     def keepValidPages(): RDD[ArchiveRecord] = {
       rdd.filter(r =>
         r.getCrawlDate != null
@@ -127,7 +127,7 @@ package object archivesunleashed {
       sqlContext.getOrCreate().createDataFrame(records, schema)
     }
 
-    /* Extracts all the images from a source page */
+    /* Extracts all the images links from a source page. */
     def extractImageLinksDF(): DataFrame = {
       val records = rdd
         .keepValidPages()
@@ -146,7 +146,7 @@ package object archivesunleashed {
       sqlContext.getOrCreate().createDataFrame(records, schema)
     }
 
-    /* Extract image bytes and metadata */
+    /* Extract image bytes and image metadata. */
     def extractImageDetailsDF(): DataFrame = {
       val records = rdd
         .keepImages()
@@ -168,7 +168,7 @@ package object archivesunleashed {
       sqlContext.getOrCreate().createDataFrame(records, schema)
     }
 
-    /* Extract PDF bytes and metadata */
+    /* Extract PDF bytes and PDF metadata. */
     def extractPDFDetailsDF(): DataFrame = {
       val records = rdd
         .filter(r => (r.getMimeType != null && r.getMimeType == "application/pdf")
@@ -220,7 +220,7 @@ package object archivesunleashed {
       rdd.filter(r => dates.contains(ExtractDate(r.getCrawlDate, component)))
     }
 
-    /** Removes all data but selected exact URLs
+    /** Removes all data but selected exact URLs.
       *
       * @param urls a Set of URLs to keep
       */
