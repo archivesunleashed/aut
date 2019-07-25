@@ -56,7 +56,7 @@ trait ArchiveRecord extends Serializable {
   def getDomain: String
 
   /** Returns a raw array of bytes for an image. */
-  def getImageBytes: Array[Byte]
+  def getBinaryBytes: Array[Byte]
 
   /** Returns the http status of the crawl. */
   def getHttpStatus: String
@@ -150,7 +150,7 @@ class ArchiveRecordImpl(r: SerializableWritable[ArchiveRecordWritable]) extends 
     ExtractDomain(getUrl)
   }
 
-  val getImageBytes: Array[Byte] = {
+  val getBinaryBytes: Array[Byte] = {
     if (getContentString.startsWith("HTTP/")) {
       getContentBytes.slice(
         getContentString.indexOf(RemoveHttpHeader.headerEnd)

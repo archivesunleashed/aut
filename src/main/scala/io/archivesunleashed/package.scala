@@ -151,7 +151,7 @@ package object archivesunleashed {
       val records = rdd
         .keepImages()
         .map(r => {
-          val image = ExtractImageDetails(r.getUrl, r.getMimeType, r.getImageBytes)
+          val image = ExtractImageDetails(r.getUrl, r.getMimeType, r.getBinaryBytes)
           (r.getUrl, r.getMimeType, image.width, image.height, image.hash, image.body)
         })
         .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6))
@@ -171,11 +171,10 @@ package object archivesunleashed {
     /* Extract PDF bytes and metadata */
     def extractPDFDetailsDF(): DataFrame = {
       val records = rdd
-        .filter(r => r.getMimeType == "application/pdf"
-          //|| r.getUrl.toLowerCase.endsWith("pdf")
-          || DetectMimeTypeTika(r.getContentString) == "application/pdf")
+        .filter(r => (r.getMimeType != null && r.getMimeType == "application/pdf")
+          || r.getUrl.toLowerCase.endsWith("pdf"))
         .map(r => {
-          val bytes = r.getImageBytes
+          val bytes = r.getBinaryBytes
           val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           (r.getUrl, r.getMimeType, hash, encodedBytes)
