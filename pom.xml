@@ -116,7 +116,9 @@
               <shadedClassifierName>fatjar</shadedClassifierName>
               <artifactSet>
                 <excludes>
-                  <exclude>org.apache.hadoop:*</exclude>
+                  <exclude>org.apache.hadoop:hadoop-core</exclude>
+                  <exclude>org.apache.hadoop:hadoop-common</exclude>
+		  <exclude>org.apache.hadoop:hadoop-mapreduce-client-core</exclude>
                   <exclude>org.apache.spark:*</exclude>
                 </excludes>
               </artifactSet>
@@ -737,6 +739,11 @@
           <artifactId>logback-classic</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-aws</artifactId>
+      <version>${hadoop.version}</version>
     </dependency>
   </dependencies>
 
