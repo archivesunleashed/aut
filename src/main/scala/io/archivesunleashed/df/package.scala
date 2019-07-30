@@ -70,7 +70,7 @@ package object df {
             val image = reader.read(0)
 
             val format = reader.getFormatName()
-            val suffix = encodedBytes.computeHash()
+            val suffix = ComputeMD5(bytes)
             val file = new File(fileName + "-" + suffix + "." + format);
             if (image != null) {
               ImageIO.write(image, format, file);
@@ -97,7 +97,7 @@ package object df {
           val bytes = Base64.getDecoder.decode(encodedBytes);
           val in = new ByteArrayInputStream(bytes);
 
-          val suffix = encodedBytes.computeHash()
+          val suffix = ComputeMD5(bytes)
           val file = new FileOutputStream(fileName + "-" + suffix + "." + extension)
           IOUtils.copy(in, file)
         } catch {
