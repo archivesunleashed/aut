@@ -61,8 +61,9 @@ class SaveImageTest extends FunSuite with BeforeAndAfter {
     extracted.saveToDisk(testString, "/tmp/foo")
 
     val encodedBytes: String = extracted.take(1)(0).getAs(testString)
+    val bytes = Base64.getDecoder.decode(encodedBytes);
 
-    val suffix = encodedBytes.computeHash()
+    val suffix = ComputeMD5(bytes)
     val fileName = "/tmp/foo-" + suffix + ".png"
     assert(Files.exists(Paths.get(fileName)))
 
@@ -85,7 +86,7 @@ class SaveImageTest extends FunSuite with BeforeAndAfter {
   test("Attempt to save invalid image") {
     val dummyEncBytes = Base64.getEncoder.encodeToString(Array.range(0, 127)
       .map(_.toByte))
-    val dummyMD5 = dummyEncBytes.computeHash()
+    val dummyMD5 = ComputeMD5(dummyEncBytes.getBytes)
     val dummyImg = TestImageDetails("http://example.com/fake.jpg", "image/jpeg",
       "600", "800", dummyMD5, dummyEncBytes)
 
@@ -96,11 +97,11 @@ class SaveImageTest extends FunSuite with BeforeAndAfter {
     // scalastyle:on
     val df = Seq(dummyImg).toDF
 
-    df.saveToDisk("bytes", "/tmp/foo")
+    df.saveToDisk("bytes", "/tmp/bar")
 
     // Check that no file was written.
     assert(new File("/tmp").listFiles.filter(_.isFile).toList
-      .count(_.getName.startsWith("foo-" + dummyMD5)) == 0)
+      .count(_.getName.startsWith("bar-" + dummyMD5)) == 0)
   }
 
   after {

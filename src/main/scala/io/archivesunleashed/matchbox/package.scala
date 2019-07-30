@@ -43,10 +43,5 @@ package object matchbox {
         case e: Exception => throw new IOException("Caught exception processing input row ", e)
       }
     }
-
-    def computeHash(): String = {
-      val md5 = MessageDigest.getInstance("MD5")
-      md5.digest(s.getBytes).map("%02x".format(_)).mkString
-    }
   }
 }
