@@ -30,6 +30,6 @@ object ComputeMD5 {
     * @return MD5 checksum.
     */
   def apply(bytes: Array[Byte]): String = {
-    new String(MessageDigest.getInstance("MD5").digest(bytes))
+    MessageDigest.getInstance("MD5").digest(bytes).map("%02x".format(_)).mkString
   }
 }
