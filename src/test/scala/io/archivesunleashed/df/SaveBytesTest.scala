@@ -64,8 +64,9 @@ class SaveBytesTest extends FunSuite with BeforeAndAfter {
     extracted.saveImageToDisk(testString, "/tmp/foo")
 
     val encodedBytes: String = extracted.take(1)(0).getAs(testString)
+    val bytes = Base64.getDecoder.decode(encodedBytes);
 
-    val suffix = encodedBytes.computeHash()
+    val suffix = ComputeMD5(bytes)
     val fileName = "/tmp/foo-" + suffix + ".png"
     assert(Files.exists(Paths.get(fileName)))
 
