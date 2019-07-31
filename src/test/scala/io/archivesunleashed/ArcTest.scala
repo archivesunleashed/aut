@@ -92,7 +92,7 @@ class ArcTest extends FunSuite with BeforeAndAfter {
       .collect
 
     languageCounts.foreach {
-      case ("en", count) => assert(57L == count)
+      case ("en", count) => assert(135L == count)
       case ("et", count) => assert(6L == count)
       case ("it", count) => assert(1L == count)
       case ("lt", count) => assert(61L == count)

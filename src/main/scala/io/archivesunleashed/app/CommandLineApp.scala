@@ -178,9 +178,13 @@ class CommandLineApp(conf: CmdAppConf) {
 
   def save(d: Dataset[Row]): Unit = {
     if (!configuration.partition.isEmpty) {
-      d.coalesce(configuration.partition()).write.csv(saveTarget)
+      d.coalesce(configuration.partition()).write
+        .option("timestampFormat", "yyyy/MM/dd HH:mm:ss ZZ")
+        .csv(saveTarget)
     } else {
-      d.write.csv(saveTarget)
+      d.write
+        .option("timestampFormat", "yyyy/MM/dd HH:mm:ss ZZ")
+        .csv(saveTarget)
     }
   }
 

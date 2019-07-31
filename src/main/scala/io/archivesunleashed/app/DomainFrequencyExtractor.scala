@@ -45,10 +45,10 @@ object DomainFrequencyExtractor {
   def apply(d: DataFrame): Dataset[Row] = {
     val spark = SparkSession.builder().master("local").getOrCreate()
     // scalastyle:off
-    import spark.implicits._ 
+    import spark.implicits._
     // scalastyle:on
 
-    d.select(df.ExtractBaseDomain($"Url").as("Domain"))
-      .groupBy("Domain").count().orderBy(desc("count"))
+    d.select(df.ExtractBaseDomain($"url").as("domain"))
+      .groupBy("domain").count().orderBy(desc("count"))
   }
 }

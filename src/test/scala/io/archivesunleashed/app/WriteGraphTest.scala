@@ -105,7 +105,7 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
     val networkrdd = sc.parallelize(network)
     val nodes = WriteGraph.nodesWithIds(networkrdd)
     val lookup = "Source1"
-    val badlookup = "NOTHERE"
+    val badlookup = "NOTTHERE"
     assert (WriteGraph.nodeLookup(nodes, badlookup) == None)
     assert (WriteGraph.nodeLookup(nodes, lookup) == Some((lookup, 6)))
     assert (WriteGraph.nodeIdFromLabel(Option(null)) == -1)

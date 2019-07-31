@@ -16,7 +16,9 @@
  */
 package io.archivesunleashed.matchbox
 
-import org.apache.tika.language.LanguageIdentifier
+import org.apache.tika.langdetect.OptimaizeLangDetector;
+import org.apache.tika.language.detect.LanguageDetector;
+import org.apache.tika.language.detect.LanguageResult;
 
 /** Detects language using Apache Tika. */
 object DetectLanguage {
@@ -30,7 +32,9 @@ object DetectLanguage {
     if (input.isEmpty) {
       ""
     } else {
-      new LanguageIdentifier(input).getLanguage
+      val detector: LanguageDetector = new OptimaizeLangDetector().loadModels()
+      val result : LanguageResult = detector.detect(input)
+      result.getLanguage()
     }
   }
 }
