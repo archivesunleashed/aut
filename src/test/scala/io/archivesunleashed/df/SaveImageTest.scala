@@ -34,6 +34,9 @@ import java.io.{File, ByteArrayInputStream}
 import javax.imageio.ImageIO
 import java.util.Base64
 
+case class TestImageDetails(url: String, mime_type: String, width: String,
+                        height: String, md5: String, bytes: String)
+
 @RunWith(classOf[JUnitRunner])
 class SaveImageTest extends FunSuite with BeforeAndAfter {
   private val arcPath = Resources.getResource("arc/example.arc.gz").getPath
@@ -53,13 +56,7 @@ class SaveImageTest extends FunSuite with BeforeAndAfter {
     val df = RecordLoader.loadArchives(arcPath, sc)
       .extractImageDetailsDF()
 
-    // We need this in order to use the $-notation
-    val spark = SparkSession.builder().master("local").getOrCreate()
-    // scalastyle:off
-    import spark.implicits._
-    // scalastyle:on
-
-    val extracted = df.select($"bytes")
+    val extracted = df.select("bytes")
       .orderBy(desc(testString)).limit(1)
     extracted.saveToDisk(testString, "/tmp/foo")
 
@@ -83,6 +80,27 @@ class SaveImageTest extends FunSuite with BeforeAndAfter {
       }
     }
     Files.delete(Paths.get(fileName))
+  }
+
+  test("Attempt to save invalid image") {
+    val dummyEncBytes = Base64.getEncoder.encodeToString(Array.range(0, 127)
+      .map(_.toByte))
+    val dummyMD5 = dummyEncBytes.computeHash()
+    val dummyImg = TestImageDetails("http://example.com/fake.jpg", "image/jpeg",
+      "600", "800", dummyMD5, dummyEncBytes)
+
+    // For toDF().
+    val spark = SparkSession.builder().master("local").getOrCreate()
+    // scalastyle:off
+    import spark.implicits._
+    // scalastyle:on
+    val df = Seq(dummyImg).toDF
+
+    df.saveToDisk("bytes", "/tmp/foo")
+
+    // Check that no file was written.
+    assert(new File("/tmp").listFiles.filter(_.isFile).toList
+      .count(_.getName.startsWith("foo-" + dummyMD5)) == 0)
   }
 
   after {

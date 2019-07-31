@@ -47,8 +47,8 @@ package object df {
   implicit class SaveImage(df: DataFrame) {
     /**
      * @param bytesColumnName the name of the column containing the image bytes
-     * @param fileName the name of the file to save the images to (without extension)
-     * e.g. fileName = "foo" => images are saved as foo0.jpg, foo1.jpg
+     * @param fileName the base name of the file to save the images to (without extension)
+     * e.g. fileName = "foo" => images are saved as foo-[md5 hash].jpg
     */
     def saveToDisk(bytesColumnName: String, fileName: String): Unit = {
       df.select(bytesColumnName).foreach(row => {
