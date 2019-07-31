@@ -89,7 +89,7 @@ class SaveImageTest extends FunSuite with BeforeAndAfter {
     val dummyImg = TestImageDetails("http://example.com/fake.jpg", "image/jpeg",
       "600", "800", dummyMD5, dummyEncBytes)
 
-    // for toDF()
+    // For toDF().
     val spark = SparkSession.builder().master("local").getOrCreate()
     // scalastyle:off
     import spark.implicits._
@@ -98,7 +98,7 @@ class SaveImageTest extends FunSuite with BeforeAndAfter {
 
     df.saveToDisk("bytes", "/tmp/foo")
 
-    // check that no file was written
+    // Check that no file was written.
     assert(new File("/tmp").listFiles.filter(_.isFile).toList
       .count(_.getName.startsWith("foo-" + dummyMD5)) == 0)
   }

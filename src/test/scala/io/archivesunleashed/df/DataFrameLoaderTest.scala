@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.archivesunleashed.df
 
 import io.archivesunleashed.DataFrameLoader
@@ -49,9 +48,9 @@ class DataFrameLoaderTest extends FunSuite with BeforeAndAfter {
     val imageLinks = df.extractImageLinks(arcPath)
     val images = df.extractImages(arcPath)
 
-    val r_1 = validPages.select("Url", "MimeType").take(1)(0)
-    assert(r_1.getAs[String]("Url") == "http://www.archive.org/")
-    assert(r_1.getAs[String]("MimeType") == "text/html")
+    val r_1 = validPages.select("url", "mime_type").take(1)(0)
+    assert(r_1.getAs[String]("url") == "http://www.archive.org/")
+    assert(r_1.getAs[String]("mime_type") == "text/html")
 
     val r_2 = hyperlinks.select("Dest", "Anchor").take(3)(2)
     assert(r_2(0) == "http://web.archive.org/collections/web/advanced.html")
