@@ -68,6 +68,10 @@
       <id>maven</id>
       <url>http://repo.maven.apache.org/maven2/</url>
     </repository>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
   </repositories>
 
   <build>
@@ -725,6 +729,12 @@
       <groupId>org.apache.tika</groupId>
       <artifactId>tika-langdetect</artifactId>
       <version>${tika.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.optimaize.languagedetector</groupId>
+          <artifactId>language-detector</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.rogach</groupId>
@@ -746,6 +756,13 @@
       <artifactId>lintools-datatypes</artifactId>
       <version>1.0.0</version>
     </dependency>
+    <!--START pull #321-->
+    <dependency>
+      <groupId>com.github.netarchivesuite</groupId>
+      <artifactId>language-detector</artifactId>
+      <version>language-detector-0.6a</version>
+    </dependency>
+    <!--END pull #321-->
     <!--START issue #113-->
     <dependency>
       <groupId>jline</groupId>
