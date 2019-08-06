@@ -107,7 +107,7 @@ class ArchiveRecordImpl(r: SerializableWritable[ArchiveRecordWritable]) extends 
   val getContentBytes: Array[Byte] = {
     if (recordFormat == ArchiveRecordWritable.ArchiveFormat.ARC)
     {
-      ArcRecordUtils.getBodyContent(r.t.getRecord.asInstanceOf[ARCRecord])
+      ArcRecordUtils.getContent(r.t.getRecord.asInstanceOf[ARCRecord])
     } else {
       WarcRecordUtils.getContent(r.t.getRecord.asInstanceOf[WARCRecord])
     }
