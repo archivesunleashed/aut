@@ -46,6 +46,6 @@ class StringUtilsTest extends FunSuite {
 
   test ("md5 hash") {
     val s: String = "unesco.org";
-    assert(ComputeMD5(s.getBytes).mkString == "8e8decc8e8107bcf9d3896f3222b77d8");
+    assert(ComputeMD5(s.getBytes) == "8e8decc8e8107bcf9d3896f3222b77d8");
   }
 }

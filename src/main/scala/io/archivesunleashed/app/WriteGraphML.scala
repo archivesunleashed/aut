@@ -48,14 +48,14 @@ object WriteGraphML {
    */
   def makeFile (rdd: RDD[((String, String, String), Int)], graphmlPath: String): Boolean = {
     val outFile = Files.newBufferedWriter(Paths.get(graphmlPath), StandardCharsets.UTF_8)
-    val edges = rdd.map(r => "<edge source=\"" + ComputeMD5(r._1._2.getBytes).mkString + "\" target=\"" +
-      ComputeMD5(r._1._3.getBytes).mkString + "\"  type=\"directed\">\n" +
+    val edges = rdd.map(r => "<edge source=\"" + ComputeMD5(r._1._2.getBytes) + "\" target=\"" +
+      ComputeMD5(r._1._3.getBytes) + "\"  type=\"directed\">\n" +
     "<data key=\"weight\">" + r._2 + "</data>\n" +
     "<data key=\"crawlDate\">" + r._1._1 + "</data>\n" +
     "</edge>\n").collect
-    val nodes = rdd.flatMap(r => List("<node id=\"" + ComputeMD5(r._1._2.getBytes).mkString + "\">\n" +
+    val nodes = rdd.flatMap(r => List("<node id=\"" + ComputeMD5(r._1._2.getBytes) + "\">\n" +
       "<data key=\"label\">" + r._1._2.escapeInvalidXML() + "</data>\n</node>\n",
-      "<node id=\"" + ComputeMD5(r._1._3.getBytes).mkString + "\">\n" +
+      "<node id=\"" + ComputeMD5(r._1._3.getBytes) + "\">\n" +
       "<data key=\"label\">" + r._1._3.escapeInvalidXML() + "</data>\n</node>\n")).distinct.collect
     outFile.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
       "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\"\n" +

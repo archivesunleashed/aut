@@ -176,13 +176,13 @@ object WriteGraph {
         "<nodes>\n")
       vertices.foreach { v =>
         outFile.write(nodeStart +
-          ComputeMD5(v.getBytes).mkString + "\" label=\"" +
+          ComputeMD5(v.getBytes) + "\" label=\"" +
           v.escapeInvalidXML() + endAttribute)
       }
       outFile.write("</nodes>\n<edges>\n")
       data.foreach { e =>
-        outFile.write(edgeStart + ComputeMD5(e.get(1).asInstanceOf[String].getBytes).mkString + targetChunk +
-          ComputeMD5(e.get(2).asInstanceOf[String].getBytes).mkString + "\" weight=\"" + e.get(3) +
+        outFile.write(edgeStart + ComputeMD5(e.get(1).asInstanceOf[String].getBytes) + targetChunk +
+          ComputeMD5(e.get(2).asInstanceOf[String].getBytes) + "\" weight=\"" + e.get(3) +
           "\" type=\"directed\">\n" +
           "<attvalues>\n" +
           "<attvalue for=\"0\" value=\"" + e.get(0) + endAttribute +
