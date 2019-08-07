@@ -66,7 +66,7 @@ package object df {
             val image = reader.read(0)
 
             val format = reader.getFormatName()
-            val suffix = encodedBytes.computeHash()
+            val suffix = ComputeMD5(bytes)
             val file = new File(fileName + "-" + suffix + "." + format);
             if (image != null) {
               ImageIO.write(image, format, file);
