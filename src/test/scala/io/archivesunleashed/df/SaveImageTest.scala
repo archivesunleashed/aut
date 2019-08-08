@@ -43,6 +43,7 @@ class SaveImageTest extends FunSuite with BeforeAndAfter {
   private val master = "local[4]"
   private val appName = "example-df"
   private var sc: SparkContext = _
+  private val testString = "bytes"
 
   before {
     val conf = new SparkConf()
@@ -52,11 +53,10 @@ class SaveImageTest extends FunSuite with BeforeAndAfter {
   }
 
   test("Save image") {
-    val testString = "bytes"
     val df = RecordLoader.loadArchives(arcPath, sc)
       .extractImageDetailsDF()
 
-    val extracted = df.select("bytes")
+    val extracted = df.select(testString)
       .orderBy(desc(testString)).limit(1)
     extracted.saveToDisk(testString, "/tmp/foo")
 
@@ -97,7 +97,7 @@ class SaveImageTest extends FunSuite with BeforeAndAfter {
     // scalastyle:on
     val df = Seq(dummyImg).toDF
 
-    df.saveToDisk("bytes", "/tmp/bar")
+    df.saveToDisk(testString, "/tmp/bar")
 
     // Check that no file was written.
     assert(new File("/tmp").listFiles.filter(_.isFile).toList

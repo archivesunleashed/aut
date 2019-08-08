@@ -23,9 +23,8 @@ object ExtractDate {
     type DateComponent = Value
     val YYYY, MM, DD, YYYYMM, YYYYMMDD = Value
   }
-  // scalastyle:off underscore.import
-  import DateComponent._
-  // scalastyle:on underscore.import
+
+  import DateComponent.{DateComponent, DD, MM, YYYY, YYYYMM}
 
   /** Extracts the wanted date component from a date.
     *

@@ -19,9 +19,7 @@ package io.archivesunleashed
 
 import java.io.IOException
 import java.security.MessageDigest
-// scalastyle:off underscore.import
-import scala.xml.Utility._
-// scalastyle:on underscore.import
+import scala.xml.Utility.escape
 
 
 /** Package object which supplies implicits providing common UDF-related functionalities. */
