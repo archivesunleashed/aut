@@ -118,7 +118,7 @@
                 <excludes>
                   <exclude>org.apache.hadoop:hadoop-core</exclude>
                   <exclude>org.apache.hadoop:hadoop-common</exclude>
-		  <exclude>org.apache.hadoop:hadoop-mapreduce-client-core</exclude>
+                  <exclude>org.apache.hadoop:hadoop-mapreduce-client-core</exclude>
                   <exclude>org.apache.spark:*</exclude>
                 </excludes>
               </artifactSet>
@@ -504,6 +504,10 @@
           <groupId>javax.xml.bind</groupId>
           <artifactId>jaxb-api</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-compress</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -538,6 +542,10 @@
         <exclusion>
           <groupId>org.apache.commons</groupId>
           <artifactId>commons-math3</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-compress</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
