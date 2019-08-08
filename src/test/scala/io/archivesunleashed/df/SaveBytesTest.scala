@@ -97,7 +97,7 @@ class SaveBytesTest extends FunSuite with BeforeAndAfter {
     // scalastyle:on
     val df = Seq(dummyImg).toDF
 
-    df.saveToDisk(testString, "/tmp/bar")
+    df.saveImageToDisk(testString, "/tmp/bar")
 
     // Check that no file was written.
     assert(new File("/tmp").listFiles.filter(_.isFile).toList

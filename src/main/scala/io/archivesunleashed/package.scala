@@ -27,6 +27,7 @@ import io.archivesunleashed.matchbox.ExtractDate.DateComponent
 import org.apache.commons.codec.binary.Hex
 import org.apache.hadoop.fs.{FileSystem, Path}
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent.DateComponent
+import java.net.URI
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 import org.apache.spark.sql.types.{IntegerType, StringType, StructField, StructType}
 import org.apache.hadoop.io.LongWritable
