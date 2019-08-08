@@ -26,11 +26,9 @@ import io.archivesunleashed.matchbox.{ComputeMD5, DetectLanguage, DetectMimeType
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent
 import org.apache.commons.codec.binary.Hex
 import org.apache.hadoop.fs.{FileSystem, Path}
-// scalastyle:off underscore.import
-import io.archivesunleashed.matchbox.ExtractDate.DateComponent._
-import org.apache.spark.sql._
-import org.apache.spark.sql.types._
-// scalastyle:on: underscore.import
+import io.archivesunleashed.matchbox.ExtractDate.DateComponent.DateComponent
+import org.apache.spark.sql.{DataFrame, Row, SparkSession}
+import org.apache.spark.sql.types.{IntegerType, StringType, StructField, StructType}
 import org.apache.hadoop.io.LongWritable
 import org.apache.spark.{SerializableWritable, SparkContext}
 import org.apache.spark.rdd.RDD
@@ -62,7 +60,8 @@ package object archivesunleashed {
       * @return an RDD of ArchiveRecords for mapping.
       */
     def loadArchives(path: String, sc: SparkContext): RDD[ArchiveRecord] = {
-      val fs = FileSystem.get(sc.hadoopConfiguration)
+      val uri = new URI(path)
+      val fs = FileSystem.get(uri, sc.hadoopConfiguration)
       val p = new Path(path)
       sc.newAPIHadoopFile(getFiles(p, fs), classOf[ArchiveRecordInputFormat], classOf[LongWritable], classOf[ArchiveRecordWritable])
         .filter(r => (r._2.getFormat == ArchiveFormat.ARC) ||

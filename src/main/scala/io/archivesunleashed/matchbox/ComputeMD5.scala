@@ -24,8 +24,6 @@ object ComputeMD5 {
 // scalastyle:on object.name
   /** Computes the MD5 checksum of a byte array (eg. an image).
     *
-    * For string data, it is better to use `StringUtils.computeHash()`.
-    *
     * @param bytes
     * @return MD5 checksum.
     */

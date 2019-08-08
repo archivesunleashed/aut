@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 package io.archivesunleashed.app
-// scalastyle:off underscore.import
-import io.archivesunleashed.matchbox._
-// scalastyle:on underscore.import
+import io.archivesunleashed.matchbox.{ComputeMD5, WWWLink}
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 import org.apache.spark.rdd.RDD
@@ -176,13 +174,13 @@ object WriteGraph {
         "<nodes>\n")
       vertices.foreach { v =>
         outFile.write(nodeStart +
-          v.computeHash() + "\" label=\"" +
+          ComputeMD5(v.getBytes) + "\" label=\"" +
           v.escapeInvalidXML() + endAttribute)
       }
       outFile.write("</nodes>\n<edges>\n")
       data.foreach { e =>
-        outFile.write(edgeStart + e.get(1).asInstanceOf[String].computeHash() + targetChunk +
-          e.get(2).asInstanceOf[String].computeHash() + "\" weight=\"" + e.get(3) +
+        outFile.write(edgeStart + ComputeMD5(e.get(1).asInstanceOf[String].getBytes) + targetChunk +
+          ComputeMD5(e.get(2).asInstanceOf[String].getBytes) + "\" weight=\"" + e.get(3) +
           "\" type=\"directed\">\n" +
           "<attvalues>\n" +
           "<attvalue for=\"0\" value=\"" + e.get(0) + endAttribute +

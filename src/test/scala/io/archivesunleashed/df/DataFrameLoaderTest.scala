@@ -14,26 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package io.archivesunleashed.df
 
-package io.archivesunleashed
-
+import io.archivesunleashed.DataFrameLoader
 import com.google.common.io.Resources
-import org.apache.spark.sql.SparkSession
 // scalastyle:off underscore.import
-import io.archivesunleashed.df._
 import org.apache.spark.sql.functions._
 // scalastyle:on underscore.import
+import org.apache.spark.sql.SparkSession
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
-class ExtractImageDetailsTest extends FunSuite with BeforeAndAfter {
+class DataFrameLoaderTest extends FunSuite with BeforeAndAfter {
   private val arcPath = Resources.getResource("arc/example.arc.gz").getPath
   private val master = "local[4]"
   private val appName = "example-df"
   private var sc: SparkContext = _
+  private val url = "url"
+  private val mime_type = "mime_type"
+  private val md5 = "md5"
 
   before {
     val conf = new SparkConf()
@@ -42,21 +44,28 @@ class ExtractImageDetailsTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Fetch image") {
-    val df = RecordLoader.loadArchives(arcPath, sc)
-      .extractImageDetailsDF()
+  test("Test DataFrameLoader") {
+    val df = new DataFrameLoader(sc)
+    val validPages = df.extractValidPages(arcPath)
+    val hyperlinks = df.extractHyperlinks(arcPath)
+    val imageLinks = df.extractImageLinks(arcPath)
+    val images = df.extractImages(arcPath)
 
-    val extracted = df.select("url", "mime_type", "width", "height", "md5")
-      .orderBy(desc("md5")).head(2).toList
-    assert(extracted.size == 2)
-    assert("http://www.archive.org/images/mediatype_movies.gif" == extracted(0)(0))
-    assert("image/gif" == extracted(0)(1))
-    assert(21 == extracted(0)(2))
-    assert(21 == extracted(0)(3))
-    assert("http://www.archive.org/images/LOCLogoSmall.jpg" == extracted(1)(0))
-    assert("image/jpeg" == extracted(1)(1))
-    assert(275 == extracted(1)(2))
-    assert(300 == extracted(1)(3))
+    val r_1 = validPages.select(url, mime_type).take(1)(0)
+    assert(r_1.getAs[String](url) == "http://www.archive.org/")
+    assert(r_1.getAs[String](mime_type) == "text/html")
+
+    val r_2 = hyperlinks.select("Dest", "Anchor").take(3)(2)
+    assert(r_2(0) == "http://web.archive.org/collections/web/advanced.html")
+    assert(r_2(1) == "Advanced Search")
+
+    val r_3 = imageLinks.take(100)(99)
+    assert(r_3.get(0) == "http://www.archive.org/details/secretarmiesb00spivrich")
+    assert(r_3.get(1) == "http://www.archive.org/images/star.png")
+
+    val r_4 = images.take(1)(0)
+    assert(r_4.getAs[String](url) == "http://www.archive.org/images/logoc.jpg")
+    assert(r_4.getAs[String](md5) == "8211d1fbb9b03d8522a1ae378f9d1b24")
   }
 
   after {

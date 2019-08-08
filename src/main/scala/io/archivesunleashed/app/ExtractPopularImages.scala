@@ -16,9 +16,7 @@
  */
 package io.archivesunleashed.app
 
-// scalastyle:off underscore.import
-import io.archivesunleashed._
-// scalastyle:on underscore.import
+import io.archivesunleashed.ArchiveRecord
 import io.archivesunleashed.matchbox.{ComputeImageSize, ComputeMD5}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{RangePartitioner, SparkContext}

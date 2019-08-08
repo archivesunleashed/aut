@@ -19,9 +19,7 @@ package io.archivesunleashed
 
 import java.io.IOException
 import java.security.MessageDigest
-// scalastyle:off underscore.import
-import scala.xml.Utility._
-// scalastyle:on underscore.import
+import scala.xml.Utility.escape
 
 
 /** Package object which supplies implicits providing common UDF-related functionalities. */
@@ -42,11 +40,6 @@ package object matchbox {
       catch {
         case e: Exception => throw new IOException("Caught exception processing input row ", e)
       }
-    }
-
-    def computeHash(): String = {
-      val md5 = MessageDigest.getInstance("MD5")
-      md5.digest(s.getBytes).map("%02x".format(_)).mkString
     }
   }
 }

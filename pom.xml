@@ -42,7 +42,7 @@
     <surefire.plugin.version>2.18.1</surefire.plugin.version>
     <jacoco.plugin.version>0.7.5.201505241946</jacoco.plugin.version>
     <versions.plugin.version>2.1</versions.plugin.version>
-    <tika.version>1.20</tika.version>
+    <tika.version>1.22</tika.version>
   </properties>
 
   <licenses>
@@ -116,7 +116,9 @@
               <shadedClassifierName>fatjar</shadedClassifierName>
               <artifactSet>
                 <excludes>
-                  <exclude>org.apache.hadoop:*</exclude>
+                  <exclude>org.apache.hadoop:hadoop-core</exclude>
+                  <exclude>org.apache.hadoop:hadoop-common</exclude>
+		  <exclude>org.apache.hadoop:hadoop-mapreduce-client-core</exclude>
                   <exclude>org.apache.spark:*</exclude>
                 </excludes>
               </artifactSet>
@@ -658,6 +660,22 @@
           <groupId>javax.ws.rs</groupId>
           <artifactId>javax.ws.rs-api</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.ant</groupId>
+          <artifactId>ant</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.google.protobuf</groupId>
+          <artifactId>protobuf-java</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.activation</groupId>
+          <artifactId>jakarta.activation</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -668,6 +686,14 @@
         <exclusion>
           <groupId>com.optimaize.languagedetector</groupId>
           <artifactId>language-detector</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.activation</groupId>
+          <artifactId>jakarta.activation</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -699,6 +725,16 @@
     </dependency>
     <!--END pull #321-->
     <!--START issue #113-->
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+      <version>2.10.3</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.activation</groupId>
+      <artifactId>jakarta.activation-api</artifactId>
+      <version>1.2.1</version>
+    </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-compress</artifactId>
@@ -735,6 +771,17 @@
         <exclusion>
           <groupId>ch.qos.logback</groupId>
           <artifactId>logback-classic</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-aws</artifactId>
+      <version>${hadoop.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-databind</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

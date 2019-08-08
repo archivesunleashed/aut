@@ -34,12 +34,16 @@ import java.io.{File, ByteArrayInputStream}
 import javax.imageio.ImageIO
 import java.util.Base64
 
+case class TestImageDetails(url: String, mime_type: String, width: String,
+                        height: String, md5: String, bytes: String)
+
 @RunWith(classOf[JUnitRunner])
 class SaveBytesTest extends FunSuite with BeforeAndAfter {
   private val arcPath = Resources.getResource("arc/example.arc.gz").getPath
   private val master = "local[4]"
   private val appName = "example-df"
   private var sc: SparkContext = _
+  private val testString = "bytes"
 
   before {
     val conf = new SparkConf()
@@ -49,17 +53,10 @@ class SaveBytesTest extends FunSuite with BeforeAndAfter {
   }
 
   test("Save image") {
-    val testString = "bytes"
     val df = RecordLoader.loadArchives(arcPath, sc)
       .extractImageDetailsDF()
 
-    // We need this in order to use the $-notation
-    val spark = SparkSession.builder().master("local").getOrCreate()
-    // scalastyle:off
-    import spark.implicits._
-    // scalastyle:on
-
-    val extracted = df.select($"bytes")
+    val extracted = df.select(testString)
       .orderBy(desc(testString)).limit(1)
     extracted.saveImageToDisk(testString, "/tmp/foo")
 
@@ -84,6 +81,27 @@ class SaveBytesTest extends FunSuite with BeforeAndAfter {
       }
     }
     Files.delete(Paths.get(fileName))
+  }
+
+  test("Attempt to save invalid image") {
+    val dummyEncBytes = Base64.getEncoder.encodeToString(Array.range(0, 127)
+      .map(_.toByte))
+    val dummyMD5 = ComputeMD5(dummyEncBytes.getBytes)
+    val dummyImg = TestImageDetails("http://example.com/fake.jpg", "image/jpeg",
+      "600", "800", dummyMD5, dummyEncBytes)
+
+    // For toDF().
+    val spark = SparkSession.builder().master("local").getOrCreate()
+    // scalastyle:off
+    import spark.implicits._
+    // scalastyle:on
+    val df = Seq(dummyImg).toDF
+
+    df.saveToDisk(testString, "/tmp/bar")
+
+    // Check that no file was written.
+    assert(new File("/tmp").listFiles.filter(_.isFile).toList
+      .count(_.getName.startsWith("bar-" + dummyMD5)) == 0)
   }
 
   after {

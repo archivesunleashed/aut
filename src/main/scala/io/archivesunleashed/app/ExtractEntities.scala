@@ -16,9 +16,7 @@
  */
 package io.archivesunleashed.app
 
-// scalastyle:off underscore.import
-import io.archivesunleashed._
-// scalastyle:on underscore.import
+import io.archivesunleashed.RecordLoader
 import io.archivesunleashed.matchbox.{NERClassifier, RemoveHTML}
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
