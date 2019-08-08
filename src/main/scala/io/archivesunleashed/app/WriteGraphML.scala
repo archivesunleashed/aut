@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 package io.archivesunleashed.app
-// scalastyle:off underscore.import
-import io.archivesunleashed.matchbox._
-// scalastyle: on underscore.import
+import io.archivesunleashed.matchbox.{ComputeMD5, WWWLink}
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 import org.apache.spark.rdd.RDD

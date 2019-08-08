@@ -32,18 +32,28 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
   private var sc: SparkContext = _
   private val master = "local[4]"
   private val appName = "example-spark"
-  private val network = Seq((("Date1", "Source1", "Destination1"), 3),
-                         (("Date2", "Source2", "Destination2"), 4),
-                         (("Date3", "Source3", "Destination3"), 100))
-  private val unescapedNetwork = Seq((("Date1", "Source1", "Destination1"), 3),
-                        (("Date2", "Source2", "Destination2"), 4),
-                        (("Date3", "Source<3", "Destination<3"), 100))
-  private val networkDf = Seq(("Date1", "Source1", "Destination1", 3),
-                         ("Date2", "Source2", "Destination2", 4),
-                         ("Date3", "Source3", "Destination3", 100))
-  private val networkWithDuplication = Seq((("Date1", "Source1", "Destination1"), 3),
-                         (("Date2", "Source2", "Source2"), 4),
-                         (("Date3", "Source3", "Destination3"), 100))
+  private val date1 = "Date1"
+  private val date2 = "Date2"
+  private val date3 = "Date3"
+  private val source1 = "Source1"
+  private val source2 = "Source2"
+  private val source3 = "Source3"
+  private val destination1 = "Destination1"
+  private val destination2 = "Destination2"
+  private val destination3 = "Destination3"
+  private val xmlDeclaration = """<?xml version="1.0" encoding="UTF-8"?>"""
+  private val network = Seq(((date1, source1, destination1), 3),
+                         ((date2, source2, destination2), 4),
+                         ((date3, source3, destination3), 100))
+  private val unescapedNetwork = Seq(((date1, source1, destination1), 3),
+                        ((date2, source2, destination2), 4),
+                        ((date3, "Source<3", "Destination<3"), 100))
+  private val networkDf = Seq((date1, source1, destination1, 3),
+                         (date2, source2, destination2, 4),
+                         (date3, source3, destination3, 100))
+  private val networkWithDuplication = Seq(((date1, source1, destination1), 3),
+                         ((date2, source2, source2), 4),
+                         ((date3, source3, destination3), 100))
   private val testFile = "temporaryTestFile.txt"
   private val testFile2 = "temporaryTestFile2.txt"
 
@@ -61,7 +71,7 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
     WriteGraph.asGexf(networkrdd, testFile)
     assert(Files.exists(Paths.get(testFile)))
     val lines = Source.fromFile(testFile).getLines.toList
-    assert(lines(testLines._1) == """<?xml version="1.0" encoding="UTF-8"?>""")
+    assert(lines(testLines._1) == xmlDeclaration)
     assert(lines(testLines._2) == """<node id="3" label="Destination1" />""")
     assert(lines(testLines._3) == """</attvalues>""")
     assert(lines(testLines._4) == """</edges>""")
@@ -77,7 +87,7 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
     val ret = WriteGraph.asGexf(networkarray, testFile)
     assert(ret)
     val lines = Source.fromFile(testFile).getLines.toList
-    assert(lines(testLines._1) == """<?xml version="1.0" encoding="UTF-8"?>""")
+    assert(lines(testLines._1) == xmlDeclaration)
     assert(lines(testLines._2) == """<node id="8d3ab53ec817a1e5bf9ffd6e749b3983" label="Destination2" />""")
     assert(lines(testLines._3) == """</attvalues>""")
     assert(lines(testLines._4) == """</edges>""")
@@ -104,7 +114,7 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
   test ("Nodelookup returns a option") {
     val networkrdd = sc.parallelize(network)
     val nodes = WriteGraph.nodesWithIds(networkrdd)
-    val lookup = "Source1"
+    val lookup = source1
     val badlookup = "NOTTHERE"
     assert (WriteGraph.nodeLookup(nodes, badlookup) == None)
     assert (WriteGraph.nodeLookup(nodes, lookup) == Some((lookup, 6)))
@@ -115,7 +125,7 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
     val nodes = WriteGraph.nodesWithIds(sc.parallelize(network))
     val empty = -1
     val expected = 6
-    val lookup = WriteGraph.nodeLookup(nodes, "Source1")
+    val lookup = WriteGraph.nodeLookup(nodes, source1)
     val badlookup = WriteGraph.nodeLookup(nodes, "NOTTHERE")
     assert (WriteGraph.nodeIdFromLabel(lookup) == expected)
     assert (WriteGraph.nodeIdFromLabel(badlookup) == empty)
@@ -123,9 +133,9 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
 
   test ("Edge ids are captured from lookup") {
     val edges = WriteGraph.edgeNodes(sc.parallelize(network))
-    val expected = Array(("Date1", 6, 3, 3),
-      ("Date2", 7, 4, 4),
-      ("Date3", 0, 5, 100)).deep
+    val expected = Array((date1, 6, 3, 3),
+      (date2, 7, 4, 4),
+      (date3, 0, 5, 100)).deep
     assert(edges.collect.deep == expected)
   }
 
@@ -135,7 +145,7 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
     WriteGraph.asGraphml(networkrdd, testFile)
     assert(Files.exists(Paths.get(testFile)))
     val lines = Source.fromFile(testFile).getLines.toList
-    assert(lines(testLines._1) == """<?xml version="1.0" encoding="UTF-8"?>""")
+    assert(lines(testLines._1) == xmlDeclaration)
     assert(lines(testLines._2) == """<data key="label">Source3</data>""")
     assert(lines(testLines._3) == """<data key="weight">3</data>""")
     assert(lines(testLines._4) == """<edge source="0" target="5" type="directed">""")
@@ -147,7 +157,7 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
     WriteGraph.asGraphml(networkrdd, testFile)
     assert(Files.exists(Paths.get(testFile)))
     val lines = Source.fromFile(testFile).getLines.toList
-    assert(lines(testLines._1) == """<?xml version="1.0" encoding="UTF-8"?>""")
+    assert(lines(testLines._1) == xmlDeclaration)
     assert(lines(testLines._2) == """<data key="label">Destination&lt;3</data>""")
     assert(lines(testLines._3) == """<data key="weight">100</data>""")
     assert(lines(testLines._4) == """<edge source="7" target="4" type="directed">""")
@@ -159,7 +169,7 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
     WriteGraph(networkrdd, testFile2)
     assert(Files.exists(Paths.get(testFile2)))
     val lines = Source.fromFile(testFile2).getLines.toList
-    assert(lines(testLines._1) == """<?xml version="1.0" encoding="UTF-8"?>""")
+    assert(lines(testLines._1) == xmlDeclaration)
     assert(lines(testLines._2) == """<node id="3" label="Source&lt;3" />""")
     assert(lines(testLines._3) == """<edge source="7" target="4" weight="4" type="directed">""")
     assert(lines(testLines._4) == """<attvalue for="0" value="Date2" />""")

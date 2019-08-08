@@ -24,11 +24,9 @@ import io.archivesunleashed.matchbox.ImageDetails
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent
 import java.net.URI
 import org.apache.hadoop.fs.{FileSystem, Path}
-// scalastyle:off underscore.import
-import io.archivesunleashed.matchbox.ExtractDate.DateComponent._
-import org.apache.spark.sql._
-import org.apache.spark.sql.types._
-// scalastyle:on: underscore.import
+import io.archivesunleashed.matchbox.ExtractDate.DateComponent.DateComponent
+import org.apache.spark.sql.{DataFrame, Row, SparkSession}
+import org.apache.spark.sql.types.{IntegerType, StringType, StructField, StructType}
 import org.apache.hadoop.io.LongWritable
 import org.apache.spark.{SerializableWritable, SparkContext}
 import org.apache.spark.rdd.RDD

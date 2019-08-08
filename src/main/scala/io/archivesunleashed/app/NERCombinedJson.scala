@@ -21,9 +21,7 @@ import java.io.{BufferedReader, BufferedWriter, InputStreamReader, OutputStreamW
 import io.archivesunleashed.matchbox.NERClassifier
 import io.archivesunleashed.util.JsonUtils
 import org.apache.hadoop.conf.Configuration
-// scalastyle:off underscore.import
-import org.apache.hadoop.fs._
-// scalastyle:on underscore.import
+import org.apache.hadoop.fs.{FileUtil, FileSystem, Path}
 import org.apache.spark.SparkContext
 
 import scala.collection.mutable.MutableList
