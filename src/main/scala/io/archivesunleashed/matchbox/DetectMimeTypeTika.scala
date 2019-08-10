@@ -23,6 +23,9 @@ import org.apache.tika.parser.AutoDetectParser
 
 /** Detect MIME type using Apache Tika. */
 object DetectMimeTypeTika {
+  val detector = new DefaultDetector()
+  val parser = new AutoDetectParser(detector)
+  val tika = new Tika(detector, parser)
 
   /** Detect MIME type from an input string.
    *
@@ -34,9 +37,7 @@ object DetectMimeTypeTika {
       "N/A"
     } else {
       val is = new ByteArrayInputStream(content.getBytes)
-      val detector = new DefaultDetector()
-      val parser = new AutoDetectParser(detector)
-      val mimetype = new Tika(detector, parser).detect(is)
+      val mimetype = tika.detect(is)
       mimetype
     }
   }
