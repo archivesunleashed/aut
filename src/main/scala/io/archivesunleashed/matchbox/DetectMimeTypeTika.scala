@@ -19,6 +19,7 @@ package io.archivesunleashed.matchbox
 import java.io.ByteArrayInputStream
 import org.apache.tika.Tika
 import org.apache.tika.detect.DefaultDetector
+import org.apache.tika.io.TikaInputStream
 import org.apache.tika.parser.AutoDetectParser
 
 /** Detect MIME type using Apache Tika. */
@@ -37,7 +38,8 @@ object DetectMimeTypeTika {
       "N/A"
     } else {
       val is = new ByteArrayInputStream(content.getBytes)
-      val mimetype = tika.detect(is)
+      val tis = TikaInputStream.get(is)
+      val mimetype = tika.detect(tis)
       mimetype
     }
   }
