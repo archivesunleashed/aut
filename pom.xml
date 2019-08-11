@@ -652,9 +652,13 @@
       <version>${tika.version}</version>
     </dependency>
     <dependency>
+      <!-- see issue #302
       <groupId>org.apache.tika</groupId>
+      -->
+      <groupId>com.github.archivesunleashed.tika</groupId>
       <artifactId>tika-parsers</artifactId>
       <version>${tika.version}</version>
+      <classifier>shaded</classifier>
       <exclusions>
         <exclusion>
           <groupId>com.fasterxml.jackson.core</groupId>
