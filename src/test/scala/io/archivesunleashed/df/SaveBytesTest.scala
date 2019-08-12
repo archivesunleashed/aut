@@ -38,7 +38,7 @@ case class TestImageDetails(url: String, mime_type: String, width: String,
                         height: String, md5: String, bytes: String)
 
 @RunWith(classOf[JUnitRunner])
-class SaveImageTest extends FunSuite with BeforeAndAfter {
+class SaveBytesTest extends FunSuite with BeforeAndAfter {
   private val arcPath = Resources.getResource("arc/example.arc.gz").getPath
   private val master = "local[4]"
   private val appName = "example-df"
@@ -58,7 +58,7 @@ class SaveImageTest extends FunSuite with BeforeAndAfter {
 
     val extracted = df.select(testString)
       .orderBy(desc(testString)).limit(1)
-    extracted.saveToDisk(testString, "/tmp/foo")
+    extracted.saveImageToDisk(testString, "/tmp/foo")
 
     val encodedBytes: String = extracted.take(1)(0).getAs(testString)
     val bytes = Base64.getDecoder.decode(encodedBytes);
@@ -97,7 +97,7 @@ class SaveImageTest extends FunSuite with BeforeAndAfter {
     // scalastyle:on
     val df = Seq(dummyImg).toDF
 
-    df.saveToDisk(testString, "/tmp/bar")
+    df.saveImageToDisk(testString, "/tmp/bar")
 
     // Check that no file was written.
     assert(new File("/tmp").listFiles.filter(_.isFile).toList

@@ -39,7 +39,7 @@ object ExtractPopularImages {
   def apply(records: RDD[ArchiveRecord], limit: Int, sc:SparkContext, minWidth: Int = MIN_WIDTH, minHeight: Int = MIN_HEIGHT): RDD[String] = {
     val res = records
       .keepImages()
-      .map(r => ((r.getUrl, r.getImageBytes), 1))
+      .map(r => ((r.getUrl, r.getBinaryBytes), 1))
       .map(img => (ComputeMD5(img._1._2), (ComputeImageSize(img._1._2), img._1._1, img._2)))
       .filter(img => img._2._1._1 >= minWidth && img._2._1._2 >= minHeight)
       .reduceByKey((image1, image2) => (image1._1, image1._2, image1._3 + image2._3))

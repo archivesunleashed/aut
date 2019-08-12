@@ -17,14 +17,17 @@
 
 package io
 
+import java.security.MessageDigest
+import java.util.Base64
+
 import io.archivesunleashed.data.{ArchiveRecordInputFormat, ArchiveRecordWritable}
 import ArchiveRecordWritable.ArchiveFormat
-import io.archivesunleashed.matchbox.{ComputeMD5, DetectLanguage, ExtractDate, ExtractDomain, ExtractImageDetails, ExtractImageLinks, ExtractLinks, RemoveHTML}
-import io.archivesunleashed.matchbox.ImageDetails
+import io.archivesunleashed.matchbox.{ComputeMD5, DetectLanguage, DetectMimeTypeTika, ExtractDate, ExtractDomain, ExtractImageDetails, ExtractImageLinks, ExtractLinks, ImageDetails, RemoveHTML}
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent
-import java.net.URI
+import org.apache.commons.codec.binary.Hex
 import org.apache.hadoop.fs.{FileSystem, Path}
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent.DateComponent
+import java.net.URI
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 import org.apache.spark.sql.types.{IntegerType, StringType, StructField, StructType}
 import org.apache.hadoop.io.LongWritable
@@ -83,7 +86,7 @@ package object archivesunleashed {
     * To load such an RDD, please see [[RecordLoader]].
     */
   implicit class WARecordRDD(rdd: RDD[ArchiveRecord]) extends java.io.Serializable {
-    /** Removes all non-html-based data (images, executables etc.) from html text. */
+    /** Removes all non-html-based data (images, executables, etc.) from html text. */
     def keepValidPages(): RDD[ArchiveRecord] = {
       rdd.filter(r =>
         r.getCrawlDate != null
@@ -124,7 +127,7 @@ package object archivesunleashed {
       sqlContext.getOrCreate().createDataFrame(records, schema)
     }
 
-    /* Extracts all the images from a source page */
+    /* Extracts all the images links from a source page. */
     def extractImageLinksDF(): DataFrame = {
       val records = rdd
         .keepValidPages()
@@ -143,12 +146,12 @@ package object archivesunleashed {
       sqlContext.getOrCreate().createDataFrame(records, schema)
     }
 
-    /* Extract image bytes and metadata */
+    /* Extract image bytes and image metadata. */
     def extractImageDetailsDF(): DataFrame = {
       val records = rdd
         .keepImages()
         .map(r => {
-          val image = ExtractImageDetails(r.getUrl, r.getMimeType, r.getImageBytes)
+          val image = ExtractImageDetails(r.getUrl, r.getMimeType, r.getBinaryBytes)
           (r.getUrl, r.getMimeType, image.width, image.height, image.hash, image.body)
         })
         .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6))
@@ -158,6 +161,28 @@ package object archivesunleashed {
         .add(StructField("mime_type", StringType, true))
         .add(StructField("width", IntegerType, true))
         .add(StructField("height", IntegerType, true))
+        .add(StructField("md5", StringType, true))
+        .add(StructField("bytes", StringType, true))
+
+      val sqlContext = SparkSession.builder();
+      sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
+    /* Extract PDF bytes and PDF metadata. */
+    def extractPDFDetailsDF(): DataFrame = {
+      val records = rdd
+        .filter(r => (DetectMimeTypeTika(r.getContentString) == "application/pdf"))
+        .map(r => {
+          val bytes = r.getBinaryBytes
+          val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
+          (r.getUrl, r.getMimeType, hash, encodedBytes)
+        })
+        .map(t => Row(t._1, t._2, t._3, t._4))
+
+      val schema = new StructType()
+        .add(StructField("url", StringType, true))
+        .add(StructField("mime_type", StringType, true))
         .add(StructField("md5", StringType, true))
         .add(StructField("bytes", StringType, true))
 
@@ -194,7 +219,7 @@ package object archivesunleashed {
       rdd.filter(r => dates.contains(ExtractDate(r.getCrawlDate, component)))
     }
 
-    /** Removes all data but selected exact URLs
+    /** Removes all data but selected exact URLs.
       *
       * @param urls a Set of URLs to keep
       */

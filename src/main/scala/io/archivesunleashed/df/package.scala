@@ -17,11 +17,13 @@
 
 package io.archivesunleashed
 
+import org.apache.commons.io.IOUtils
 import io.archivesunleashed.matchbox.{ComputeMD5, ExtractDomain, RemoveHTML}
 import org.apache.spark.sql.functions.udf
 import org.apache.spark.sql.DataFrame
 import java.io.ByteArrayInputStream
 import java.io.File
+import java.io.FileOutputStream
 import javax.imageio.{ImageIO, ImageReader}
 import java.util.Base64
 
@@ -38,17 +40,19 @@ package object df {
   val RemovePrefixWWW = udf[String, String](_.replaceAll("^\\s*www\\.", ""))
 
   var RemoveHTML = udf(io.archivesunleashed.matchbox.RemoveHTML.apply(_:String))
+
   /**
-   * Given a dataframe, serializes the images and saves to disk
+   * Given a dataframe, serializes binary object and saves to disk
    * @param df the input dataframe
-  */
-  implicit class SaveImage(df: DataFrame) {
+   */
+  implicit class SaveBytes(df: DataFrame) {
+
     /**
      * @param bytesColumnName the name of the column containing the image bytes
-     * @param fileName the base name of the file to save the images to (without extension)
-     * e.g. fileName = "foo" => images are saved as foo-[md5 hash].jpg
-    */
-    def saveToDisk(bytesColumnName: String, fileName: String): Unit = {
+     * @param fileName the name of the file to save the images to (without extension)
+     * e.g. fileName = "foo" => images are saved as "foo-[MD5 hash].jpg"
+     */
+    def saveImageToDisk(bytesColumnName: String, fileName: String): Unit = {
       df.select(bytesColumnName).foreach(row => {
         try {
           // assumes the bytes are base64 encoded already as returned by ExtractImageDetails
@@ -70,6 +74,30 @@ package object df {
               ImageIO.write(image, format, file);
             }
           }
+        } catch {
+          case e: Throwable => {
+          }
+        }
+      })
+    }
+
+    /**
+      * @param bytesColumnName the name of the column containing the bytes
+      * @param fileName the name of the file to save the binary file to (without extension)
+      * @param extension the extension of saved files
+      * e.g. fileName = "foo", extension = "pdf" => files are saved as "foo-[MD5 hash].pdf"
+      */
+    def saveToDisk(bytesColumnName: String, fileName: String, extension: String): Unit = {
+      df.select(bytesColumnName).foreach(row => {
+        try {
+          // assumes the bytes are base64 encoded
+          val encodedBytes: String = row.getAs(bytesColumnName);
+          val bytes = Base64.getDecoder.decode(encodedBytes);
+          val in = new ByteArrayInputStream(bytes);
+
+          val suffix = ComputeMD5(bytes)
+          val file = new FileOutputStream(fileName + "-" + suffix + "." + extension)
+          IOUtils.copy(in, file)
         } catch {
           case e: Throwable => {
           }
