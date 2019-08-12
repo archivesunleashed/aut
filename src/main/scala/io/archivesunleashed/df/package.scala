@@ -21,11 +21,9 @@ import org.apache.commons.io.IOUtils
 import io.archivesunleashed.matchbox.{ComputeMD5, ExtractDomain, RemoveHTML}
 import org.apache.spark.sql.functions.udf
 import org.apache.spark.sql.DataFrame
-import org.apache.commons.io.FilenameUtils
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.net.URL
 import javax.imageio.{ImageIO, ImageReader}
 import java.util.Base64
 
@@ -86,20 +84,20 @@ package object df {
     /**
       * @param bytesColumnName the name of the column containing the bytes
       * @param fileName the name of the file to save the binary file to (without extension)
+      * @param extensionColumnName the name of the column containin the extension
       * e.g. fileName = "foo" => files are saved as "foo-[MD5 hash].pdf"
       */
-    def saveToDisk(bytesColumnName: String, fileName: String, urlColumnName: String): Unit = {
-      df.select(bytesColumnName).foreach(row => {
+    def saveToDisk(bytesColumnName: String, fileName: String, extensionColumnName: String): Unit = {
+      df.select(bytesColumnName, extensionColumnName).foreach(row => {
         try {
           // Assumes the bytes are base64 encoded.
           val encodedBytes: String = row.getAs(bytesColumnName);
           val bytes = Base64.getDecoder.decode(encodedBytes);
           val in = new ByteArrayInputStream(bytes);
 
-          val url = new URL(urlColumnName)
-          val extension = FilenameUtils.getExtension(url.getFile()).toLowerCase
+          val extension: String = row.getAs(extensionColumnName);
           val suffix = ComputeMD5(bytes)
-          val file = new FileOutputStream(fileName + "-" + suffix + "." + extension)
+          val file = new FileOutputStream(fileName + "-" + suffix + "." + extension.toLowerCase)
           IOUtils.copy(in, file)
         } catch {
           case e: Throwable => {

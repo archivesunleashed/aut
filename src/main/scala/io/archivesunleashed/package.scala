@@ -25,9 +25,11 @@ import ArchiveRecordWritable.ArchiveFormat
 import io.archivesunleashed.matchbox.{ComputeMD5, DetectLanguage, DetectMimeTypeTika, ExtractDate, ExtractDomain, ExtractImageDetails, ExtractImageLinks, ExtractLinks, ImageDetails, RemoveHTML}
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent
 import org.apache.commons.codec.binary.Hex
+import org.apache.commons.io.FilenameUtils
 import org.apache.hadoop.fs.{FileSystem, Path}
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent.DateComponent
 import java.net.URI
+import java.net.URL
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 import org.apache.spark.sql.types.{IntegerType, StringType, StructField, StructType}
 import org.apache.hadoop.io.LongWritable
@@ -176,12 +178,16 @@ package object archivesunleashed {
           val bytes = r.getBinaryBytes
           val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
-          (r.getUrl, r.getMimeType, hash, encodedBytes)
+          val url = new URL(r.getUrl)
+          val filename = url.getFile()
+          val extension = FilenameUtils.getExtension(filename)
+          (r.getUrl, extension, r.getMimeType, hash, encodedBytes)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5))
 
       val schema = new StructType()
         .add(StructField("url", StringType, true))
+        .add(StructField("extension", StringType, true))
         .add(StructField("mime_type", StringType, true))
         .add(StructField("md5", StringType, true))
         .add(StructField("bytes", StringType, true))
@@ -210,12 +216,16 @@ package object archivesunleashed {
           val bytes = r.getBinaryBytes
           val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
-          (r.getUrl, r.getMimeType, hash, encodedBytes)
+          val url = new URL(r.getUrl)
+          val filename = url.getFile()
+          val extension = FilenameUtils.getExtension(filename)
+          (r.getUrl, extension, r.getMimeType, hash, encodedBytes)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5))
 
       val schema = new StructType()
         .add(StructField("url", StringType, true))
+        .add(StructField("extension", StringType, true))
         .add(StructField("mime_type", StringType, true))
         .add(StructField("md5", StringType, true))
         .add(StructField("bytes", StringType, true))
@@ -244,12 +254,16 @@ package object archivesunleashed {
           val bytes = r.getBinaryBytes
           val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
-          (r.getUrl, r.getMimeType, hash, encodedBytes)
+          val url = new URL(r.getUrl)
+          val filename = url.getFile()
+          val extension = FilenameUtils.getExtension(filename)
+          (r.getUrl, extension, r.getMimeType, hash, encodedBytes)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5))
 
       val schema = new StructType()
         .add(StructField("url", StringType, true))
+        .add(StructField("extension", StringType, true))
         .add(StructField("mime_type", StringType, true))
         .add(StructField("md5", StringType, true))
         .add(StructField("bytes", StringType, true))
