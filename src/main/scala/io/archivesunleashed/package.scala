@@ -190,6 +190,74 @@ package object archivesunleashed {
       sqlContext.getOrCreate().createDataFrame(records, schema)
     }
 
+    /* Extract audio bytes and audio metadata. */
+    def extractAudioDetailsDF(): DataFrame = {
+      val records = rdd
+        .filter(r => (DetectMimeTypeTika(r.getContentString).contains("audio/"))
+          || r.getUrl.endsWith("aac")
+          || r.getUrl.endsWith("mid")
+          || r.getUrl.endsWith("midi")
+          || r.getUrl.endsWith("mp3")
+          || r.getUrl.endsWith("wav")
+          || r.getUrl.endsWith("oga")
+          || r.getUrl.endsWith("ogg")
+          || r.getUrl.endsWith("weba")
+          || r.getUrl.endsWith("ra")
+          || r.getUrl.endsWith("rm")
+          || r.getUrl.endsWith("3gp")
+          || r.getUrl.endsWith("3g2"))
+        .map(r => {
+          val bytes = r.getBinaryBytes
+          val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
+          (r.getUrl, r.getMimeType, hash, encodedBytes)
+        })
+        .map(t => Row(t._1, t._2, t._3, t._4))
+
+      val schema = new StructType()
+        .add(StructField("url", StringType, true))
+        .add(StructField("mime_type", StringType, true))
+        .add(StructField("md5", StringType, true))
+        .add(StructField("bytes", StringType, true))
+
+      val sqlContext = SparkSession.builder();
+      sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
+    /* Extract video bytes and video metadata. */
+    def extractVideoDetailsDF(): DataFrame = {
+      val records = rdd
+        .filter(r => (DetectMimeTypeTika(r.getContentString).contains("video/"))
+          || r.getUrl.endsWith("flv")
+          || r.getUrl.endsWith("mp4")
+          || r.getUrl.endsWith("mov")
+          || r.getUrl.endsWith("avi")
+          || r.getUrl.endsWith("wmv")
+          || r.getUrl.endsWith("rv")
+          || r.getUrl.endsWith("mpeg")
+          || r.getUrl.endsWith("ogv")
+          || r.getUrl.endsWith("webm")
+          || r.getUrl.endsWith("ts")
+          || r.getUrl.endsWith("3gp")
+          || r.getUrl.endsWith("3g2"))
+        .map(r => {
+          val bytes = r.getBinaryBytes
+          val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
+          (r.getUrl, r.getMimeType, hash, encodedBytes)
+        })
+        .map(t => Row(t._1, t._2, t._3, t._4))
+
+      val schema = new StructType()
+        .add(StructField("url", StringType, true))
+        .add(StructField("mime_type", StringType, true))
+        .add(StructField("md5", StringType, true))
+        .add(StructField("bytes", StringType, true))
+
+      val sqlContext = SparkSession.builder();
+      sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
     /** Removes all data except images. */
     def keepImages(): RDD[ArchiveRecord] = {
       rdd.filter(r =>

@@ -21,9 +21,11 @@ import org.apache.commons.io.IOUtils
 import io.archivesunleashed.matchbox.{ComputeMD5, ExtractDomain, RemoveHTML}
 import org.apache.spark.sql.functions.udf
 import org.apache.spark.sql.DataFrame
+import org.apache.commons.io.FilenameUtils
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.net.URL
 import javax.imageio.{ImageIO, ImageReader}
 import java.util.Base64
 
@@ -55,7 +57,7 @@ package object df {
     def saveImageToDisk(bytesColumnName: String, fileName: String): Unit = {
       df.select(bytesColumnName).foreach(row => {
         try {
-          // assumes the bytes are base64 encoded already as returned by ExtractImageDetails
+          // Assumes the bytes are base64 encoded already as returned by ExtractImageDetails.
           val encodedBytes: String = row.getAs(bytesColumnName);
           val bytes = Base64.getDecoder.decode(encodedBytes);
           val in = new ByteArrayInputStream(bytes);
@@ -84,17 +86,18 @@ package object df {
     /**
       * @param bytesColumnName the name of the column containing the bytes
       * @param fileName the name of the file to save the binary file to (without extension)
-      * @param extension the extension of saved files
-      * e.g. fileName = "foo", extension = "pdf" => files are saved as "foo-[MD5 hash].pdf"
+      * e.g. fileName = "foo" => files are saved as "foo-[MD5 hash].pdf"
       */
-    def saveToDisk(bytesColumnName: String, fileName: String, extension: String): Unit = {
+    def saveToDisk(bytesColumnName: String, fileName: String, urlColumnName: String): Unit = {
       df.select(bytesColumnName).foreach(row => {
         try {
-          // assumes the bytes are base64 encoded
+          // Assumes the bytes are base64 encoded.
           val encodedBytes: String = row.getAs(bytesColumnName);
           val bytes = Base64.getDecoder.decode(encodedBytes);
           val in = new ByteArrayInputStream(bytes);
 
+          val url = new URL(urlColumnName)
+          val extension = FilenameUtils.getExtension(url.getFile()).toLowerCase
           val suffix = ComputeMD5(bytes)
           val file = new FileOutputStream(fileName + "-" + suffix + "." + extension)
           IOUtils.copy(in, file)
