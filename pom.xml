@@ -655,7 +655,7 @@
       <!-- see issue #302
       <groupId>org.apache.tika</groupId>
       -->
-      <groupId>com.github.archivesunleashed.tika</groupId>
+      <groupId>com.github.jrwiebe.tika</groupId>
       <artifactId>tika-parsers</artifactId>
       <version>${tika.version}</version>
       <classifier>shaded</classifier>
