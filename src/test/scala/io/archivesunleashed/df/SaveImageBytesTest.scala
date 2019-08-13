@@ -38,7 +38,7 @@ case class TestImageDetails(url: String, mime_type: String, width: String,
                         height: String, md5: String, bytes: String)
 
 @RunWith(classOf[JUnitRunner])
-class SaveBytesTest extends FunSuite with BeforeAndAfter {
+class SaveImageBytesTest extends FunSuite with BeforeAndAfter {
   private val arcPath = Resources.getResource("arc/example.arc.gz").getPath
   private val master = "local[4]"
   private val appName = "example-df"
@@ -52,7 +52,7 @@ class SaveBytesTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Save image") {
+  test("Save image bytes to disk") {
     val df = RecordLoader.loadArchives(arcPath, sc)
       .extractImageDetailsDF()
 
