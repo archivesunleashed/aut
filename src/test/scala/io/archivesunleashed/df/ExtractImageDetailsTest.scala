@@ -42,7 +42,7 @@ class ExtractImageDetailsTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Fetch image") {
+  test("Image DF extraction") {
     val df = RecordLoader.loadArchives(arcPath, sc)
       .extractImageDetailsDF()
 
