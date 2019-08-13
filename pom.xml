@@ -655,10 +655,10 @@
       <!-- see issue #302
       <groupId>org.apache.tika</groupId>
       -->
-      <groupId>com.github.jrwiebe.tika</groupId>
+      <groupId>com.github.archivesunleashed.tika</groupId>
       <artifactId>tika-parsers</artifactId>
       <version>${tika.version}</version>
-      <classifier>shaded</classifier>
+      <classifier>shady</classifier>
       <exclusions>
         <exclusion>
           <groupId>com.fasterxml.jackson.core</groupId>
