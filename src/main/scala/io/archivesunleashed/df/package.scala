@@ -55,7 +55,7 @@ package object df {
     def saveImageToDisk(bytesColumnName: String, fileName: String): Unit = {
       df.select(bytesColumnName).foreach(row => {
         try {
-          // assumes the bytes are base64 encoded already as returned by ExtractImageDetails
+          // Assumes the bytes are base64 encoded already as returned by ExtractImageDetails.
           val encodedBytes: String = row.getAs(bytesColumnName);
           val bytes = Base64.getDecoder.decode(encodedBytes);
           val in = new ByteArrayInputStream(bytes);
@@ -84,19 +84,20 @@ package object df {
     /**
       * @param bytesColumnName the name of the column containing the bytes
       * @param fileName the name of the file to save the binary file to (without extension)
-      * @param extension the extension of saved files
-      * e.g. fileName = "foo", extension = "pdf" => files are saved as "foo-[MD5 hash].pdf"
+      * @param extensionColumnName the name of the column containin the extension
+      * e.g. fileName = "foo" => files are saved as "foo-[MD5 hash].pdf"
       */
-    def saveToDisk(bytesColumnName: String, fileName: String, extension: String): Unit = {
-      df.select(bytesColumnName).foreach(row => {
+    def saveToDisk(bytesColumnName: String, fileName: String, extensionColumnName: String): Unit = {
+      df.select(bytesColumnName, extensionColumnName).foreach(row => {
         try {
-          // assumes the bytes are base64 encoded
+          // Assumes the bytes are base64 encoded.
           val encodedBytes: String = row.getAs(bytesColumnName);
           val bytes = Base64.getDecoder.decode(encodedBytes);
           val in = new ByteArrayInputStream(bytes);
 
+          val extension: String = row.getAs(extensionColumnName);
           val suffix = ComputeMD5(bytes)
-          val file = new FileOutputStream(fileName + "-" + suffix + "." + extension)
+          val file = new FileOutputStream(fileName + "-" + suffix + "." + extension.toLowerCase)
           IOUtils.copy(in, file)
         } catch {
           case e: Throwable => {
