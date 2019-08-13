@@ -200,7 +200,7 @@ package object archivesunleashed {
     /* Extract audio bytes and audio metadata. */
     def extractAudioDetailsDF(): DataFrame = {
       val records = rdd
-        .filter(r => (DetectMimeTypeTika(r.getContentString).startsWith("audio/"))
+        .filter(r => (DetectMimeTypeTika(r.getBinaryBytes).startsWith("audio/"))
           || r.getUrl.endsWith("aac")
           || r.getUrl.endsWith("mid")
           || r.getUrl.endsWith("midi")
@@ -239,7 +239,7 @@ package object archivesunleashed {
     /* Extract video bytes and video metadata. */
     def extractVideoDetailsDF(): DataFrame = {
       val records = rdd
-        .filter(r => (DetectMimeTypeTika(r.getContentString).startsWith("video/"))
+        .filter(r => (DetectMimeTypeTika(r.getBinaryBytes).startsWith("video/"))
           || r.getUrl.endsWith("flv")
           || r.getUrl.endsWith("mp4")
           || r.getUrl.endsWith("mov")
