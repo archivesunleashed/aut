@@ -17,6 +17,7 @@
 package io.archivesunleashed.matchbox
 
 import java.io.ByteArrayInputStream
+import scala.collection.JavaConverters._
 import org.apache.tika.Tika
 import org.apache.tika.detect.DefaultDetector
 import org.apache.tika.io.TikaInputStream
@@ -57,4 +58,15 @@ object DetectMimeTypeTika {
     val regMimeType = allMimeTypes.forName(mimeType)
     regMimeType.getExtension
   }
+
+  /** Return the list of all known file extensions for a MIME type string
+   *
+   * @param mimeType string representation of the MimeType
+   * @return list of file extensions (e.g. ".jpg" for "image/jpeg").
+   */
+  def getExtensions(mimeType: String): List[String] = {
+    val regMimeType = allMimeTypes.forName(mimeType)
+    regMimeType.getExtensions.asScala.toList
+  }
+
 }
