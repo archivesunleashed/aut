@@ -171,7 +171,7 @@ package object archivesunleashed {
     /* Extract PDF bytes and PDF metadata. */
     def extractPDFDetailsDF(): DataFrame = {
       val records = rdd
-        .filter(r => (DetectMimeTypeTika(r.getContentString) == "application/pdf"))
+        .filter(r => (DetectMimeTypeTika(r.getBinaryBytes) == "application/pdf"))
         .map(r => {
           val bytes = r.getBinaryBytes
           val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
