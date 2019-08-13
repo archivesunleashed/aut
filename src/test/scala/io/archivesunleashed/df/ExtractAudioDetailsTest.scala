@@ -46,13 +46,14 @@ class ExtractAudioDetailsTest extends FunSuite with BeforeAndAfter {
     val df = RecordLoader.loadArchives(warcPath, sc)
       .extractAudioDetailsDF()
 
-    val extracted = df.select("url", "extension", "mime_type", "md5")
+    val extracted = df.select("url", "filename", "extension", "mime_type", "md5")
       .orderBy(desc("md5")).head(1).toList
     assert(extracted.size == 1)
     assert("https://ruebot.net/files/feniz.mp3" == extracted(0)(0))
-    assert("mp3" == extracted(0)(1))
-    assert("audio/mpeg" == extracted(0)(2))
-    assert("f7e7ec84b12c294e19af1ba41732c733" == extracted(0)(3))
+    assert("feniz.mp3" == extracted(0)(1))
+    assert("mp3" == extracted(0)(2))
+    assert("audio/mpeg" == extracted(0)(3))
+    assert("f7e7ec84b12c294e19af1ba41732c733" == extracted(0)(4))
   }
 
   after {

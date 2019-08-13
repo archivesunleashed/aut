@@ -46,13 +46,14 @@ class ExtractVideoDetailsTest extends FunSuite with BeforeAndAfter {
     val df = RecordLoader.loadArchives(warcPath, sc)
       .extractVideoDetailsDF()
 
-    val extracted = df.select("url", "extension", "mime_type", "md5")
+    val extracted = df.select("url", "filename", "extension", "mime_type", "md5")
       .orderBy(desc("md5")).head(1).toList
     assert(extracted.size == 1)
     assert("https://ruebot.net/2018-11-12%2016.14.11.mp4" == extracted(0)(0))
-    assert("mp4" == extracted(0)(1))
-    assert("video/mp4" == extracted(0)(2))
-    assert("2cde7de3213a87269957033f6315fce2" == extracted(0)(3))
+    assert("2018-11-12%2016.14.11.mp4" == extracted(0)(1))
+    assert("mp4" == extracted(0)(2))
+    assert("video/mp4" == extracted(0)(3))
+    assert("2cde7de3213a87269957033f6315fce2" == extracted(0)(4))
   }
 
   after {

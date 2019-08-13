@@ -46,17 +46,19 @@ class ExtractPDFDetailsTest extends FunSuite with BeforeAndAfter {
     val df = RecordLoader.loadArchives(warcPath, sc)
       .extractPDFDetailsDF()
 
-    val extracted = df.select("url", "extension", "mime_type", "md5")
+    val extracted = df.select("url", "filename", "extension", "mime_type", "md5")
       .orderBy(desc("md5")).head(2).toList
     assert(extracted.size == 2)
     assert("https://yorkspace.library.yorku.ca/xmlui/bitstream/handle/10315/36158/cost-analysis.pdf?sequence=1&isAllowed=y" == extracted(0)(0))
-    assert("pdf?sequence=1&isAllowed=y" == extracted(0)(1))
-    assert("application/pdf" == extracted(0)(2))
-    assert("aaba59d2287afd40c996488a39bbc0dd" == extracted(0)(3))
+    assert("cost-analysis.pdf" == extracted(0)(1))
+    assert("pdf" == extracted(0)(2))
+    assert("application/pdf" == extracted(0)(3))
+    assert("aaba59d2287afd40c996488a39bbc0dd" == extracted(0)(4))
     assert("https://yorkspace.library.yorku.ca/xmlui/bitstream/handle/10315/36158/JCDL%20-%20Cost%20of%20a%20WARC%20Presentation-4.pdf?sequence=3&isAllowed=y" == extracted(1)(0))
-    assert("pdf?sequence=3&isAllowed=y" == extracted(1)(1))
-    assert("application/pdf" == extracted(1)(2))
-    assert("322cd5239141408c42f7441f15eed9af" == extracted(1)(3))
+    assert("JCDL%20-%20Cost%20of%20a%20WARC%20Presentation-4.pdf" == extracted(1)(1))
+    assert("pdf" == extracted(1)(2))
+    assert("application/pdf" == extracted(1)(3))
+    assert("322cd5239141408c42f7441f15eed9af" == extracted(1)(4))
   }
 
   after {
