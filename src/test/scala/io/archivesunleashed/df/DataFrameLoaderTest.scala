@@ -34,7 +34,7 @@ class DataFrameLoaderTest extends FunSuite with BeforeAndAfter {
   private val appName = "example-df"
   private var sc: SparkContext = _
   private val url = "url"
-  private val mime_type = "mime_type"
+  private val mime_type = "mime_type_web_server"
   private val md5 = "md5"
 
   before {
