@@ -20,6 +20,8 @@ import java.io.ByteArrayInputStream
 import org.apache.tika.Tika
 import org.apache.tika.detect.DefaultDetector
 import org.apache.tika.io.TikaInputStream
+import org.apache.tika.mime.MimeType
+import org.apache.tika.mime.MimeTypes
 import org.apache.tika.parser.AutoDetectParser
 
 /** Detect MIME type using Apache Tika. */
@@ -27,6 +29,8 @@ object DetectMimeTypeTika {
   val detector = new DefaultDetector()
   val parser = new AutoDetectParser(detector)
   val tika = new Tika(detector, parser)
+
+  val allMimeTypes = MimeTypes.getDefaultMimeTypes();
 
   /** Detect MIME type from an input string.
    *
@@ -42,5 +46,15 @@ object DetectMimeTypeTika {
       val mimetype = tika.detect(tis)
       mimetype
     }
+  }
+
+  /** Return the best guess at a file extension from a MIME type string
+   *
+   * @param mimeType string representation of the MimeType
+   * @return file extension (e.g. ".jpg" for "image/jpeg").
+   */
+  def getExtension(mimeType: String): String = {
+    val regMimeType = allMimeTypes.forName(mimeType)
+    regMimeType.getExtension
   }
 }
