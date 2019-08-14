@@ -292,6 +292,169 @@ package object archivesunleashed {
       sqlContext.getOrCreate().createDataFrame(records, schema)
     }
 
+    /* Extract spreadsheet bytes and spreadsheet metadata. */
+    def extractSpreadsheetDetailsDF(): DataFrame = {
+      val records = rdd
+        .map(r =>
+            (r, (DetectMimeTypeTika(r.getBinaryBytes)))
+            )
+        .filter(r => r._2 == "application/vnd.ms-excel"
+          || r._2 == "application/vnd.ms-excel.workspace.3"
+          || r._2 == "application/vnd.ms-excel.workspace.4"
+          || r._2 == "application/vnd.ms-excel.sheet.2"
+          || r._2 == "application/vnd.ms-excel.sheet.3"
+          || r._2 == "application/vnd.ms-excel.sheet.3"
+          || r._2 == "application/vnd.ms-excel.addin.macroenabled.12"
+          || r._2 == "application/vnd.ms-excel.sheet.binary.macroenabled.12"
+          || r._2 == "application/vnd.ms-excel.sheet.macroenabled.12"
+          || r._2 == "application/vnd.ms-excel.template.macroenabled.12"
+          || r._2 == "application/vnd.ms-spreadsheetml"
+          || r._2 == "application/vnd.openxmlformats-officedocument.spreadsheetml.template"
+          || r._2 == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          || r._2 == "application/x-vnd.oasis.opendocument.spreadsheet-template"
+          || r._2 == "application/vnd.oasis.opendocument.spreadsheet-template"
+          || r._2 == "application/vnd.oasis.opendocument.spreadsheet"
+          || r._2 == "application/x-vnd.oasis.opendocument.spreadsheet"
+          || r._2 == "application/x-tika-msworks-spreadsheet"
+          || r._2 == "application/vnd.lotus-1-2-3"
+          || r._1.getMimeType == "text/tab-separated-values"
+          || r._1.getUrl.endsWith("tsv")
+          || r._1.getMimeType == "text/csv"
+          || r._1.getUrl.endsWith("csv")
+          || r._1.getUrl.endsWith("ods")
+          || r._1.getUrl.endsWith("xlr")
+          || r._1.getUrl.endsWith("xls")
+          || r._1.getUrl.endsWith("xlsx"))
+        .map(r => {
+          val bytes = r._1.getBinaryBytes
+          val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
+          val url = new URL(r._1.getUrl)
+          val filename = FilenameUtils.getName(url.getPath())
+          val extension = FilenameUtils.getExtension(url.getPath())
+          (r._1.getUrl, filename, extension, r._1.getMimeType,
+            DetectMimeTypeTika(r._1.getBinaryBytes), hash, encodedBytes)
+        })
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7))
+
+      val schema = new StructType()
+        .add(StructField("url", StringType, true))
+        .add(StructField("filename", StringType, true))
+        .add(StructField("extension", StringType, true))
+        .add(StructField("mime_type_web_server", StringType, true))
+        .add(StructField("mime_type_tika", StringType, true))
+        .add(StructField("md5", StringType, true))
+        .add(StructField("bytes", StringType, true))
+
+      val sqlContext = SparkSession.builder();
+      sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
+    /* Extract presentation program bytes and presentation program metadata. */
+    def extractPresentationProgramDetailsDF(): DataFrame = {
+      val records = rdd
+        .map(r =>
+            (r, (DetectMimeTypeTika(r.getBinaryBytes)))
+            )
+        .filter(r => r._2 == "application/vnd.ms-powerpoint"
+          || r._2 == "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+          || r._2 == "application/vnd.oasis.opendocument.presentation"
+          || r._2 == "application/vnd.oasis.opendocument.presentation-template"
+          || r._2 == "application/vnd.sun.xml.impress"
+          || r._2 == "application/vnd.sun.xml.impress.template"
+          || r._2 == "application/vnd.stardivision.impress"
+          || r._2 == "application/x-starimpress"
+          || r._2 == "application/vnd.ms-powerpoint.addin.macroEnabled.12"
+          || r._2 == "application/vnd.ms-powerpoint.presentation.macroEnabled.12"
+          || r._2 == "application/vnd.ms-powerpoint.slide.macroEnabled.12"
+          || r._2 == "application/vnd.ms-powerpoint.slideshow.macroEnabled.12"
+          || r._2 == "application/vnd.ms-powerpoint.template.macroEnabled.12"
+          || r._1.getUrl.endsWith("key")
+          || r._1.getUrl.endsWith("odp")
+          || r._1.getUrl.endsWith("pps")
+          || r._1.getUrl.endsWith("ppt")
+          || r._1.getUrl.endsWith("pptx"))
+        .map(r => {
+          val bytes = r._1.getBinaryBytes
+          val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
+          val url = new URL(r._1.getUrl)
+          val filename = FilenameUtils.getName(url.getPath())
+          val extension = FilenameUtils.getExtension(url.getPath())
+          (r._1.getUrl, filename, extension, r._1.getMimeType,
+            DetectMimeTypeTika(r._1.getBinaryBytes), hash, encodedBytes)
+        })
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7))
+
+      val schema = new StructType()
+        .add(StructField("url", StringType, true))
+        .add(StructField("filename", StringType, true))
+        .add(StructField("extension", StringType, true))
+        .add(StructField("mime_type_web_server", StringType, true))
+        .add(StructField("mime_type_tika", StringType, true))
+        .add(StructField("md5", StringType, true))
+        .add(StructField("bytes", StringType, true))
+
+      val sqlContext = SparkSession.builder();
+      sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
+    /* Extract word processor bytes and word processor metadata. */
+    def extractWordProcessorDetailsDF(): DataFrame = {
+      val records = rdd
+        .map(r =>
+            (r, (DetectMimeTypeTika(r.getBinaryBytes)))
+            )
+        .filter(r => r._2 == "application/vnd.lotus-wordpro"
+          || r._2 == "application/vnd.kde.kword"
+          || r._2 == "application/vnd.ms-word.document.macroEnabled.12"
+          || r._2 == "application/vnd.ms-word.template.macroEnabled.12"
+          || r._2 == "application/vnd.oasis.opendocument.text"
+          || r._2 == "application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml"
+          || r._2 == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          || r._2 == "application/vnd.openxmlformats-officedocument.wordprocessingml.document.glossary+xml"
+          || r._2 == "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
+          || r._2 == "application/vnd.wordperfect"
+          || r._2 == "application/wordperfect5.1"
+          || r._2 == "application/msword"
+          || r._2 == "application/vnd.ms-word.document.macroEnabled.12"
+          || r._2 == "application/vnd.ms-word.template.macroEnabled.12"
+          || r._2 == "application/vnd.apple.pages"
+          || r._2 == "application/macwriteii"
+          || r._2 == "application/vnd.ms-works"
+          || r._2 == "text/rtf"
+          || r._1.getUrl.endsWith("rtf")
+          || r._1.getUrl.endsWith("docx")
+          || r._1.getUrl.endsWith("doc")
+          || r._1.getUrl.endsWith("odt")
+          || r._1.getUrl.endsWith("wks")
+          || r._1.getUrl.endsWith("wps")
+          || r._1.getUrl.endsWith("wpd"))
+        .map(r => {
+          val bytes = r._1.getBinaryBytes
+          val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
+          val url = new URL(r._1.getUrl)
+          val filename = FilenameUtils.getName(url.getPath())
+          val extension = FilenameUtils.getExtension(url.getPath())
+          (r._1.getUrl, filename, extension, r._1.getMimeType,
+            DetectMimeTypeTika(r._1.getBinaryBytes), hash, encodedBytes)
+        })
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7))
+
+      val schema = new StructType()
+        .add(StructField("url", StringType, true))
+        .add(StructField("filename", StringType, true))
+        .add(StructField("extension", StringType, true))
+        .add(StructField("mime_type_web_server", StringType, true))
+        .add(StructField("mime_type_tika", StringType, true))
+        .add(StructField("md5", StringType, true))
+        .add(StructField("bytes", StringType, true))
+
+      val sqlContext = SparkSession.builder();
+      sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
     /** Removes all data except images. */
     def keepImages(): RDD[ArchiveRecord] = {
       rdd.filter(r =>

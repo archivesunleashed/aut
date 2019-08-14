@@ -658,6 +658,7 @@
       <groupId>com.github.archivesunleashed.tika</groupId>
       <artifactId>tika-parsers</artifactId>
       <version>${tika.version}</version>
+      <classifier>shady</classifier>
       <exclusions>
         <exclusion>
           <groupId>com.fasterxml.jackson.core</groupId>
