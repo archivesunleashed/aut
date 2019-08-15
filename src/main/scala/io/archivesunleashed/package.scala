@@ -317,19 +317,14 @@ package object archivesunleashed {
           || r._2 == "application/x-vnd.oasis.opendocument.spreadsheet"
           || r._2 == "application/x-tika-msworks-spreadsheet"
           || r._2 == "application/vnd.lotus-1-2-3"
-          || r._1.getMimeType == "text/tab-separated-values"
           || r._1.getUrl.endsWith("tsv")
           || r._1.getMimeType == "text/csv"
-          || r._1.getUrl.endsWith("csv")
-          || r._1.getUrl.endsWith("ods")
-          || r._1.getUrl.endsWith("xlr")
-          || r._1.getUrl.endsWith("xls")
-          || r._1.getUrl.endsWith("xlsx"))
-        && !r._2.startsWith("audio/")
-        && !r._2.startsWith("video/")
-        && !r._2.startsWith("image/")
-        && r._2 != "text/html"
-        && !r._1.getUrl.endsWith("js"))
+          || r._1.getUrl.endsWith("csv"))
+          && !r._2.startsWith("audio/")
+          && !r._2.startsWith("video/")
+          && !r._2.startsWith("image/")
+          && r._2 != "text/html"
+          && !r._1.getUrl.endsWith("js"))
         .map(r => {
           val bytes = r._1.getBinaryBytes
           val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
@@ -373,17 +368,7 @@ package object archivesunleashed {
           || r._2 == "application/vnd.ms-powerpoint.presentation.macroEnabled.12"
           || r._2 == "application/vnd.ms-powerpoint.slide.macroEnabled.12"
           || r._2 == "application/vnd.ms-powerpoint.slideshow.macroEnabled.12"
-          || r._2 == "application/vnd.ms-powerpoint.template.macroEnabled.12"
-          || r._1.getUrl.endsWith("key")
-          || r._1.getUrl.endsWith("odp")
-          || r._1.getUrl.endsWith("pps")
-          || r._1.getUrl.endsWith("ppt")
-          || r._1.getUrl.endsWith("pptx"))
-        && !r._2.startsWith("audio/")
-        && !r._2.startsWith("video/")
-        && !r._2.startsWith("image/")
-        && r._2 != "text/html"
-        && !r._1.getUrl.endsWith("js"))
+          || r._2 == "application/vnd.ms-powerpoint.template.macroEnabled.12"))
         .map(r => {
           val bytes = r._1.getBinaryBytes
           val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
@@ -432,19 +417,7 @@ package object archivesunleashed {
           || r._2 == "application/vnd.apple.pages"
           || r._2 == "application/macwriteii"
           || r._2 == "application/vnd.ms-works"
-          || r._2 == "text/rtf"
-          || r._1.getUrl.endsWith("rtf")
-          || r._1.getUrl.endsWith("docx")
-          || r._1.getUrl.endsWith("doc")
-          || r._1.getUrl.endsWith("odt")
-          || r._1.getUrl.endsWith("wks")
-          || r._1.getUrl.endsWith("wps")
-          || r._1.getUrl.endsWith("wpd"))
-        && !r._2.startsWith("audio/")
-        && !r._2.startsWith("video/")
-        && !r._2.startsWith("image/")
-        && r._2 != "text/html"
-        && !r._1.getUrl.endsWith("js"))
+          || r._2 == "application/rtf"))
         .map(r => {
           val bytes = r._1.getBinaryBytes
           val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
