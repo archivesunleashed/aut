@@ -298,7 +298,7 @@ package object archivesunleashed {
         .map(r =>
             (r, (DetectMimeTypeTika(r.getBinaryBytes)))
             )
-        .filter(r => r._2 == "application/vnd.ms-excel"
+        .filter(r => (r._2 == "application/vnd.ms-excel"
           || r._2 == "application/vnd.ms-excel.workspace.3"
           || r._2 == "application/vnd.ms-excel.workspace.4"
           || r._2 == "application/vnd.ms-excel.sheet.2"
@@ -325,6 +325,11 @@ package object archivesunleashed {
           || r._1.getUrl.endsWith("xlr")
           || r._1.getUrl.endsWith("xls")
           || r._1.getUrl.endsWith("xlsx"))
+        && !r._2.startsWith("audio/")
+        && !r._2.startsWith("video/")
+        && !r._2.startsWith("image/")
+        && r._2 != "text/html"
+        && !r._1.getUrl.endsWith("js"))
         .map(r => {
           val bytes = r._1.getBinaryBytes
           val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
@@ -356,7 +361,7 @@ package object archivesunleashed {
         .map(r =>
             (r, (DetectMimeTypeTika(r.getBinaryBytes)))
             )
-        .filter(r => r._2 == "application/vnd.ms-powerpoint"
+        .filter(r => (r._2 == "application/vnd.ms-powerpoint"
           || r._2 == "application/vnd.openxmlformats-officedocument.presentationml.presentation"
           || r._2 == "application/vnd.oasis.opendocument.presentation"
           || r._2 == "application/vnd.oasis.opendocument.presentation-template"
@@ -374,6 +379,11 @@ package object archivesunleashed {
           || r._1.getUrl.endsWith("pps")
           || r._1.getUrl.endsWith("ppt")
           || r._1.getUrl.endsWith("pptx"))
+        && !r._2.startsWith("audio/")
+        && !r._2.startsWith("video/")
+        && !r._2.startsWith("image/")
+        && r._2 != "text/html"
+        && !r._1.getUrl.endsWith("js"))
         .map(r => {
           val bytes = r._1.getBinaryBytes
           val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
@@ -405,7 +415,7 @@ package object archivesunleashed {
         .map(r =>
             (r, (DetectMimeTypeTika(r.getBinaryBytes)))
             )
-        .filter(r => r._2 == "application/vnd.lotus-wordpro"
+        .filter(r => (r._2 == "application/vnd.lotus-wordpro"
           || r._2 == "application/vnd.kde.kword"
           || r._2 == "application/vnd.ms-word.document.macroEnabled.12"
           || r._2 == "application/vnd.ms-word.template.macroEnabled.12"
@@ -430,6 +440,47 @@ package object archivesunleashed {
           || r._1.getUrl.endsWith("wks")
           || r._1.getUrl.endsWith("wps")
           || r._1.getUrl.endsWith("wpd"))
+        && !r._2.startsWith("audio/")
+        && !r._2.startsWith("video/")
+        && !r._2.startsWith("image/")
+        && r._2 != "text/html"
+        && !r._1.getUrl.endsWith("js"))
+        .map(r => {
+          val bytes = r._1.getBinaryBytes
+          val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
+          val url = new URL(r._1.getUrl)
+          val filename = FilenameUtils.getName(url.getPath())
+          val extension = FilenameUtils.getExtension(url.getPath())
+          (r._1.getUrl, filename, extension, r._1.getMimeType,
+            DetectMimeTypeTika(r._1.getBinaryBytes), hash, encodedBytes)
+        })
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7))
+
+      val schema = new StructType()
+        .add(StructField("url", StringType, true))
+        .add(StructField("filename", StringType, true))
+        .add(StructField("extension", StringType, true))
+        .add(StructField("mime_type_web_server", StringType, true))
+        .add(StructField("mime_type_tika", StringType, true))
+        .add(StructField("md5", StringType, true))
+        .add(StructField("bytes", StringType, true))
+
+      val sqlContext = SparkSession.builder();
+      sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
+    /* Extract plain text bytes and plain text metadata. */
+    def extractTextFilesDetailsDF(): DataFrame = {
+      val records = rdd
+        .map(r =>
+            (r, (DetectMimeTypeTika(r.getBinaryBytes)))
+            )
+        .filter(r => (r._2 == "text/plain"
+          || r._1.getUrl.endsWith("txt"))
+        && !r._1.getUrl.endsWith("robots.txt")
+        && r._2 != "text/html"
+        && !r._1.getUrl.endsWith("js"))
         .map(r => {
           val bytes = r._1.getBinaryBytes
           val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
