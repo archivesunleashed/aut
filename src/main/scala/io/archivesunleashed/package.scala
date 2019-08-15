@@ -42,7 +42,7 @@ import scala.util.matching.Regex
   * Package object which supplies implicits to augment generic RDDs with AUT-specific transformations.
   */
 package object archivesunleashed {
-  /** Loads records from either WARCs, ARCs or Twitter API data (JSON). */
+  /** Loads records from either WARCs or ARCs. */
   object RecordLoader {
     /** Gets all non-empty archive files.
       *
