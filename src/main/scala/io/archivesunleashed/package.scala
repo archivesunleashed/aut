@@ -210,19 +210,7 @@ package object archivesunleashed {
         .map(r =>
             (r, (DetectMimeTypeTika(r.getBinaryBytes)))
             )
-        .filter(r => r._2.startsWith("audio/")
-          || r._1.getUrl.toLowerCase.endsWith(".aac")
-          || r._1.getUrl.toLowerCase.endsWith(".mid")
-          || r._1.getUrl.toLowerCase.endsWith(".midi")
-          || r._1.getUrl.toLowerCase.endsWith(".mp3")
-          || r._1.getUrl.toLowerCase.endsWith(".wav")
-          || r._1.getUrl.toLowerCase.endsWith(".oga")
-          || r._1.getUrl.toLowerCase.endsWith(".ogg")
-          || r._1.getUrl.toLowerCase.endsWith(".weba")
-          || r._1.getUrl.toLowerCase.endsWith(".ra")
-          || r._1.getUrl.toLowerCase.endsWith(".rm")
-          || r._1.getUrl.toLowerCase.endsWith(".3gp")
-          || r._1.getUrl.toLowerCase.endsWith(".3g2"))
+        .filter(r => r._2.startsWith("audio/"))
         .map(r => {
           val bytes = r._1.getBinaryBytes
           val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
@@ -254,19 +242,7 @@ package object archivesunleashed {
         .map(r =>
             (r, (DetectMimeTypeTika(r.getBinaryBytes)))
             )
-        .filter(r => r._2.startsWith("video/")
-          || r._1.getUrl.toLowerCase.endsWith(".flv")
-          || r._1.getUrl.toLowerCase.endsWith(".mp4")
-          || r._1.getUrl.toLowerCase.endsWith(".mov")
-          || r._1.getUrl.toLowerCase.endsWith(".avi")
-          || r._1.getUrl.toLowerCase.endsWith(".wmv")
-          || r._1.getUrl.toLowerCase.endsWith(".rv")
-          || r._1.getUrl.toLowerCase.endsWith(".mpeg")
-          || r._1.getUrl.toLowerCase.endsWith(".ogv")
-          || r._1.getUrl.toLowerCase.endsWith(".webm")
-          || r._1.getUrl.toLowerCase.endsWith(".ts")
-          || r._1.getUrl.toLowerCase.endsWith(".3gp")
-          || r._1.getUrl.toLowerCase.endsWith(".3g2"))
+        .filter(r => r._2.startsWith("video/"))
         .map(r => {
           val bytes = r._1.getBinaryBytes
           val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
@@ -487,14 +463,8 @@ package object archivesunleashed {
 
     /** Removes all data except images. */
     def keepImages(): RDD[ArchiveRecord] = {
-      rdd.filter(r =>
-        r.getCrawlDate != null
-          && (
-          (r.getMimeType != null && r.getMimeType.contains("image/"))
-            || r.getUrl.toLowerCase.endsWith("jpg")
-            || r.getUrl.toLowerCase.endsWith("jpeg")
-            || r.getUrl.toLowerCase.endsWith("png"))
-          && !r.getUrl.toLowerCase.endsWith("robots.txt"))
+      rdd.filter(r => r.getCrawlDate != null
+        && (r.getMimeType != null && r.getMimeType.startsWith("image/")))
     }
 
     /** Removes all data but selected mimeTypes specified in ArchiveRecord.
