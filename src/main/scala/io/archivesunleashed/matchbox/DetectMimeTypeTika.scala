@@ -42,6 +42,7 @@ object DetectMimeTypeTika {
     } else {
       val tis = TikaInputStream.get(content)
       val mimetype = tika.detect(tis)
+      tis.close()
       mimetype
     }
   }
