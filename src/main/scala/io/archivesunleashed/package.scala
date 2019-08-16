@@ -94,9 +94,9 @@ package object archivesunleashed {
         r.getCrawlDate != null
           && (r.getMimeType == "text/html"
           || r.getMimeType == "application/xhtml+xml"
-          || r.getUrl.endsWith("htm")
-          || r.getUrl.endsWith("html"))
-          && !r.getUrl.endsWith("robots.txt"))
+          || r.getUrl.toLowerCase.endsWith("htm")
+          || r.getUrl.toLowerCase.endsWith("html"))
+          && !r.getUrl.toLowerCase.endsWith("robots.txt"))
     }
 
     def extractValidPagesDF(): DataFrame = {
@@ -211,18 +211,18 @@ package object archivesunleashed {
             (r, (DetectMimeTypeTika(r.getBinaryBytes)))
             )
         .filter(r => r._2.startsWith("audio/")
-          || r._1.getUrl.endsWith(".aac")
-          || r._1.getUrl.endsWith(".mid")
-          || r._1.getUrl.endsWith(".midi")
-          || r._1.getUrl.endsWith(".mp3")
-          || r._1.getUrl.endsWith(".wav")
-          || r._1.getUrl.endsWith(".oga")
-          || r._1.getUrl.endsWith(".ogg")
-          || r._1.getUrl.endsWith(".weba")
-          || r._1.getUrl.endsWith(".ra")
-          || r._1.getUrl.endsWith(".rm")
-          || r._1.getUrl.endsWith(".3gp")
-          || r._1.getUrl.endsWith(".3g2"))
+          || r._1.getUrl.toLowerCase.endsWith(".aac")
+          || r._1.getUrl.toLowerCase.endsWith(".mid")
+          || r._1.getUrl.toLowerCase.endsWith(".midi")
+          || r._1.getUrl.toLowerCase.endsWith(".mp3")
+          || r._1.getUrl.toLowerCase.endsWith(".wav")
+          || r._1.getUrl.toLowerCase.endsWith(".oga")
+          || r._1.getUrl.toLowerCase.endsWith(".ogg")
+          || r._1.getUrl.toLowerCase.endsWith(".weba")
+          || r._1.getUrl.toLowerCase.endsWith(".ra")
+          || r._1.getUrl.toLowerCase.endsWith(".rm")
+          || r._1.getUrl.toLowerCase.endsWith(".3gp")
+          || r._1.getUrl.toLowerCase.endsWith(".3g2"))
         .map(r => {
           val bytes = r._1.getBinaryBytes
           val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
@@ -255,18 +255,18 @@ package object archivesunleashed {
             (r, (DetectMimeTypeTika(r.getBinaryBytes)))
             )
         .filter(r => r._2.startsWith("video/")
-          || r._1.getUrl.endsWith(".flv")
-          || r._1.getUrl.endsWith(".mp4")
-          || r._1.getUrl.endsWith(".mov")
-          || r._1.getUrl.endsWith(".avi")
-          || r._1.getUrl.endsWith(".wmv")
-          || r._1.getUrl.endsWith(".rv")
-          || r._1.getUrl.endsWith(".mpeg")
-          || r._1.getUrl.endsWith(".ogv")
-          || r._1.getUrl.endsWith(".webm")
-          || r._1.getUrl.endsWith(".ts")
-          || r._1.getUrl.endsWith(".3gp")
-          || r._1.getUrl.endsWith(".3g2"))
+          || r._1.getUrl.toLowerCase.endsWith(".flv")
+          || r._1.getUrl.toLowerCase.endsWith(".mp4")
+          || r._1.getUrl.toLowerCase.endsWith(".mov")
+          || r._1.getUrl.toLowerCase.endsWith(".avi")
+          || r._1.getUrl.toLowerCase.endsWith(".wmv")
+          || r._1.getUrl.toLowerCase.endsWith(".rv")
+          || r._1.getUrl.toLowerCase.endsWith(".mpeg")
+          || r._1.getUrl.toLowerCase.endsWith(".ogv")
+          || r._1.getUrl.toLowerCase.endsWith(".webm")
+          || r._1.getUrl.toLowerCase.endsWith(".ts")
+          || r._1.getUrl.toLowerCase.endsWith(".3gp")
+          || r._1.getUrl.toLowerCase.endsWith(".3g2"))
         .map(r => {
           val bytes = r._1.getBinaryBytes
           val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
@@ -321,8 +321,8 @@ package object archivesunleashed {
           || r._2 == "text/tab-separated-values" // " "
           || r._1.getMimeType == "text/csv"
           || r._1.getMimeType == "text/tab-separated-values")
-          || ((r._1.getUrl.endsWith(".csv")
-            || r._1.getUrl.endsWith(".tsv"))
+          || ((r._1.getUrl.toLowerCase.endsWith(".csv")
+            || r._1.getUrl.toLowerCase.endsWith(".tsv"))
             && r._2 == "text/plain"))
         .map(r => {
           val bytes = r._1.getBinaryBytes
@@ -332,9 +332,9 @@ package object archivesunleashed {
           val filename = FilenameUtils.getName(url.getPath())
           var mimeType = r._2
           if (mimeType == "text/plain") {
-            if (r._1.getUrl.endsWith(".csv")) {
+            if (r._1.getUrl.toLowerCase.endsWith(".csv")) {
               mimeType = "test/csv"
-            } else if (r._1.getUrl.endsWith(".tsv")) {
+            } else if (r._1.getUrl.toLowerCase.endsWith(".tsv")) {
               mimeType = "text/tab-separated-values"
             }
           }
@@ -454,12 +454,12 @@ package object archivesunleashed {
     def extractTextFilesDetailsDF(): DataFrame = {
       val records = rdd
         .keepMimeTypes(Set("text/plain"))
-        .filter(r => r.getUrl.endsWith(".txt")
-          || !r.getUrl.endsWith("robots.txt")
-          || !r.getUrl.endsWith(".js")
-          || !r.getUrl.endsWith(".css")
-          || !r.getUrl.endsWith(".htm")
-          || !r.getUrl.endsWith(".html"))
+        .filter(r => r.getUrl.toLowerCase.endsWith(".txt")
+          || !r.getUrl.toLowerCase.endsWith("robots.txt")
+          || !r.getUrl.toLowerCase.endsWith(".js")
+          || !r.getUrl.toLowerCase.endsWith(".css")
+          || !r.getUrl.toLowerCase.endsWith(".htm")
+          || !r.getUrl.toLowerCase.endsWith(".html"))
         .map(r => {
           val bytes = r.getBinaryBytes
           val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
@@ -491,10 +491,10 @@ package object archivesunleashed {
         r.getCrawlDate != null
           && (
           (r.getMimeType != null && r.getMimeType.contains("image/"))
-            || r.getUrl.endsWith("jpg")
-            || r.getUrl.endsWith("jpeg")
-            || r.getUrl.endsWith("png"))
-          && !r.getUrl.endsWith("robots.txt"))
+            || r.getUrl.toLowerCase.endsWith("jpg")
+            || r.getUrl.toLowerCase.endsWith("jpeg")
+            || r.getUrl.toLowerCase.endsWith("png"))
+          && !r.getUrl.toLowerCase.endsWith("robots.txt"))
     }
 
     /** Removes all data but selected mimeTypes specified in ArchiveRecord.

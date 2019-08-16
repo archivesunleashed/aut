@@ -37,7 +37,7 @@ object GetExtensionMime {
       ext = tikaExtensions(0).substring(1)
     } else {
       // Get extension from URL
-      val urlExt = FilenameUtils.getExtension(url)
+      val urlExt = FilenameUtils.getExtension(url).toLowerCase
       if (urlExt != null) {
         // Reconcile MIME-based and URL extension, preferring MIME-based
         if (tikaExtensions.size > 1) {
