@@ -25,9 +25,11 @@ import ArchiveRecordWritable.ArchiveFormat
 import io.archivesunleashed.matchbox.{ComputeMD5, DetectLanguage, DetectMimeTypeTika, ExtractDate, ExtractDomain, ExtractImageDetails, ExtractImageLinks, ExtractLinks, ImageDetails, RemoveHTML}
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent
 import org.apache.commons.codec.binary.Hex
+import org.apache.commons.io.FilenameUtils
 import org.apache.hadoop.fs.{FileSystem, Path}
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent.DateComponent
 import java.net.URI
+import java.net.URL
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 import org.apache.spark.sql.types.{IntegerType, StringType, StructField, StructType}
 import org.apache.hadoop.io.LongWritable
@@ -104,7 +106,7 @@ package object archivesunleashed {
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
         .add(StructField("url", StringType, true))
-        .add(StructField("mime_type", StringType, true))
+        .add(StructField("mime_type_web_server", StringType, true))
         .add(StructField("content", StringType, true))
 
       val sqlContext = SparkSession.builder()
@@ -152,13 +154,15 @@ package object archivesunleashed {
         .keepImages()
         .map(r => {
           val image = ExtractImageDetails(r.getUrl, r.getMimeType, r.getBinaryBytes)
-          (r.getUrl, r.getMimeType, image.width, image.height, image.hash, image.body)
+          (r.getUrl, r.getMimeType, DetectMimeTypeTika(r.getBinaryBytes),
+            image.width, image.height, image.hash, image.body)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7))
 
       val schema = new StructType()
         .add(StructField("url", StringType, true))
-        .add(StructField("mime_type", StringType, true))
+        .add(StructField("mime_type_web_server", StringType, true))
+        .add(StructField("mime_type_tika", StringType, true))
         .add(StructField("width", IntegerType, true))
         .add(StructField("height", IntegerType, true))
         .add(StructField("md5", StringType, true))
@@ -171,18 +175,116 @@ package object archivesunleashed {
     /* Extract PDF bytes and PDF metadata. */
     def extractPDFDetailsDF(): DataFrame = {
       val records = rdd
-        .filter(r => (DetectMimeTypeTika(r.getContentString) == "application/pdf"))
+        .map(r =>
+            (r, (DetectMimeTypeTika(r.getBinaryBytes)))
+            )
+        .filter(r => r._2 == "application/pdf")
         .map(r => {
-          val bytes = r.getBinaryBytes
+          val bytes = r._1.getBinaryBytes
           val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
-          (r.getUrl, r.getMimeType, hash, encodedBytes)
+          val url = new URL(r._1.getUrl)
+          val filename = FilenameUtils.getName(url.getPath())
+          val extension = FilenameUtils.getExtension(url.getPath())
+          (r._1.getUrl, filename, extension, r._1.getMimeType,
+            DetectMimeTypeTika(r._1.getBinaryBytes), hash, encodedBytes)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7))
 
       val schema = new StructType()
         .add(StructField("url", StringType, true))
-        .add(StructField("mime_type", StringType, true))
+        .add(StructField("filename", StringType, true))
+        .add(StructField("extension", StringType, true))
+        .add(StructField("mime_type_web_server", StringType, true))
+        .add(StructField("mime_type_tika", StringType, true))
+        .add(StructField("md5", StringType, true))
+        .add(StructField("bytes", StringType, true))
+
+      val sqlContext = SparkSession.builder();
+      sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
+    /* Extract audio bytes and audio metadata. */
+    def extractAudioDetailsDF(): DataFrame = {
+      val records = rdd
+        .map(r =>
+            (r, (DetectMimeTypeTika(r.getBinaryBytes)))
+            )
+        .filter(r => r._2.startsWith("audio/")
+          || r._1.getUrl.endsWith("aac")
+          || r._1.getUrl.endsWith("mid")
+          || r._1.getUrl.endsWith("midi")
+          || r._1.getUrl.endsWith("mp3")
+          || r._1.getUrl.endsWith("wav")
+          || r._1.getUrl.endsWith("oga")
+          || r._1.getUrl.endsWith("ogg")
+          || r._1.getUrl.endsWith("weba")
+          || r._1.getUrl.endsWith("ra")
+          || r._1.getUrl.endsWith("rm")
+          || r._1.getUrl.endsWith("3gp")
+          || r._1.getUrl.endsWith("3g2"))
+        .map(r => {
+          val bytes = r._1.getBinaryBytes
+          val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
+          val url = new URL(r._1.getUrl)
+          val filename = FilenameUtils.getName(url.getPath())
+          val extension = FilenameUtils.getExtension(url.getPath())
+          (r._1.getUrl, filename, extension, r._1.getMimeType,
+            DetectMimeTypeTika(r._1.getBinaryBytes), hash, encodedBytes)
+        })
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7))
+
+      val schema = new StructType()
+        .add(StructField("url", StringType, true))
+        .add(StructField("filename", StringType, true))
+        .add(StructField("extension", StringType, true))
+        .add(StructField("mime_type_web_server", StringType, true))
+        .add(StructField("mime_type_tika", StringType, true))
+        .add(StructField("md5", StringType, true))
+        .add(StructField("bytes", StringType, true))
+
+      val sqlContext = SparkSession.builder();
+      sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
+    /* Extract video bytes and video metadata. */
+    def extractVideoDetailsDF(): DataFrame = {
+      val records = rdd
+        .map(r =>
+            (r, (DetectMimeTypeTika(r.getBinaryBytes)))
+            )
+        .filter(r => r._2.startsWith("video/")
+          || r._1.getUrl.endsWith("flv")
+          || r._1.getUrl.endsWith("mp4")
+          || r._1.getUrl.endsWith("mov")
+          || r._1.getUrl.endsWith("avi")
+          || r._1.getUrl.endsWith("wmv")
+          || r._1.getUrl.endsWith("rv")
+          || r._1.getUrl.endsWith("mpeg")
+          || r._1.getUrl.endsWith("ogv")
+          || r._1.getUrl.endsWith("webm")
+          || r._1.getUrl.endsWith("ts")
+          || r._1.getUrl.endsWith("3gp")
+          || r._1.getUrl.endsWith("3g2"))
+        .map(r => {
+          val bytes = r._1.getBinaryBytes
+          val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
+          val url = new URL(r._1.getUrl)
+          val filename = FilenameUtils.getName(url.getPath())
+          val extension = FilenameUtils.getExtension(url.getPath())
+          (r._1.getUrl, filename, extension, r._1.getMimeType,
+            DetectMimeTypeTika(r._1.getBinaryBytes), hash, encodedBytes)
+        })
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7))
+
+      val schema = new StructType()
+        .add(StructField("url", StringType, true))
+        .add(StructField("filename", StringType, true))
+        .add(StructField("extension", StringType, true))
+        .add(StructField("mime_type_web_server", StringType, true))
+        .add(StructField("mime_type_tika", StringType, true))
         .add(StructField("md5", StringType, true))
         .add(StructField("bytes", StringType, true))
 

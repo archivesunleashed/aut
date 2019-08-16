@@ -42,21 +42,24 @@ class ExtractImageDetailsTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Fetch image") {
+  test("Image DF extraction") {
     val df = RecordLoader.loadArchives(arcPath, sc)
       .extractImageDetailsDF()
 
-    val extracted = df.select("url", "mime_type", "width", "height", "md5")
+    val extracted = df.select("url", "mime_type_web_server", "mime_type_tika",
+      "width", "height", "md5")
       .orderBy(desc("md5")).head(2).toList
     assert(extracted.size == 2)
     assert("http://www.archive.org/images/mediatype_movies.gif" == extracted(0)(0))
     assert("image/gif" == extracted(0)(1))
-    assert(21 == extracted(0)(2))
+    assert("image/gif" == extracted(0)(2))
     assert(21 == extracted(0)(3))
+    assert(21 == extracted(0)(4))
     assert("http://www.archive.org/images/LOCLogoSmall.jpg" == extracted(1)(0))
     assert("image/jpeg" == extracted(1)(1))
-    assert(275 == extracted(1)(2))
-    assert(300 == extracted(1)(3))
+    assert("image/jpeg" == extracted(1)(2))
+    assert(275 == extracted(1)(3))
+    assert(300 == extracted(1)(4))
   }
 
   after {

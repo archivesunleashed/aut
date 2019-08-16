@@ -16,12 +16,10 @@
  */
 package io.archivesunleashed.matchbox
 
-import java.io.ByteArrayInputStream
 import scala.collection.JavaConverters._
 import org.apache.tika.Tika
 import org.apache.tika.detect.DefaultDetector
 import org.apache.tika.io.TikaInputStream
-import org.apache.tika.mime.MimeType
 import org.apache.tika.mime.MimeTypes
 import org.apache.tika.parser.AutoDetectParser
 
@@ -35,15 +33,14 @@ object DetectMimeTypeTika {
 
   /** Detect MIME type from an input string.
    *
-   * @param content a string of content for which to detect the MimeType
+   * @param content a byte array of content for which to detect the MimeType
    * @return MIME type (e.g. "text/html" or "application/xml") or "N/A".
    */
-  def apply(content: String): String = {
-    if (content.isEmpty) {
+  def apply(content: Array[Byte]): String = {
+    if (content.size == 0) {
       "N/A"
     } else {
-      val is = new ByteArrayInputStream(content.getBytes)
-      val tis = TikaInputStream.get(is)
+      val tis = TikaInputStream.get(content)
       val mimetype = tika.detect(tis)
       mimetype
     }
