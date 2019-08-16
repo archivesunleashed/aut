@@ -42,7 +42,7 @@ class ExtractPresentationProgramDetailsTest extends FunSuite with BeforeAndAfter
     sc = new SparkContext(conf)
   }
 
-  test("Word Processor DF extraction") {
+  test("Presentation Program DF extraction") {
     val df = RecordLoader.loadArchives(warcPath, sc)
       .extractPresentationProgramDetailsDF()
 
