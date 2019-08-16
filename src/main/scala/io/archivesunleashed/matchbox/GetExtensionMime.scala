@@ -38,7 +38,7 @@ object GetExtensionMime {
     } else {
       // Get extension from URL
       val urlExt = FilenameUtils.getExtension(url)
-      if (urlExt != null && !urlExt.isEmpty) {
+      if (urlExt != null) {
         // Reconcile MIME-based and URL extension, preferring MIME-based
         if (tikaExtensions.size > 1) {
           if (tikaExtensions.contains("." + urlExt)) {
@@ -46,10 +46,12 @@ object GetExtensionMime {
           } else {
             ext = tikaExtensions(0).substring(1)
           }
-        } else { // tikaExtensions.size == 0 && urlExt exists
-          ext = urlExt
+        } else { // tikaExtensions.size == 0
+          if (!urlExt.isEmpty) {
+            ext = urlExt
+          } // urlExt = "" => ext = "unknown"
         }
-      } // else => unknown
+      }
     }
     ext
   }
