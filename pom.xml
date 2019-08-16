@@ -66,10 +66,6 @@
       <url>http://repo.maven.apache.org/maven2/</url>
     </repository>
     <repository>
-      <id>mvn-repo</id>
-      <url>https://raw.githubusercontent.com/archivesunleashed/aut-resources/master/mvn-repo</url>
-    </repository>
-    <repository>
       <id>jitpack.io</id>
       <url>https://jitpack.io</url>
     </repository>
@@ -662,6 +658,7 @@
       <groupId>com.github.archivesunleashed.tika</groupId>
       <artifactId>tika-parsers</artifactId>
       <version>${tika.version}</version>
+      <classifier>shady</classifier>
       <exclusions>
         <exclusion>
           <groupId>com.fasterxml.jackson.core</groupId>

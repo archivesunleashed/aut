@@ -48,20 +48,14 @@ class ExtractTextFilesDetailsTest extends FunSuite with BeforeAndAfter {
 
     val extracted = df.select("url", "filename", "extension",
       "mime_type_web_server", "mime_type_tika", "md5")
-      .orderBy(desc("md5")).head(2).toList
-    assert(extracted.size == 2)
-    assert("https://ruebot.net/files/aut-test-fixtures/aut-text" == extracted(0)(0))
-    assert("aut-text" == extracted(0)(1))
-    assert("" == extracted(0)(2))
-    assert("unknown" == extracted(0)(3))
-    assert("text/plain" == extracted(0)(4))
-    assert("fab57c98846268b27c374907a38ed932" == extracted(0)(5))
-    assert("https://ruebot.net/files/aut-test-fixtures/aut-text.txt" == extracted(1)(0))
-    assert("aut-text.txt" == extracted(1)(1))
-    assert("txt" == extracted(1)(2))
-    assert("text/plain" == extracted(1)(3))
-    assert("application/gzip" == extracted(1)(4))
-    assert("32abd404fb560ecf14b75611f3cc5c2c" == extracted(1)(5))
+      .orderBy(desc("md5")).head(1).toList
+    assert(extracted.size == 1)
+    assert("https://ruebot.net/files/aut-test-fixtures/aut-text.txt" == extracted(0)(0))
+    assert("aut-text.txt" == extracted(0)(1))
+    assert("txt" == extracted(0)(2))
+    assert("text/plain" == extracted(0)(3))
+    assert("application/gzip" == extracted(0)(4))
+    assert("32abd404fb560ecf14b75611f3cc5c2c" == extracted(0)(5))
   }
 
   after {
