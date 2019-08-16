@@ -40,7 +40,7 @@ object GetExtensionMime {
       if (urlExt != null && !urlExt.isEmpty) {
         // Reconcile Tika list and FilenameUtils extension
         if (tikaExtensions.size > 1) {
-          if (tikaExtensions.contains(urlExt)) {
+          if (tikaExtensions.contains("." + urlExt)) {
             ext = urlExt
           } else {
             ext = tikaExtensions(0).substring(1)
