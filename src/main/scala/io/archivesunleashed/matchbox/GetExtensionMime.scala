@@ -22,6 +22,7 @@ import org.apache.commons.io.FilenameUtils
 // scalastyle:off object.name
 object GetExtensionMime {
 // scalastyle:on object.name
+
   /** Returns the extension of a file specified by URL
     *
     * @param url string
@@ -31,14 +32,14 @@ object GetExtensionMime {
   def apply(url: String, mimeType: String): String = {
     val tikaExtensions = DetectMimeTypeTika.getExtensions(mimeType)
     var ext = "unknown"
-    // Tika method
+    // Determine extension from MIME type
     if (tikaExtensions.size == 1) {
       ext = tikaExtensions(0).substring(1)
     } else {
-      // FilenameUtils method
+      // Get extension from URL
       val urlExt = FilenameUtils.getExtension(url)
       if (urlExt != null && !urlExt.isEmpty) {
-        // Reconcile Tika list and FilenameUtils extension
+        // Reconcile MIME-based and URL extension, preferring MIME-based
         if (tikaExtensions.size > 1) {
           if (tikaExtensions.contains("." + urlExt)) {
             ext = urlExt
