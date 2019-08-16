@@ -531,12 +531,20 @@ package object archivesunleashed {
           && !r.getUrl.endsWith("robots.txt"))
     }
 
-    /** Removes all data but selected mimeTypes.
+    /** Removes all data but selected mimeTypes specified in ArchiveRecord.
       *
       * @param mimeTypes a Set of Mimetypes to keep
       */
     def keepMimeTypes(mimeTypes: Set[String]): RDD[ArchiveRecord] = {
       rdd.filter(r => mimeTypes.contains(r.getMimeType))
+    }
+
+    /** Removes all data but selected mimeTypes as detected by Tika.
+      *
+      * @param mimeTypes a Set of Mimetypes to keep
+      */
+    def keepMimeTypesTika(mimeTypes: Set[String]): RDD[ArchiveRecord] = {
+      rdd.filter(r => mimeTypes.contains(DetectMimeTypeTika(r.getBinaryBytes)))
     }
 
     /** Removes all data that does not have selected data.
@@ -598,12 +606,20 @@ package object archivesunleashed {
           }).exists(identity))
     }
 
-    /** Filters MimeTypes from RDDs.
+    /** Filters ArchiveRecord MimeTypes from RDDs.
       *
       * @param mimeTypes
       */
     def discardMimeTypes(mimeTypes: Set[String]): RDD[ArchiveRecord] = {
       rdd.filter(r => !mimeTypes.contains(r.getMimeType))
+    }
+
+    /** Filters detected MimeTypes from RDDs.
+      *
+      * @param mimeTypes
+      */
+    def discardMimeTypesTika(mimeTypes: Set[String]): RDD[ArchiveRecord] = {
+      rdd.filter(r => !mimeTypes.contains(DetectMimeTypeTika(r.getBinaryBytes)))
     }
 
     def discardDate(date: String): RDD[ArchiveRecord] = {
