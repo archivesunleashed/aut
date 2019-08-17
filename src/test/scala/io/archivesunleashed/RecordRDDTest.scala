@@ -71,7 +71,16 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
       .map ( mp => mp.getUrl).take(3)
     assert (r2.sameElements(r)) }
 
-  test ("keepUrls") {
+  test ("keep http status codes") {
+    val expected = 129
+    val base = RecordLoader.loadArchives(arcPath, sc)
+      .keepValidPages()
+    val statusCodes: Set[String] = Set ("200", "404")
+    val r2 = base.keepHttpStatus(statusCodes).count
+    assert (r2 == expected)
+  }
+
+  test ("keep urls") {
     val expected = 1
     val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
@@ -80,7 +89,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     assert (r2 == expected)
   }
 
-  test ("keepUrlPatterns") {
+  test ("keep url patterns") {
     val expected = 1
     val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
@@ -145,12 +154,21 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     assert (r2 == expected)
   }
 
-  test ("discard UrlPatterns") {
+  test ("discard url patterns") {
     val expected = 134
     val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
     val urls = Set (archive.r, sloan.r, "".r)
     val r2 = base.discardUrlPatterns(urls).count
+    assert (r2 == expected)
+  }
+
+  test ("discard http status codes") {
+    val expected = 6
+    val base = RecordLoader.loadArchives(arcPath, sc)
+      .keepValidPages()
+    val statusCodes: Set[String] = Set ("200", "404")
+    val r2 = base.discardHttpStatus(statusCodes).count
     assert (r2 == expected)
   }
 
