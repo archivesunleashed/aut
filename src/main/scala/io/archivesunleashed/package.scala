@@ -470,8 +470,7 @@ package object archivesunleashed {
     /** Removes all data except images. */
     def keepImages(): RDD[ArchiveRecord] = {
       rdd.filter(r => r.getCrawlDate != null
-        && DetectMimeTypeTika(r.getBinaryBytes).startsWith("image/")
-        && !r.getUrl.endsWith("robots.txt"))
+        && DetectMimeTypeTika(r.getBinaryBytes).startsWith("image/"))
     }
 
     /** Removes all data but selected mimeTypes specified in ArchiveRecord.

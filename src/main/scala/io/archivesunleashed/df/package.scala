@@ -22,9 +22,7 @@ import io.archivesunleashed.matchbox.{ComputeMD5, ExtractDomain, RemoveHTML}
 import org.apache.spark.sql.functions.udf
 import org.apache.spark.sql.DataFrame
 import java.io.ByteArrayInputStream
-import java.io.File
 import java.io.FileOutputStream
-import javax.imageio.{ImageIO, ImageReader}
 import java.util.Base64
 
 /**
