@@ -67,7 +67,7 @@ package object df {
             reader.setInput(input)
             val image = reader.read(0)
 
-            val format = reader.getFormatName()
+            val format = reader.getFormatName().toLowerCase
             val suffix = ComputeMD5(bytes)
             val file = new File(fileName + "-" + suffix + "." + format);
             if (image != null) {
