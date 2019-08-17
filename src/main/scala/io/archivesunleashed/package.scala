@@ -533,7 +533,7 @@ package object archivesunleashed {
 
     /** Removes all data but selected mimeTypes specified in ArchiveRecord.
       *
-      * @param mimeTypes a Set of Mimetypes to keep
+      * @param mimeTypes a list of Mime Types
       */
     def keepMimeTypes(mimeTypes: Set[String]): RDD[ArchiveRecord] = {
       rdd.filter(r => mimeTypes.contains(r.getMimeType))
@@ -541,15 +541,23 @@ package object archivesunleashed {
 
     /** Removes all data but selected mimeTypes as detected by Tika.
       *
-      * @param mimeTypes a Set of Mimetypes to keep
+      * @param mimeTypes a list of Mime Types
       */
     def keepMimeTypesTika(mimeTypes: Set[String]): RDD[ArchiveRecord] = {
       rdd.filter(r => mimeTypes.contains(DetectMimeTypeTika(r.getBinaryBytes)))
     }
 
+    /** Removes all data that does not have selected status codes.
+     *
+     *  @param statusCodes a list of HTTP status codes
+     */
+    def keepHttpStatus(statusCodes: Set[String]): RDD[ArchiveRecord] = {
+      rdd.filter(r => statusCodes.contains(r.getHttpStatus))
+    }
+
     /** Removes all data that does not have selected data.
       *
-      * @param dates a list of dates to keep
+      * @param dates a list of dates
       * @param component the selected DateComponent enum value
       */
     def keepDate(dates: List[String], component: DateComponent = DateComponent.YYYYMMDD): RDD[ArchiveRecord] = {
@@ -558,7 +566,7 @@ package object archivesunleashed {
 
     /** Removes all data but selected exact URLs.
       *
-      * @param urls a Set of URLs to keep
+      * @param urls a list of URLs to keep
       */
     def keepUrls(urls: Set[String]): RDD[ArchiveRecord] = {
       rdd.filter(r => urls.contains(r.getUrl))
@@ -566,7 +574,7 @@ package object archivesunleashed {
 
     /** Removes all data but selected url patterns.
       *
-      * @param urlREs a Set of Regular Expressions to keep
+      * @param urlREs a list of regular expressions
       */
     def keepUrlPatterns(urlREs: Set[Regex]): RDD[ArchiveRecord] = {
       rdd.filter(r =>
@@ -579,7 +587,7 @@ package object archivesunleashed {
 
     /** Removes all data but selected source domains.
       *
-      * @param urls a Set of urls for the source domains to keep
+      * @param urls a list of urls for the source domains
       */
     def keepDomains(urls: Set[String]): RDD[ArchiveRecord] = {
       rdd.filter(r => urls.contains(ExtractDomain(r.getUrl).replace("^\\s*www\\.", "")))
@@ -587,7 +595,7 @@ package object archivesunleashed {
 
     /** Removes all data not in selected language.
       *
-      * @param lang a Set of ISO 639-2 codes
+      * @param lang a set of ISO 639-2 codes
       */
     def keepLanguages(lang: Set[String]): RDD[ArchiveRecord] = {
       rdd.filter(r => lang.contains(DetectLanguage(RemoveHTML(r.getContentString))))
@@ -595,7 +603,7 @@ package object archivesunleashed {
 
     /** Removes all content that does not pass Regular Expression test.
       *
-      * @param contentREs a list of Regular expressions to keep
+      * @param contentREs a list of regular expressions to keep
       */
     def keepContent(contentREs: Set[Regex]): RDD[ArchiveRecord] = {
       rdd.filter(r =>
@@ -608,7 +616,7 @@ package object archivesunleashed {
 
     /** Filters ArchiveRecord MimeTypes from RDDs.
       *
-      * @param mimeTypes
+      * @param mimeTypes a list of Mime Types
       */
     def discardMimeTypes(mimeTypes: Set[String]): RDD[ArchiveRecord] = {
       rdd.filter(r => !mimeTypes.contains(r.getMimeType))
@@ -616,20 +624,40 @@ package object archivesunleashed {
 
     /** Filters detected MimeTypes from RDDs.
       *
-      * @param mimeTypes
+      * @param mimeTypes a list of Mime Types
       */
     def discardMimeTypesTika(mimeTypes: Set[String]): RDD[ArchiveRecord] = {
       rdd.filter(r => !mimeTypes.contains(DetectMimeTypeTika(r.getBinaryBytes)))
     }
 
+    /** Filters detected dates from RDDs.
+      *
+      * @param date a list of dates
+      */
     def discardDate(date: String): RDD[ArchiveRecord] = {
       rdd.filter(r => r.getCrawlDate != date)
     }
 
+    /** Filters detected urls from RDDs.
+      *
+      * @param urls a list of urls
+      */
     def discardUrls(urls: Set[String]): RDD[ArchiveRecord] = {
       rdd.filter(r => !urls.contains(r.getUrl))
     }
 
+    /** Filters detected status codes from RDDs.
+      *
+      * @param statusCodes a list of HTTP status codes
+      */
+    def discardHttpStatus(statusCodes: Set[String]): RDD[ArchiveRecord] = {
+      rdd.filter(r => !statusCodes.contains(r.getHttpStatus))
+    }
+
+    /** Filters detected url patterns from RDDs.
+     *
+     *  @param urlREs a list of Regular expressions
+     */
     def discardUrlPatterns(urlREs: Set[Regex]): RDD[ArchiveRecord] = {
       rdd.filter(r =>
         !urlREs.map(re =>
@@ -639,10 +667,18 @@ package object archivesunleashed {
           }).exists(identity))
     }
 
+    /** Filters detected domains (regex) from RDDs.
+      *
+      * @param urls a list of urls for the source domains
+      */
     def discardDomains(urls: Set[String]): RDD[ArchiveRecord] = {
       rdd.filter(r => !urls.contains(r.getDomain))
     }
 
+    /** Filters detected content (regex) from RDDs.
+      *
+      * @param contentREs a list of regular expressions
+      */
     def discardContent(contentREs: Set[Regex]): RDD[ArchiveRecord] = {
       rdd.filter(r =>
         !contentREs.map(re =>
