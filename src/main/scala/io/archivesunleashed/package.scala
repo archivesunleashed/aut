@@ -153,14 +153,20 @@ package object archivesunleashed {
       val records = rdd
         .keepImages()
         .map(r => {
-          val image = ExtractImageDetails(r.getUrl, r.getMimeType, r.getBinaryBytes)
-          (r.getUrl, r.getMimeType, DetectMimeTypeTika(r.getBinaryBytes),
+          val mimeTypeTika = DetectMimeTypeTika(r.getBinaryBytes)
+          val image = ExtractImageDetails(r.getUrl, mimeTypeTika, r.getBinaryBytes)
+          val url = new URL(r.getUrl)
+          val filename = FilenameUtils.getName(url.getPath())
+          val extension = GetExtensionMime(url.getPath(), mimeTypeTika)
+          (r.getUrl, filename, extension, r.getMimeType, mimeTypeTika,
             image.width, image.height, image.hash, image.body)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
 
       val schema = new StructType()
         .add(StructField("url", StringType, true))
+        .add(StructField("filename", StringType, true))
+        .add(StructField("extension", StringType, true))
         .add(StructField("mime_type_web_server", StringType, true))
         .add(StructField("mime_type_tika", StringType, true))
         .add(StructField("width", IntegerType, true))
@@ -464,7 +470,8 @@ package object archivesunleashed {
     /** Removes all data except images. */
     def keepImages(): RDD[ArchiveRecord] = {
       rdd.filter(r => r.getCrawlDate != null
-        && (r.getMimeType != null && r.getMimeType.startsWith("image/")))
+        && r.getMimeType.startsWith("image/")
+        && !r.getUrl.endsWith("robots.txt"))
     }
 
     /** Removes all data but selected mimeTypes specified in ArchiveRecord.
