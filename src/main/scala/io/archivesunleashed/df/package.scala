@@ -63,6 +63,7 @@ package object df {
           val suffix = ComputeMD5(bytes)
           val file = new FileOutputStream(fileName + "-" + suffix + "." + extension.toLowerCase)
           IOUtils.copy(in, file)
+          file.close()
         } catch {
           case e: Throwable => {
           }
