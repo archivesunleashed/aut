@@ -22,7 +22,7 @@ import java.util.Base64
 
 import io.archivesunleashed.data.{ArchiveRecordInputFormat, ArchiveRecordWritable}
 import ArchiveRecordWritable.ArchiveFormat
-import io.archivesunleashed.matchbox.{ComputeMD5, DetectLanguage, DetectMimeTypeTika, ExtractDate, ExtractDomain, ExtractImageDetails, ExtractImageLinks, ExtractLinks, ImageDetails, RemoveHTML}
+import io.archivesunleashed.matchbox.{DetectLanguage, DetectMimeTypeTika, ExtractDate, ExtractDomain, ExtractImageDetails, ExtractImageLinks, ExtractLinks, GetExtensionMime, RemoveHTML}
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent
 import org.apache.commons.codec.binary.Hex
 import org.apache.commons.io.FilenameUtils
@@ -94,9 +94,9 @@ package object archivesunleashed {
         r.getCrawlDate != null
           && (r.getMimeType == "text/html"
           || r.getMimeType == "application/xhtml+xml"
-          || r.getUrl.endsWith("htm")
-          || r.getUrl.endsWith("html"))
-          && !r.getUrl.endsWith("robots.txt"))
+          || r.getUrl.toLowerCase.endsWith("htm")
+          || r.getUrl.toLowerCase.endsWith("html"))
+          && !r.getUrl.toLowerCase.endsWith("robots.txt"))
     }
 
     def extractValidPagesDF(): DataFrame = {
@@ -153,14 +153,20 @@ package object archivesunleashed {
       val records = rdd
         .keepImages()
         .map(r => {
-          val image = ExtractImageDetails(r.getUrl, r.getMimeType, r.getBinaryBytes)
-          (r.getUrl, r.getMimeType, DetectMimeTypeTika(r.getBinaryBytes),
+          val mimeTypeTika = DetectMimeTypeTika(r.getBinaryBytes)
+          val image = ExtractImageDetails(r.getUrl, mimeTypeTika, r.getBinaryBytes)
+          val url = new URL(r.getUrl)
+          val filename = FilenameUtils.getName(url.getPath())
+          val extension = GetExtensionMime(url.getPath(), mimeTypeTika)
+          (r.getUrl, filename, extension, r.getMimeType, mimeTypeTika,
             image.width, image.height, image.hash, image.body)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
 
       val schema = new StructType()
         .add(StructField("url", StringType, true))
+        .add(StructField("filename", StringType, true))
+        .add(StructField("extension", StringType, true))
         .add(StructField("mime_type_web_server", StringType, true))
         .add(StructField("mime_type_tika", StringType, true))
         .add(StructField("width", IntegerType, true))
@@ -185,7 +191,7 @@ package object archivesunleashed {
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
-          val extension = FilenameUtils.getExtension(url.getPath())
+          val extension = GetExtensionMime(url.getPath(), r._2)
           (r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), hash, encodedBytes)
         })
@@ -210,26 +216,14 @@ package object archivesunleashed {
         .map(r =>
             (r, (DetectMimeTypeTika(r.getBinaryBytes)))
             )
-        .filter(r => r._2.startsWith("audio/")
-          || r._1.getUrl.endsWith(".aac")
-          || r._1.getUrl.endsWith(".mid")
-          || r._1.getUrl.endsWith(".midi")
-          || r._1.getUrl.endsWith(".mp3")
-          || r._1.getUrl.endsWith(".wav")
-          || r._1.getUrl.endsWith(".oga")
-          || r._1.getUrl.endsWith(".ogg")
-          || r._1.getUrl.endsWith(".weba")
-          || r._1.getUrl.endsWith(".ra")
-          || r._1.getUrl.endsWith(".rm")
-          || r._1.getUrl.endsWith(".3gp")
-          || r._1.getUrl.endsWith(".3g2"))
+        .filter(r => r._2.startsWith("audio/"))
         .map(r => {
           val bytes = r._1.getBinaryBytes
           val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
-          val extension = FilenameUtils.getExtension(url.getPath())
+          val extension = GetExtensionMime(url.getPath(), r._2)
           (r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), hash, encodedBytes)
         })
@@ -254,26 +248,14 @@ package object archivesunleashed {
         .map(r =>
             (r, (DetectMimeTypeTika(r.getBinaryBytes)))
             )
-        .filter(r => r._2.startsWith("video/")
-          || r._1.getUrl.endsWith(".flv")
-          || r._1.getUrl.endsWith(".mp4")
-          || r._1.getUrl.endsWith(".mov")
-          || r._1.getUrl.endsWith(".avi")
-          || r._1.getUrl.endsWith(".wmv")
-          || r._1.getUrl.endsWith(".rv")
-          || r._1.getUrl.endsWith(".mpeg")
-          || r._1.getUrl.endsWith(".ogv")
-          || r._1.getUrl.endsWith(".webm")
-          || r._1.getUrl.endsWith(".ts")
-          || r._1.getUrl.endsWith(".3gp")
-          || r._1.getUrl.endsWith(".3g2"))
+        .filter(r => r._2.startsWith("video/"))
         .map(r => {
           val bytes = r._1.getBinaryBytes
           val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
-          val extension = FilenameUtils.getExtension(url.getPath())
+          val extension = GetExtensionMime(url.getPath(), r._2)
           (r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), hash, encodedBytes)
         })
@@ -317,30 +299,28 @@ package object archivesunleashed {
           || r._2 == "application/x-vnd.oasis.opendocument.spreadsheet"
           || r._2 == "application/x-tika-msworks-spreadsheet"
           || r._2 == "application/vnd.lotus-1-2-3"
-          || r._1.getUrl.endsWith(".ods")
-          || r._1.getUrl.endsWith(".xlr")
-          || r._1.getUrl.endsWith(".xls")
-          || r._1.getUrl.endsWith(".xlsx")
-          || r._1.getUrl.endsWith(".tsv")
+          || r._2 == "text/csv"                  // future versions of Tika?
+          || r._2 == "text/tab-separated-values" // " "
           || r._1.getMimeType == "text/csv"
-          || r._1.getUrl.endsWith(".csv"))
-          && (!r._2.startsWith("audio/")
-          || !r._2.startsWith("video/")
-          || !r._2.startsWith("image/")
-          || !r._1.getMimeType.startsWith("audio/")
-          || !r._1.getMimeType.startsWith("video/")
-          || !r._1.getMimeType.startsWith("image/")
-          || r._2 != "text/html"
-          || r._1.getMimeType != "text/html"
-          || !r._1.getUrl.endsWith(".js")
-          || !r._1.getUrl.endsWith(".css")))
+          || r._1.getMimeType == "text/tab-separated-values")
+          || ((r._1.getUrl.toLowerCase.endsWith(".csv")
+            || r._1.getUrl.toLowerCase.endsWith(".tsv"))
+            && r._2 == "text/plain"))
         .map(r => {
           val bytes = r._1.getBinaryBytes
           val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
-          val extension = FilenameUtils.getExtension(url.getPath())
+          var mimeType = r._2
+          if (mimeType == "text/plain") {
+            if (r._1.getUrl.toLowerCase.endsWith(".csv")) {
+              mimeType = "test/csv"
+            } else if (r._1.getUrl.toLowerCase.endsWith(".tsv")) {
+              mimeType = "text/tab-separated-values"
+            }
+          }
+          val extension = GetExtensionMime(url.getPath(), mimeType)
           (r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), hash, encodedBytes)
         })
@@ -365,7 +345,7 @@ package object archivesunleashed {
         .map(r =>
             (r, (DetectMimeTypeTika(r.getBinaryBytes)))
             )
-        .filter(r => (r._2 == "application/vnd.ms-powerpoint"
+        .filter(r => r._2 == "application/vnd.ms-powerpoint"
           || r._2 == "application/vnd.openxmlformats-officedocument.presentationml.presentation"
           || r._2 == "application/vnd.oasis.opendocument.presentation"
           || r._2 == "application/vnd.oasis.opendocument.presentation-template"
@@ -377,29 +357,14 @@ package object archivesunleashed {
           || r._2 == "application/vnd.ms-powerpoint.presentation.macroEnabled.12"
           || r._2 == "application/vnd.ms-powerpoint.slide.macroEnabled.12"
           || r._2 == "application/vnd.ms-powerpoint.slideshow.macroEnabled.12"
-          || r._2 == "application/vnd.ms-powerpoint.template.macroEnabled.12"
-          || r._1.getUrl.endsWith(".key")
-          || r._1.getUrl.endsWith(".odp")
-          || r._1.getUrl.endsWith(".pps")
-          || r._1.getUrl.endsWith(".ppt")
-          || r._1.getUrl.endsWith(".pptx"))
-          && (!r._2.startsWith("audio/")
-          || !r._2.startsWith("video/")
-          || !r._2.startsWith("image/")
-          || !r._1.getMimeType.startsWith("audio/")
-          || !r._1.getMimeType.startsWith("video/")
-          || !r._1.getMimeType.startsWith("image/")
-          || r._2 != "text/html"
-          || r._1.getMimeType != "text/html"
-          || !r._1.getUrl.endsWith(".js")
-          || !r._1.getUrl.endsWith(".css")))
+          || r._2 == "application/vnd.ms-powerpoint.template.macroEnabled.12")
         .map(r => {
           val bytes = r._1.getBinaryBytes
           val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
-          val extension = FilenameUtils.getExtension(url.getPath())
+          val extension = GetExtensionMime(url.getPath(), r._2)
           (r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), hash, encodedBytes)
         })
@@ -424,7 +389,7 @@ package object archivesunleashed {
         .map(r =>
             (r, (DetectMimeTypeTika(r.getBinaryBytes)))
             )
-        .filter(r => (r._2 == "application/vnd.lotus-wordpro"
+        .filter(r => r._2 == "application/vnd.lotus-wordpro"
           || r._2 == "application/vnd.kde.kword"
           || r._2 == "application/vnd.ms-word.document.macroEnabled.12"
           || r._2 == "application/vnd.ms-word.template.macroEnabled.12"
@@ -441,31 +406,14 @@ package object archivesunleashed {
           || r._2 == "application/vnd.apple.pages"
           || r._2 == "application/macwriteii"
           || r._2 == "application/vnd.ms-works"
-          || r._2 == "application/rtf"
-          || r._1.getUrl.endsWith(".rtf")
-          || r._1.getUrl.endsWith(".docx")
-          || r._1.getUrl.endsWith(".doc")
-          || r._1.getUrl.endsWith(".odt")
-          || r._1.getUrl.endsWith(".wks")
-          || r._1.getUrl.endsWith(".wps")
-          || r._1.getUrl.endsWith(".wpd"))
-          && (!r._2.startsWith("audio/")
-          || !r._2.startsWith("video/")
-          || !r._2.startsWith("image/")
-          || r._2 != "text/html"
-          || r._1.getMimeType != "text/html"
-          || !r._1.getUrl.endsWith(".js")
-          || !r._1.getUrl.endsWith(".css")
-          || !r._1.getMimeType.startsWith("audio/")
-          || !r._1.getMimeType.startsWith("video/")
-          || !r._1.getMimeType.startsWith("image/")))
+          || r._2 == "application/rtf")
         .map(r => {
           val bytes = r._1.getBinaryBytes
           val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
-          val extension = FilenameUtils.getExtension(url.getPath())
+          val extension = GetExtensionMime(url.getPath(), r._2)
           (r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), hash, encodedBytes)
         })
@@ -488,12 +436,12 @@ package object archivesunleashed {
     def extractTextFilesDetailsDF(): DataFrame = {
       val records = rdd
         .keepMimeTypes(Set("text/plain"))
-        .filter(r => r.getUrl.endsWith(".txt")
-          || !r.getUrl.endsWith("robots.txt")
-          || !r.getUrl.endsWith(".js")
-          || !r.getUrl.endsWith(".css")
-          || !r.getUrl.endsWith(".htm")
-          || !r.getUrl.endsWith(".html"))
+        .filter(r => r.getUrl.toLowerCase.endsWith(".txt")
+          || !r.getUrl.toLowerCase.endsWith("robots.txt")
+          || !r.getUrl.toLowerCase.endsWith(".js")
+          || !r.getUrl.toLowerCase.endsWith(".css")
+          || !r.getUrl.toLowerCase.endsWith(".htm")
+          || !r.getUrl.toLowerCase.endsWith(".html"))
         .map(r => {
           val bytes = r.getBinaryBytes
           val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
@@ -521,14 +469,8 @@ package object archivesunleashed {
 
     /** Removes all data except images. */
     def keepImages(): RDD[ArchiveRecord] = {
-      rdd.filter(r =>
-        r.getCrawlDate != null
-          && (
-          (r.getMimeType != null && r.getMimeType.contains("image/"))
-            || r.getUrl.endsWith("jpg")
-            || r.getUrl.endsWith("jpeg")
-            || r.getUrl.endsWith("png"))
-          && !r.getUrl.endsWith("robots.txt"))
+      rdd.filter(r => r.getCrawlDate != null
+        && DetectMimeTypeTika(r.getBinaryBytes).startsWith("image/"))
     }
 
     /** Removes all data but selected mimeTypes specified in ArchiveRecord.

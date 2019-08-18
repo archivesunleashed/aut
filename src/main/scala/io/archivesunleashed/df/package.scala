@@ -22,9 +22,7 @@ import io.archivesunleashed.matchbox.{ComputeMD5, ExtractDomain, RemoveHTML}
 import org.apache.spark.sql.functions.udf
 import org.apache.spark.sql.DataFrame
 import java.io.ByteArrayInputStream
-import java.io.File
 import java.io.FileOutputStream
-import javax.imageio.{ImageIO, ImageReader}
 import java.util.Base64
 
 /**
@@ -48,40 +46,6 @@ package object df {
   implicit class SaveBytes(df: DataFrame) {
 
     /**
-     * @param bytesColumnName the name of the column containing the image bytes
-     * @param fileName the name of the file to save the images to (without extension)
-     * e.g. fileName = "foo" => images are saved as "foo-[MD5 hash].jpg"
-     */
-    def saveImageToDisk(bytesColumnName: String, fileName: String): Unit = {
-      df.select(bytesColumnName).foreach(row => {
-        try {
-          // Assumes the bytes are base64 encoded already as returned by ExtractImageDetails.
-          val encodedBytes: String = row.getAs(bytesColumnName);
-          val bytes = Base64.getDecoder.decode(encodedBytes);
-          val in = new ByteArrayInputStream(bytes);
-
-          val input = ImageIO.createImageInputStream(in);
-          val readers = ImageIO.getImageReaders(input);
-          if (readers.hasNext()) {
-            val reader = readers.next()
-            reader.setInput(input)
-            val image = reader.read(0)
-
-            val format = reader.getFormatName()
-            val suffix = ComputeMD5(bytes)
-            val file = new File(fileName + "-" + suffix + "." + format);
-            if (image != null) {
-              ImageIO.write(image, format, file);
-            }
-          }
-        } catch {
-          case e: Throwable => {
-          }
-        }
-      })
-    }
-
-    /**
       * @param bytesColumnName the name of the column containing the bytes
       * @param fileName the name of the file to save the binary file to (without extension)
       * @param extensionColumnName the name of the column containin the extension
@@ -99,6 +63,7 @@ package object df {
           val suffix = ComputeMD5(bytes)
           val file = new FileOutputStream(fileName + "-" + suffix + "." + extension.toLowerCase)
           IOUtils.copy(in, file)
+          file.close()
         } catch {
           case e: Throwable => {
           }
