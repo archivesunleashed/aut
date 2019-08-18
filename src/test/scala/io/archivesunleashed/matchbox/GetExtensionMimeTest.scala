@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package io.archivesunleashed
+package io.archivesunleashed.matchbox
 
 import com.google.common.io.Resources
 import org.apache.spark.sql.{DataFrame, Row}
 // scalastyle:off underscore.import
+import io.archivesunleashed._
 import org.apache.spark.sql.functions._
 // scalastyle:on underscore.import
 import org.apache.spark.{SparkConf, SparkContext}
@@ -51,7 +52,7 @@ class GetExtensionMimeTest extends FunSuite with BeforeAndAfter {
       "mime_type_web_server", "mime_type_tika", "md5")
       .orderBy(desc("md5")).head(3).toList
     assert(extracted.size == 3)
-    assert("[https://ruebot.net/files/aut-test-fixtures/this_is_a_gif" == extracted(0)(0))
+    assert("https://ruebot.net/files/aut-test-fixtures/this_is_a_gif" == extracted(0)(0))
     assert("this_is_a_gif" == extracted(0)(1))
     assert("gif" == extracted(0)(2))
     assert("unknown" == extracted(0)(3))
@@ -60,7 +61,7 @@ class GetExtensionMimeTest extends FunSuite with BeforeAndAfter {
   }
 
   test("Get extension of file from URL with correct extension") {
-    assert("[https://ruebot.net/files/aut-test-fixtures/real_png.png" == extracted(1)(0))
+    assert("https://ruebot.net/files/aut-test-fixtures/real_png.png" == extracted(1)(0))
     assert("real_png.png" == extracted(1)(1))
     assert("png" == extracted(1)(2))
     assert("image/png" == extracted(1)(3))
@@ -69,7 +70,7 @@ class GetExtensionMimeTest extends FunSuite with BeforeAndAfter {
   }
 
   test("Get extension of file from URL with incorrect extension") {
-    assert("[https://ruebot.net/files/aut-test-fixtures/this_is_a_jpeg.mp3" == extracted(2)(0))
+    assert("https://ruebot.net/files/aut-test-fixtures/this_is_a_jpeg.mp3" == extracted(2)(0))
     assert("this_is_a_jpeg.mp3" == extracted(2)(1))
     assert("jpg" == extracted(2)(2))
     assert("audio/mpeg" == extracted(2)(3))
