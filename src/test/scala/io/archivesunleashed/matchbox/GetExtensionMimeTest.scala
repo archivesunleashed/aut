@@ -50,7 +50,7 @@ class GetExtensionMimeTest extends FunSuite with BeforeAndAfter {
     extracted = df.select("url", "filename", "extension",
       "mime_type_web_server", "mime_type_tika", "md5")
       .orderBy(desc("md5")).head(3).toList
-    assert(extracted.size == 1)
+    assert(extracted.size == 3)
     assert("[https://ruebot.net/files/aut-test-fixtures/this_is_a_gif" == extracted(0)(0))
     assert("this_is_a_gif" == extracted(0)(1))
     assert("gif" == extracted(0)(2))
@@ -60,7 +60,6 @@ class GetExtensionMimeTest extends FunSuite with BeforeAndAfter {
   }
 
   test("Get extension of file from URL with correct extension") {
-    assert(extracted.size == 1)
     assert("[https://ruebot.net/files/aut-test-fixtures/real_png.png" == extracted(1)(0))
     assert("real_png.png" == extracted(1)(1))
     assert("png" == extracted(1)(2))
@@ -70,7 +69,6 @@ class GetExtensionMimeTest extends FunSuite with BeforeAndAfter {
   }
 
   test("Get extension of file from URL with incorrect extension") {
-    assert(extracted.size == 1)
     assert("[https://ruebot.net/files/aut-test-fixtures/this_is_a_jpeg.mp3" == extracted(2)(0))
     assert("this_is_a_jpeg.mp3" == extracted(2)(1))
     assert("jpg" == extracted(2)(2))
