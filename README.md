@@ -59,7 +59,7 @@ Ok! Take a quick spin with `aut` with [Docker](https://github.com/archivesunleas
 
 ## Documentation! Or, how do I use this?
 
-Once built or downloaded, you can follow the basic set of recipes and tutorials [here](http://archivesunleashed.org/aut/).
+Once built or downloaded, you can follow the basic set of recipes and tutorials [here](https://github.com/archivesunleashed/aut/wiki/User-Documentation).
 
 # License
 
@@ -67,4 +67,6 @@ Licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/
 
 # Acknowledgments
 
-This work is primarily supported by the [Andrew W. Mellon Foundation](https://uwaterloo.ca/arts/news/multidisciplinary-project-will-help-historians-unlock). Additional funding for the Toolkit has come from the U.S. National Science Foundation, Columbia University Library's Mellon-funded Web Archiving Incentive Award, the Natural Sciences and Engineering Research Council of Canada, the Social Sciences and Humanities Research Council of Canada, and the Ontario Ministry of Research and Innovation's Early Researcher Award program. Any opinions, findings, and conclusions or recommendations expressed are those of the researchers and do not necessarily reflect the views of the sponsors.
+This work is primarily supported by the [Andrew W. Mellon Foundation](https://mellon.org/). Other financial and in-kind support comes from the [Social Sciences and Humanities Research Council](http://www.sshrc-crsh.gc.ca/), [Compute Canada](https://www.computecanada.ca/), the [Ontario Ministry of Research, Innovation, and Science](https://www.ontario.ca/page/ministry-research-innovation-and-science), [York University Libraries](https://www.library.yorku.ca/web/), [Start Smart Labs](http://www.startsmartlabs.com/), and the [Faculty of Arts](https://uwaterloo.ca/arts/) and [David R. Cheriton School of Computer Science](https://cs.uwaterloo.ca/) at the [University of Waterloo](https://uwaterloo.ca/).
+
+Any opinions, findings, and conclusions or recommendations expressed are those of the researchers and do not necessarily reflect the views of the sponsors.
