@@ -9,17 +9,17 @@
   <name>Archives Unleashed Toolkit</name>
   <description>An open-source toolkit for analyzing web archives.</description>
   <url>https://github.com/archivesunleashed/aut</url>
+  <inceptionYear>2017</inceptionYear>
 
   <organization>
-    <name>The Archives Unleased Project</name>
-    <url>http://archivesunleashed.org/</url>
+    <name>The Archives Unleashed Project</name>
+    <url>https://archivesunleashed.org/</url>
   </organization>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <project_name>${project.artifactId}</project_name>
-    <project_organization>The Archives Unleashed Project</project_organization>
+    <project.name>${project.artifactId}</project.name>
     <scala.version>2.11.12</scala.version>
     <hadoop.version>2.6.5</hadoop.version>
     <spark.version>2.4.3</spark.version>
@@ -218,23 +218,25 @@
         <artifactId>license-maven-plugin</artifactId>
         <version>${license.plugin.version}</version>
         <configuration>
-          <header>LICENSE_HEADER.txt</header>
+          <header>config/LICENSE_HEADER.txt</header>
           <mapping>
-              <java>SLASHSTAR_STYLE</java>
+            <java>SLASHSTAR_STYLE</java>
+            <scala>SLASHSTAR_STYLE</scala>
           </mapping>
           <includes>
-            <include>**/src/main/java/**</include>
-            <include>**/src/test/java/**</include>
+            <include>src/main/java/**</include>
+            <include>src/test/java/**</include>
+            <include>src/main/scala/**</include>
+            <include>src/test/scala/**</include>
           </includes>
           <excludes>
             <exclude>target/**</exclude>
-            <exclude>**/src/test/resources/**</exclude>
-            <exclude>**/src/main/resources/**</exclude>
+            <exclude>src/test/resources/**</exclude>
+            <exclude>src/main/resources/**</exclude>
             <exclude>**/*.properties</exclude>
           </excludes>
           <properties>
-            <name>${project.artifactId}</name>
-            <holder>${project.organization.name}</holder>
+            <owner>${project.organization.name}</owner>
           </properties>
           <encoding>UTF-8</encoding>
           <strictCheck>true</strictCheck>
