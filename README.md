@@ -2,8 +2,8 @@
 [![Build Status](https://travis-ci.org/archivesunleashed/aut.svg?branch=master)](https://travis-ci.org/archivesunleashed/aut)
 [![codecov](https://codecov.io/gh/archivesunleashed/aut/branch/master/graph/badge.svg)](https://codecov.io/gh/archivesunleashed/aut)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.archivesunleashed/aut/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.archivesunleashed/aut)
-[![Javadoc](https://javadoc-badge.appspot.com/io.archivesunleashed/aut.svg?label=javadoc)](http://java.docs.archivesunleashed.io/0.17.0/apidocs/index.html)
-[![Scaladoc](https://javadoc-badge.appspot.com/io.archivesunleashed/aut.svg?label=scaladoc)](http://java.docs.archivesunleashed.io/0.17.0/scaladocs/index.html)
+[![Javadoc](https://javadoc-badge.appspot.com/io.archivesunleashed/aut.svg?label=javadoc)](http://java.docs.archivesunleashed.io/0.18.0/apidocs/index.html)
+[![Scaladoc](https://javadoc-badge.appspot.com/io.archivesunleashed/aut.svg?label=scaladoc)](http://java.docs.archivesunleashed.io/0.18.0/scaladocs/index.html)
 [![LICENSE](https://img.shields.io/badge/license-Apache-blue.svg?style=flat-square)](./LICENSE)
 [![Contribution Guidelines](http://img.shields.io/badge/CONTRIBUTING-Guidelines-blue.svg)](./CONTRIBUTING.md)
 
@@ -20,7 +20,7 @@ The toolkit grew out of a previous project called [Warcbase](https://github.com/
 If you have Apache Spark ready to go, it's as easy as:
 
 ```
-$ spark-shell --packages "io.archivesunleashed:aut:0.17.0"
+$ spark-shell --packages "io.archivesunleashed:aut:0.18.0"
 ```
 
 ### A little less easy
@@ -28,7 +28,7 @@ $ spark-shell --packages "io.archivesunleashed:aut:0.17.0"
 You can download the [latest release here](https://github.com/archivesunleashed/aut/releases) and include it like so:
 
 ```
-$ spark-shell --jars /path/to/aut-0.17.0-fatjar.jar"
+$ spark-shell --jars /path/to/aut-0.18.0-fatjar.jar"
 ```
 
 ### Even less easy
