@@ -117,6 +117,26 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     assert (r2.sameElements(r))
   }
 
+  test ("keep mime tika") {
+    val base = RecordLoader.loadArchives(arcPath, sc)
+    val mime = Set ("text/plain", "image/jpeg")
+    val r2 = base.keepMimeTypesTika(mime)
+      .map (mp => mp.getUrl).take(3)
+    assert (r2.deep == Array("dns:www.archive.org",
+      "http://www.archive.org/robots.txt",
+      "http://www.archive.org/images/logoc.jpg").deep)
+  }
+
+  test ("keep mime web server") {
+    val base = RecordLoader.loadArchives(arcPath, sc)
+    val mime = Set ("text/plain", "image/jpeg")
+    val r2 = base.keepMimeTypes(mime)
+      .map (mp => mp.getUrl).take(3)
+    assert (r2.deep == Array("filedesc://IAH-20080430204825-00000-blackbook.arc",
+      "http://www.archive.org/robots.txt",
+      "http://www.archive.org/images/logoc.jpg").deep)
+  }
+
   test ("check for keep content"){
     val expected = 1
     val base = RecordLoader.loadArchives(arcPath, sc)
@@ -128,12 +148,22 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     assert (y1 == expected)
   }
 
-  test ("discard mime") {
+  test ("discard mime web server") {
     val base = RecordLoader.loadArchives(arcPath, sc)
     val mime = Set ("text/plain", "image/jpeg")
     val r2 = base.discardMimeTypes(mime)
       .map (mp => mp.getUrl).take(3)
-    assert (r2.deep == Array("dns:www.archive.org", archive, "http://www.archive.org/index.php").deep)
+    assert (r2.deep == Array("dns:www.archive.org", archive,
+      "http://www.archive.org/index.php").deep)
+  }
+
+  test ("discard mime tika") {
+    val base = RecordLoader.loadArchives(arcPath, sc)
+    val mime = Set ("text/plain", "image/jpeg")
+    val r2 = base.discardMimeTypesTika(mime)
+      .map (mp => mp.getUrl).take(3)
+    assert (r2.deep == Array("filedesc://IAH-20080430204825-00000-blackbook.arc",
+      "http://www.archive.org/", "http://www.archive.org/index.php").deep)
   }
 
   test ("discard date") {
