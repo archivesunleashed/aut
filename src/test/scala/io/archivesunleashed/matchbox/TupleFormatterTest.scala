@@ -34,6 +34,7 @@ class TupleFormatterTest extends FunSuite with Matchers {
     assert(TupleFormatter.tabDelimit(tuple) == "ab\tbl\tc\t9\td\t5\thi\t1")
     assert(TupleFormatter.tabDelimit.isInstanceOf[Poly1])
   }
+
   test("just flatten") {
     val tuple = ("an", 1, "cr", ("x", 3, ("NO", "YES")), "perhaps", "maybe", 3, (0,1))
     val flatTuple = ("an", 1, "cr", "x", 3, "NO", "YES", "perhaps", "maybe", 3, 0, 1)
