@@ -472,7 +472,7 @@ package object archivesunleashed {
         && DetectMimeTypeTika(r.getBinaryBytes).startsWith("image/"))
     }
 
-    /** Removes all data but selected mimeTypes specified in ArchiveRecord.
+    /** Removes all data but selected mimeTypes specified.
       *
       * @param mimeTypes a list of Mime Types
       */
@@ -488,7 +488,7 @@ package object archivesunleashed {
       rdd.filter(r => mimeTypes.contains(DetectMimeTypeTika(r.getBinaryBytes)))
     }
 
-    /** Removes all data that does not have selected status codes.
+    /** Removes all data that does not have selected HTTP status codes.
      *
      *  @param statusCodes a list of HTTP status codes
      */
@@ -496,7 +496,7 @@ package object archivesunleashed {
       rdd.filter(r => statusCodes.contains(r.getHttpStatus))
     }
 
-    /** Removes all data that does not have selected data.
+    /** Removes all data that does not have selected date.
       *
       * @param dates a list of dates
       * @param component the selected DateComponent enum value
@@ -513,7 +513,7 @@ package object archivesunleashed {
       rdd.filter(r => urls.contains(r.getUrl))
     }
 
-    /** Removes all data but selected url patterns.
+    /** Removes all data but selected URL patterns.
       *
       * @param urlREs a list of regular expressions
       */
@@ -555,7 +555,7 @@ package object archivesunleashed {
           }).exists(identity))
     }
 
-    /** Filters ArchiveRecord MimeTypes from RDDs.
+    /** Filters ArchiveRecord MimeTypes (web server).
       *
       * @param mimeTypes a list of Mime Types
       */
@@ -563,7 +563,7 @@ package object archivesunleashed {
       rdd.filter(r => !mimeTypes.contains(r.getMimeType))
     }
 
-    /** Filters detected MimeTypes from RDDs.
+    /** Filters detected MimeTypes (Tika).
       *
       * @param mimeTypes a list of Mime Types
       */
@@ -571,7 +571,7 @@ package object archivesunleashed {
       rdd.filter(r => !mimeTypes.contains(DetectMimeTypeTika(r.getBinaryBytes)))
     }
 
-    /** Filters detected dates from RDDs.
+    /** Filters detected dates.
       *
       * @param date a list of dates
       */
@@ -579,7 +579,7 @@ package object archivesunleashed {
       rdd.filter(r => r.getCrawlDate != date)
     }
 
-    /** Filters detected urls from RDDs.
+    /** Filters detected URLs.
       *
       * @param urls a list of urls
       */
@@ -587,7 +587,7 @@ package object archivesunleashed {
       rdd.filter(r => !urls.contains(r.getUrl))
     }
 
-    /** Filters detected status codes from RDDs.
+    /** Filters detected HTTP status codes.
       *
       * @param statusCodes a list of HTTP status codes
       */
@@ -595,7 +595,7 @@ package object archivesunleashed {
       rdd.filter(r => !statusCodes.contains(r.getHttpStatus))
     }
 
-    /** Filters detected url patterns from RDDs.
+    /** Filters detected URL patterns (regex).
      *
      *  @param urlREs a list of Regular expressions
      */
@@ -608,7 +608,7 @@ package object archivesunleashed {
           }).exists(identity))
     }
 
-    /** Filters detected domains (regex) from RDDs.
+    /** Filters detected domains (regex).
       *
       * @param urls a list of urls for the source domains
       */
@@ -616,7 +616,7 @@ package object archivesunleashed {
       rdd.filter(r => !urls.contains(r.getDomain))
     }
 
-    /** Filters detected content (regex) from RDDs.
+    /** Filters detected content (regex).
       *
       * @param contentREs a list of regular expressions
       */
@@ -627,6 +627,14 @@ package object archivesunleashed {
             case Some(v) => true
             case None => false
           }).exists(identity))
+    }
+
+    /** Filters detected language.
+      *
+      * @param lang a set of ISO 639-2 codes
+      */
+    def discardLanguages(lang: Set[String]): RDD[ArchiveRecord] = {
+      rdd.filter(r => !lang.contains(DetectLanguage(RemoveHTML(r.getContentString))))
     }
   }
 }

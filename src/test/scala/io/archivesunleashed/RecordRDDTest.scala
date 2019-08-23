@@ -117,6 +117,16 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     assert (r2.sameElements(r))
   }
 
+  test ("discard languages") {
+    val base2 = RecordLoader.loadArchives(arcPath, sc)
+      .keepValidPages()
+    val langs: Set[String] = Set("fr")
+    val r = Array("http://www.archive.org/", "http://www.archive.org/index.php")
+    val r2 = base2.discardLanguages(langs)
+      .map(r => r.getUrl).take(2)
+    assert (r2.sameElements(r))
+  }
+
   test ("keep mime tika") {
     val base = RecordLoader.loadArchives(arcPath, sc)
     val mime = Set ("text/plain", "image/jpeg")
