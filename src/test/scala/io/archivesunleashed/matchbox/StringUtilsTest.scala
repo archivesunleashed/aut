@@ -31,6 +31,7 @@ class StringUtilsTest extends FunSuite {
     // scalastyle:on null
     assert(s.removePrefixWWW() == "example.com")
     assert(n.removePrefixWWW() == "")
+    assert(n.removePrefixWWW().isEmpty)
   }
 
   test("create hash") {

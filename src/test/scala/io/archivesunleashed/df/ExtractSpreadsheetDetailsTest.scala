@@ -73,7 +73,6 @@ class ExtractSpreadsheetDetailsTest extends FunSuite with BeforeAndAfter {
     assert("text/csv" == extracted(3)(3))
     assert("text/plain" == extracted(3)(4))
     assert("38c3a488b239ec7b9b8e377b78968ef5" == extracted(3)(5))
-
   }
 
   after {
