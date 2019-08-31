@@ -37,9 +37,9 @@
     <site.plugin.version>3.3</site.plugin.version>
     <project-info-reports.plugin.version>2.7</project-info-reports.plugin.version>
     <doxia-markdown.plugin.version>1.7</doxia-markdown.plugin.version>
-    <failsafe.plugin.version>2.18.1</failsafe.plugin.version>
+    <failsafe.plugin.version>2.22.0</failsafe.plugin.version>
     <jxr.plugin.version>2.5</jxr.plugin.version>
-    <surefire.plugin.version>2.18.1</surefire.plugin.version>
+    <surefire.plugin.version>2.22.0</surefire.plugin.version>
     <jacoco.plugin.version>0.7.5.201505241946</jacoco.plugin.version>
     <versions.plugin.version>2.1</versions.plugin.version>
     <tika.version>1.22</tika.version>
@@ -82,8 +82,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.7.0</version>
         <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
+          <source>11</source>
+          <target>11</target>
         </configuration>
       </plugin>
       <plugin>
@@ -373,8 +373,12 @@
   <reporting>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
         <version>${failsafe.plugin.version}</version>
+        <configuration>
+          <argLine>--illegal-access=permit</argLine>
+        </configuration>
       </plugin>
 
       <plugin>
@@ -401,6 +405,7 @@
         <version>${surefire.plugin.version}</version>
         <configuration>
           <argLine>-XX:-UseSplitVerifier</argLine>
+          <argLine>--illegal-access=permit</argLine>
           <outputName>surefire-report</outputName>
           <aggregate>true</aggregate>
           <reportsDirectories>
@@ -513,6 +518,10 @@
         <exclusion>
           <groupId>org.apache.commons</groupId>
           <artifactId>commons-compress</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>jdk.tools</groupId>
+          <artifactId>jdk.tools</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -788,6 +797,10 @@
         <exclusion>
           <groupId>ch.qos.logback</groupId>
           <artifactId>logback-classic</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun</groupId>
+          <artifactId>tools</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
