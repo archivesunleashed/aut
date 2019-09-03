@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +15,7 @@
  */
 package io.archivesunleashed.app
 
-// scalastyle:off underscore.import
-import io.archivesunleashed._
-// scalastyle:on underscore.import
+import io.archivesunleashed.ArchiveRecord
 import io.archivesunleashed.matchbox.{ComputeImageSize, ComputeMD5}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{RangePartitioner, SparkContext}
@@ -41,7 +38,7 @@ object ExtractPopularImages {
   def apply(records: RDD[ArchiveRecord], limit: Int, sc:SparkContext, minWidth: Int = MIN_WIDTH, minHeight: Int = MIN_HEIGHT): RDD[String] = {
     val res = records
       .keepImages()
-      .map(r => ((r.getUrl, r.getImageBytes), 1))
+      .map(r => ((r.getUrl, r.getBinaryBytes), 1))
       .map(img => (ComputeMD5(img._1._2), (ComputeImageSize(img._1._2), img._1._1, img._2)))
       .filter(img => img._2._1._1 >= minWidth && img._2._1._2 >= minHeight)
       .reduceByKey((image1, image2) => (image1._1, image1._2, image1._3 + image2._3))

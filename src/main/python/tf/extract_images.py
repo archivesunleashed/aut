@@ -1,13 +1,19 @@
-import numpy as np
 import argparse
+
+import numpy as np
+
 from model.object_detection import SSDExtractor
 
 
 def get_args():
-    parser = argparse.ArgumentParser(description='Extracting images from model output.')
-    parser.add_argument('--res_dir', help='Path of result (model output) directory.')
-    parser.add_argument('--output_dir', help='Path of extracted image file output directory.')
-    parser.add_argument('--threshold', type=float, help='Threshold of detection confidence scores.')
+    parser = argparse.ArgumentParser(description="Extracting images from model output.")
+    parser.add_argument("--res_dir", help="Path of result (model output) directory.")
+    parser.add_argument(
+        "--output_dir", help="Path of extracted image file output directory."
+    )
+    parser.add_argument(
+        "--threshold", type=float, help="Threshold of detection confidence scores."
+    )
     return parser.parse_args()
 
 

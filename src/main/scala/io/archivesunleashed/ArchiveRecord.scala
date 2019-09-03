@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +55,7 @@ trait ArchiveRecord extends Serializable {
   def getDomain: String
 
   /** Returns a raw array of bytes for an image. */
-  def getImageBytes: Array[Byte]
+  def getBinaryBytes: Array[Byte]
 
   /** Returns the http status of the crawl. */
   def getHttpStatus: String
@@ -107,7 +106,7 @@ class ArchiveRecordImpl(r: SerializableWritable[ArchiveRecordWritable]) extends 
   val getContentBytes: Array[Byte] = {
     if (recordFormat == ArchiveRecordWritable.ArchiveFormat.ARC)
     {
-      ArcRecordUtils.getBodyContent(r.t.getRecord.asInstanceOf[ARCRecord])
+      ArcRecordUtils.getContent(r.t.getRecord.asInstanceOf[ARCRecord])
     } else {
       WarcRecordUtils.getContent(r.t.getRecord.asInstanceOf[WARCRecord])
     }
@@ -150,7 +149,7 @@ class ArchiveRecordImpl(r: SerializableWritable[ArchiveRecordWritable]) extends 
     ExtractDomain(getUrl)
   }
 
-  val getImageBytes: Array[Byte] = {
+  val getBinaryBytes: Array[Byte] = {
     if (getContentString.startsWith("HTTP/")) {
       getContentBytes.slice(
         getContentString.indexOf(RemoveHttpHeader.headerEnd)

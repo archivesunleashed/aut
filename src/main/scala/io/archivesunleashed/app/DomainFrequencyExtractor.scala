@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,10 +44,10 @@ object DomainFrequencyExtractor {
   def apply(d: DataFrame): Dataset[Row] = {
     val spark = SparkSession.builder().master("local").getOrCreate()
     // scalastyle:off
-    import spark.implicits._ 
+    import spark.implicits._
     // scalastyle:on
 
-    d.select(df.ExtractBaseDomain($"Url").as("Domain"))
-      .groupBy("Domain").count().orderBy(desc("count"))
+    d.select(df.ExtractBaseDomain($"url").as("domain"))
+      .groupBy("domain").count().orderBy(desc("count"))
   }
 }

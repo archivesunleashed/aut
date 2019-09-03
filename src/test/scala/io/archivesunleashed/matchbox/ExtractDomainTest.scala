@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,17 +24,20 @@ import org.scalatest.junit.JUnitRunner
 class ExtractDomainTest extends FunSuite {
   private val index = "index.html"
   private val umiacs = "www.umiacs.umd.edu"
+  private val jimmylin = "http://www.umiacs.umd.edu/~jimmylin/"
+  private val lintool = "https://github.com/lintool"
+  private val github = "github.com"
 
   private val data1: Seq[(String, String)] = Seq.newBuilder.+=(
-    ("http://www.umiacs.umd.edu/~jimmylin/", umiacs),
-    ("https://github.com/lintool", "github.com"),
+    (jimmylin, umiacs),
+    (lintool, github),
     ("http://ianmilligan.ca/2015/05/04/iipc-2015-slides-for-warcs-wats-and-wgets-presentation/", "ianmilligan.ca"),
     (index, "")).result()
 
   private val data2 = Seq.newBuilder.+=(
-    (index, "http://www.umiacs.umd.edu/~jimmylin/", umiacs),
-    ("https://github.com/lintool", "http://www.umiacs.umd.edu/~jimmylin/", "github.com"),
-    (index, "https://github.com/lintool", "github.com")).result()
+    (index, jimmylin, umiacs),
+    (lintool, jimmylin, github),
+    (index, lintool, github)).result()
 
   private val data3 = Seq.newBuilder.+=(
     ("http://www.seetorontonow.canada-booknow.com\\booking_results.php", "www.seetorontonow.canada-booknow.com")).result()

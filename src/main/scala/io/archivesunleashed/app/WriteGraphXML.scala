@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +14,7 @@
  * limitations under the License.
  */
 package io.archivesunleashed.app
-// scalastyle:off underscore.import
-import io.archivesunleashed.matchbox._
-import org.apache.spark.graphx._
-// scalastyle:on underscore.import
+import org.apache.spark.graphx.Graph
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 import io.archivesunleashed.app.ExtractGraphX.{VertexData,EdgeData,VertexDataPR}

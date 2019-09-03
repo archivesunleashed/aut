@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +15,7 @@
  */
 package io.archivesunleashed.app
 
-// scalastyle:off underscore.import
-import io.archivesunleashed._
-import io.archivesunleashed.matchbox
-import org.apache.spark.graphx._
-// scalastyle:on underscore.import
+import org.apache.spark.graphx.{Edge, Graph, PartitionStrategy, VertexId}
 import org.apache.spark.rdd.RDD
 
 /** Extracts a site link structure using Spark's GraphX utility. */

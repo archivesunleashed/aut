@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +70,16 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
       .map ( mp => mp.getUrl).take(3)
     assert (r2.sameElements(r)) }
 
-  test ("keepUrls") {
+  test ("keep http status codes") {
+    val expected = 129
+    val base = RecordLoader.loadArchives(arcPath, sc)
+      .keepValidPages()
+    val statusCodes: Set[String] = Set ("200", "404")
+    val r2 = base.keepHttpStatus(statusCodes).count
+    assert (r2 == expected)
+  }
+
+  test ("keep urls") {
     val expected = 1
     val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
@@ -80,7 +88,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     assert (r2 == expected)
   }
 
-  test ("keepUrlPatterns") {
+  test ("keep url patterns") {
     val expected = 1
     val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
@@ -109,6 +117,36 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     assert (r2.sameElements(r))
   }
 
+  test ("discard languages") {
+    val base2 = RecordLoader.loadArchives(arcPath, sc)
+      .keepValidPages()
+    val langs: Set[String] = Set("fr")
+    val r = Array("http://www.archive.org/", "http://www.archive.org/index.php")
+    val r2 = base2.discardLanguages(langs)
+      .map(r => r.getUrl).take(2)
+    assert (r2.sameElements(r))
+  }
+
+  test ("keep mime tika") {
+    val base = RecordLoader.loadArchives(arcPath, sc)
+    val mime = Set ("text/plain", "image/jpeg")
+    val r2 = base.keepMimeTypesTika(mime)
+      .map (mp => mp.getUrl).take(3)
+    assert (r2.deep == Array("dns:www.archive.org",
+      "http://www.archive.org/robots.txt",
+      "http://www.archive.org/images/logoc.jpg").deep)
+  }
+
+  test ("keep mime web server") {
+    val base = RecordLoader.loadArchives(arcPath, sc)
+    val mime = Set ("text/plain", "image/jpeg")
+    val r2 = base.keepMimeTypes(mime)
+      .map (mp => mp.getUrl).take(3)
+    assert (r2.deep == Array("filedesc://IAH-20080430204825-00000-blackbook.arc",
+      "http://www.archive.org/robots.txt",
+      "http://www.archive.org/images/logoc.jpg").deep)
+  }
+
   test ("check for keep content"){
     val expected = 1
     val base = RecordLoader.loadArchives(arcPath, sc)
@@ -120,12 +158,22 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     assert (y1 == expected)
   }
 
-  test ("discard mime") {
+  test ("discard mime web server") {
     val base = RecordLoader.loadArchives(arcPath, sc)
     val mime = Set ("text/plain", "image/jpeg")
     val r2 = base.discardMimeTypes(mime)
       .map (mp => mp.getUrl).take(3)
-    assert (r2.deep == Array("dns:www.archive.org", archive, "http://www.archive.org/index.php").deep)
+    assert (r2.deep == Array("dns:www.archive.org", archive,
+      "http://www.archive.org/index.php").deep)
+  }
+
+  test ("discard mime tika") {
+    val base = RecordLoader.loadArchives(arcPath, sc)
+    val mime = Set ("text/plain", "image/jpeg")
+    val r2 = base.discardMimeTypesTika(mime)
+      .map (mp => mp.getUrl).take(3)
+    assert (r2.deep == Array("filedesc://IAH-20080430204825-00000-blackbook.arc",
+      "http://www.archive.org/", "http://www.archive.org/index.php").deep)
   }
 
   test ("discard date") {
@@ -145,12 +193,21 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     assert (r2 == expected)
   }
 
-  test ("discard UrlPatterns") {
+  test ("discard url patterns") {
     val expected = 134
     val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
     val urls = Set (archive.r, sloan.r, "".r)
     val r2 = base.discardUrlPatterns(urls).count
+    assert (r2 == expected)
+  }
+
+  test ("discard http status codes") {
+    val expected = 6
+    val base = RecordLoader.loadArchives(arcPath, sc)
+      .keepValidPages()
+    val statusCodes: Set[String] = Set ("200", "404")
+    val r2 = base.discardHttpStatus(statusCodes).count
     assert (r2 == expected)
   }
 

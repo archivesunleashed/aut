@@ -9,8 +9,7 @@
  <check class="org.scalastyle.file.HeaderMatchesChecker" level="warning" enabled="true">
   <parameters>
    <parameter name="header"><![CDATA[/*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,7 +66,7 @@
    <parameter name="maxParameters"><![CDATA[8]]></parameter>
   </parameters>
  </check>
- <check class="org.scalastyle.scalariform.MagicNumberChecker" level="warning" enabled="true">
+ <check class="org.scalastyle.scalariform.MagicNumberChecker" level="warning" enabled="false">
   <parameters>
    <parameter name="ignore"><![CDATA[-1,0,1,2,3]]></parameter>
   </parameters>
@@ -75,7 +74,7 @@
  <check class="org.scalastyle.scalariform.NoWhitespaceBeforeLeftBracketChecker" level="warning" enabled="true"></check>
  <check class="org.scalastyle.scalariform.NoWhitespaceAfterLeftBracketChecker" level="warning" enabled="true"></check>
  <check class="org.scalastyle.scalariform.ReturnChecker" level="warning" enabled="true"></check>
- <check class="org.scalastyle.scalariform.NullChecker" level="warning" enabled="true"></check>
+ <check class="org.scalastyle.scalariform.NullChecker" level="warning" enabled="false"></check>
  <check class="org.scalastyle.scalariform.NoCloneChecker" level="warning" enabled="true"></check>
  <check class="org.scalastyle.scalariform.NoFinalizeChecker" level="warning" enabled="true"></check>
  <check class="org.scalastyle.scalariform.CovariantEqualsChecker" level="warning" enabled="true"></check>

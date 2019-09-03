@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,9 +44,9 @@ class ExtractPopularImagesTest extends FunSuite with BeforeAndAfter {
     val examplerdd = RecordLoader.loadArchives(arcPath, sc)
     val imagesLowLimit = ExtractPopularImages(examplerdd, 3, sc)
     val imagesHighLimit = ExtractPopularImages(examplerdd, highTest, sc)
-    val response = Array("1\thttp://creativecommons.org/images/public/somerights20.gif",
-      "1\thttp://www.archive.org/images/blendbar.jpg",
-      "1\thttp://www.archive.org/images/main-header.jpg")
+    val response = Array("1\thttp://www.archive.org/images/books-small.jpg",
+      "1\thttp://i.creativecommons.org/l/by-sa/3.0/88x31.png",
+      "1\thttp://www.archive.org/images/blendbar.jpg")
     assert (imagesLowLimit.take(3).deep == response.deep)
     assert (imagesHighLimit.take(3).deep == response.deep)
   }

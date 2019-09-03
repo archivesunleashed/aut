@@ -5,22 +5,22 @@
   <groupId>io.archivesunleashed</groupId>
   <artifactId>aut</artifactId>
   <packaging>jar</packaging>
-  <version>0.17.1-SNAPSHOT</version>
+  <version>0.18.1-SNAPSHOT</version>
   <name>Archives Unleashed Toolkit</name>
   <description>An open-source toolkit for analyzing web archives.</description>
   <url>https://github.com/archivesunleashed/aut</url>
+  <inceptionYear>2017</inceptionYear>
 
   <organization>
-    <name>The Archives Unleased Project</name>
-    <url>http://archivesunleashed.org/</url>
+    <name>The Archives Unleashed Project</name>
+    <url>https://archivesunleashed.org/</url>
   </organization>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <project_name>${project.artifactId}</project_name>
-    <project_organization>The Archives Unleashed Project</project_organization>
-    <scala.version>2.11.8</scala.version>
+    <project.name>${project.artifactId}</project.name>
+    <scala.version>2.11.12</scala.version>
     <hadoop.version>2.6.5</hadoop.version>
     <spark.version>2.4.3</spark.version>
     <github.global.server>github</github.global.server>
@@ -42,7 +42,7 @@
     <surefire.plugin.version>2.18.1</surefire.plugin.version>
     <jacoco.plugin.version>0.7.5.201505241946</jacoco.plugin.version>
     <versions.plugin.version>2.1</versions.plugin.version>
-    <tika.version>1.20</tika.version>
+    <tika.version>1.22</tika.version>
   </properties>
 
   <licenses>
@@ -64,6 +64,10 @@
     <repository>
       <id>maven</id>
       <url>http://repo.maven.apache.org/maven2/</url>
+    </repository>
+    <repository>
+      <id>mvn-repo</id>
+      <url>https://raw.githubusercontent.com/archivesunleashed/aut-resources/master/mvn-repo</url>
     </repository>
     <repository>
       <id>jitpack.io</id>
@@ -116,7 +120,9 @@
               <shadedClassifierName>fatjar</shadedClassifierName>
               <artifactSet>
                 <excludes>
-                  <exclude>org.apache.hadoop:*</exclude>
+                  <exclude>org.apache.hadoop:hadoop-core</exclude>
+                  <exclude>org.apache.hadoop:hadoop-common</exclude>
+                  <exclude>org.apache.hadoop:hadoop-mapreduce-client-core</exclude>
                   <exclude>org.apache.spark:*</exclude>
                 </excludes>
               </artifactSet>
@@ -212,23 +218,25 @@
         <artifactId>license-maven-plugin</artifactId>
         <version>${license.plugin.version}</version>
         <configuration>
-          <header>LICENSE_HEADER.txt</header>
+          <header>config/LICENSE_HEADER.txt</header>
           <mapping>
-              <java>SLASHSTAR_STYLE</java>
+            <java>SLASHSTAR_STYLE</java>
+            <scala>SLASHSTAR_STYLE</scala>
           </mapping>
           <includes>
-            <include>**/src/main/java/**</include>
-            <include>**/src/test/java/**</include>
+            <include>src/main/java/**</include>
+            <include>src/test/java/**</include>
+            <include>src/main/scala/**</include>
+            <include>src/test/scala/**</include>
           </includes>
           <excludes>
             <exclude>target/**</exclude>
-            <exclude>**/src/test/resources/**</exclude>
-            <exclude>**/src/main/resources/**</exclude>
+            <exclude>src/test/resources/**</exclude>
+            <exclude>src/main/resources/**</exclude>
             <exclude>**/*.properties</exclude>
           </excludes>
           <properties>
-            <name>${project.artifactId}</name>
-            <holder>${project.organization.name}</holder>
+            <owner>${project.organization.name}</owner>
           </properties>
           <encoding>UTF-8</encoding>
           <strictCheck>true</strictCheck>
@@ -456,7 +464,7 @@
     <dependency>
       <groupId>org.scalatest</groupId>
       <artifactId>scalatest_2.11</artifactId>
-      <version>3.0.1</version>
+      <version>3.0.8</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -472,7 +480,7 @@
     <dependency>
       <groupId>com.chuusai</groupId>
       <artifactId>shapeless_2.11</artifactId>
-      <version>2.3.2</version>
+      <version>2.3.3</version>
       <exclusions>
         <exclusion>
           <groupId>org.typelevel</groupId>
@@ -483,7 +491,7 @@
     <dependency>
       <groupId>org.scala-lang.modules</groupId>
       <artifactId>scala-parser-combinators_2.11</artifactId>
-      <version>1.0.5</version>
+      <version>1.1.1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.hadoop</groupId>
@@ -501,6 +509,10 @@
         <exclusion>
           <groupId>javax.xml.bind</groupId>
           <artifactId>jaxb-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-compress</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -536,6 +548,10 @@
         <exclusion>
           <groupId>org.apache.commons</groupId>
           <artifactId>commons-math3</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-compress</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -587,11 +603,6 @@
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-graphx_2.11</artifactId>
       <version>${spark.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>15.0</version>
     </dependency>
     <dependency>
       <groupId>org.xerial.snappy</groupId>
@@ -647,7 +658,10 @@
       <version>${tika.version}</version>
     </dependency>
     <dependency>
+      <!-- see issue #302
       <groupId>org.apache.tika</groupId>
+      -->
+      <groupId>com.github.archivesunleashed.tika</groupId>
       <artifactId>tika-parsers</artifactId>
       <version>${tika.version}</version>
       <exclusions>
@@ -663,6 +677,22 @@
           <groupId>javax.ws.rs</groupId>
           <artifactId>javax.ws.rs-api</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.ant</groupId>
+          <artifactId>ant</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.google.protobuf</groupId>
+          <artifactId>protobuf-java</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.activation</groupId>
+          <artifactId>jakarta.activation</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -673,6 +703,14 @@
         <exclusion>
           <groupId>com.optimaize.languagedetector</groupId>
           <artifactId>language-detector</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.activation</groupId>
+          <artifactId>jakarta.activation</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -704,6 +742,16 @@
     </dependency>
     <!--END pull #321-->
     <!--START issue #113-->
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+      <version>2.10.3</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.activation</groupId>
+      <artifactId>jakarta.activation-api</artifactId>
+      <version>1.2.1</version>
+    </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-compress</artifactId>
@@ -740,6 +788,17 @@
         <exclusion>
           <groupId>ch.qos.logback</groupId>
           <artifactId>logback-classic</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-aws</artifactId>
+      <version>${hadoop.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-databind</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

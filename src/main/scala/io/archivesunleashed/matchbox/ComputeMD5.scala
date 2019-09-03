@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,12 +23,10 @@ object ComputeMD5 {
 // scalastyle:on object.name
   /** Computes the MD5 checksum of a byte array (eg. an image).
     *
-    * For string data, it is better to use `StringUtils.computeHash()`.
-    *
     * @param bytes
     * @return MD5 checksum.
     */
   def apply(bytes: Array[Byte]): String = {
-    new String(MessageDigest.getInstance("MD5").digest(bytes))
+    MessageDigest.getInstance("MD5").digest(bytes).map("%02x".format(_)).mkString
   }
 }

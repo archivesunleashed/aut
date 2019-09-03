@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +20,7 @@ import java.io.{BufferedReader, BufferedWriter, InputStreamReader, OutputStreamW
 import io.archivesunleashed.matchbox.NERClassifier
 import io.archivesunleashed.util.JsonUtils
 import org.apache.hadoop.conf.Configuration
-// scalastyle:off underscore.import
-import org.apache.hadoop.fs._
-// scalastyle:on underscore.import
+import org.apache.hadoop.fs.{FileUtil, FileSystem, Path}
 import org.apache.spark.SparkContext
 
 import scala.collection.mutable.MutableList
