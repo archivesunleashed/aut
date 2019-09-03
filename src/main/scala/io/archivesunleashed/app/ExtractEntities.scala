@@ -36,9 +36,18 @@ object ExtractEntities {
     * @param sc the Apache Spark context
     * @return an rdd with classification entities.
     */
-  def extractFromRecords(iNerClassifierFile: String, inputRecordFile: String, outputFile: String, sc: SparkContext): RDD[(String, String, String, String)] = {
+  def extractFromRecords(iNerClassifierFile: String, inputRecordFile: String,
+    outputFile: String,
+    sc: SparkContext): RDD[(String, String, String, String)] = {
+    val statusCodes = Set("200")
     val rdd = RecordLoader.loadArchives(inputRecordFile, sc)
-      .map(r => (r.getCrawlDate, r.getUrl, RemoveHTML(r.getContentString), ComputeMD5((RemoveHTML(r.getContentString)).getBytes)))
+      .keepValidPages()
+      .keepHttpStatus(statusCodes)
+      .map(r => (("\"timestamp\":\"" + r.getCrawlDate + "\""),
+        ("\"url\":\"" + r.getUrl + "\""),
+        RemoveHTML(r.getContentString),
+        ("\"digest\":\"md5:" + ComputeMD5((RemoveHTML(r.getContentString))
+          .getBytes) + "\"")))
     extractAndOutput(iNerClassifierFile, rdd, outputFile)
   }
 
@@ -50,7 +59,9 @@ object ExtractEntities {
     * @param outputFile path of output directory
     * @return an rdd with classification entities.
     */
-  def extractFromScrapeText(iNerClassifierFile: String, inputFile: String, outputFile: String, sc: SparkContext): RDD[(String, String, String, String)] = {
+  def extractFromScrapeText(iNerClassifierFile: String, inputFile: String,
+    outputFile: String,
+    sc: SparkContext): RDD[(String, String, String, String)] = {
     val rdd = sc.textFile(inputFile)
       .map(line => {
         val ind1 = line.indexOf(",")
@@ -70,9 +81,10 @@ object ExtractEntities {
     * @param outputFile path of output directory
     * @return an rdd of tuples with classification entities extracted.
     */
-  def extractAndOutput(iNerClassifierFile: String, rdd: RDD[(String, String, String, String)], outputFile: String): RDD[(String, String, String, String)] = {
+  def extractAndOutput(iNerClassifierFile: String,
+    rdd: RDD[(String, String, String, String)],
+    outputFile: String): RDD[(String, String, String, String)] = {
     val r = rdd.mapPartitions(iter => {
-
       NERClassifier.apply(iNerClassifierFile)
       iter.map(r => (r._1, r._2, NERClassifier.classify(r._3), r._4))
     })
