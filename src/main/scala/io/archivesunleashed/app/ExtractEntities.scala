@@ -45,7 +45,7 @@ object ExtractEntities {
       .keepHttpStatus(statusCodes)
       .map(r => (("\"timestamp\":\"" + r.getCrawlDate + "\""),
         ("\"url\":\"" + r.getUrl + "\""),
-        RemoveHTML(r.getContentString),
+        (RemoveHTML(r.getContentString)),
         ("\"digest\":\"md5:" + ComputeMD5((RemoveHTML(r.getContentString))
           .getBytes) + "\"")))
     extractAndOutput(iNerClassifierFile, rdd, outputFile)
@@ -86,7 +86,8 @@ object ExtractEntities {
     outputFile: String): RDD[(String, String, String, String)] = {
     val r = rdd.mapPartitions(iter => {
       NERClassifier.apply(iNerClassifierFile)
-      iter.map(r => (r._1, r._2, NERClassifier.classify(r._3), r._4))
+      iter.map(r => (r._1, r._2,
+        ("\"named_entities\":" + NERClassifier.classify(r._3)), r._4))
     })
     r.saveAsTextFile(outputFile)
     r

@@ -54,10 +54,10 @@ object NERClassifier {
   /** Performs NER classificiation based on NER Classifier.
    *
    * @param input
-   * @return json array containing lists of persons, organizations, and locations.
+   * @return json string containing lists of persons, organizations, and locations.
    */
   def classify(input: String): String = {
-    val emptyString: String = "\"named_entities\":{\"persons\":[],\"organizations\":[],\"locations\":[]}"
+    val emptyString: String = "\"persons\":[],\"organizations\":[],\"locations\":[]"
     val entitiesByType = mutable.LinkedHashMap[NERClassType.Value, mutable.Seq[String]]()
     for (t <- NERClassType.values) {
       if (t != NERClassType.O) { entitiesByType.put(t, mutable.Seq()) }
