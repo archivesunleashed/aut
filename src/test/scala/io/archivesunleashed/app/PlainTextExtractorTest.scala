@@ -43,7 +43,7 @@ class PlainTextExtractorTest extends FunSuite with BeforeAndAfter {
     val df = RecordLoader.loadArchives(arcPath, sc).extractValidPagesDF()
     val rddResults = PlainTextExtractor(rdd).collect()
     val dfResults = PlainTextExtractor(df).collect()
-    val RESULTSLENGTH = 135
+    val RESULTSLENGTH = 94
 
     assert(rddResults.length == RESULTSLENGTH)
     assert(rddResults(0)._1 == "20080430")
