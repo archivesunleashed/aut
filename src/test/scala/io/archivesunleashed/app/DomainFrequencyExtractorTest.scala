@@ -49,20 +49,20 @@ class DomainFrequencyExtractorTest extends FunSuite with BeforeAndAfter {
     // +------------------+-----+
     // |            Domain|count|
     // +------------------+-----+
-    // |   www.archive.org|  132|
+    // |   www.archive.org|   91|
     // |     deadlists.com|    2|
     // |www.hideout.com.br|    1|
     // +------------------+-----+
 
     assert(dfResults(0).get(0) == "www.archive.org")
-    assert(dfResults(0).get(1) == 132)
+    assert(dfResults(0).get(1) == 91)
     assert(dfResults(1).get(0) == "deadlists.com")
     assert(dfResults(1).get(1) == 2)
     assert(dfResults(2).get(0) == "www.hideout.com.br")
     assert(dfResults(2).get(1) == 1)
 
     assert(rddResults(0)._1 == "www.archive.org")
-    assert(rddResults(0)._2 == 132)
+    assert(rddResults(0)._2 == 91)
     assert(rddResults(1)._1 == "deadlists.com")
     assert(rddResults(1)._2 == 2)
     assert(rddResults(2)._1 == "www.hideout.com.br")

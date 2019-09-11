@@ -95,17 +95,20 @@ package object archivesunleashed {
           || r.getMimeType == "application/xhtml+xml"
           || r.getUrl.toLowerCase.endsWith("htm")
           || r.getUrl.toLowerCase.endsWith("html"))
-          && !r.getUrl.toLowerCase.endsWith("robots.txt"))
+          && !r.getUrl.toLowerCase.endsWith("robots.txt")
+          && r.getHttpStatus == "200")
     }
 
     def extractValidPagesDF(): DataFrame = {
       val records = rdd.keepValidPages()
-        .map(r => Row(r.getCrawlDate, r.getUrl, r.getMimeType, r.getContentString))
+        .map(r => Row(r.getCrawlDate, r.getUrl, r.getMimeType,
+          DetectMimeTypeTika(r.getBinaryBytes), r.getContentString))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("mime_type_web_server", StringType, true))
+        .add(StructField("mime_type_tika", StringType, true))
         .add(StructField("content", StringType, true))
 
       val sqlContext = SparkSession.builder()
@@ -115,7 +118,8 @@ package object archivesunleashed {
     def extractHyperlinksDF(): DataFrame = {
       val records = rdd
         .keepValidPages()
-        .flatMap(r => ExtractLinks(r.getUrl, r.getContentString).map(t => (r.getCrawlDate, t._1, t._2, t._3)))
+        .flatMap(r => ExtractLinks(r.getUrl, r.getContentString)
+        .map(t => (r.getCrawlDate, t._1, t._2, t._3)))
         .map(t => Row(t._1, t._2, t._3, t._4))
 
       val schema = new StructType()

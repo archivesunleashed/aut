@@ -71,7 +71,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     assert (r2.sameElements(r)) }
 
   test ("keep http status codes") {
-    val expected = 129
+    val expected = 94
     val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
     val statusCodes: Set[String] = Set ("200", "404")
@@ -98,7 +98,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
   }
 
   test ("check for domains") {
-    val expected = 132
+    val expected = 91
     val base2 = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
     val urls: Set[String] = Set("www.archive.org", "www.sloan.org")
@@ -185,7 +185,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
   }
 
   test ("discard urls") {
-    val expected = 135
+    val expected = 94
     val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
     val urls: Set[String] = Set (sloan)
@@ -194,7 +194,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
   }
 
   test ("discard url patterns") {
-    val expected = 134
+    val expected = 93
     val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
     val urls = Set (archive.r, sloan.r, "".r)
@@ -203,16 +203,15 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
   }
 
   test ("discard http status codes") {
-    val expected = 6
+    val expected = 46
     val base = RecordLoader.loadArchives(arcPath, sc)
-      .keepValidPages()
     val statusCodes: Set[String] = Set ("200", "404")
     val r2 = base.discardHttpStatus(statusCodes).count
     assert (r2 == expected)
   }
 
   test ("discard domains") {
-    val expected = 135
+    val expected = 94
     val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
     val urls: Set[String] = Set ("www.sloan.org")
@@ -221,7 +220,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
   }
 
   test ("discard content") {
-    val expected = 134
+    val expected = 93
     val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
     val regno = Set(regex, raw"UNINTELLIBLEDFSJKLS".r)
