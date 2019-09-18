@@ -63,7 +63,6 @@ trait ArchiveRecord extends Serializable {
 
   /** Returns payload digest (SHA1). */
   def getPayloadDigest: String
-
 }
 
 /** Default implementation of a record in a web archive.

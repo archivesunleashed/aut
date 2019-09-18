@@ -48,29 +48,6 @@ object ExtractEntities {
     extractAndOutput(iNerClassifierFile, rdd, outputFile)
   }
 
-  /** Extracts named entities from tuple-formatted derivatives scraped from a website.
-    *
-    * @param iNerClassifierFile path of classifier file
-    * @param inputFile path of file containing tuples (date: String, url: String, content: String)
-    *                  from which to extract entities
-    * @param outputFile path of output directory
-    * @return an rdd with classification entities.
-    */
-  def extractFromScrapeText(iNerClassifierFile: String, inputFile: String,
-    outputFile: String,
-    sc: SparkContext): RDD[(String, String, String, String)] = {
-    val rdd = sc.textFile(inputFile)
-      .map(line => {
-        val ind1 = line.indexOf(",")
-        val ind2 = line.indexOf(",", ind1 + 1)
-        (line.substring(1, ind1),
-          line.substring(ind1 + 1, ind2),
-          line.substring(ind2 + 1, line.length - 1),
-          ComputeMD5((line.substring(ind2 + 1, line.length - 1)).getBytes))
-        })
-    extractAndOutput(iNerClassifierFile, rdd, outputFile)
-  }
-
   /** Saves the NER output to file from a given RDD.
     *
     * @param iNerClassifierFile path of classifier file
@@ -83,10 +60,10 @@ object ExtractEntities {
     outputFile: String): RDD[(String, String, String, String)] = {
     val r = rdd.mapPartitions(iter => {
       NERClassifier.apply(iNerClassifierFile)
-      iter.map(r => (r._1, r._2,
-        ("\"named_entities\":" + NERClassifier.classify(r._3)), r._4))
+      iter.map(r => (("{" + r._1), r._2,
+        ("\"named_entities\":" + NERClassifier.classify(r._3)), (r._4 + "}")))
     })
-    r.saveAsTextFile(outputFile)
+    r.map(r => r._1 + "," + r._2 + "," + r._3 + "," + r._4).saveAsTextFile(outputFile)
     r
   }
 }
