@@ -149,7 +149,7 @@ public final class WarcRecordUtils implements WARCConstants {
       return null;
     }
 
-    // Just using parseHeaders to move down input stream to body
+    // Just using parseHeaders to move down input stream to body.
     HttpParser.parseHeaders(record, WARC_HEADER_ENCODING);
     record.dump(baos);
     return baos.toByteArray();

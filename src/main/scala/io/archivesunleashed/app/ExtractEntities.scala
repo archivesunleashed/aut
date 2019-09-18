@@ -39,15 +39,12 @@ object ExtractEntities {
   def extractFromRecords(iNerClassifierFile: String, inputRecordFile: String,
     outputFile: String,
     sc: SparkContext): RDD[(String, String, String, String)] = {
-    val statusCodes = Set("200")
     val rdd = RecordLoader.loadArchives(inputRecordFile, sc)
       .keepValidPages()
-      .keepHttpStatus(statusCodes)
       .map(r => (("\"timestamp\":\"" + r.getCrawlDate + "\""),
         ("\"url\":\"" + r.getUrl + "\""),
         (RemoveHTML(r.getContentString)),
-        ("\"digest\":\"md5:" + ComputeMD5((RemoveHTML(r.getContentString))
-          .getBytes) + "\"")))
+        ("\"digest\":\"" + r.getPayloadDigest + "\"")))
     extractAndOutput(iNerClassifierFile, rdd, outputFile)
   }
 
