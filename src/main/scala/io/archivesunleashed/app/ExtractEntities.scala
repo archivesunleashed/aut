@@ -53,7 +53,7 @@ object ExtractEntities {
     * @param iNerClassifierFile path of classifier file
     * @param rdd with values (date, url, content, content digest)
     * @param outputFile path of output directory
-    * @return an rdd of tuples with classification entities extracted.
+    * @return a json object with classification entities extracted.
     */
   def extractAndOutput(iNerClassifierFile: String,
     rdd: RDD[(String, String, String, String)],
@@ -63,7 +63,8 @@ object ExtractEntities {
       iter.map(r => (("{" + r._1), r._2,
         ("\"named_entities\":" + NERClassifier.classify(r._3)), (r._4 + "}")))
     })
-    r.map(r => r._1 + "," + r._2 + "," + r._3 + "," + r._4).saveAsTextFile(outputFile)
+    r.map(r => r._1 + "," + r._2 + "," + r._3 + "," + r._4)
+      .saveAsTextFile(outputFile)
     r
   }
 }
