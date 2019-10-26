@@ -27,7 +27,8 @@ object RemoveHTML {
    * @return content without html markup.
    */
   def apply(content: String): String = {
-    val maybeContent: Option[String] = Option(content)
+    // First remove the HTTP header.
+    val maybeContent: Option[String] = Option(RemoveHttpHeader(content))
     maybeContent match {
       case Some(content) =>
         Jsoup.parse(content).text().replaceAll("[\\r\\n]+", " ")

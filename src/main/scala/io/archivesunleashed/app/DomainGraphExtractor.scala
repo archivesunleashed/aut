@@ -55,8 +55,8 @@ object DomainGraphExtractor {
     import spark.implicits._
     // scalastyle:on
     d.select($"crawl_date",
-      df.RemovePrefixWWW(df.ExtractBaseDomain($"src")).as("src_domain"),
-      df.RemovePrefixWWW(df.ExtractBaseDomain($"dest")).as("dest_domain"))
+      df.RemovePrefixWWW(df.ExtractDomain($"src")).as("src_domain"),
+      df.RemovePrefixWWW(df.ExtractDomain($"dest")).as("dest_domain"))
       .filter("src_domain != ''").filter("dest_domain != ''")
       .groupBy($"crawl_date", $"src_domain", $"dest_domain").count().orderBy(desc("count"))
   }
