@@ -114,6 +114,19 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
       exampleStatusCode2).deep)
   }
 
+  test("Get Payload Digest") {
+    val textSampleArc = RecordLoader.loadArchives(arcPath, sc)
+      .map(x => x.getPayloadDigest).take(3)
+    val textSampleWarc = RecordLoader.loadArchives(warcPath, sc)
+      .map(x => x.getPayloadDigest).take(3)
+    assert (textSampleArc.deep == Array("sha1:252efd6dd414d91812dd9b0f897cdb2b44f64601",
+      "sha1:8d115d0e83c5dcd66b13619e04d60a36cb2c1ee4",
+      "sha1:ede22581685942721c7b9743dced317633d00e33").deep)
+    assert (textSampleWarc.deep == Array(null,
+      "sha1:SUCGMUVXDKVB5CS2NL4R4JABNX7K466U",
+      "sha1:2WAXX5NUWNNCS2BDKCO5OVDQBJVNKIVV").deep)
+  }
+
   after {
     if (sc != null) {
       sc.stop()

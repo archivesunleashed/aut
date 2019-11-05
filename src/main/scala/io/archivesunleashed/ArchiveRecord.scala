@@ -18,9 +18,10 @@ package io.archivesunleashed
 
 import java.text.SimpleDateFormat
 import java.io.ByteArrayInputStream
+import java.security.MessageDigest
 
 import io.archivesunleashed.data.{ArcRecordUtils, WarcRecordUtils, ArchiveRecordWritable}
-import io.archivesunleashed.matchbox.{ExtractDate, ExtractDomain, RemoveHttpHeader}
+import io.archivesunleashed.matchbox.{ComputeMD5, ExtractDate, ExtractDomain, RemoveHttpHeader}
 import org.apache.spark.SerializableWritable
 import org.archive.io.arc.ARCRecord
 import org.archive.io.warc.WARCRecord
@@ -60,6 +61,8 @@ trait ArchiveRecord extends Serializable {
   /** Returns the http status of the crawl. */
   def getHttpStatus: String
 
+  /** Returns payload digest (SHA1). */
+  def getPayloadDigest: String
 }
 
 /** Default implementation of a record in a web archive.
@@ -156,6 +159,14 @@ class ArchiveRecordImpl(r: SerializableWritable[ArchiveRecordWritable]) extends 
           + RemoveHttpHeader.headerEnd.length, getContentBytes.length)
     } else {
       getContentBytes
+    }
+  }
+
+  val getPayloadDigest: String = {
+    if (recordFormat == ArchiveRecordWritable.ArchiveFormat.ARC){
+      "sha1:" + MessageDigest.getInstance("SHA1").digest(getContentBytes).map("%02x".format(_)).mkString
+    } else {
+      r.t.getRecord.asInstanceOf[WARCRecord].getHeader.getHeaderValue("WARC-Payload-Digest").asInstanceOf[String]
     }
   }
 }
