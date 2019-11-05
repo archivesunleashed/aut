@@ -44,7 +44,7 @@ object PlainTextExtractor {
     // scalastyle:off
     import spark.implicits._
     // scalastyle:on
-    d.select($"crawl_date", df.ExtractBaseDomain($"url").as("domain"),
+    d.select($"crawl_date", df.ExtractDomain($"url").as("domain"),
       $"url", df.RemoveHTML($"content").as("Text"))
   }
 }
