@@ -7,7 +7,7 @@
 [![LICENSE](https://img.shields.io/badge/license-Apache-blue.svg?style=flat-square)](./LICENSE)
 [![Contribution Guidelines](http://img.shields.io/badge/CONTRIBUTING-Guidelines-blue.svg)](./CONTRIBUTING.md)
 
-The Archives Unleashed Toolkit is an open-source toolkit for analyzing web archives built around [Apache Spark](https://spark.apache.org/). This toolkit is part of the [Archives Unleashed Project](http://archivesunleashed.org/).
+The Archives Unleashed Toolkit is an open-source platform for analyzing web archives built on [Apache Spark](http://spark.apache.org/), which provides powerful tools for analytics and data processing. This toolkit is part of the [Archives Unleashed Project](http://archivesunleashed.org/).
 
 The toolkit grew out of a previous project called [Warcbase](https://github.com/lintool/warcbase). The following article provides a nice overview, much of which is still relevant:
 
