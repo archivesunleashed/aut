@@ -21,14 +21,14 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class RemoveHttpHeaderTest extends FunSuite {
+class RemoveHTTPHeaderTest extends FunSuite {
   test("simple") {
     val header = "HTTP/1.1 200 OK\r\n\r\nHello content"
     val nohttp = "This has no Http"
-    val removed = RemoveHttpHeader(header)
-    val unchanged = RemoveHttpHeader(nohttp)
+    val removed = RemoveHTTPHeader(header)
+    val unchanged = RemoveHTTPHeader(nohttp)
     // scalastyle:off null
-    val error = RemoveHttpHeader(null)
+    val error = RemoveHTTPHeader(null)
     // scalastyle:on null
     assert(removed == "Hello content")
     assert(unchanged == nohttp)
