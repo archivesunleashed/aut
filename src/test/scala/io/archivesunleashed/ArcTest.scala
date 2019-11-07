@@ -103,7 +103,7 @@ class ArcTest extends FunSuite with BeforeAndAfter {
 
   test("detect mime type tika") {
     val mimeTypeCounts = RecordLoader.loadArchives(arcPath, sc)
-      .map(r => RemoveHttpHeader(r.getContentString))
+      .map(r => RemoveHTTPHeader(r.getContentString))
       .groupBy(content => DetectMimeTypeTika(content.getBytes))
       .map(f => {
         (f._1, f._2.size)

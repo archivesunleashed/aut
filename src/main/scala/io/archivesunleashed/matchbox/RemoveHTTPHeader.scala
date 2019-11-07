@@ -16,7 +16,7 @@
 package io.archivesunleashed.matchbox
 
 /** Remove HTTP headers. */
-object RemoveHttpHeader {
+object RemoveHTTPHeader {
   val headerEnd = "\r\n\r\n"
 
   /** Remove HTTP headers.
