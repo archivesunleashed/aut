@@ -13,25 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.archivesunleashed.matchbox
 
-import org.junit.runner.RunWith
-import org.scalatest.FunSuite
-import org.scalatest.junit.JUnitRunner
+/** Remove HTTP headers. */
+object RemoveHTTPHeader {
+  val headerEnd = "\r\n\r\n"
 
-@RunWith(classOf[JUnitRunner])
-class RemoveHttpHeaderTest extends FunSuite {
-  test("simple") {
-    val header = "HTTP/1.1 200 OK\r\n\r\nHello content"
-    val nohttp = "This has no Http"
-    val removed = RemoveHttpHeader(header)
-    val unchanged = RemoveHttpHeader(nohttp)
-    // scalastyle:off null
-    val error = RemoveHttpHeader(null)
-    // scalastyle:on null
-    assert(removed == "Hello content")
-    assert(unchanged == nohttp)
-    assert( error == "" )
+  /** Remove HTTP headers.
+   *
+   * @param content string of WARC or ARC-based text content
+   * @return string with HTTP headers removed.
+   */
+  def apply(content: String): String = {
+    val maybeContent: Option[String] = Option(content)
+    maybeContent match {
+      case Some(content) =>
+        if (content.startsWith("HTTP/")){
+          content.substring(content.indexOf(headerEnd) + headerEnd.length)
+        } else {
+          content
+        }
+      case None =>
+        ""
+    }
   }
 }

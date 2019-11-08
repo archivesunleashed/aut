@@ -47,7 +47,7 @@ object DomainFrequencyExtractor {
     import spark.implicits._
     // scalastyle:on
 
-    d.select(df.ExtractBaseDomain($"url").as("domain"))
+    d.select(df.ExtractDomain($"url").as("domain"))
       .groupBy("domain").count().orderBy(desc("count"))
   }
 }

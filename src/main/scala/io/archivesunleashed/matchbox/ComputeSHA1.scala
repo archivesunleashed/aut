@@ -15,26 +15,18 @@
  */
 package io.archivesunleashed.matchbox
 
-/** Remove HTTP headers. */
-object RemoveHttpHeader {
-  val headerEnd = "\r\n\r\n"
+import java.security.MessageDigest
 
-  /** Remove HTTP headers.
-   *
-   * @param content string of WARC or ARC-based text content
-   * @return string with HTTP headers removed.
-   */
-  def apply(content: String): String = {
-    val maybeContent: Option[String] = Option(content)
-    maybeContent match {
-      case Some(content) =>
-        if (content.startsWith("HTTP/")){
-          content.substring(content.indexOf(headerEnd) + headerEnd.length)
-        } else {
-          content
-        }
-      case None =>
-        ""
-    }
+/** Compute SHA1 checksum. */
+// scalastyle:off object.name
+object ComputeSHA1 {
+// scalastyle:on object.name
+  /** Computes the MD5 checksum of a byte array (eg. an image).
+    *
+    * @param bytes
+    * @return SHA1 checksum.
+    */
+  def apply(bytes: Array[Byte]): String = {
+    MessageDigest.getInstance("SHA1").digest(bytes).map("%02x".format(_)).mkString
   }
 }

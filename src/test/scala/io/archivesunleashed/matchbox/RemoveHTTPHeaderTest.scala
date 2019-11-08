@@ -13,27 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.archivesunleashed.matchbox
 
-import java.io.IOException
-import org.jsoup.Jsoup
+import org.junit.runner.RunWith
+import org.scalatest.FunSuite
+import org.scalatest.junit.JUnitRunner
 
-/** Removes HTML markup with JSoup. */
-object RemoveHTML {
-
-  /** Removes HTML markup.
-   *
-   * @param content an html or text string
-   * @return content without html markup.
-   */
-  def apply(content: String): String = {
-    // First remove the HTTP header.
-    val maybeContent: Option[String] = Option(RemoveHTTPHeader(content))
-    maybeContent match {
-      case Some(content) =>
-        Jsoup.parse(content).text().replaceAll("[\\r\\n]+", " ")
-      case None =>
-        ""
-    }
+@RunWith(classOf[JUnitRunner])
+class RemoveHTTPHeaderTest extends FunSuite {
+  test("simple") {
+    val header = "HTTP/1.1 200 OK\r\n\r\nHello content"
+    val nohttp = "This has no Http"
+    val removed = RemoveHTTPHeader(header)
+    val unchanged = RemoveHTTPHeader(nohttp)
+    // scalastyle:off null
+    val error = RemoveHTTPHeader(null)
+    // scalastyle:on null
+    assert(removed == "Hello content")
+    assert(unchanged == nohttp)
+    assert( error == "" )
   }
 }

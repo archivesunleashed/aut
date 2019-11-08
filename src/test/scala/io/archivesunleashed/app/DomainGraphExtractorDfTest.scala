@@ -40,7 +40,7 @@ class DomainGraphExtractorDfTest extends FunSuite with BeforeAndAfter {
 
   test("DomainGraphExtractor") {
     val TESTLENGTH = 166
-    val TESTRESULT = 316
+    val TESTRESULT = 280
     val df = RecordLoader.loadArchives(arcPath, sc).extractHyperlinksDF()
     val dfResult = DomainGraphExtractor(df).collect()
     assert(dfResult.length == TESTLENGTH)

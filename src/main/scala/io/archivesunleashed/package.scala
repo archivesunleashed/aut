@@ -95,17 +95,20 @@ package object archivesunleashed {
           || r.getMimeType == "application/xhtml+xml"
           || r.getUrl.toLowerCase.endsWith("htm")
           || r.getUrl.toLowerCase.endsWith("html"))
-          && !r.getUrl.toLowerCase.endsWith("robots.txt"))
+          && !r.getUrl.toLowerCase.endsWith("robots.txt")
+          && r.getHttpStatus == "200")
     }
 
     def extractValidPagesDF(): DataFrame = {
       val records = rdd.keepValidPages()
-        .map(r => Row(r.getCrawlDate, r.getUrl, r.getMimeType, r.getContentString))
+        .map(r => Row(r.getCrawlDate, r.getUrl, r.getMimeType,
+          DetectMimeTypeTika(r.getBinaryBytes), r.getContentString))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("mime_type_web_server", StringType, true))
+        .add(StructField("mime_type_tika", StringType, true))
         .add(StructField("content", StringType, true))
 
       val sqlContext = SparkSession.builder()
@@ -115,7 +118,8 @@ package object archivesunleashed {
     def extractHyperlinksDF(): DataFrame = {
       val records = rdd
         .keepValidPages()
-        .flatMap(r => ExtractLinks(r.getUrl, r.getContentString).map(t => (r.getCrawlDate, t._1, t._2, t._3)))
+        .flatMap(r => ExtractLinks(r.getUrl, r.getContentString)
+        .map(t => (r.getCrawlDate, t._1, t._2, t._3)))
         .map(t => Row(t._1, t._2, t._3, t._4))
 
       val schema = new StructType()
@@ -158,9 +162,9 @@ package object archivesunleashed {
           val filename = FilenameUtils.getName(url.getPath())
           val extension = GetExtensionMime(url.getPath(), mimeTypeTika)
           (r.getUrl, filename, extension, r.getMimeType, mimeTypeTika,
-            image.width, image.height, image.hash, image.body)
+            image.width, image.height, image.md5Hash, image.sha1Hash, image.body)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10))
 
       val schema = new StructType()
         .add(StructField("url", StringType, true))
@@ -171,6 +175,7 @@ package object archivesunleashed {
         .add(StructField("width", IntegerType, true))
         .add(StructField("height", IntegerType, true))
         .add(StructField("md5", StringType, true))
+        .add(StructField("sha1", StringType, true))
         .add(StructField("bytes", StringType, true))
 
       val sqlContext = SparkSession.builder();
@@ -186,15 +191,16 @@ package object archivesunleashed {
         .filter(r => r._2 == "application/pdf")
         .map(r => {
           val bytes = r._1.getBinaryBytes
-          val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val sha1Hash = new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
           val extension = GetExtensionMime(url.getPath(), r._2)
           (r._1.getUrl, filename, extension, r._1.getMimeType,
-            DetectMimeTypeTika(r._1.getBinaryBytes), hash, encodedBytes)
+            DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8))
 
       val schema = new StructType()
         .add(StructField("url", StringType, true))
@@ -203,6 +209,7 @@ package object archivesunleashed {
         .add(StructField("mime_type_web_server", StringType, true))
         .add(StructField("mime_type_tika", StringType, true))
         .add(StructField("md5", StringType, true))
+        .add(StructField("sha1", StringType, true))
         .add(StructField("bytes", StringType, true))
 
       val sqlContext = SparkSession.builder();
@@ -218,15 +225,16 @@ package object archivesunleashed {
         .filter(r => r._2.startsWith("audio/"))
         .map(r => {
           val bytes = r._1.getBinaryBytes
-          val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val sha1Hash = new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
           val extension = GetExtensionMime(url.getPath(), r._2)
           (r._1.getUrl, filename, extension, r._1.getMimeType,
-            DetectMimeTypeTika(r._1.getBinaryBytes), hash, encodedBytes)
+            DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8))
 
       val schema = new StructType()
         .add(StructField("url", StringType, true))
@@ -235,6 +243,7 @@ package object archivesunleashed {
         .add(StructField("mime_type_web_server", StringType, true))
         .add(StructField("mime_type_tika", StringType, true))
         .add(StructField("md5", StringType, true))
+        .add(StructField("sha1", StringType, true))
         .add(StructField("bytes", StringType, true))
 
       val sqlContext = SparkSession.builder();
@@ -250,15 +259,16 @@ package object archivesunleashed {
         .filter(r => r._2.startsWith("video/"))
         .map(r => {
           val bytes = r._1.getBinaryBytes
-          val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val sha1Hash = new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
           val extension = GetExtensionMime(url.getPath(), r._2)
           (r._1.getUrl, filename, extension, r._1.getMimeType,
-            DetectMimeTypeTika(r._1.getBinaryBytes), hash, encodedBytes)
+            DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8))
 
       val schema = new StructType()
         .add(StructField("url", StringType, true))
@@ -267,6 +277,7 @@ package object archivesunleashed {
         .add(StructField("mime_type_web_server", StringType, true))
         .add(StructField("mime_type_tika", StringType, true))
         .add(StructField("md5", StringType, true))
+        .add(StructField("sha1", StringType, true))
         .add(StructField("bytes", StringType, true))
 
       val sqlContext = SparkSession.builder();
@@ -307,7 +318,8 @@ package object archivesunleashed {
             && r._2 == "text/plain"))
         .map(r => {
           val bytes = r._1.getBinaryBytes
-          val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val sha1Hash = new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
@@ -321,9 +333,9 @@ package object archivesunleashed {
           }
           val extension = GetExtensionMime(url.getPath(), mimeType)
           (r._1.getUrl, filename, extension, r._1.getMimeType,
-            DetectMimeTypeTika(r._1.getBinaryBytes), hash, encodedBytes)
+            DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8))
 
       val schema = new StructType()
         .add(StructField("url", StringType, true))
@@ -332,6 +344,7 @@ package object archivesunleashed {
         .add(StructField("mime_type_web_server", StringType, true))
         .add(StructField("mime_type_tika", StringType, true))
         .add(StructField("md5", StringType, true))
+        .add(StructField("sha1", StringType, true))
         .add(StructField("bytes", StringType, true))
 
       val sqlContext = SparkSession.builder();
@@ -359,15 +372,16 @@ package object archivesunleashed {
           || r._2 == "application/vnd.ms-powerpoint.template.macroEnabled.12")
         .map(r => {
           val bytes = r._1.getBinaryBytes
-          val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val sha1Hash = new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
           val extension = GetExtensionMime(url.getPath(), r._2)
           (r._1.getUrl, filename, extension, r._1.getMimeType,
-            DetectMimeTypeTika(r._1.getBinaryBytes), hash, encodedBytes)
+            DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8))
 
       val schema = new StructType()
         .add(StructField("url", StringType, true))
@@ -376,6 +390,7 @@ package object archivesunleashed {
         .add(StructField("mime_type_web_server", StringType, true))
         .add(StructField("mime_type_tika", StringType, true))
         .add(StructField("md5", StringType, true))
+        .add(StructField("sha1", StringType, true))
         .add(StructField("bytes", StringType, true))
 
       val sqlContext = SparkSession.builder();
@@ -408,15 +423,16 @@ package object archivesunleashed {
           || r._2 == "application/rtf")
         .map(r => {
           val bytes = r._1.getBinaryBytes
-          val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val sha1Hash = new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
           val extension = GetExtensionMime(url.getPath(), r._2)
           (r._1.getUrl, filename, extension, r._1.getMimeType,
-            DetectMimeTypeTika(r._1.getBinaryBytes), hash, encodedBytes)
+            DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8))
 
       val schema = new StructType()
         .add(StructField("url", StringType, true))
@@ -425,6 +441,7 @@ package object archivesunleashed {
         .add(StructField("mime_type_web_server", StringType, true))
         .add(StructField("mime_type_tika", StringType, true))
         .add(StructField("md5", StringType, true))
+        .add(StructField("sha1", StringType, true))
         .add(StructField("bytes", StringType, true))
 
       val sqlContext = SparkSession.builder();
@@ -443,15 +460,16 @@ package object archivesunleashed {
           || !r.getUrl.toLowerCase.endsWith(".html"))
         .map(r => {
           val bytes = r.getBinaryBytes
-          val hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val sha1Hash = new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
           val extension = FilenameUtils.getExtension(url.getPath())
           (r.getUrl, filename, extension, r.getMimeType,
-            DetectMimeTypeTika(r.getBinaryBytes), hash, encodedBytes)
+            DetectMimeTypeTika(r.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8))
 
       val schema = new StructType()
         .add(StructField("url", StringType, true))
@@ -460,6 +478,7 @@ package object archivesunleashed {
         .add(StructField("mime_type_web_server", StringType, true))
         .add(StructField("mime_type_tika", StringType, true))
         .add(StructField("md5", StringType, true))
+        .add(StructField("sha1", StringType, true))
         .add(StructField("bytes", StringType, true))
 
       val sqlContext = SparkSession.builder();
