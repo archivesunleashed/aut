@@ -82,16 +82,19 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.7.0</version>
+        <version>3.8.0</version>
         <configuration>
+          <debug>true</debug>
+          <release>11</release>
           <source>11</source>
           <target>11</target>
+          <compilerArgument>-Xlint:unchecked,deprecation</compilerArgument>
         </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>3.1.0</version>
+        <version>3.2.1</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -117,7 +120,7 @@
                   </excludes>
                 </filter>
               </filters>
-              <!-- this will create both a normal thin jar and also a fatjar -->
+              <!-- This will create both a normal thin jar and also a fatjar. -->
               <shadedArtifactAttached>true</shadedArtifactAttached>
               <shadedClassifierName>fatjar</shadedClassifierName>
               <artifactSet>
@@ -133,7 +136,7 @@
         </executions>
       </plugin>
 
-      <!-- for Scala -->
+      <!-- For Scala. -->
       <plugin>
         <groupId>net.alchim31.maven</groupId>
         <artifactId>scala-maven-plugin</artifactId>
@@ -168,7 +171,7 @@
           </args>
         </configuration>
       </plugin>
-      <!-- for checkstyle -->
+      <!-- For checkstyle. -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
@@ -192,7 +195,7 @@
           </execution>
         </executions>
       </plugin>
-      <!-- for scalastyle -->
+      <!-- For scalastyle. -->
       <plugin>
         <groupId>org.scalastyle</groupId>
         <artifactId>scalastyle-maven-plugin</artifactId>
@@ -216,7 +219,7 @@
           </execution>
         </executions>
       </plugin>
-      <!-- for mycila -->
+      <!-- For license header enforcement. -->
       <plugin>
         <groupId>com.mycila</groupId>
         <artifactId>license-maven-plugin</artifactId>
@@ -253,7 +256,7 @@
           </execution>
         </executions>
       </plugin>
-      <!-- So we can release aut -->
+      <!-- So we can release aut. -->
       <plugin>
         <artifactId>maven-release-plugin</artifactId>
         <version>${release.plugin.version}</version>
@@ -282,7 +285,7 @@
         </configuration>
         <dependencies>
           <dependency>
-            <!-- allows markdown syntax for site generation. To use it
+            <!-- Allows markdown syntax for site generation. To use it
                  place files below src/site/markdown/[filename].md -->
             <groupId>org.apache.maven.doxia</groupId>
             <artifactId>doxia-module-markdown</artifactId>
@@ -318,12 +321,12 @@
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>${javadoc.plugin.version}</version>
         <configuration>
-          <javadocExecutable>/usr/bin/javadoc</javadocExecutable>
+          <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
           <linksource>true</linksource>
           <quiet>true</quiet>
+          <source>11</source>
         </configuration>
         <executions>
-          <!--
           <execution>
             <id>verify-javadocs</id>
             <goals>
@@ -331,7 +334,6 @@
               <goal>test-jar</goal>
             </goals>
           </execution>
-          -->
           <execution>
             <id>attach-javadocs</id>
             <goals>
@@ -351,8 +353,7 @@
         <artifactId>build-helper-maven-plugin</artifactId>
         <version>${build-helper.plugin.version}</version>
       </plugin>
-
-      <!-- this is to create a zip of PySpark modules -->
+      <!-- This is to create a zip of PySpark modules. -->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.6</version>
@@ -373,7 +374,6 @@
           </execution>
         </executions>
       </plugin>
-
     </plugins>
   </build>
 
@@ -387,7 +387,6 @@
           <argLine>--illegal-access=permit</argLine>
         </configuration>
       </plugin>
-
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>${javadoc.plugin.version}</version>
@@ -395,20 +394,10 @@
           <linksource>true</linksource>
         </configuration>
       </plugin>
-
-      <!--
-      <plugin>
-        <groupId>net.alchim31.maven</groupId>
-        <artifactId>scala-maven-plugin</artifactId>
-        <version>4.2.0</version>
-      </plugin>
-      -->
-
       <plugin>
         <artifactId>maven-jxr-plugin</artifactId>
         <version>${jxr.plugin.version}</version>
       </plugin>
-
       <plugin>
         <artifactId>maven-surefire-report-plugin</artifactId>
         <version>${surefire.plugin.version}</version>
@@ -423,7 +412,6 @@
           </reportsDirectories>
         </configuration>
       </plugin>
-
       <plugin>
         <artifactId>maven-project-info-reports-plugin</artifactId>
         <version>${project-info-reports.plugin.version}</version>
@@ -432,13 +420,11 @@
           <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
         </configuration>
       </plugin>
-
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
         <version>${jacoco.plugin.version}</version>
       </plugin>
-
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>versions-maven-plugin</artifactId>
@@ -453,7 +439,6 @@
           </reportSet>
         </reportSets>
       </plugin>
-
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>cobertura-maven-plugin</artifactId>
@@ -473,7 +458,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.8.2</version>
+      <version>4.12</version>
     </dependency>
     <dependency>
       <groupId>org.scalatest</groupId>
@@ -483,7 +468,7 @@
     </dependency>
     <dependency>
       <groupId>org.scala-lang.modules</groupId>
-      <artifactId>scala-parser-combinators_2.12</artifactId>
+      <artifactId>scala-parser-combinators_${scala.binary.version}</artifactId>
       <version>1.1.2</version>
     </dependency>
     <dependency>
@@ -493,80 +478,18 @@
     </dependency>
     <dependency>
       <groupId>com.chuusai</groupId>
-      <artifactId>shapeless_2.12</artifactId>
+      <artifactId>shapeless_${scala.binary.version}</artifactId>
       <version>2.3.3</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.typelevel</groupId>
-          <artifactId>macro-compat_2.11</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.hadoop</groupId>
       <artifactId>hadoop-mapreduce-client-core</artifactId>
       <version>${hadoop.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.google.protobuf</groupId>
-          <artifactId>protobuf-java</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>javax.xml.bind</groupId>
-          <artifactId>jaxb-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.commons</groupId>
-          <artifactId>commons-compress</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>jdk.tools</groupId>
-          <artifactId>jdk.tools</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.hadoop</groupId>
       <artifactId>hadoop-common</artifactId>
       <version>${hadoop.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-configuration</groupId>
-          <artifactId>commons-configuration</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.google.protobuf</groupId>
-          <artifactId>protobuf-java</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>commons-codec</groupId>
-          <artifactId>commons-codec</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>commons-io</groupId>
-          <artifactId>commons-io</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.google.code.gson</groupId>
-          <artifactId>gson</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.commons</groupId>
-          <artifactId>commons-math3</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.commons</groupId>
-          <artifactId>commons-compress</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.spark</groupId>
@@ -586,7 +509,7 @@
     <dependency>
       <groupId>org.xerial.snappy</groupId>
       <artifactId>snappy-java</artifactId>
-      <version>1.1.4</version>
+      <version>1.1.7.3</version>
     </dependency>
     <dependency>
       <groupId>org.jsoup</groupId>
@@ -596,7 +519,13 @@
     <dependency>
       <groupId>org.netpreserve.commons</groupId>
       <artifactId>webarchive-commons</artifactId>
-      <version>1.1.8</version>
+      <version>1.1.9</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.hadoop</groupId>
+          <artifactId>hadoop-core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>edu.stanford.nlp</groupId>
@@ -614,7 +543,7 @@
       <version>${tika.version}</version>
     </dependency>
     <dependency>
-      <!-- see issue #302
+      <!-- See issue #302.
       <groupId>org.apache.tika</groupId>
       -->
       <groupId>com.github.archivesunleashed.tika</groupId>
@@ -645,20 +574,20 @@
       <artifactId>scallop_${scala.binary.version}</artifactId>
       <version>3.3.1</version>
     </dependency>
-    <dependency>  <!-- needed for running boilerpipe, but will compile without -->
+    <dependency>  <!-- Needed for running boilerpipe, but will compile without. -->
       <groupId>com.syncthemall</groupId>
       <artifactId>boilerpipe</artifactId>
       <version>1.2.2</version>
     </dependency>
-    <dependency>  <!-- needed for running boilerpipe. -->
+    <dependency>  <!-- Needed for running boilerpipe. -->
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
-      <version>2.11.0</version>
+      <version>2.12.0</version>
     </dependency>
     <dependency>
       <groupId>tl.lin</groupId>
       <artifactId>lintools-datatypes</artifactId>
-      <version>1.0.0</version>
+      <version>1.1.1</version>
     </dependency>
     <!--START pull #321-->
     <dependency>
@@ -667,44 +596,7 @@
       <version>language-detector-0.6a</version>
     </dependency>
     <!--END pull #321-->
-    <!--START issue #113-->
-    <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-      <version>2.10.5</version>
-    </dependency>
-    <dependency>
-      <groupId>jakarta.activation</groupId>
-      <artifactId>jakarta.activation-api</artifactId>
-      <version>1.2.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-compress</artifactId>
-      <version>1.19</version>
-    </dependency>
-    <dependency>
-      <groupId>jline</groupId>
-      <artifactId>jline</artifactId>
-      <version>0.9.94</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-math3</artifactId>
-      <version>3.6.1</version>
-    </dependency>
-     <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <version>1.2</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpcore</artifactId>
-      <version>4.4.10</version>
-    </dependency>
-    <!--END issue #113-->
-    <!-- for codecov.io -->
+    <!-- For codecov.io reports. -->
     <dependency>
       <groupId>org.codehaus.mojo</groupId>
       <artifactId>cobertura-maven-plugin</artifactId>
