@@ -9,10 +9,6 @@ jdk:
   - openjdk8
   - openjdk11
 
-matrix:
-  allow_failures:
-    - jdk: openjdk11
-
 before_install:
  - "echo $JAVA_OPTS"
  - "export JAVA_OPTS=-Xmx512m"
