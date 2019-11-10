@@ -13,6 +13,11 @@ The toolkit grew out of a previous project called [Warcbase](https://github.com/
 
 + Jimmy Lin, Ian Milligan, Jeremy Wiebe, and Alice Zhou. [Warcbase: Scalable Analytics Infrastructure for Exploring Web Archives](https://dl.acm.org/authorize.cfm?key=N46731). _ACM Journal on Computing and Cultural Heritage_, 10(4), Article 22, 2017.
 
+## Dependencies
+
+- Java 11
+- [Apache Spark](https://spark.apache.org/) 3.x.x
+
 ## Getting Started
 
 ### Easy
