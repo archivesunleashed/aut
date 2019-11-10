@@ -22,7 +22,6 @@ script:
  - mvn install -B -V
  - mvn javadoc:jar
  - mvn javadoc:test-aggregate
- - mvn cobertura:cobertura
  - mvn site
 
 after_success:
