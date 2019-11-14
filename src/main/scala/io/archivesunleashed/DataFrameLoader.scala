@@ -22,67 +22,67 @@ import org.apache.spark.sql.DataFrame
 class DataFrameLoader(sc: SparkContext) {
 
   /** Create a DataFram with crawl_date, url, mime_type_web_server, and content. */
-  def extractValidPages(path: String): DataFrame = {
+  def pages(path: String): DataFrame = {
     RecordLoader.loadArchives(path, sc)
-      .extractValidPagesDF()
+      .pages()
   }
 
   /** Create a DataFrame with crawl_date, source, destination, and anchor. */
-  def extractHyperlinks(path: String): DataFrame = {
+  def webgraph(path: String): DataFrame = {
     RecordLoader.loadArchives(path, sc)
-      .extractHyperlinksDF()
+      .webgraph()
   }
 
   /* Create a DataFrame with source page, and image url. */
-  def extractImageLinks(path: String): DataFrame = {
+  def imageLinks(path: String): DataFrame = {
     RecordLoader.loadArchives(path, sc)
-      .extractImageLinksDF()
+      .imageLinks()
   }
 
   /** Create a DataFrame with image url, filename, extension, mime_type_web_servr, mime_type_tika, width, height, md5, and raw bytes. */
-  def extractImages(path: String): DataFrame = {
+  def images(path: String): DataFrame = {
     RecordLoader.loadArchives(path, sc)
-      .extractImageDetailsDF()
+      .images()
   }
 
   /** Create a DataFrame with PDF url, filename, extension, mime_type_web_servr, mime_type_tika, md5, and raw bytes. */
-  def extractPDFs(path: String): DataFrame = {
+  def pdfs(path: String): DataFrame = {
     RecordLoader.loadArchives(path, sc)
-    .extractPDFDetailsDF
+    .pdfs
   }
   /** Create a DataFrame with audio url, filename, extension, mime_type_web_servr, mime_type_tika, md5, and raw bytes. */
-  def extractAudio(path: String): DataFrame = {
+  def audio(path: String): DataFrame = {
     RecordLoader.loadArchives(path, sc)
-    .extractAudioDetailsDF
+    .audio
   }
 
   /** Create a DataFrame with video url, filename, extension, mime_type_web_servr, mime_type_tika, md5, and raw bytes. */
-  def extractVideo(path: String): DataFrame = {
+  def videos(path: String): DataFrame = {
     RecordLoader.loadArchives(path, sc)
-    .extractVideoDetailsDF
+    .videos
   }
 
   /** Create a DataFrame with spreadsheet url, filename, extension, mime_type_web_servr, mime_type_tika, md5, and raw bytes. */
-  def extractSpreadsheets(path: String): DataFrame = {
+  def spreadsheets(path: String): DataFrame = {
     RecordLoader.loadArchives(path, sc)
-    .extractSpreadsheetDetailsDF
+    .spreadsheets
   }
 
   /** Create a DataFrame with presentation program url, filename, extension, mime_type_web_servr, mime_type_tika, md5, and raw bytes. */
-  def extractPresentationProgram(path: String): DataFrame = {
+  def presentationProgramFiles(path: String): DataFrame = {
     RecordLoader.loadArchives(path, sc)
-    .extractPresentationProgramDetailsDF
+    .presentationProgramFiles
   }
 
   /** Create a DataFrame with word processor url, filename, extension, mime_type_web_servr, mime_type_tika, md5, and raw bytes. */
-  def extractWordProcessor(path: String): DataFrame = {
+  def wordProcessorFiles(path: String): DataFrame = {
     RecordLoader.loadArchives(path, sc)
-    .extractWordProcessorDetailsDF
+    .wordProcessorFiles
   }
 
   /** Create a DataFrame with text file url, filename, extension, mime_type_web_servr, mime_type_tika, md5, and raw bytes. */
-  def extractTextFiles(path: String): DataFrame = {
+  def textFiles(path: String): DataFrame = {
     RecordLoader.loadArchives(path, sc)
-    .extractTextFilesDetailsDF
+    .textFiles
   }
 }

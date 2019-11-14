@@ -28,7 +28,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
-class ExtractVideoDetailsTest extends FunSuite with BeforeAndAfter {
+class VideoTest extends FunSuite with BeforeAndAfter {
   private val warcPath = Resources.getResource("warc/example.media.warc.gz").getPath
   private val master = "local[4]"
   private val appName = "example-df"
@@ -43,7 +43,7 @@ class ExtractVideoDetailsTest extends FunSuite with BeforeAndAfter {
 
   test("Video DF extraction") {
     val df = RecordLoader.loadArchives(warcPath, sc)
-      .extractVideoDetailsDF()
+      .videos()
 
     val extracted = df.select("url", "filename", "extension",
       "mime_type_web_server", "mime_type_tika", "md5")
