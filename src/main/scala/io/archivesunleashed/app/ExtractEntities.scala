@@ -48,6 +48,18 @@ object ExtractEntities {
     extractAndOutput(iNerClassifierFile, rdd, outputFile)
   }
 
+  /** Converts output of NER classifier to WANE format
+    *
+    * @param output of NER Classifier
+    * @return output of NER Classifier in WANE format
+    */
+  def waneFormat(input: String): String = {
+    var output = input.replaceAll("PERSON\":","persons\":")
+    output = output.replaceAll("ORGANIZATION\":","organizations\":")
+    output = output.replaceAll("LOCATION\":","locations\":")
+    return output;
+  }
+
   /** Saves the NER output to file from a given RDD.
     *
     * @param iNerClassifierFile path of classifier file
@@ -61,7 +73,7 @@ object ExtractEntities {
     val r = rdd.mapPartitions(iter => {
       NERClassifier.apply(iNerClassifierFile)
       iter.map(r => (("{" + r._1), r._2,
-        ("\"named_entities\":" + NERClassifier.classify(r._3)), (r._4 + "}")))
+        ("\"named_entities\":" + waneFormat(NERClassifier.classify(r._3).toString)), (r._4 + "}")))
     })
     r.map(r => r._1 + "," + r._2 + "," + r._3 + "," + r._4)
       .saveAsTextFile(outputFile)
