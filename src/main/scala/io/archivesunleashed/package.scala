@@ -99,7 +99,7 @@ package object archivesunleashed {
           && r.getHttpStatus == "200")
     }
 
-    def extractValidPagesDF(): DataFrame = {
+    def pages(): DataFrame = {
       val records = rdd.keepValidPages()
         .map(r => Row(r.getCrawlDate, r.getUrl, r.getMimeType,
           DetectMimeTypeTika(r.getBinaryBytes), r.getContentString))
@@ -115,7 +115,7 @@ package object archivesunleashed {
       sqlContext.getOrCreate().createDataFrame(records, schema)
     }
 
-    def extractHyperlinksDF(): DataFrame = {
+    def webgraph(): DataFrame = {
       val records = rdd
         .keepValidPages()
         .flatMap(r => ExtractLinks(r.getUrl, r.getContentString)
@@ -133,7 +133,7 @@ package object archivesunleashed {
     }
 
     /* Extracts all the images links from a source page. */
-    def extractImageLinksDF(): DataFrame = {
+    def imageLinks(): DataFrame = {
       val records = rdd
         .keepValidPages()
         .flatMap(r => {
@@ -152,7 +152,7 @@ package object archivesunleashed {
     }
 
     /* Extract image bytes and image metadata. */
-    def extractImageDetailsDF(): DataFrame = {
+    def images(): DataFrame = {
       val records = rdd
         .keepImages()
         .map(r => {
@@ -183,7 +183,7 @@ package object archivesunleashed {
     }
 
     /* Extract PDF bytes and PDF metadata. */
-    def extractPDFDetailsDF(): DataFrame = {
+    def pdfs(): DataFrame = {
       val records = rdd
         .map(r =>
             (r, (DetectMimeTypeTika(r.getBinaryBytes)))
@@ -217,7 +217,7 @@ package object archivesunleashed {
     }
 
     /* Extract audio bytes and audio metadata. */
-    def extractAudioDetailsDF(): DataFrame = {
+    def audio(): DataFrame = {
       val records = rdd
         .map(r =>
             (r, (DetectMimeTypeTika(r.getBinaryBytes)))
@@ -251,7 +251,7 @@ package object archivesunleashed {
     }
 
     /* Extract video bytes and video metadata. */
-    def extractVideoDetailsDF(): DataFrame = {
+    def videos(): DataFrame = {
       val records = rdd
         .map(r =>
             (r, (DetectMimeTypeTika(r.getBinaryBytes)))
@@ -285,7 +285,7 @@ package object archivesunleashed {
     }
 
     /* Extract spreadsheet bytes and spreadsheet metadata. */
-    def extractSpreadsheetDetailsDF(): DataFrame = {
+    def spreadsheets(): DataFrame = {
       val records = rdd
         .map(r =>
             (r, (DetectMimeTypeTika(r.getBinaryBytes)))
@@ -352,7 +352,7 @@ package object archivesunleashed {
     }
 
     /* Extract presentation program bytes and presentation program metadata. */
-    def extractPresentationProgramDetailsDF(): DataFrame = {
+    def presentationProgramFiles(): DataFrame = {
       val records = rdd
         .map(r =>
             (r, (DetectMimeTypeTika(r.getBinaryBytes)))
@@ -398,7 +398,7 @@ package object archivesunleashed {
     }
 
     /* Extract word processor bytes and word processor metadata. */
-    def extractWordProcessorDetailsDF(): DataFrame = {
+    def wordProcessorFiles(): DataFrame = {
       val records = rdd
         .map(r =>
             (r, (DetectMimeTypeTika(r.getBinaryBytes)))
@@ -449,7 +449,7 @@ package object archivesunleashed {
     }
 
     /* Extract plain text bytes and plain text metadata. */
-    def extractTextFilesDetailsDF(): DataFrame = {
+    def textFiles(): DataFrame = {
       val records = rdd
         .keepMimeTypes(Set("text/plain"))
         .filter(r => r.getUrl.toLowerCase.endsWith(".txt")

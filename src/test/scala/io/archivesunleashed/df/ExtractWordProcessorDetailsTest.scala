@@ -28,7 +28,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
-class ExtractWordProcessorDetailsTest extends FunSuite with BeforeAndAfter {
+class WordProcessorFilesTest extends FunSuite with BeforeAndAfter {
   private val warcPath = Resources.getResource("warc/example.docs.warc.gz").getPath
   private val master = "local[4]"
   private val appName = "example-df"
@@ -43,7 +43,7 @@ class ExtractWordProcessorDetailsTest extends FunSuite with BeforeAndAfter {
 
   test("Word Processor DF extraction") {
     val df = RecordLoader.loadArchives(warcPath, sc)
-      .extractWordProcessorDetailsDF()
+      .wordProcessorFiles()
 
     val extracted = df.select("url", "filename", "extension",
       "mime_type_web_server", "mime_type_tika", "md5")

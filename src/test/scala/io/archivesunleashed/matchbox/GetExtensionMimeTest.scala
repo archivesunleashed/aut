@@ -45,7 +45,7 @@ class GetExtensionMimeTest extends FunSuite with BeforeAndAfter {
 
   test("Get extension of file from URL with no extension") {
     df = RecordLoader.loadArchives(warcPath, sc)
-      .extractImageDetailsDF()
+      .images()
 
     extracted = df.select("url", "filename", "extension",
       "mime_type_web_server", "mime_type_tika", "md5")

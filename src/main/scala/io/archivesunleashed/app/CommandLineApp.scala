@@ -138,17 +138,17 @@ class CommandLineApp(conf: CmdAppConf) {
   private val dfExtractors = Map[String, List[String] => Any](
     "DomainFrequencyExtractor" ->
       ((inputFiles: List[String]) => {
-        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).extractValidPagesDF()
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).pages()
         inputFiles.tail foreach { f =>
-          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).extractValidPagesDF())
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).pages())
         }
         save(DomainFrequencyExtractor(df))
       }),
     "DomainGraphExtractor" ->
       ((inputFiles: List[String]) => {
-        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).extractHyperlinksDF()
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).webgraph()
         inputFiles.tail foreach { f =>
-          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).extractHyperlinksDF())
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).webgraph())
         }
         if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "GEXF") {
           new File(saveTarget).mkdirs()
@@ -159,9 +159,9 @@ class CommandLineApp(conf: CmdAppConf) {
       }),
     "PlainTextExtractor" ->
       ((inputFiles: List[String]) => {
-        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).extractValidPagesDF()
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).pages()
         inputFiles.tail foreach { f =>
-          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).extractValidPagesDF())
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).pages())
         }
         save(PlainTextExtractor(df))
       })

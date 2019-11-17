@@ -28,7 +28,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
-class ExtractImageLinksTest extends FunSuite with BeforeAndAfter {
+class ImageLinksTest extends FunSuite with BeforeAndAfter {
   private val arcPath = Resources.getResource("arc/example.arc.gz").getPath
   private val master = "local[4]"
   private val appName = "example-df"
@@ -43,7 +43,7 @@ class ExtractImageLinksTest extends FunSuite with BeforeAndAfter {
 
   test("Fetch image links") {
     val df = RecordLoader.loadArchives(arcPath, sc)
-      .extractImageLinksDF()
+      .imageLinks()
 
     // We need this in order to use the $-notation
     val spark = SparkSession.builder().master("local").getOrCreate()

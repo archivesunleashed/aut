@@ -43,7 +43,7 @@ class ExtractSpreadsheetDetailsTest extends FunSuite with BeforeAndAfter {
 
   test("Spreadsheet DF extraction") {
     val df = RecordLoader.loadArchives(warcPath, sc)
-      .extractSpreadsheetDetailsDF()
+      .spreadsheets()
 
     val extracted = df.select("url", "filename", "extension",
       "mime_type_web_server", "mime_type_tika", "md5")
