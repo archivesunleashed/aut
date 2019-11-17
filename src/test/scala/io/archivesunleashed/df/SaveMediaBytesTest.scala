@@ -53,7 +53,7 @@ class SaveMediaBytesTest extends FunSuite with BeforeAndAfter {
 
   test("Save audio bytes to disk") {
     val df = RecordLoader.loadArchives(warcPath, sc)
-      .extractAudioDetailsDF()
+      .audio()
 
     val extracted = df.select(testString, testExtension)
       .orderBy(desc(testString)).limit(1)
