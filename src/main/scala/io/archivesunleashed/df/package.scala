@@ -47,7 +47,7 @@ package object df {
 
   val ComputeMD5DF = udf((content: String) => io.archivesunleashed.matchbox.ComputeMD5.apply(content.getBytes()))
   
-  val ComputeSHA1 = udf((content: String) => io.archivesunleashed.matchbox.ComputeSHA1.apply(content.getBytes()))
+  val ComputeSHA1DF = udf((content: String) => io.archivesunleashed.matchbox.ComputeSHA1.apply(content.getBytes()))
 
   /**
    * Given a dataframe, serializes binary object and saves to disk
