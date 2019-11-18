@@ -43,7 +43,7 @@ class SimpleDfTest extends FunSuite with BeforeAndAfter {
 
   test("count records") {
     val df = RecordLoader.loadArchives(arcPath, sc)
-      .extractValidPagesDF()
+      .pages()
 
     // We need this in order to use the $-notation
     val spark = SparkSession.builder().master("local").getOrCreate()

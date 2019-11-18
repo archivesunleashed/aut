@@ -43,7 +43,7 @@ class ExtractHyperlinksTest extends FunSuite with BeforeAndAfter {
 
   test("count records") {
     val df = RecordLoader.loadArchives(arcPath, sc)
-      .extractValidPagesDF()
+      .pages()
 
     val dest = udf((vs: Seq[Any]) => vs(0).toString.split(",")(1))
 

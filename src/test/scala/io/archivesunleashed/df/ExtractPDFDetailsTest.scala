@@ -43,7 +43,7 @@ class ExtractPDFDetailsTest extends FunSuite with BeforeAndAfter {
 
   test("PDF DF extraction") {
     val df = RecordLoader.loadArchives(warcPath, sc)
-      .extractPDFDetailsDF()
+      .pdfs()
 
     val extracted = df.select("url", "filename", "extension",
       "mime_type_web_server", "mime_type_tika", "md5")
