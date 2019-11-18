@@ -16,7 +16,7 @@
 package io.archivesunleashed
 
 import org.apache.commons.io.IOUtils
-import io.archivesunleashed.matchbox.{ComputeMD5, ExtractDomain, RemoveHTML, ExtractLinks}
+import io.archivesunleashed.matchbox.{ComputeMD5}
 import org.apache.spark.sql.functions.udf
 import org.apache.spark.sql.DataFrame
 import java.io.ByteArrayInputStream
@@ -37,9 +37,17 @@ package object df {
 
   val RemovePrefixWWW = udf[String, String](_.replaceAll("^\\s*www\\.", ""))
 
-  var RemoveHTML = udf(io.archivesunleashed.matchbox.RemoveHTML.apply(_:String))
+  var RemoveHTML = udf(io.archivesunleashed.matchbox.RemoveHTML.apply(_: String))
 
-  val ExtractLinks = udf(io.archivesunleashed.matchbox.ExtractLinks.apply(_:String,_:String))
+  val ExtractLinks = udf(io.archivesunleashed.matchbox.ExtractLinks.apply(_: String, _: String))
+
+  val GetExtensionMime = udf(io.archivesunleashed.matchbox.GetExtensionMime.apply(_: String, _: String))
+
+  val ExtractImageLinks = udf(io.archivesunleashed.matchbox.ExtractImageLinks.apply(_: String, _: String))
+
+  val ComputeMD5DF = udf((content: String) => io.archivesunleashed.matchbox.ComputeMD5.apply(content.getBytes()))
+  
+  val ComputeSHA1DF = udf((content: String) => io.archivesunleashed.matchbox.ComputeSHA1.apply(content.getBytes()))
 
   /**
    * Given a dataframe, serializes binary object and saves to disk
