@@ -21,7 +21,7 @@ import java.util.Base64
 
 import io.archivesunleashed.data.{ArchiveRecordInputFormat, ArchiveRecordWritable}
 import ArchiveRecordWritable.ArchiveFormat
-import io.archivesunleashed.matchbox.{DetectLanguage, DetectMimeTypeTika, ExtractDate, ExtractDomain, ExtractImageDetails, ExtractImageLinks, ExtractLinks, GetExtensionMime, RemoveHTML}
+import io.archivesunleashed.matchbox.{DetectLanguage, DetectMimeTypeTika, ExtractDate, ExtractDomainRDD, ExtractImageDetails, ExtractImageLinksRDD, ExtractLinksRDD, GetExtensionMimeRDD, RemoveHTMLRDD}
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent
 import org.apache.commons.codec.binary.Hex
 import org.apache.commons.io.FilenameUtils
@@ -118,7 +118,7 @@ package object archivesunleashed {
     def webgraph(): DataFrame = {
       val records = rdd
         .keepValidPages()
-        .flatMap(r => ExtractLinks(r.getUrl, r.getContentString)
+        .flatMap(r => ExtractLinksRDD(r.getUrl, r.getContentString)
         .map(t => (r.getCrawlDate, t._1, t._2, t._3)))
         .map(t => Row(t._1, t._2, t._3, t._4))
 
@@ -138,7 +138,7 @@ package object archivesunleashed {
         .keepValidPages()
         .flatMap(r => {
           val src = r.getUrl
-          val imageUrls = ExtractImageLinks(src, r.getContentString)
+          val imageUrls = ExtractImageLinksRDD(src, r.getContentString)
           imageUrls.map(url => (src, url))
         })
         .map(t => Row(t._1, t._2))
@@ -160,7 +160,7 @@ package object archivesunleashed {
           val image = ExtractImageDetails(r.getUrl, mimeTypeTika, r.getBinaryBytes)
           val url = new URL(r.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
-          val extension = GetExtensionMime(url.getPath(), mimeTypeTika)
+          val extension = GetExtensionMimeRDD(url.getPath(), mimeTypeTika)
           (r.getUrl, filename, extension, r.getMimeType, mimeTypeTika,
             image.width, image.height, image.md5Hash, image.sha1Hash, image.body)
         })
@@ -196,7 +196,7 @@ package object archivesunleashed {
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
-          val extension = GetExtensionMime(url.getPath(), r._2)
+          val extension = GetExtensionMimeRDD(url.getPath(), r._2)
           (r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
@@ -230,7 +230,7 @@ package object archivesunleashed {
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
-          val extension = GetExtensionMime(url.getPath(), r._2)
+          val extension = GetExtensionMimeRDD(url.getPath(), r._2)
           (r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
@@ -264,7 +264,7 @@ package object archivesunleashed {
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
-          val extension = GetExtensionMime(url.getPath(), r._2)
+          val extension = GetExtensionMimeRDD(url.getPath(), r._2)
           (r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
@@ -331,7 +331,7 @@ package object archivesunleashed {
               mimeType = "text/tab-separated-values"
             }
           }
-          val extension = GetExtensionMime(url.getPath(), mimeType)
+          val extension = GetExtensionMimeRDD(url.getPath(), mimeType)
           (r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
@@ -377,7 +377,7 @@ package object archivesunleashed {
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
-          val extension = GetExtensionMime(url.getPath(), r._2)
+          val extension = GetExtensionMimeRDD(url.getPath(), r._2)
           (r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
@@ -428,7 +428,7 @@ package object archivesunleashed {
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
-          val extension = GetExtensionMime(url.getPath(), r._2)
+          val extension = GetExtensionMimeRDD(url.getPath(), r._2)
           (r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
@@ -550,7 +550,7 @@ package object archivesunleashed {
       * @param urls a list of urls for the source domains
       */
     def keepDomains(urls: Set[String]): RDD[ArchiveRecord] = {
-      rdd.filter(r => urls.contains(ExtractDomain(r.getUrl).replace("^\\s*www\\.", "")))
+      rdd.filter(r => urls.contains(ExtractDomainRDD(r.getUrl).replace("^\\s*www\\.", "")))
     }
 
     /** Removes all data not in selected language.
@@ -558,7 +558,7 @@ package object archivesunleashed {
       * @param lang a set of ISO 639-2 codes
       */
     def keepLanguages(lang: Set[String]): RDD[ArchiveRecord] = {
-      rdd.filter(r => lang.contains(DetectLanguage(RemoveHTML(r.getContentString))))
+      rdd.filter(r => lang.contains(DetectLanguage(RemoveHTMLRDD(r.getContentString))))
     }
 
     /** Removes all content that does not pass Regular Expression test.
@@ -653,7 +653,7 @@ package object archivesunleashed {
       * @param lang a set of ISO 639-2 codes
       */
     def discardLanguages(lang: Set[String]): RDD[ArchiveRecord] = {
-      rdd.filter(r => !lang.contains(DetectLanguage(RemoveHTML(r.getContentString))))
+      rdd.filter(r => !lang.contains(DetectLanguage(RemoveHTMLRDD(r.getContentString))))
     }
   }
 }

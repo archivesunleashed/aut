@@ -45,11 +45,11 @@ class StringUtilsTest extends FunSuite {
 
   test ("md5 hash") {
     val s: String = "unesco.org";
-    assert(ComputeMD5(s.getBytes) == "8e8decc8e8107bcf9d3896f3222b77d8");
+    assert(ComputeMD5RDD(s.getBytes) == "8e8decc8e8107bcf9d3896f3222b77d8");
   }
   test ("sh1 hash") {
     val s: String = "unesco.org";
-    assert(ComputeSHA1(s.getBytes) == "2d0e5377157172045d87befe46e157cda42c4f6e");
+    assert(ComputeSHA1RDD(s.getBytes) == "2d0e5377157172045d87befe46e157cda42c4f6e");
   }
 
 }

@@ -43,7 +43,7 @@ class CountableRDDTest extends FunSuite with BeforeAndAfter {
   test("count records") {
     val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
-      .map(r => ExtractDomain(r.getUrl))
+      .map(r => ExtractDomainRDD(r.getUrl))
     val r = base
       .map(r => (r, 1))
       .reduceByKey(_ + _)

@@ -21,7 +21,7 @@ import org.jsoup.select.Elements
 import scala.collection.mutable
 
 /** Extracts image links from a webpage given the HTML content (using Jsoup). */
-object ExtractImageLinks {
+object ExtractImageLinksRDD {
 
   /** Extracts image links.
     *

@@ -15,24 +15,23 @@
  */
 package io.archivesunleashed.matchbox
 
-/** Remove HTTP headers. */
-object RemoveHTTPHeader {
-  val headerEnd = "\r\n\r\n"
+import java.io.IOException
+import org.jsoup.Jsoup
 
-  /** Remove HTTP headers.
+/** Removes HTML markup with JSoup. */
+object RemoveHTMLRDD {
+
+  /** Removes HTML markup.
    *
-   * @param content string of WARC or ARC-based text content
-   * @return string with HTTP headers removed.
+   * @param content an html or text string
+   * @return content without html markup.
    */
   def apply(content: String): String = {
-    val maybeContent: Option[String] = Option(content)
+    // First remove the HTTP header.
+    val maybeContent: Option[String] = Option(RemoveHTTPHeaderRDD(content))
     maybeContent match {
       case Some(content) =>
-        if (content.startsWith("HTTP/")){
-          content.substring(content.indexOf(headerEnd) + headerEnd.length)
-        } else {
-          content
-        }
+        Jsoup.parse(content).text().replaceAll("[\\r\\n]+", " ")
       case None =>
         ""
     }

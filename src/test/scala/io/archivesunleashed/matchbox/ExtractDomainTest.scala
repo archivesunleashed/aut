@@ -21,7 +21,7 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class ExtractDomainTest extends FunSuite {
+class ExtractDomainRDDTest extends FunSuite {
   private val index = "index.html"
   private val umiacs = "www.umiacs.umd.edu"
   private val jimmylin = "http://www.umiacs.umd.edu/~jimmylin/"
@@ -44,26 +44,26 @@ class ExtractDomainTest extends FunSuite {
 
   test("simple") {
     data1.foreach {
-      case (link, domain) => assert(ExtractDomain(link) == domain)
+      case (link, domain) => assert(ExtractDomainRDD(link) == domain)
     }
   }
 
   test("withBase") {
     data2.foreach {
-      case (link, base, domain) => assert(ExtractDomain(link, base) == domain)
+      case (link, base, domain) => assert(ExtractDomainRDD(link, base) == domain)
     }
   }
 
   test("error") {
     // scalastyle:off null
-    assert(ExtractDomain(null) == "")
-    assert(ExtractDomain(index, null) == "")
+    assert(ExtractDomainRDD(null) == "")
+    assert(ExtractDomainRDD(index, null) == "")
     // scalastyle:on null
   }
 
   test("backslash") {
     data3.foreach {
-      case (link, domain) => assert(ExtractDomain(link) == domain)
+      case (link, domain) => assert(ExtractDomainRDD(link) == domain)
     }
   }
 }

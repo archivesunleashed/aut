@@ -15,18 +15,26 @@
  */
 package io.archivesunleashed.matchbox
 
-import java.security.MessageDigest
+/** Remove HTTP headers. */
+object RemoveHTTPHeaderRDD {
+  val headerEnd = "\r\n\r\n"
 
-/** Compute MD5 checksum. */
-// scalastyle:off object.name
-object ComputeMD5 {
-// scalastyle:on object.name
-  /** Computes the MD5 checksum of a byte array (eg. an image).
-    *
-    * @param bytes
-    * @return MD5 checksum.
-    */
-  def apply(bytes: Array[Byte]): String = {
-    MessageDigest.getInstance("MD5").digest(bytes).map("%02x".format(_)).mkString
+  /** Remove HTTP headers.
+   *
+   * @param content string of WARC or ARC-based text content
+   * @return string with HTTP headers removed.
+   */
+  def apply(content: String): String = {
+    val maybeContent: Option[String] = Option(content)
+    maybeContent match {
+      case Some(content) =>
+        if (content.startsWith("HTTP/")){
+          content.substring(content.indexOf(headerEnd) + headerEnd.length)
+        } else {
+          content
+        }
+      case None =>
+        ""
+    }
   }
 }

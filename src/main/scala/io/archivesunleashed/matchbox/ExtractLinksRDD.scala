@@ -22,7 +22,7 @@ import scala.collection.mutable
 import scala.Option
 
 /** Extracts links from a webpage given the HTML content (using Jsoup). */
-object ExtractLinks {
+object ExtractLinksRDD {
 
   /** Extract links.
     *
