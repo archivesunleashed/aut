@@ -53,10 +53,10 @@ class ExtractHyperlinksTest extends FunSuite with BeforeAndAfter {
     import spark.implicits._
     // scalastyle:on
 
-    val interResults = df.select(   RemovePrefixWWW( ExtractDomain($"url")).as("Domain"),
+    val interResults = df.select(RemovePrefixWWWDF(ExtractDomainDF($"url")).as("Domain"),
                             $"url".as("url"),
                             $"crawl_date",
-                            explode_outer(ExtractLinks($"url",$"content")).as("link")
+                            explode_outer(ExtractLinksDF($"url",$"content")).as("link")
                         )
                        .filter(lower($"content").contains("keynote")) //filtered on keyword internet
 
