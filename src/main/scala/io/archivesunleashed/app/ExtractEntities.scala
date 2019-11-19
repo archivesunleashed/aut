@@ -16,7 +16,7 @@
 package io.archivesunleashed.app
 
 import io.archivesunleashed.RecordLoader
-import io.archivesunleashed.matchbox.{ComputeMD5, NERClassifier, RemoveHTML}
+import io.archivesunleashed.matchbox.{ComputeMD5RDD, NERClassifier, RemoveHTMLRDD}
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 
@@ -43,7 +43,7 @@ object ExtractEntities {
       .keepValidPages()
       .map(r => (("\"timestamp\":\"" + r.getCrawlDate + "\""),
         ("\"url\":\"" + r.getUrl + "\""),
-        (RemoveHTML(r.getContentString)),
+        (RemoveHTMLRDD(r.getContentString)),
         ("\"digest\":\"" + r.getPayloadDigest + "\"")))
     extractAndOutput(iNerClassifierFile, rdd, outputFile)
   }

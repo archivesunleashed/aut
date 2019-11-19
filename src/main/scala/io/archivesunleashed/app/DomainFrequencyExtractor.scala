@@ -32,7 +32,7 @@ object DomainFrequencyExtractor {
   def apply(records: RDD[ArchiveRecord]): RDD[(String, Int)] = {
       records
         .keepValidPages()
-        .map(r => matchbox.ExtractDomain(r.getUrl))
+        .map(r => matchbox.ExtractDomainRDD(r.getUrl))
         .countItems()
   }
 
@@ -47,7 +47,7 @@ object DomainFrequencyExtractor {
     import spark.implicits._
     // scalastyle:on
 
-    d.select(df.ExtractDomain($"url").as("domain"))
+    d.select(df.ExtractDomainDF($"url").as("domain"))
       .groupBy("domain").count().orderBy(desc("count"))
   }
 }

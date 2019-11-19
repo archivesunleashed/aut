@@ -29,7 +29,7 @@ object ExtractBoilerpipeText {
    */
 
   def apply(input: String): String = {
-    removeBoilerplate(RemoveHTTPHeader(input))
+    removeBoilerplate(RemoveHTTPHeaderRDD(input))
   }
 
   private def removeBoilerplate(input: String): String = {

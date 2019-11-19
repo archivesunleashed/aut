@@ -17,7 +17,7 @@
 package io.archivesunleashed.app
 
 import io.archivesunleashed.{ArchiveRecord, df}
-import io.archivesunleashed.matchbox.RemoveHTML
+import io.archivesunleashed.matchbox.RemoveHTMLRDD
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
@@ -31,7 +31,7 @@ object PlainTextExtractor {
   def apply(records: RDD[ArchiveRecord]): RDD[(String, String, String, String)] = {
     records
       .keepValidPages()
-      .map(r => (r.getCrawlDate, r.getDomain, r.getUrl, RemoveHTML(r.getContentString)))
+      .map(r => (r.getCrawlDate, r.getDomain, r.getUrl, RemoveHTMLRDD(r.getContentString)))
   }
 
   /** Extract plain text from web archive using Data Frame and Spark SQL.
@@ -44,7 +44,7 @@ object PlainTextExtractor {
     // scalastyle:off
     import spark.implicits._
     // scalastyle:on
-    d.select($"crawl_date", df.ExtractDomain($"url").as("domain"),
-      $"url", df.RemoveHTML($"content").as("Text"))
+    d.select($"crawl_date", df.ExtractDomainDF($"url").as("domain"),
+      $"url", df.RemoveHTMLDF($"content").as("Text"))
   }
 }
