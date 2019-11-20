@@ -30,7 +30,7 @@ import io.archivesunleashed.matchbox.ExtractDate.DateComponent.DateComponent
 import java.net.URI
 import java.net.URL
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
-import org.apache.spark.sql.types.{IntegerType, StringType, StructField, StructType}
+import org.apache.spark.sql.types.{IntegerType, StringType, BinaryType, StructField, StructType}
 import org.apache.hadoop.io.LongWritable
 import org.apache.spark.{SerializableWritable, SparkContext}
 import org.apache.spark.rdd.RDD
@@ -110,6 +110,24 @@ package object archivesunleashed {
         .add(StructField("mime_type_web_server", StringType, true))
         .add(StructField("mime_type_tika", StringType, true))
         .add(StructField("content", StringType, true))
+
+      val sqlContext = SparkSession.builder()
+      sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
+    /*Creates a column for Bytes as well in Dataframe. 
+      Call KeepImages OR KeepValidPages on RDD depending upon the requirement before calling this method */
+    def pagesWithBytes(): DataFrame = {
+      val records = rdd.map(r => Row(r.getCrawlDate, r.getUrl, r.getMimeType,
+          DetectMimeTypeTika(r.getBinaryBytes), r.getContentString, r.getBinaryBytes))
+
+      val schema = new StructType()
+        .add(StructField("crawl_date", StringType, true))
+        .add(StructField("url", StringType, true))
+        .add(StructField("mime_type_web_server", StringType, true))
+        .add(StructField("mime_type_tika", StringType, true))
+        .add(StructField("content", StringType, true))
+        .add(StructField("bytes", BinaryType, true))
 
       val sqlContext = SparkSession.builder()
       sqlContext.getOrCreate().createDataFrame(records, schema)
