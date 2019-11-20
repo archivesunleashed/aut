@@ -21,7 +21,7 @@ import java.io.ByteArrayInputStream
 import java.security.MessageDigest
 
 import io.archivesunleashed.data.{ArcRecordUtils, WarcRecordUtils, ArchiveRecordWritable}
-import io.archivesunleashed.matchbox.{ComputeMD5, ExtractDate, ExtractDomain, RemoveHTTPHeader}
+import io.archivesunleashed.matchbox.{ComputeMD5RDD, ExtractDate, ExtractDomainRDD, RemoveHTTPHeaderRDD}
 import org.apache.spark.SerializableWritable
 import org.archive.io.arc.ARCRecord
 import org.archive.io.warc.WARCRecord
@@ -149,14 +149,14 @@ class ArchiveRecordImpl(r: SerializableWritable[ArchiveRecordWritable]) extends 
   }
 
   val getDomain: String = {
-    ExtractDomain(getUrl)
+    ExtractDomainRDD(getUrl)
   }
 
   val getBinaryBytes: Array[Byte] = {
     if (getContentString.startsWith("HTTP/")) {
       getContentBytes.slice(
-        getContentString.indexOf(RemoveHTTPHeader.headerEnd)
-          + RemoveHTTPHeader.headerEnd.length, getContentBytes.length)
+        getContentString.indexOf(RemoveHTTPHeaderRDD.headerEnd)
+          + RemoveHTTPHeaderRDD.headerEnd.length, getContentBytes.length)
     } else {
       getContentBytes
     }
