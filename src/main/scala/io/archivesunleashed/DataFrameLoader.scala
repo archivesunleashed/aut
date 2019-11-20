@@ -27,6 +27,12 @@ class DataFrameLoader(sc: SparkContext) {
       .pages()
   }
 
+  def pagesWithBytes(path: String): DataFrame = {
+    RecordLoader.loadArchives(path, sc)
+      .keepValidPages()
+      .pagesWithBytes()
+  }
+
   /** Create a DataFrame with crawl_date, source, destination, and anchor. */
   def webgraph(path: String): DataFrame = {
     RecordLoader.loadArchives(path, sc)
