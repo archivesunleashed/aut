@@ -19,6 +19,8 @@ import io.archivesunleashed.ArchiveRecord
 import io.archivesunleashed.matchbox.{ComputeImageSize, ComputeMD5RDD}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{RangePartitioner, SparkContext}
+import org.apache.spark.sql.functions.{desc,first}
+import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
 /** Extract most popular images from an RDD. */
 object ExtractPopularImages {
@@ -48,5 +50,33 @@ object ExtractPopularImages {
     val rdd = sc.parallelize(res)
     rdd.repartitionAndSortWithinPartitions(
       new RangePartitioner(numPartitions, rdd, false)).sortByKey(false).map(x=>x._1 + "\t" + x._2)
+  }
+
+  /** Extracts the <i>n</i> most popular images from an Data Frame within a given size range.
+   *
+   * @param d Data frame obtained from RecordLoader
+   * @param limit number of most popular images in the output
+   * @param minWidth of image
+   * @param minHeight of image
+   * @return Dataset[Row], where the schema is (url, count)
+   */
+  def apply(d: DataFrame, limit: Int, minWidth: Int, minHeight: Int): Dataset[Row] = {
+
+      val spark = SparkSession.builder().master("local").getOrCreate()
+      // scalastyle:off
+      import spark.implicits._
+      // scalastyle:on
+
+      val df = d.select($"url",$"md5")
+                .filter(($"width") >= minWidth && ($"height") >= minHeight)
+
+      val count = df.groupBy("md5").count()
+
+      df.join(count,"md5")
+        .groupBy("md5")
+        .agg(first("url").as("url"), first("count").as("count"))   
+        .select("url","count")    
+        .orderBy(desc("count"))
+        .limit(limit)
   }
 }
