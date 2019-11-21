@@ -99,7 +99,7 @@ package object archivesunleashed {
           && r.getHttpStatus == "200")
     }
 
-    def pages(): DataFrame = {
+    def webpages(): DataFrame = {
       val records = rdd.keepValidPages()
         .map(r => Row(r.getCrawlDate, r.getUrl, r.getMimeType,
           DetectMimeTypeTika(r.getBinaryBytes), r.getContentString))
