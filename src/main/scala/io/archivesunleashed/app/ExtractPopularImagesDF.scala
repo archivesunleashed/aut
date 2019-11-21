@@ -21,7 +21,7 @@ import org.apache.spark.sql.functions.{desc,first}
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
 /** Extract most popular images from a Data Frame. */
-object ExtractPopularImages {
+object ExtractPopularImagesDF {
   val MIN_WIDTH: Int = 30
   val MIN_HEIGHT: Int = 30
 

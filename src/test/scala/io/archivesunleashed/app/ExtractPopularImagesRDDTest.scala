@@ -23,7 +23,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
-class ExtractPopularImagesTestRDD extends FunSuite with BeforeAndAfter {
+class ExtractPopularImagesRDDTest extends FunSuite with BeforeAndAfter {
   private val arcPath = Resources.getResource("arc/example.arc.gz").getPath
   private var sc: SparkContext = _
   private val master = "local[4]"
