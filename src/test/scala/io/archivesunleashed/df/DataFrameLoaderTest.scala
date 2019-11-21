@@ -49,7 +49,7 @@ class DataFrameLoaderTest extends FunSuite with BeforeAndAfter {
 
   test("Test DataFrameLoader") {
     val df = new DataFrameLoader(sc)
-    val validPages = df.pages(arcPath)
+    val validPages = df.webpages(arcPath)
     val hyperlinks = df.webgraph(arcPath)
     val imageLinks = df.imageLinks(arcPath)
     val images = df.images(arcPath)
