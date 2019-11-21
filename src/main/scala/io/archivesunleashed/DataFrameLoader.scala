@@ -27,6 +27,13 @@ class DataFrameLoader(sc: SparkContext) {
       .webpages()
   }
 
+  /** Create a DataFram with crawl_date, url, mime_type_web_server, content and bytes. */
+  def all(path: String): DataFrame = {
+    RecordLoader.loadArchives(path, sc)
+      .keepValidPages()
+      .all()
+  }
+
   /** Create a DataFrame with crawl_date, source, destination, and anchor. */
   def webgraph(path: String): DataFrame = {
     RecordLoader.loadArchives(path, sc)
