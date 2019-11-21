@@ -22,9 +22,9 @@ import org.apache.spark.sql.DataFrame
 class DataFrameLoader(sc: SparkContext) {
 
   /** Create a DataFram with crawl_date, url, mime_type_web_server, and content. */
-  def pages(path: String): DataFrame = {
+  def webpages(path: String): DataFrame = {
     RecordLoader.loadArchives(path, sc)
-      .pages()
+      .webpages()
   }
 
   /** Create a DataFram with crawl_date, url, mime_type_web_server, content and bytes. */
