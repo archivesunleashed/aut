@@ -40,7 +40,7 @@ class DomainFrequencyExtractorTest extends FunSuite with BeforeAndAfter {
 
   test("DomainFrequencyExtractor") {
     val rdd = RecordLoader.loadArchives(arcPath, sc).keepValidPages()
-    val df = RecordLoader.loadArchives(arcPath, sc).pages()
+    val df = RecordLoader.loadArchives(arcPath, sc).webpages()
 
     val dfResults = DomainFrequencyExtractor(df).collect()
     val rddResults = DomainFrequencyExtractor(rdd).collect()
