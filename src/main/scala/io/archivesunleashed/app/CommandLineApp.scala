@@ -138,9 +138,9 @@ class CommandLineApp(conf: CmdAppConf) {
   private val dfExtractors = Map[String, List[String] => Any](
     "DomainFrequencyExtractor" ->
       ((inputFiles: List[String]) => {
-        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).pages()
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).webpages()
         inputFiles.tail foreach { f =>
-          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).pages())
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).webpages())
         }
         save(DomainFrequencyExtractor(df))
       }),
@@ -159,9 +159,9 @@ class CommandLineApp(conf: CmdAppConf) {
       }),
     "PlainTextExtractor" ->
       ((inputFiles: List[String]) => {
-        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).pages()
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).webpages()
         inputFiles.tail foreach { f =>
-          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).pages())
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).webpages())
         }
         save(PlainTextExtractor(df))
       })
