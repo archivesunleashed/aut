@@ -8,8 +8,11 @@ class WebArchive:
         self.loader = sc._jvm.io.archivesunleashed.DataFrameLoader(sc._jsc.sc())
         self.path = path
 
-    def pages(self):
-        return DataFrame(self.loader.pages(self.path), self.sqlContext)
+    def all(self):
+        return DataFrame(self.loader.all(self.path), self.sqlContext)
+
+    def webpages(self):
+        return DataFrame(self.loader.webpages(self.path), self.sqlContext)
 
     def links(self):
         return DataFrame(self.loader.webgraph(self.path), self.sqlContext)
