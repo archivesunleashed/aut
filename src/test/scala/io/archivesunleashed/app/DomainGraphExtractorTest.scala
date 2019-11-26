@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +47,7 @@ class DomainGraphExtractorTest extends FunSuite with BeforeAndAfter {
     assert(rddResult(0)._1._1 == "20080430")
     assert(rddResult(0)._1._2 == "www.archive.org")
     assert(rddResult(0)._1._3 == "www.archive.org")
-    assert(rddResult(0)._2 == 305)
+    assert(rddResult(0)._2 == 269)
   }
 
   after {

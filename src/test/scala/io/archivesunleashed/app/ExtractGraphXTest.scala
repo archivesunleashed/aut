@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,8 +76,8 @@ import scala.util.Try
        val minTake = 3
        val examplerdd = RecordLoader.loadArchives(arcPath, sc)
          .keepValidPages()
-         .flatMap(r => ExtractLinks(r.getUrl, r.getContentString))
-         .map(r => (ExtractDomain(r._1).removePrefixWWW(), ExtractDomain(r._2).removePrefixWWW()))
+         .flatMap(r => ExtractLinksRDD(r.getUrl, r.getContentString))
+         .map(r => (ExtractDomainRDD(r._1).removePrefixWWW(), ExtractDomainRDD(r._2).removePrefixWWW()))
          .filter(r => r._1 != "" && r._2 != "")
        val graph = ExtractGraphX.extractGraphX(examplerdd)
          .subgraph(epred = eTriplet => eTriplet.attr.edgeCount > minEdges)
@@ -96,8 +95,8 @@ import scala.util.Try
        val examplerdd = RecordLoader.loadArchives(arcPath, sc)
          .keepValidPages()
          .keepContent(Set("apple".r))
-         .flatMap(r => ExtractLinks(r.getUrl, r.getContentString))
-         .map(r => (ExtractDomain(r._1).removePrefixWWW(), ExtractDomain(r._2).removePrefixWWW()))
+         .flatMap(r => ExtractLinksRDD(r.getUrl, r.getContentString))
+         .map(r => (ExtractDomainRDD(r._1).removePrefixWWW(), ExtractDomainRDD(r._2).removePrefixWWW()))
          .filter(r => r._1 != "" && r._2 != "")
        ExtractGraphX.dynamic = true
        val graph = ExtractGraphX.extractGraphX(examplerdd)

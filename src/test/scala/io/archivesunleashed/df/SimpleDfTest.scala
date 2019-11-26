@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +43,7 @@ class SimpleDfTest extends FunSuite with BeforeAndAfter {
 
   test("count records") {
     val df = RecordLoader.loadArchives(arcPath, sc)
-      .extractValidPagesDF()
+      .webpages()
 
     // We need this in order to use the $-notation
     val spark = SparkSession.builder().master("local").getOrCreate()
@@ -52,20 +51,20 @@ class SimpleDfTest extends FunSuite with BeforeAndAfter {
     import spark.implicits._
     // scalastyle:on
 
-    val results = df.select(ExtractBaseDomain($"Url").as("Domain"))
+    val results = df.select(ExtractDomainDF($"Url").as("Domain"))
       .groupBy("Domain").count().orderBy(desc("count")).head(3)
 
     // Results should be:
     // +------------------+-----+
     // |            Domain|count|
     // +------------------+-----+
-    // |   www.archive.org|  132|
+    // |   www.archive.org|   91|
     // |     deadlists.com|    2|
     // |www.hideout.com.br|    1|
     // +------------------+-----+
 
     assert(results(0).get(0) == "www.archive.org")
-    assert(results(0).get(1) == 132)
+    assert(results(0).get(1) == 91)
 
     assert(results(1).get(0) == "deadlists.com")
     assert(results(1).get(1) == 2)

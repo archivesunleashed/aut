@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.archivesunleashed
 
-// scalastyle:off underscore.import
-import io.archivesunleashed.matchbox._
-// scalastyle:on underscore.import
+import org.apache.commons.io.IOUtils
+import io.archivesunleashed.matchbox.{ComputeMD5RDD}
 import org.apache.spark.sql.functions.udf
 import org.apache.spark.sql.DataFrame
 import java.io.ByteArrayInputStream
-import java.io.File
-import javax.imageio.{ImageIO, ImageReader}
+import java.io.FileOutputStream
 import java.util.Base64
 
 /**
@@ -35,43 +31,51 @@ package object df {
   // by wrapping matchbox UDFs or by reimplementing them. The following examples illustrate. Obviously, we'll
   // need to populate more UDFs over time, but this is a start.
 
-  val ExtractBaseDomain = udf(io.archivesunleashed.matchbox.ExtractDomain.apply(_: String, ""))
+  val ExtractDomainDF = udf(io.archivesunleashed.matchbox.ExtractDomainRDD.apply(_: String, ""))
 
-  val RemovePrefixWWW = udf[String, String](_.replaceAll("^\\s*www\\.", ""))
+  val RemoveHTTPHeaderDF = udf(io.archivesunleashed.matchbox.RemoveHTTPHeaderRDD.apply(_: String))
 
-  var RemoveHTML = udf(io.archivesunleashed.matchbox.RemoveHTML.apply(_:String))
+  val RemovePrefixWWWDF = udf[String, String](_.replaceAll("^\\s*www\\.", ""))
+
+  var RemoveHTMLDF = udf(io.archivesunleashed.matchbox.RemoveHTMLRDD.apply(_: String))
+
+  val ExtractLinksDF = udf(io.archivesunleashed.matchbox.ExtractLinksRDD.apply(_: String, _: String))
+
+  val GetExtensionMimeDF = udf(io.archivesunleashed.matchbox.GetExtensionMimeRDD.apply(_: String, _: String))
+
+  val ExtractImageLinksDF = udf(io.archivesunleashed.matchbox.ExtractImageLinksRDD.apply(_: String, _: String))
+
+  val ComputeMD5DF = udf(io.archivesunleashed.matchbox.ComputeMD5RDD.apply(_: Array[Byte]))
+
+  val ComputeSHA1DF = udf(io.archivesunleashed.matchbox.ComputeSHA1RDD.apply(_: Array[Byte]))
+
+  val ComputeImageSizeDF = udf(io.archivesunleashed.matchbox.ComputeImageSize.apply(_: Array[Byte]))
+
   /**
-   * Given a dataframe, serializes the images and saves to disk
+   * Given a dataframe, serializes binary object and saves to disk
    * @param df the input dataframe
-  */
-  implicit class SaveImage(df: DataFrame) {
+   */
+  implicit class SaveBytes(df: DataFrame) {
+
     /**
-     * @param bytesColumnName the name of the column containing the image bytes
-     * @param fileName the name of the file to save the images to (without extension)
-     * e.g. fileName = "foo" => images are saved as foo0.jpg, foo1.jpg
-    */
-    def saveToDisk(bytesColumnName: String, fileName: String): Unit = {
-      df.select(bytesColumnName).foreach(row => {
+      * @param bytesColumnName the name of the column containing the bytes
+      * @param fileName the name of the file to save the binary file to (without extension)
+      * @param extensionColumnName the name of the column containin the extension
+      * e.g. fileName = "foo" => files are saved as "foo-[MD5 hash].pdf"
+      */
+    def saveToDisk(bytesColumnName: String, fileName: String, extensionColumnName: String): Unit = {
+      df.select(bytesColumnName, extensionColumnName).foreach(row => {
         try {
-          // assumes the bytes are base64 encoded already as returned by ExtractImageDetails
+          // Assumes the bytes are base64 encoded.
           val encodedBytes: String = row.getAs(bytesColumnName);
           val bytes = Base64.getDecoder.decode(encodedBytes);
           val in = new ByteArrayInputStream(bytes);
 
-          val input = ImageIO.createImageInputStream(in);
-          val readers = ImageIO.getImageReaders(input);
-          if (readers.hasNext()) {
-            val reader = readers.next()
-            reader.setInput(input)
-            val image = reader.read(0)
-
-            val format = reader.getFormatName()
-            val suffix = encodedBytes.computeHash()
-            val file = new File(fileName + "-" + suffix + "." + format);
-            if (image != null) {
-              ImageIO.write(image, format, file);
-            }
-          }
+          val extension: String = row.getAs(extensionColumnName);
+          val suffix = ComputeMD5RDD(bytes)
+          val file = new FileOutputStream(fileName + "-" + suffix + "." + extension.toLowerCase)
+          IOUtils.copy(in, file)
+          file.close()
         } catch {
           case e: Throwable => {
           }

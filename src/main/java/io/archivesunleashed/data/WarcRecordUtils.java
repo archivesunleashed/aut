@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -150,7 +149,7 @@ public final class WarcRecordUtils implements WARCConstants {
       return null;
     }
 
-    // Just using parseHeaders to move down input stream to body
+    // Just using parseHeaders to move down input stream to body.
     HttpParser.parseHeaders(record, WARC_HEADER_ENCODING);
     record.dump(baos);
     return baos.toByteArray();

@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,10 +38,10 @@ class DomainGraphExtractorDfTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("DomainGraphExtractor") {
+  test("Web Graph Extractor") {
     val TESTLENGTH = 166
-    val TESTRESULT = 316
-    val df = RecordLoader.loadArchives(arcPath, sc).extractHyperlinksDF()
+    val TESTRESULT = 280
+    val df = RecordLoader.loadArchives(arcPath, sc).webgraph()
     val dfResult = DomainGraphExtractor(df).collect()
     assert(dfResult.length == TESTLENGTH)
     assert(dfResult(0).get(0) == "20080430")

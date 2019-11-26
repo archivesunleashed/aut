@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +14,7 @@
  * limitations under the License.
  */
 package io.archivesunleashed.app
-// scalastyle:off underscore.import
-import io.archivesunleashed.matchbox._
-// scalastyle:on underscore.import
+import io.archivesunleashed.matchbox.{ComputeMD5RDD, WWWLink}
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 import org.apache.spark.rdd.RDD
@@ -62,18 +59,18 @@ object WriteGEXF {
     val endAttribute = "\" />\n"
     val nodeStart = "<node id=\""
     val labelStart = "\" label=\""
-    val edges = rdd.map(r => "<edge source=\"" + r._1._2.computeHash() + "\" target=\"" +
-      r._1._3.computeHash() + "\" weight=\"" + r._2 +
+    val edges = rdd.map(r => "<edge source=\"" + ComputeMD5RDD(r._1._2.getBytes) + "\" target=\"" +
+      ComputeMD5RDD(r._1._3.getBytes) + "\" weight=\"" + r._2 +
       "\" type=\"directed\">\n" +
       "<attvalues>\n" +
       "<attvalue for=\"0\" value=\"" + r._1._1 + endAttribute +
       "</attvalues>\n" +
       "</edge>\n").collect
     val nodes = rdd.flatMap(r => List(nodeStart +
-      r._1._2.computeHash() + labelStart +
+      ComputeMD5RDD(r._1._2.getBytes) + labelStart +
       r._1._2.escapeInvalidXML() + endAttribute,
       nodeStart +
-      r._1._3.computeHash() + labelStart +
+      ComputeMD5RDD(r._1._3.getBytes) + labelStart +
       r._1._3.escapeInvalidXML() + endAttribute)).distinct.collect
     outFile.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
       "<gexf xmlns=\"http://www.gexf.net/1.3draft\"\n" +
@@ -122,13 +119,13 @@ object WriteGEXF {
       "<nodes>\n")
     vertices foreach { v =>
       outFile.write("<node id=\"" +
-        v.computeHash() + "\" label=\"" +
+        ComputeMD5RDD(v.getBytes) + "\" label=\"" +
         v.escapeInvalidXML() + endAttribute)
     }
     outFile.write("</nodes>\n<edges>\n")
     data foreach { e =>
-      outFile.write("<edge source=\"" + e.get(1).asInstanceOf[String].computeHash() + "\" target=\"" +
-        e.get(2).asInstanceOf[String].computeHash() + "\" weight=\"" + e.get(3) +
+      outFile.write("<edge source=\"" + ComputeMD5RDD(e.get(1).asInstanceOf[String].getBytes) + "\" target=\"" +
+        ComputeMD5RDD(e.get(2).asInstanceOf[String].getBytes) + "\" weight=\"" + e.get(3) +
         "\" type=\"directed\">\n" +
         "<attvalues>\n" +
         "<attvalue for=\"0\" value=\"" + e.get(0) + endAttribute +

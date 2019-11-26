@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,7 +75,7 @@ class ArcTest extends FunSuite with BeforeAndAfter {
 
   test("count links") {
     val links = RecordLoader.loadArchives(arcPath, sc)
-      .map(r => ExtractLinks(r.getUrl, r.getContentString))
+      .map(r => ExtractLinksRDD(r.getUrl, r.getContentString))
       .reduce((a, b) => a ++ b)
     assert(links.size == 664)
   }
@@ -84,7 +83,7 @@ class ArcTest extends FunSuite with BeforeAndAfter {
   test("detect language") {
     val languageCounts = RecordLoader.loadArchives(arcPath, sc)
       .keepMimeTypes(Set("text/html"))
-      .map(r => RemoveHTML(r.getContentString))
+      .map(r => RemoveHTMLRDD(r.getContentString))
       .groupBy(content => DetectLanguage(content))
       .map(f => {
         (f._1, f._2.size)
@@ -104,8 +103,8 @@ class ArcTest extends FunSuite with BeforeAndAfter {
 
   test("detect mime type tika") {
     val mimeTypeCounts = RecordLoader.loadArchives(arcPath, sc)
-      .map(r => RemoveHTML(r.getContentString))
-      .groupBy(content => DetectMimeTypeTika(content))
+      .map(r => RemoveHTTPHeaderRDD(r.getContentString))
+      .groupBy(content => DetectMimeTypeTika(content.getBytes))
       .map(f => {
         (f._1, f._2.size)
       }).collect
@@ -115,7 +114,7 @@ class ArcTest extends FunSuite with BeforeAndAfter {
       case ("image/png", count) => assert(8L == count)
       case ("image/jpeg", count) => assert(18L == count)
       case ("text/html", count) => assert(132L == count)
-      case ("text/plain", count) => assert(229L == count)
+      case ("text/plain", count) => assert(86L == count)
       case ("application/xml", count) => assert(1L == count)
       case ("application/rss+xml", count) => assert(9L == count)
       case ("application/xhtml+xml", count) => assert(1L == count)

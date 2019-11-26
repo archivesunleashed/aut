@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +43,7 @@ class CountableRDDTest extends FunSuite with BeforeAndAfter {
   test("count records") {
     val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
-      .map(r => ExtractDomain(r.getUrl))
+      .map(r => ExtractDomainRDD(r.getUrl))
     val r = base
       .map(r => (r, 1))
       .reduceByKey(_ + _)

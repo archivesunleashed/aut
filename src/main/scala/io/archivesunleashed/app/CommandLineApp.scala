@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.archivesunleashed.app
 
 import java.io.File
@@ -140,17 +138,17 @@ class CommandLineApp(conf: CmdAppConf) {
   private val dfExtractors = Map[String, List[String] => Any](
     "DomainFrequencyExtractor" ->
       ((inputFiles: List[String]) => {
-        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).extractValidPagesDF()
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).webpages()
         inputFiles.tail foreach { f =>
-          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).extractValidPagesDF())
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).webpages())
         }
         save(DomainFrequencyExtractor(df))
       }),
     "DomainGraphExtractor" ->
       ((inputFiles: List[String]) => {
-        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).extractHyperlinksDF()
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).webgraph()
         inputFiles.tail foreach { f =>
-          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).extractHyperlinksDF())
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).webgraph())
         }
         if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "GEXF") {
           new File(saveTarget).mkdirs()
@@ -161,9 +159,9 @@ class CommandLineApp(conf: CmdAppConf) {
       }),
     "PlainTextExtractor" ->
       ((inputFiles: List[String]) => {
-        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).extractValidPagesDF()
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).webpages()
         inputFiles.tail foreach { f =>
-          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).extractValidPagesDF())
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).webpages())
         }
         save(PlainTextExtractor(df))
       })

@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +17,7 @@ package io.archivesunleashed.matchbox
 
 import java.security.MessageDigest
 import java.util.Base64
-import java.nio.charset.StandardCharsets
 import org.apache.commons.codec.binary.Hex
-
 
 /** Information about an image. e.g. width, height. */
 class ImageDetails(imageUrl: String, imageType: String, bytes: Array[Byte]) {
@@ -29,11 +26,12 @@ class ImageDetails(imageUrl: String, imageType: String, bytes: Array[Byte]) {
   val height = dimensions._2
   val url: String = imageUrl
   val mimeType: String = imageType
-  val hash: String = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+  val md5Hash: String = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+  val sha1Hash: String = new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
   val body: String = Base64.getEncoder.encodeToString(bytes)
 }
 
-/** Extracts image details given raw bytes (using Apache Tika). */
+/** Extracts image details given raw bytes. */
 object ExtractImageDetails {
 
   /**

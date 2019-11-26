@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +16,21 @@
 
 package io
 
+import java.security.MessageDigest
+import java.util.Base64
+
 import io.archivesunleashed.data.{ArchiveRecordInputFormat, ArchiveRecordWritable}
 import ArchiveRecordWritable.ArchiveFormat
-import io.archivesunleashed.matchbox.{ComputeMD5, DetectLanguage, ExtractDate, ExtractDomain, ExtractImageDetails, ExtractImageLinks, ExtractLinks, RemoveHTML}
-import io.archivesunleashed.matchbox.ImageDetails
+import io.archivesunleashed.matchbox.{DetectLanguage, DetectMimeTypeTika, ExtractDate, ExtractDomainRDD, ExtractImageDetails, ExtractImageLinksRDD, ExtractLinksRDD, GetExtensionMimeRDD, RemoveHTMLRDD}
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent
+import org.apache.commons.codec.binary.Hex
+import org.apache.commons.io.FilenameUtils
 import org.apache.hadoop.fs.{FileSystem, Path}
-// scalastyle:off underscore.import
-import io.archivesunleashed.matchbox.ExtractDate.DateComponent._
-import org.apache.spark.sql._
-import org.apache.spark.sql.types._
-// scalastyle:on: underscore.import
+import io.archivesunleashed.matchbox.ExtractDate.DateComponent.DateComponent
+import java.net.URI
+import java.net.URL
+import org.apache.spark.sql.{DataFrame, Row, SparkSession}
+import org.apache.spark.sql.types.{BinaryType, IntegerType, StringType, StructField, StructType}
 import org.apache.hadoop.io.LongWritable
 import org.apache.spark.{SerializableWritable, SparkContext}
 import org.apache.spark.rdd.RDD
@@ -38,7 +41,7 @@ import scala.util.matching.Regex
   * Package object which supplies implicits to augment generic RDDs with AUT-specific transformations.
   */
 package object archivesunleashed {
-  /** Loads records from either WARCs, ARCs or Twitter API data (JSON). */
+  /** Loads records from either WARCs or ARCs. */
   object RecordLoader {
     /** Gets all non-empty archive files.
       *
@@ -59,7 +62,8 @@ package object archivesunleashed {
       * @return an RDD of ArchiveRecords for mapping.
       */
     def loadArchives(path: String, sc: SparkContext): RDD[ArchiveRecord] = {
-      val fs = FileSystem.get(sc.hadoopConfiguration)
+      val uri = new URI(path)
+      val fs = FileSystem.get(uri, sc.hadoopConfiguration)
       val p = new Path(path)
       sc.newAPIHadoopFile(getFiles(p, fs), classOf[ArchiveRecordInputFormat], classOf[LongWritable], classOf[ArchiveRecordWritable])
         .filter(r => (r._2.getFormat == ArchiveFormat.ARC) ||
@@ -83,35 +87,58 @@ package object archivesunleashed {
     * To load such an RDD, please see [[RecordLoader]].
     */
   implicit class WARecordRDD(rdd: RDD[ArchiveRecord]) extends java.io.Serializable {
-    /** Removes all non-html-based data (images, executables etc.) from html text. */
+
+    /*Creates a column for Bytes as well in Dataframe. 
+      Call KeepImages OR KeepValidPages on RDD depending upon the requirement before calling this method */
+    def all(): DataFrame = {
+      val records = rdd.map(r => Row(r.getCrawlDate, r.getUrl, r.getMimeType,
+          DetectMimeTypeTika(r.getBinaryBytes), r.getContentString, r.getBinaryBytes))
+
+      val schema = new StructType()
+        .add(StructField("crawl_date", StringType, true))
+        .add(StructField("url", StringType, true))
+        .add(StructField("mime_type_web_server", StringType, true))
+        .add(StructField("mime_type_tika", StringType, true))
+        .add(StructField("content", StringType, true))
+        .add(StructField("bytes", BinaryType, true))
+
+      val sqlContext = SparkSession.builder()
+      sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
+    /** Removes all non-html-based data (images, executables, etc.) from html text. */
     def keepValidPages(): RDD[ArchiveRecord] = {
       rdd.filter(r =>
         r.getCrawlDate != null
           && (r.getMimeType == "text/html"
           || r.getMimeType == "application/xhtml+xml"
-          || r.getUrl.endsWith("htm")
-          || r.getUrl.endsWith("html"))
-          && !r.getUrl.endsWith("robots.txt"))
+          || r.getUrl.toLowerCase.endsWith("htm")
+          || r.getUrl.toLowerCase.endsWith("html"))
+          && !r.getUrl.toLowerCase.endsWith("robots.txt")
+          && r.getHttpStatus == "200")
     }
 
-    def extractValidPagesDF(): DataFrame = {
+    def webpages(): DataFrame = {
       val records = rdd.keepValidPages()
-        .map(r => Row(r.getCrawlDate, r.getUrl, r.getMimeType, r.getContentString))
+        .map(r => Row(r.getCrawlDate, r.getUrl, r.getMimeType,
+          DetectMimeTypeTika(r.getBinaryBytes), r.getContentString))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
         .add(StructField("url", StringType, true))
-        .add(StructField("mime_type", StringType, true))
+        .add(StructField("mime_type_web_server", StringType, true))
+        .add(StructField("mime_type_tika", StringType, true))
         .add(StructField("content", StringType, true))
 
       val sqlContext = SparkSession.builder()
       sqlContext.getOrCreate().createDataFrame(records, schema)
     }
 
-    def extractHyperlinksDF(): DataFrame = {
+    def webgraph(): DataFrame = {
       val records = rdd
         .keepValidPages()
-        .flatMap(r => ExtractLinks(r.getUrl, r.getContentString).map(t => (r.getCrawlDate, t._1, t._2, t._3)))
+        .flatMap(r => ExtractLinksRDD(r.getUrl, r.getContentString)
+        .map(t => (r.getCrawlDate, t._1, t._2, t._3)))
         .map(t => Row(t._1, t._2, t._3, t._4))
 
       val schema = new StructType()
@@ -124,13 +151,13 @@ package object archivesunleashed {
       sqlContext.getOrCreate().createDataFrame(records, schema)
     }
 
-    /* Extracts all the images from a source page */
-    def extractImageLinksDF(): DataFrame = {
+    /* Extracts all the images links from a source page. */
+    def imageLinks(): DataFrame = {
       val records = rdd
         .keepValidPages()
         .flatMap(r => {
           val src = r.getUrl
-          val imageUrls = ExtractImageLinks(src, r.getContentString)
+          val imageUrls = ExtractImageLinksRDD(src, r.getContentString)
           imageUrls.map(url => (src, url))
         })
         .map(t => Row(t._1, t._2))
@@ -143,22 +170,334 @@ package object archivesunleashed {
       sqlContext.getOrCreate().createDataFrame(records, schema)
     }
 
-    /* Extract image bytes and metadata */
-    def extractImageDetailsDF(): DataFrame = {
+    /* Extract image bytes and image metadata. */
+    def images(): DataFrame = {
       val records = rdd
         .keepImages()
         .map(r => {
-          val image = ExtractImageDetails(r.getUrl, r.getMimeType, r.getImageBytes)
-          (r.getUrl, r.getMimeType, image.width, image.height, image.hash, image.body)
+          val mimeTypeTika = DetectMimeTypeTika(r.getBinaryBytes)
+          val image = ExtractImageDetails(r.getUrl, mimeTypeTika, r.getBinaryBytes)
+          val url = new URL(r.getUrl)
+          val filename = FilenameUtils.getName(url.getPath())
+          val extension = GetExtensionMimeRDD(url.getPath(), mimeTypeTika)
+          (r.getUrl, filename, extension, r.getMimeType, mimeTypeTika,
+            image.width, image.height, image.md5Hash, image.sha1Hash, image.body)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10))
 
       val schema = new StructType()
         .add(StructField("url", StringType, true))
-        .add(StructField("mime_type", StringType, true))
+        .add(StructField("filename", StringType, true))
+        .add(StructField("extension", StringType, true))
+        .add(StructField("mime_type_web_server", StringType, true))
+        .add(StructField("mime_type_tika", StringType, true))
         .add(StructField("width", IntegerType, true))
         .add(StructField("height", IntegerType, true))
         .add(StructField("md5", StringType, true))
+        .add(StructField("sha1", StringType, true))
+        .add(StructField("bytes", StringType, true))
+
+      val sqlContext = SparkSession.builder();
+      sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
+    /* Extract PDF bytes and PDF metadata. */
+    def pdfs(): DataFrame = {
+      val records = rdd
+        .map(r =>
+            (r, (DetectMimeTypeTika(r.getBinaryBytes)))
+            )
+        .filter(r => r._2 == "application/pdf")
+        .map(r => {
+          val bytes = r._1.getBinaryBytes
+          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val sha1Hash = new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
+          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
+          val url = new URL(r._1.getUrl)
+          val filename = FilenameUtils.getName(url.getPath())
+          val extension = GetExtensionMimeRDD(url.getPath(), r._2)
+          (r._1.getUrl, filename, extension, r._1.getMimeType,
+            DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
+        })
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8))
+
+      val schema = new StructType()
+        .add(StructField("url", StringType, true))
+        .add(StructField("filename", StringType, true))
+        .add(StructField("extension", StringType, true))
+        .add(StructField("mime_type_web_server", StringType, true))
+        .add(StructField("mime_type_tika", StringType, true))
+        .add(StructField("md5", StringType, true))
+        .add(StructField("sha1", StringType, true))
+        .add(StructField("bytes", StringType, true))
+
+      val sqlContext = SparkSession.builder();
+      sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
+    /* Extract audio bytes and audio metadata. */
+    def audio(): DataFrame = {
+      val records = rdd
+        .map(r =>
+            (r, (DetectMimeTypeTika(r.getBinaryBytes)))
+            )
+        .filter(r => r._2.startsWith("audio/"))
+        .map(r => {
+          val bytes = r._1.getBinaryBytes
+          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val sha1Hash = new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
+          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
+          val url = new URL(r._1.getUrl)
+          val filename = FilenameUtils.getName(url.getPath())
+          val extension = GetExtensionMimeRDD(url.getPath(), r._2)
+          (r._1.getUrl, filename, extension, r._1.getMimeType,
+            DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
+        })
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8))
+
+      val schema = new StructType()
+        .add(StructField("url", StringType, true))
+        .add(StructField("filename", StringType, true))
+        .add(StructField("extension", StringType, true))
+        .add(StructField("mime_type_web_server", StringType, true))
+        .add(StructField("mime_type_tika", StringType, true))
+        .add(StructField("md5", StringType, true))
+        .add(StructField("sha1", StringType, true))
+        .add(StructField("bytes", StringType, true))
+
+      val sqlContext = SparkSession.builder();
+      sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
+    /* Extract video bytes and video metadata. */
+    def videos(): DataFrame = {
+      val records = rdd
+        .map(r =>
+            (r, (DetectMimeTypeTika(r.getBinaryBytes)))
+            )
+        .filter(r => r._2.startsWith("video/"))
+        .map(r => {
+          val bytes = r._1.getBinaryBytes
+          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val sha1Hash = new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
+          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
+          val url = new URL(r._1.getUrl)
+          val filename = FilenameUtils.getName(url.getPath())
+          val extension = GetExtensionMimeRDD(url.getPath(), r._2)
+          (r._1.getUrl, filename, extension, r._1.getMimeType,
+            DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
+        })
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8))
+
+      val schema = new StructType()
+        .add(StructField("url", StringType, true))
+        .add(StructField("filename", StringType, true))
+        .add(StructField("extension", StringType, true))
+        .add(StructField("mime_type_web_server", StringType, true))
+        .add(StructField("mime_type_tika", StringType, true))
+        .add(StructField("md5", StringType, true))
+        .add(StructField("sha1", StringType, true))
+        .add(StructField("bytes", StringType, true))
+
+      val sqlContext = SparkSession.builder();
+      sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
+    /* Extract spreadsheet bytes and spreadsheet metadata. */
+    def spreadsheets(): DataFrame = {
+      val records = rdd
+        .map(r =>
+            (r, (DetectMimeTypeTika(r.getBinaryBytes)))
+            )
+        .filter(r => (r._2 == "application/vnd.ms-excel"
+          || r._2 == "application/vnd.ms-excel.workspace.3"
+          || r._2 == "application/vnd.ms-excel.workspace.4"
+          || r._2 == "application/vnd.ms-excel.sheet.2"
+          || r._2 == "application/vnd.ms-excel.sheet.3"
+          || r._2 == "application/vnd.ms-excel.sheet.3"
+          || r._2 == "application/vnd.ms-excel.addin.macroenabled.12"
+          || r._2 == "application/vnd.ms-excel.sheet.binary.macroenabled.12"
+          || r._2 == "application/vnd.ms-excel.sheet.macroenabled.12"
+          || r._2 == "application/vnd.ms-excel.template.macroenabled.12"
+          || r._2 == "application/vnd.ms-spreadsheetml"
+          || r._2 == "application/vnd.openxmlformats-officedocument.spreadsheetml.template"
+          || r._2 == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          || r._2 == "application/x-vnd.oasis.opendocument.spreadsheet-template"
+          || r._2 == "application/vnd.oasis.opendocument.spreadsheet-template"
+          || r._2 == "application/vnd.oasis.opendocument.spreadsheet"
+          || r._2 == "application/x-vnd.oasis.opendocument.spreadsheet"
+          || r._2 == "application/x-tika-msworks-spreadsheet"
+          || r._2 == "application/vnd.lotus-1-2-3"
+          || r._2 == "text/csv"                  // future versions of Tika?
+          || r._2 == "text/tab-separated-values" // " "
+          || r._1.getMimeType == "text/csv"
+          || r._1.getMimeType == "text/tab-separated-values")
+          || ((r._1.getUrl.toLowerCase.endsWith(".csv")
+            || r._1.getUrl.toLowerCase.endsWith(".tsv"))
+            && r._2 == "text/plain"))
+        .map(r => {
+          val bytes = r._1.getBinaryBytes
+          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val sha1Hash = new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
+          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
+          val url = new URL(r._1.getUrl)
+          val filename = FilenameUtils.getName(url.getPath())
+          var mimeType = r._2
+          if (mimeType == "text/plain") {
+            if (r._1.getUrl.toLowerCase.endsWith(".csv")) {
+              mimeType = "test/csv"
+            } else if (r._1.getUrl.toLowerCase.endsWith(".tsv")) {
+              mimeType = "text/tab-separated-values"
+            }
+          }
+          val extension = GetExtensionMimeRDD(url.getPath(), mimeType)
+          (r._1.getUrl, filename, extension, r._1.getMimeType,
+            DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
+        })
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8))
+
+      val schema = new StructType()
+        .add(StructField("url", StringType, true))
+        .add(StructField("filename", StringType, true))
+        .add(StructField("extension", StringType, true))
+        .add(StructField("mime_type_web_server", StringType, true))
+        .add(StructField("mime_type_tika", StringType, true))
+        .add(StructField("md5", StringType, true))
+        .add(StructField("sha1", StringType, true))
+        .add(StructField("bytes", StringType, true))
+
+      val sqlContext = SparkSession.builder();
+      sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
+    /* Extract presentation program bytes and presentation program metadata. */
+    def presentationProgramFiles(): DataFrame = {
+      val records = rdd
+        .map(r =>
+            (r, (DetectMimeTypeTika(r.getBinaryBytes)))
+            )
+        .filter(r => r._2 == "application/vnd.ms-powerpoint"
+          || r._2 == "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+          || r._2 == "application/vnd.oasis.opendocument.presentation"
+          || r._2 == "application/vnd.oasis.opendocument.presentation-template"
+          || r._2 == "application/vnd.sun.xml.impress"
+          || r._2 == "application/vnd.sun.xml.impress.template"
+          || r._2 == "application/vnd.stardivision.impress"
+          || r._2 == "application/x-starimpress"
+          || r._2 == "application/vnd.ms-powerpoint.addin.macroEnabled.12"
+          || r._2 == "application/vnd.ms-powerpoint.presentation.macroEnabled.12"
+          || r._2 == "application/vnd.ms-powerpoint.slide.macroEnabled.12"
+          || r._2 == "application/vnd.ms-powerpoint.slideshow.macroEnabled.12"
+          || r._2 == "application/vnd.ms-powerpoint.template.macroEnabled.12")
+        .map(r => {
+          val bytes = r._1.getBinaryBytes
+          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val sha1Hash = new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
+          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
+          val url = new URL(r._1.getUrl)
+          val filename = FilenameUtils.getName(url.getPath())
+          val extension = GetExtensionMimeRDD(url.getPath(), r._2)
+          (r._1.getUrl, filename, extension, r._1.getMimeType,
+            DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
+        })
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8))
+
+      val schema = new StructType()
+        .add(StructField("url", StringType, true))
+        .add(StructField("filename", StringType, true))
+        .add(StructField("extension", StringType, true))
+        .add(StructField("mime_type_web_server", StringType, true))
+        .add(StructField("mime_type_tika", StringType, true))
+        .add(StructField("md5", StringType, true))
+        .add(StructField("sha1", StringType, true))
+        .add(StructField("bytes", StringType, true))
+
+      val sqlContext = SparkSession.builder();
+      sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
+    /* Extract word processor bytes and word processor metadata. */
+    def wordProcessorFiles(): DataFrame = {
+      val records = rdd
+        .map(r =>
+            (r, (DetectMimeTypeTika(r.getBinaryBytes)))
+            )
+        .filter(r => r._2 == "application/vnd.lotus-wordpro"
+          || r._2 == "application/vnd.kde.kword"
+          || r._2 == "application/vnd.ms-word.document.macroEnabled.12"
+          || r._2 == "application/vnd.ms-word.template.macroEnabled.12"
+          || r._2 == "application/vnd.oasis.opendocument.text"
+          || r._2 == "application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml"
+          || r._2 == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          || r._2 == "application/vnd.openxmlformats-officedocument.wordprocessingml.document.glossary+xml"
+          || r._2 == "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
+          || r._2 == "application/vnd.wordperfect"
+          || r._2 == "application/wordperfect5.1"
+          || r._2 == "application/msword"
+          || r._2 == "application/vnd.ms-word.document.macroEnabled.12"
+          || r._2 == "application/vnd.ms-word.template.macroEnabled.12"
+          || r._2 == "application/vnd.apple.pages"
+          || r._2 == "application/macwriteii"
+          || r._2 == "application/vnd.ms-works"
+          || r._2 == "application/rtf")
+        .map(r => {
+          val bytes = r._1.getBinaryBytes
+          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val sha1Hash = new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
+          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
+          val url = new URL(r._1.getUrl)
+          val filename = FilenameUtils.getName(url.getPath())
+          val extension = GetExtensionMimeRDD(url.getPath(), r._2)
+          (r._1.getUrl, filename, extension, r._1.getMimeType,
+            DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
+        })
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8))
+
+      val schema = new StructType()
+        .add(StructField("url", StringType, true))
+        .add(StructField("filename", StringType, true))
+        .add(StructField("extension", StringType, true))
+        .add(StructField("mime_type_web_server", StringType, true))
+        .add(StructField("mime_type_tika", StringType, true))
+        .add(StructField("md5", StringType, true))
+        .add(StructField("sha1", StringType, true))
+        .add(StructField("bytes", StringType, true))
+
+      val sqlContext = SparkSession.builder();
+      sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
+    /* Extract plain text bytes and plain text metadata. */
+    def textFiles(): DataFrame = {
+      val records = rdd
+        .keepMimeTypes(Set("text/plain"))
+        .filter(r => r.getUrl.toLowerCase.endsWith(".txt")
+          || !r.getUrl.toLowerCase.endsWith("robots.txt")
+          || !r.getUrl.toLowerCase.endsWith(".js")
+          || !r.getUrl.toLowerCase.endsWith(".css")
+          || !r.getUrl.toLowerCase.endsWith(".htm")
+          || !r.getUrl.toLowerCase.endsWith(".html"))
+        .map(r => {
+          val bytes = r.getBinaryBytes
+          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val sha1Hash = new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
+          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
+          val url = new URL(r.getUrl)
+          val filename = FilenameUtils.getName(url.getPath())
+          val extension = FilenameUtils.getExtension(url.getPath())
+          (r.getUrl, filename, extension, r.getMimeType,
+            DetectMimeTypeTika(r.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
+        })
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8))
+
+      val schema = new StructType()
+        .add(StructField("url", StringType, true))
+        .add(StructField("filename", StringType, true))
+        .add(StructField("extension", StringType, true))
+        .add(StructField("mime_type_web_server", StringType, true))
+        .add(StructField("mime_type_tika", StringType, true))
+        .add(StructField("md5", StringType, true))
+        .add(StructField("sha1", StringType, true))
         .add(StructField("bytes", StringType, true))
 
       val sqlContext = SparkSession.builder();
@@ -167,44 +506,54 @@ package object archivesunleashed {
 
     /** Removes all data except images. */
     def keepImages(): RDD[ArchiveRecord] = {
-      rdd.filter(r =>
-        r.getCrawlDate != null
-          && (
-          (r.getMimeType != null && r.getMimeType.contains("image/"))
-            || r.getUrl.endsWith("jpg")
-            || r.getUrl.endsWith("jpeg")
-            || r.getUrl.endsWith("png"))
-          && !r.getUrl.endsWith("robots.txt"))
+      rdd.filter(r => r.getCrawlDate != null
+        && DetectMimeTypeTika(r.getBinaryBytes).startsWith("image/"))
     }
 
-    /** Removes all data but selected mimeTypes.
+    /** Removes all data but selected mimeTypes specified.
       *
-      * @param mimeTypes a Set of Mimetypes to keep
+      * @param mimeTypes a list of Mime Types
       */
     def keepMimeTypes(mimeTypes: Set[String]): RDD[ArchiveRecord] = {
       rdd.filter(r => mimeTypes.contains(r.getMimeType))
     }
 
-    /** Removes all data that does not have selected data.
+    /** Removes all data but selected mimeTypes as detected by Tika.
       *
-      * @param dates a list of dates to keep
+      * @param mimeTypes a list of Mime Types
+      */
+    def keepMimeTypesTika(mimeTypes: Set[String]): RDD[ArchiveRecord] = {
+      rdd.filter(r => mimeTypes.contains(DetectMimeTypeTika(r.getBinaryBytes)))
+    }
+
+    /** Removes all data that does not have selected HTTP status codes.
+     *
+     *  @param statusCodes a list of HTTP status codes
+     */
+    def keepHttpStatus(statusCodes: Set[String]): RDD[ArchiveRecord] = {
+      rdd.filter(r => statusCodes.contains(r.getHttpStatus))
+    }
+
+    /** Removes all data that does not have selected date.
+      *
+      * @param dates a list of dates
       * @param component the selected DateComponent enum value
       */
     def keepDate(dates: List[String], component: DateComponent = DateComponent.YYYYMMDD): RDD[ArchiveRecord] = {
       rdd.filter(r => dates.contains(ExtractDate(r.getCrawlDate, component)))
     }
 
-    /** Removes all data but selected exact URLs
+    /** Removes all data but selected exact URLs.
       *
-      * @param urls a Set of URLs to keep
+      * @param urls a list of URLs to keep
       */
     def keepUrls(urls: Set[String]): RDD[ArchiveRecord] = {
       rdd.filter(r => urls.contains(r.getUrl))
     }
 
-    /** Removes all data but selected url patterns.
+    /** Removes all data but selected URL patterns.
       *
-      * @param urlREs a Set of Regular Expressions to keep
+      * @param urlREs a list of regular expressions
       */
     def keepUrlPatterns(urlREs: Set[Regex]): RDD[ArchiveRecord] = {
       rdd.filter(r =>
@@ -217,23 +566,23 @@ package object archivesunleashed {
 
     /** Removes all data but selected source domains.
       *
-      * @param urls a Set of urls for the source domains to keep
+      * @param urls a list of urls for the source domains
       */
     def keepDomains(urls: Set[String]): RDD[ArchiveRecord] = {
-      rdd.filter(r => urls.contains(ExtractDomain(r.getUrl).replace("^\\s*www\\.", "")))
+      rdd.filter(r => urls.contains(ExtractDomainRDD(r.getUrl).replace("^\\s*www\\.", "")))
     }
 
     /** Removes all data not in selected language.
       *
-      * @param lang a Set of ISO 639-2 codes
+      * @param lang a set of ISO 639-2 codes
       */
     def keepLanguages(lang: Set[String]): RDD[ArchiveRecord] = {
-      rdd.filter(r => lang.contains(DetectLanguage(RemoveHTML(r.getContentString))))
+      rdd.filter(r => lang.contains(DetectLanguage(RemoveHTMLRDD(r.getContentString))))
     }
 
     /** Removes all content that does not pass Regular Expression test.
       *
-      * @param contentREs a list of Regular expressions to keep
+      * @param contentREs a list of regular expressions to keep
       */
     def keepContent(contentREs: Set[Regex]): RDD[ArchiveRecord] = {
       rdd.filter(r =>
@@ -244,22 +593,50 @@ package object archivesunleashed {
           }).exists(identity))
     }
 
-    /** Filters MimeTypes from RDDs.
+    /** Filters ArchiveRecord MimeTypes (web server).
       *
-      * @param mimeTypes
+      * @param mimeTypes a list of Mime Types
       */
     def discardMimeTypes(mimeTypes: Set[String]): RDD[ArchiveRecord] = {
       rdd.filter(r => !mimeTypes.contains(r.getMimeType))
     }
 
+    /** Filters detected MimeTypes (Tika).
+      *
+      * @param mimeTypes a list of Mime Types
+      */
+    def discardMimeTypesTika(mimeTypes: Set[String]): RDD[ArchiveRecord] = {
+      rdd.filter(r => !mimeTypes.contains(DetectMimeTypeTika(r.getBinaryBytes)))
+    }
+
+    /** Filters detected dates.
+      *
+      * @param date a list of dates
+      */
     def discardDate(date: String): RDD[ArchiveRecord] = {
       rdd.filter(r => r.getCrawlDate != date)
     }
 
+    /** Filters detected URLs.
+      *
+      * @param urls a list of urls
+      */
     def discardUrls(urls: Set[String]): RDD[ArchiveRecord] = {
       rdd.filter(r => !urls.contains(r.getUrl))
     }
 
+    /** Filters detected HTTP status codes.
+      *
+      * @param statusCodes a list of HTTP status codes
+      */
+    def discardHttpStatus(statusCodes: Set[String]): RDD[ArchiveRecord] = {
+      rdd.filter(r => !statusCodes.contains(r.getHttpStatus))
+    }
+
+    /** Filters detected URL patterns (regex).
+     *
+     *  @param urlREs a list of Regular expressions
+     */
     def discardUrlPatterns(urlREs: Set[Regex]): RDD[ArchiveRecord] = {
       rdd.filter(r =>
         !urlREs.map(re =>
@@ -269,10 +646,18 @@ package object archivesunleashed {
           }).exists(identity))
     }
 
+    /** Filters detected domains (regex).
+      *
+      * @param urls a list of urls for the source domains
+      */
     def discardDomains(urls: Set[String]): RDD[ArchiveRecord] = {
       rdd.filter(r => !urls.contains(r.getDomain))
     }
 
+    /** Filters detected content (regex).
+      *
+      * @param contentREs a list of regular expressions
+      */
     def discardContent(contentREs: Set[Regex]): RDD[ArchiveRecord] = {
       rdd.filter(r =>
         !contentREs.map(re =>
@@ -280,6 +665,14 @@ package object archivesunleashed {
             case Some(v) => true
             case None => false
           }).exists(identity))
+    }
+
+    /** Filters detected language.
+      *
+      * @param lang a set of ISO 639-2 codes
+      */
+    def discardLanguages(lang: Set[String]): RDD[ArchiveRecord] = {
+      rdd.filter(r => !lang.contains(DetectLanguage(RemoveHTMLRDD(r.getContentString))))
     }
   }
 }

@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +15,8 @@
  */
 package io.archivesunleashed.app
 
-// scalastyle:off underscore.import
-import io.archivesunleashed._
-// scalastyle:on underscore.import
-import io.archivesunleashed.matchbox.{NERClassifier, RemoveHTML}
+import io.archivesunleashed.RecordLoader
+import io.archivesunleashed.matchbox.{ComputeMD5RDD, NERClassifier, RemoveHTMLRDD}
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 
@@ -39,45 +36,47 @@ object ExtractEntities {
     * @param sc the Apache Spark context
     * @return an rdd with classification entities.
     */
-  def extractFromRecords(iNerClassifierFile: String, inputRecordFile: String, outputFile: String, sc: SparkContext): RDD[(String, String, String)] = {
+  def extractFromRecords(iNerClassifierFile: String, inputRecordFile: String,
+    outputFile: String,
+    sc: SparkContext): RDD[(String, String, String, String)] = {
     val rdd = RecordLoader.loadArchives(inputRecordFile, sc)
-      .map(r => (r.getCrawlDate, r.getUrl, RemoveHTML(r.getContentString)))
+      .keepValidPages()
+      .map(r => (("\"timestamp\":\"" + r.getCrawlDate + "\""),
+        ("\"url\":\"" + r.getUrl + "\""),
+        (RemoveHTMLRDD(r.getContentString)),
+        ("\"digest\":\"" + r.getPayloadDigest + "\"")))
     extractAndOutput(iNerClassifierFile, rdd, outputFile)
   }
 
-  /** Extracts named entities from tuple-formatted derivatives scraped from a website.
+  /** Converts output of NER classifier to WANE format
     *
-    * @param iNerClassifierFile path of classifier file
-    * @param inputFile path of file containing tuples (date: String, url: String, content: String)
-    *                  from which to extract entities
-    * @param outputFile path of output directory
-    * @return an rdd with classification entities.
+    * @param output of NER Classifier
+    * @return output of NER Classifier in WANE format
     */
-  def extractFromScrapeText(iNerClassifierFile: String, inputFile: String, outputFile: String, sc: SparkContext): RDD[(String, String, String)] = {
-    val rdd = sc.textFile(inputFile)
-      .map(line => {
-        val ind1 = line.indexOf(",")
-        val ind2 = line.indexOf(",", ind1 + 1)
-        (line.substring(1, ind1),
-          line.substring(ind1 + 1, ind2),
-          line.substring(ind2 + 1, line.length - 1))
-      })
-    extractAndOutput(iNerClassifierFile, rdd, outputFile)
+  def waneFormat(input: String): String = {
+    var output = input.replaceAll("PERSON\":","persons\":")
+    output = output.replaceAll("ORGANIZATION\":","organizations\":")
+    output = output.replaceAll("LOCATION\":","locations\":")
+    return output;
   }
 
   /** Saves the NER output to file from a given RDD.
     *
     * @param iNerClassifierFile path of classifier file
-    * @param rdd with values (date, url, content)
+    * @param rdd with values (date, url, content, content digest)
     * @param outputFile path of output directory
-    * @return an rdd of tuples with classification entities extracted.
+    * @return a json object with classification entities extracted.
     */
-  def extractAndOutput(iNerClassifierFile: String, rdd: RDD[(String, String, String)], outputFile: String): RDD[(String, String, String)] = {
+  def extractAndOutput(iNerClassifierFile: String,
+    rdd: RDD[(String, String, String, String)],
+    outputFile: String): RDD[(String, String, String, String)] = {
     val r = rdd.mapPartitions(iter => {
       NERClassifier.apply(iNerClassifierFile)
-      iter.map(r => (r._1, r._2, NERClassifier.classify(r._3)))
+      iter.map(r => (("{" + r._1), r._2,
+        ("\"named_entities\":" + waneFormat(NERClassifier.classify(r._3).toString)), (r._4 + "}")))
     })
-    r.saveAsTextFile(outputFile)
+    r.map(r => r._1 + "," + r._2 + "," + r._3 + "," + r._4)
+      .saveAsTextFile(outputFile)
     r
   }
 }

@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +28,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
-class ExtractImageLinksTest extends FunSuite with BeforeAndAfter {
+class ImageLinksTest extends FunSuite with BeforeAndAfter {
   private val arcPath = Resources.getResource("arc/example.arc.gz").getPath
   private val master = "local[4]"
   private val appName = "example-df"
@@ -44,7 +43,7 @@ class ExtractImageLinksTest extends FunSuite with BeforeAndAfter {
 
   test("Fetch image links") {
     val df = RecordLoader.loadArchives(arcPath, sc)
-      .extractImageLinksDF()
+      .imageLinks()
 
     // We need this in order to use the $-notation
     val spark = SparkSession.builder().master("local").getOrCreate()

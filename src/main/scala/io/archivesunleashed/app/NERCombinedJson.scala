@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +20,7 @@ import java.io.{BufferedReader, BufferedWriter, InputStreamReader, OutputStreamW
 import io.archivesunleashed.matchbox.NERClassifier
 import io.archivesunleashed.util.{CopyMerge, JsonUtils}
 import org.apache.hadoop.conf.Configuration
-// scalastyle:off underscore.import
-import org.apache.hadoop.fs._
-// scalastyle:on underscore.import
+import org.apache.hadoop.fs.{FileUtil, FileSystem, Path}
 import org.apache.spark.SparkContext
 
 import scala.collection.mutable.MutableList
@@ -117,7 +114,7 @@ class NERCombinedJson extends Serializable {
         iter.map(r => {
           val nerRec = new NerRecord(r._1._1, r._1._2)
           r._2.foreach(entityMap => {
-            // e.g., entityMap = "PERSON" -> List(("Jack", 1), ("Diane", 3))
+            // e.g., entityMap = "persons" -> List(("Jack", 1), ("Diane", 3))
             val ec = new EntityCounts(entityMap._1)
             entityMap._2.foreach(e => {
               ec.entities += new Entity(e._1, e._2)

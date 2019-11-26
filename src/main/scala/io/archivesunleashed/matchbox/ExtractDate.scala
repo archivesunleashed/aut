@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +22,8 @@ object ExtractDate {
     type DateComponent = Value
     val YYYY, MM, DD, YYYYMM, YYYYMMDD = Value
   }
-  // scalastyle:off underscore.import
-  import DateComponent._
-  // scalastyle:on underscore.import
+
+  import DateComponent.{DateComponent, DD, MM, YYYY, YYYYMM}
 
   /** Extracts the wanted date component from a date.
     *

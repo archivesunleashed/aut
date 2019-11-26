@@ -23,7 +23,7 @@ if __name__ == "__main__":
 
     # preprocessing raw images
     arc = WebArchive(sc, sql_context, args.web_archive)
-    df = DataFrame(arc.loader.extractImages(arc.path), sql_context)
+    df = DataFrame(arc.loader.images(arc.path), sql_context)
     filter_size = tuple(args.filter_size)
     print("height >= %d and width >= %d" % filter_size)
     preprocessed = df.filter("height >= %d and width >= %d" % filter_size)

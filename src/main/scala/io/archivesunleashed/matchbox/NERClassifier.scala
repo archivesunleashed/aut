@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,10 +54,10 @@ object NERClassifier {
   /** Performs NER classificiation based on NER Classifier.
    *
    * @param input
-   * @return json string containing lists of people, organizations and locations.
+   * @return json string containing lists of persons, organizations, and locations.
    */
   def classify(input: String): String = {
-    val emptyString: String = "{\"PERSON\":[],\"ORGANIZATION\"=[],\"LOCATION\"=[]}"
+    val emptyString: String = "\"persons\":[],\"organizations\":[],\"locations\":[]"
     val entitiesByType = mutable.LinkedHashMap[NERClassType.Value, mutable.Seq[String]]()
     for (t <- NERClassType.values) {
       if (t != NERClassType.O) { entitiesByType.put(t, mutable.Seq()) }

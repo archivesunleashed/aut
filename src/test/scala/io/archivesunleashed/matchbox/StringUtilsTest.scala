@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +45,11 @@ class StringUtilsTest extends FunSuite {
 
   test ("md5 hash") {
     val s: String = "unesco.org";
-    assert(s.computeHash() == "8e8decc8e8107bcf9d3896f3222b77d8");
+    assert(ComputeMD5RDD(s.getBytes) == "8e8decc8e8107bcf9d3896f3222b77d8");
   }
+  test ("sh1 hash") {
+    val s: String = "unesco.org";
+    assert(ComputeSHA1RDD(s.getBytes) == "2d0e5377157172045d87befe46e157cda42c4f6e");
+  }
+
 }

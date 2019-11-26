@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,12 +34,12 @@ class TupleFormatterTest extends FunSuite with Matchers {
     assert(TupleFormatter.tabDelimit(tuple) == "ab\tbl\tc\t9\td\t5\thi\t1")
     assert(TupleFormatter.tabDelimit.isInstanceOf[Poly1])
   }
+
   test("just flatten") {
     val tuple = ("an", 1, "cr", ("x", 3, ("NO", "YES")), "perhaps", "maybe", 3, (0,1))
     val flatTuple = ("an", 1, "cr", "x", 3, "NO", "YES", "perhaps", "maybe", 3, 0, 1)
     assert(TupleFormatter.flatten(tuple) == flatTuple)
     assert(TupleFormatter.flatten.isInstanceOf[TupleFormatter.LowPriorityFlatten])
-    TupleFormatter.flatten.default shouldBe a[Poly1$CaseBuilder$$anon$1]
   }
 
   test ("Object extensions") {

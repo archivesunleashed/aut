@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +29,7 @@ object ExtractBoilerpipeText {
    */
 
   def apply(input: String): String = {
-    removeBoilerplate(RemoveHttpHeader(input))
+    removeBoilerplate(RemoveHTTPHeaderRDD(input))
   }
 
   private def removeBoilerplate(input: String): String = {

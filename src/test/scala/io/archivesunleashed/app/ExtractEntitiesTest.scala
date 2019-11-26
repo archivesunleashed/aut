@@ -1,6 +1,5 @@
 /*
- * Archives Unleashed Toolkit (AUT):
- * An open-source toolkit for analyzing web archives.
+ * Copyright © 2017 The Archives Unleashed Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,21 +49,6 @@ class ExtractEntitiesTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
     tempDir = Files.createTempDir()
     LOG.info("Output can be found in " + tempDir.getPath)
-  }
-
-  test("extract entities") {
-    val e = ExtractEntities.extractFromScrapeText(iNerClassifierFile, scrapePath, tempDir + "/scrapeTextEntities", sc).take(3).last
-    val expectedEntityMap = mutable.Map[NERClassType.Value, List[String]]()
-    expectedEntityMap.put(NERClassType.PERSON, List())
-    expectedEntityMap.put(NERClassType.LOCATION, List("Teoma"))
-    expectedEntityMap.put(NERClassType.ORGANIZATION, List())
-    assert(e._1 == "20080430")
-    assert(e._2 == "http://www.archive.org/robots.txt")
-    val actual = mapper.readValue(e._3, classOf[Map[String, List[String]]])
-
-    expectedEntityMap.toStream.foreach(f => {
-      assert(f._2 == actual.get(f._1.toString).get)
-    })
   }
 
   test("Extract from Record") {
