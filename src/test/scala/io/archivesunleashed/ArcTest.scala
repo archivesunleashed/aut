@@ -17,10 +17,8 @@
 package io.archivesunleashed
 
 import com.google.common.io.Resources
+import io.archivesunleashed.matchbox.{DetectLanguage, DetectMimeTypeTika, ExtractLinksRDD, RemoveHTMLRDD, RemoveHTTPHeaderRDD}
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent
-// scalastyle:off underscore.import
-import io.archivesunleashed.matchbox._
-// scalastyle:on underscore.import
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner

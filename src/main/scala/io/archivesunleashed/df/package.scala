@@ -16,7 +16,7 @@
 package io.archivesunleashed
 
 import org.apache.commons.io.IOUtils
-import io.archivesunleashed.matchbox.{ComputeMD5RDD}
+import io.archivesunleashed.matchbox.ComputeMD5RDD
 import org.apache.spark.sql.functions.udf
 import org.apache.spark.sql.DataFrame
 import java.io.ByteArrayInputStream
