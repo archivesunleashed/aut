@@ -47,8 +47,8 @@ object ExtractPopularImagesDF {
 
       df.join(count,"md5")
         .groupBy("md5")
-        .agg(first("url").as("url"), first("count").as("count"))   
-        .select("url","count")    
+        .agg(first("url").as("url"), first("count").as("count"))
+        .select("url","count")
         .orderBy(desc("count"))
         .limit(limit)
   }
