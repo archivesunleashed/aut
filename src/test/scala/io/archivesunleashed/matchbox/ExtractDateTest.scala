@@ -16,9 +16,7 @@
 
 package io.archivesunleashed.matchbox
 
-// scalastyle:off underscore.import
-import io.archivesunleashed.matchbox.ExtractDate.DateComponent._
-// scalastyle:on underscore.import
+import io.archivesunleashed.matchbox.ExtractDate.DateComponent.{DD, MM, YYYY, YYYYMM, YYYYMMDD}
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner

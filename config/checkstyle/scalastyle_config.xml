@@ -149,7 +149,7 @@
  <check class="org.scalastyle.scalariform.EmptyInterpolatedStringChecker" level="warning" enabled="true"></check>
  <check class="org.scalastyle.scalariform.MultipleStringLiteralsChecker" level="warning" enabled="true">
   <parameters>
-   <parameter name="allowed"><![CDATA[2]]></parameter>
+   <parameter name="allowed"><![CDATA[10]]></parameter>
    <parameter name="ignoreRegex"><![CDATA[^""$]]></parameter>
   </parameters>
  </check>

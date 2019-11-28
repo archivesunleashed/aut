@@ -17,12 +17,10 @@
 package io.archivesunleashed
 
 import com.google.common.io.Resources
-// scalastyle:off underscore.import
-import io.archivesunleashed.df._
-import org.apache.spark.sql.functions._
-import io.archivesunleashed.matchbox._
-// scalastyle:on underscore.import
+import io.archivesunleashed.df.SaveBytes
+import io.archivesunleashed.matchbox.ComputeMD5RDD
 import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.functions.desc
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner

@@ -20,13 +20,9 @@ import java.io.File
 import java.nio.file.{Files, Paths}
 
 import com.google.common.io.Resources
-// scalastyle:off underscore.import
-import io.archivesunleashed._
-import io.archivesunleashed.matchbox._
-import io.archivesunleashed.app._
-import io.archivesunleashed.util._
-import org.apache.spark.graphx._
-// scalastyle:on underscore.import
+import io.archivesunleashed.{ArchiveRecord, RecordLoader}
+import io.archivesunleashed.app.ExtractGraphX.{EdgeData, VertexData, VertexDataPR}
+import io.archivesunleashed.matchbox.{ExtractDomainRDD, ExtractLinksRDD, WWWLink}
 import org.apache.commons.io.FileUtils
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
