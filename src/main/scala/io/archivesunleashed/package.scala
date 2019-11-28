@@ -21,7 +21,9 @@ import java.util.Base64
 
 import io.archivesunleashed.data.{ArchiveRecordInputFormat, ArchiveRecordWritable}
 import ArchiveRecordWritable.ArchiveFormat
-import io.archivesunleashed.matchbox.{DetectLanguage, DetectMimeTypeTika, ExtractDate, ExtractDomainRDD, ExtractImageDetails, ExtractImageLinksRDD, ExtractLinksRDD, GetExtensionMimeRDD, RemoveHTMLRDD}
+import io.archivesunleashed.matchbox.{DetectLanguage, DetectMimeTypeTika, ExtractDate,
+                                      ExtractDomainRDD, ExtractImageDetails, ExtractImageLinksRDD,
+                                      ExtractLinksRDD, GetExtensionMimeRDD, RemoveHTMLRDD}
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent
 import org.apache.commons.codec.binary.Hex
 import org.apache.commons.io.FilenameUtils
@@ -88,8 +90,8 @@ package object archivesunleashed {
     */
   implicit class WARecordRDD(rdd: RDD[ArchiveRecord]) extends java.io.Serializable {
 
-    /*Creates a column for Bytes as well in Dataframe. 
-      Call KeepImages OR KeepValidPages on RDD depending upon the requirement before calling this method */
+    /* Creates a column for Bytes as well in Dataframe.
+       Call KeepImages OR KeepValidPages on RDD depending upon the requirement before calling this method */
     def all(): DataFrame = {
       val records = rdd.map(r => Row(r.getCrawlDate, r.getUrl, r.getMimeType,
           DetectMimeTypeTika(r.getBinaryBytes), r.getContentString, r.getBinaryBytes))

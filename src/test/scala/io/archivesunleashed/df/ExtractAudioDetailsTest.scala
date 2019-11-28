@@ -18,10 +18,7 @@ package io.archivesunleashed
 
 import com.google.common.io.Resources
 import org.apache.spark.sql.SparkSession
-// scalastyle:off underscore.import
-import io.archivesunleashed.df._
-import org.apache.spark.sql.functions._
-// scalastyle:on underscore.import
+import org.apache.spark.sql.functions.desc
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner

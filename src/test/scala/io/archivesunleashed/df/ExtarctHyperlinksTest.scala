@@ -17,10 +17,8 @@
 package io.archivesunleashed
 
 import com.google.common.io.Resources
-// scalastyle:off underscore.import
-import io.archivesunleashed.df._
-import org.apache.spark.sql.functions._
-// scalastyle:on underscore.import
+import io.archivesunleashed.df.{ExtractDomainDF, ExtractLinksDF, RemovePrefixWWWDF}
+import org.apache.spark.sql.functions.{array, explode_outer, lower, udf}
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
@@ -58,7 +56,7 @@ class ExtractHyperlinksTest extends FunSuite with BeforeAndAfter {
                             $"crawl_date",
                             explode_outer(ExtractLinksDF($"url",$"content")).as("link")
                         )
-                       .filter(lower($"content").contains("keynote")) //filtered on keyword internet
+                       .filter(lower($"content").contains("keynote")) // filtered on keyword internet
 
     val results = interResults.select($"url",$"Domain",$"crawl_date",dest(array($"link")).as("destination_page")).head(3)
 
