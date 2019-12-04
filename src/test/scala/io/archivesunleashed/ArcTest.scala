@@ -17,8 +17,8 @@
 package io.archivesunleashed
 
 import com.google.common.io.Resources
-import io.archivesunleashed.matchbox.{DetectLanguage, DetectMimeTypeTika, ExtractLinksRDD, RemoveHTMLRDD, RemoveHTTPHeaderRDD}
-import io.archivesunleashed.matchbox.ExtractDate.DateComponent
+import io.archivesunleashed.matchbox.{DetectLanguageRDD, DetectMimeTypeTika, ExtractLinksRDD, RemoveHTMLRDD, RemoveHTTPHeaderRDD}
+import io.archivesunleashed.matchbox.ExtractDateRDD.DateComponent
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -82,7 +82,7 @@ class ArcTest extends FunSuite with BeforeAndAfter {
     val languageCounts = RecordLoader.loadArchives(arcPath, sc)
       .keepMimeTypes(Set("text/html"))
       .map(r => RemoveHTMLRDD(r.getContentString))
-      .groupBy(content => DetectLanguage(content))
+      .groupBy(content => DetectLanguageRDD(content))
       .map(f => {
         (f._1, f._2.size)
       })

@@ -16,7 +16,7 @@
 package io.archivesunleashed
 
 import org.apache.commons.io.IOUtils
-import io.archivesunleashed.matchbox.ComputeMD5RDD
+import io.archivesunleashed.matchbox.{ComputeMD5RDD,ExtractDateRDD}
 import org.apache.spark.sql.functions.udf
 import org.apache.spark.sql.DataFrame
 import java.io.ByteArrayInputStream
@@ -26,6 +26,7 @@ import java.util.Base64
 /**
   * UDFs for data frames.
   */
+
 package object df {
   // UDFs for use with data frames go here, tentatively. There are couple of ways we could build UDFs,
   // by wrapping matchbox UDFs or by reimplementing them. The following examples illustrate. Obviously, we'll
@@ -50,6 +51,12 @@ package object df {
   val ComputeSHA1DF = udf(io.archivesunleashed.matchbox.ComputeSHA1RDD.apply(_: Array[Byte]))
 
   val ComputeImageSizeDF = udf(io.archivesunleashed.matchbox.ComputeImageSize.apply(_: Array[Byte]))
+
+  val DetectLanguageDF = udf(io.archivesunleashed.matchbox.DetectLanguageRDD.apply(_: String))
+
+  val ExtractBoilerpipeTextDF = udf(io.archivesunleashed.matchbox.ExtractBoilerpipeTextRDD.apply(_: String))
+
+  val ExtractDateDF = udf((io.archivesunleashed.matchbox.ExtractDateRDD.apply(_: String, _: String)))
 
   /**
    * Given a dataframe, serializes binary object and saves to disk
