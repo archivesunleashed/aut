@@ -16,7 +16,7 @@
 package io.archivesunleashed
 
 import org.apache.commons.io.IOUtils
-import io.archivesunleashed.matchbox.{ComputeMD5RDD}
+import io.archivesunleashed.matchbox.ComputeMD5RDD
 import org.apache.spark.sql.functions.udf
 import org.apache.spark.sql.DataFrame
 import java.io.ByteArrayInputStream
@@ -45,9 +45,11 @@ package object df {
 
   val ExtractImageLinksDF = udf(io.archivesunleashed.matchbox.ExtractImageLinksRDD.apply(_: String, _: String))
 
-  val ComputeMD5DF = udf((content: String) => io.archivesunleashed.matchbox.ComputeMD5RDD.apply(content.getBytes()))
+  val ComputeMD5DF = udf(io.archivesunleashed.matchbox.ComputeMD5RDD.apply(_: Array[Byte]))
 
-  val ComputeSHA1DF = udf((content: String) => io.archivesunleashed.matchbox.ComputeSHA1RDD.apply(content.getBytes()))
+  val ComputeSHA1DF = udf(io.archivesunleashed.matchbox.ComputeSHA1RDD.apply(_: Array[Byte]))
+
+  val ComputeImageSizeDF = udf(io.archivesunleashed.matchbox.ComputeImageSize.apply(_: Array[Byte]))
 
   /**
    * Given a dataframe, serializes binary object and saves to disk

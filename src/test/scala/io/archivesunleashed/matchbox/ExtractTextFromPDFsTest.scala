@@ -19,9 +19,7 @@ package io.archivesunleashed.matchbox
 import org.apache.tika.parser.pdf.PDFParser
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
-// scalastyle:off underscore.import
 import org.scalatest.Matchers
-// scalastyle:on underscore.import
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])

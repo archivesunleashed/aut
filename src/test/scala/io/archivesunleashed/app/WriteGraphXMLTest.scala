@@ -22,9 +22,6 @@ import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
-// scalastyle:off underscore.import
-import org.apache.spark.graphx._
-// scalastyle:on underscore.import
 import scala.io.Source
 
 @RunWith(classOf[JUnitRunner])
