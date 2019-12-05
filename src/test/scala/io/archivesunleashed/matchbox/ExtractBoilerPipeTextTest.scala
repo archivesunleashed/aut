@@ -32,14 +32,14 @@ class ExtractBoilerPipeTextTest extends FunSuite {
   var boiler = """Copyright 2017"""
 
   test("Collects boilerpipe") {
-    assert(ExtractBoilerpipeText(text) == boiler)
+    assert(ExtractBoilerpipeTextRDD(text) == boiler)
     // scalastyle:off null
-    assert(ExtractBoilerpipeText(null) == "")
+    assert(ExtractBoilerpipeTextRDD(null) == "")
     // scalastyle:on null
-    assert(ExtractBoilerpipeText("All Rights Reserved.") == "")
+    assert(ExtractBoilerpipeTextRDD("All Rights Reserved.") == "")
   }
 
   test("Removes Header information") {
-    assert(ExtractBoilerpipeText(header + text) == boiler)
+    assert(ExtractBoilerpipeTextRDD(header + text) == boiler)
   }
 }
