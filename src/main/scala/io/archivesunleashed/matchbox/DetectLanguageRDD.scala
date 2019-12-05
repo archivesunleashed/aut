@@ -20,7 +20,7 @@ import org.apache.tika.language.detect.LanguageDetector;
 import org.apache.tika.language.detect.LanguageResult;
 
 /** Detects language using Apache Tika. */
-object DetectLanguage {
+object DetectLanguageRDD {
 
   /** Detects the language of a String input.
    *

@@ -21,7 +21,7 @@ import java.io.ByteArrayInputStream
 import java.security.MessageDigest
 
 import io.archivesunleashed.data.{ArcRecordUtils, WarcRecordUtils, ArchiveRecordWritable}
-import io.archivesunleashed.matchbox.{ComputeMD5RDD, ExtractDate, ExtractDomainRDD, RemoveHTTPHeaderRDD}
+import io.archivesunleashed.matchbox.{ComputeMD5RDD, ExtractDateRDD, ExtractDomainRDD, RemoveHTTPHeaderRDD}
 import org.apache.spark.SerializableWritable
 import org.archive.io.arc.ARCRecord
 import org.archive.io.warc.WARCRecord
@@ -84,25 +84,25 @@ class ArchiveRecordImpl(r: SerializableWritable[ArchiveRecordWritable]) extends 
 
   val getCrawlDate: String = {
     if (recordFormat == ArchiveRecordWritable.ArchiveFormat.ARC){
-      ExtractDate(r.t.getRecord.asInstanceOf[ARCRecord].getMetaData.getDate,
-        ExtractDate.DateComponent.YYYYMMDD)
+      ExtractDateRDD(r.t.getRecord.asInstanceOf[ARCRecord].getMetaData.getDate,
+        ExtractDateRDD.DateComponent.YYYYMMDD)
     } else {
-      ExtractDate(
+      ExtractDateRDD(
         ArchiveUtils.get14DigitDate(
           ISO8601.parse(r.t.getRecord.asInstanceOf[WARCRecord].getHeader.getDate)),
-        ExtractDate.DateComponent.YYYYMMDD)
+        ExtractDateRDD.DateComponent.YYYYMMDD)
     }
   }
 
   val getCrawlMonth: String = {
     if (recordFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {
-      ExtractDate(r.t.getRecord.asInstanceOf[ARCRecord].getMetaData.getDate,
-        ExtractDate.DateComponent.YYYYMM)
+      ExtractDateRDD(r.t.getRecord.asInstanceOf[ARCRecord].getMetaData.getDate,
+        ExtractDateRDD.DateComponent.YYYYMM)
     } else {
-      ExtractDate(
+      ExtractDateRDD(
         ArchiveUtils.get14DigitDate(
           ISO8601.parse(r.t.getRecord.asInstanceOf[WARCRecord].getHeader.getDate)),
-        ExtractDate.DateComponent.YYYYMM)
+        ExtractDateRDD.DateComponent.YYYYMM)
     }
   }
 

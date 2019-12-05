@@ -21,14 +21,14 @@ import java.util.Base64
 
 import io.archivesunleashed.data.{ArchiveRecordInputFormat, ArchiveRecordWritable}
 import ArchiveRecordWritable.ArchiveFormat
-import io.archivesunleashed.matchbox.{DetectLanguage, DetectMimeTypeTika, ExtractDate,
+import io.archivesunleashed.matchbox.{DetectLanguageRDD, DetectMimeTypeTika, ExtractDateRDD,
                                       ExtractDomainRDD, ExtractImageDetails, ExtractImageLinksRDD,
                                       ExtractLinksRDD, GetExtensionMimeRDD, RemoveHTMLRDD}
-import io.archivesunleashed.matchbox.ExtractDate.DateComponent
+import io.archivesunleashed.matchbox.ExtractDateRDD.DateComponent
 import org.apache.commons.codec.binary.Hex
 import org.apache.commons.io.FilenameUtils
 import org.apache.hadoop.fs.{FileSystem, Path}
-import io.archivesunleashed.matchbox.ExtractDate.DateComponent.DateComponent
+import io.archivesunleashed.matchbox.ExtractDateRDD.DateComponent.DateComponent
 import java.net.URI
 import java.net.URL
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
@@ -542,7 +542,7 @@ package object archivesunleashed {
       * @param component the selected DateComponent enum value
       */
     def keepDate(dates: List[String], component: DateComponent = DateComponent.YYYYMMDD): RDD[ArchiveRecord] = {
-      rdd.filter(r => dates.contains(ExtractDate(r.getCrawlDate, component)))
+      rdd.filter(r => dates.contains(ExtractDateRDD(r.getCrawlDate, component)))
     }
 
     /** Removes all data but selected exact URLs.
@@ -579,7 +579,7 @@ package object archivesunleashed {
       * @param lang a set of ISO 639-2 codes
       */
     def keepLanguages(lang: Set[String]): RDD[ArchiveRecord] = {
-      rdd.filter(r => lang.contains(DetectLanguage(RemoveHTMLRDD(r.getContentString))))
+      rdd.filter(r => lang.contains(DetectLanguageRDD(RemoveHTMLRDD(r.getContentString))))
     }
 
     /** Removes all content that does not pass Regular Expression test.
@@ -674,7 +674,7 @@ package object archivesunleashed {
       * @param lang a set of ISO 639-2 codes
       */
     def discardLanguages(lang: Set[String]): RDD[ArchiveRecord] = {
-      rdd.filter(r => !lang.contains(DetectLanguage(RemoveHTMLRDD(r.getContentString))))
+      rdd.filter(r => !lang.contains(DetectLanguageRDD(RemoveHTMLRDD(r.getContentString))))
     }
   }
 }
