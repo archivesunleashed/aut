@@ -16,7 +16,7 @@
 package io.archivesunleashed
 
 import org.apache.commons.io.IOUtils
-import io.archivesunleashed.matchbox.{ComputeMD5RDD,ExtractDateRDD}
+import io.archivesunleashed.matchbox.{ComputeMD5RDD}
 import org.apache.spark.sql.functions.udf
 import org.apache.spark.sql.DataFrame
 import java.io.ByteArrayInputStream
@@ -26,7 +26,6 @@ import java.util.Base64
 /**
   * UDFs for data frames.
   */
-
 package object df {
   // UDFs for use with data frames go here, tentatively. There are couple of ways we could build UDFs,
   // by wrapping matchbox UDFs or by reimplementing them. The following examples illustrate. Obviously, we'll
