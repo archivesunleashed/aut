@@ -50,7 +50,7 @@ object ExtractDateRDD {
     }
   }
 
-  /** Extracts the wanted date component from a date (for DataFrames).
+  /** Extracts a provided date component from a date (for DataFrames).
     *
     * @param fullDate date returned by `WARecord.getCrawlDate`, formatted as YYYYMMDD
     * @param dateFormat in String format
