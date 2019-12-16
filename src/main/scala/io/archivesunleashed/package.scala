@@ -473,12 +473,13 @@ package object archivesunleashed {
     def textFiles(): DataFrame = {
       val records = rdd
         .keepMimeTypes(Set("text/plain"))
-        .filter(r => r.getUrl.toLowerCase.endsWith(".txt")
-          || !r.getUrl.toLowerCase.endsWith("robots.txt")
-          || !r.getUrl.toLowerCase.endsWith(".js")
-          || !r.getUrl.toLowerCase.endsWith(".css")
-          || !r.getUrl.toLowerCase.endsWith(".htm")
-          || !r.getUrl.toLowerCase.endsWith(".html"))
+        .filter(r => r.getMimeType.endsWith("text/plain")
+          && (!r.getUrl.toLowerCase.endsWith("robots.txt")
+            && !r.getUrl.toLowerCase.endsWith(".js")
+            && !r.getUrl.toLowerCase.endsWith(".css")
+            && !r.getUrl.toLowerCase.endsWith(".htm")
+            && !r.getUrl.toLowerCase.endsWith(".html"))
+        )
         .map(r => {
           val bytes = r.getBinaryBytes
           val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
