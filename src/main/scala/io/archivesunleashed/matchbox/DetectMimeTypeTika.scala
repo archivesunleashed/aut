@@ -15,7 +15,9 @@
  */
 package io.archivesunleashed.matchbox
 
+// scalastyle:off underscore.import
 import scala.collection.JavaConverters._
+// scalastyle:on underscore.import
 import org.apache.tika.Tika
 import org.apache.tika.detect.DefaultDetector
 import org.apache.tika.io.TikaInputStream

@@ -21,16 +21,18 @@ import java.util.Base64
 
 import io.archivesunleashed.data.{ArchiveRecordInputFormat, ArchiveRecordWritable}
 import ArchiveRecordWritable.ArchiveFormat
-import io.archivesunleashed.matchbox.{DetectLanguage, DetectMimeTypeTika, ExtractDate, ExtractDomainRDD, ExtractImageDetails, ExtractImageLinksRDD, ExtractLinksRDD, GetExtensionMimeRDD, RemoveHTMLRDD}
-import io.archivesunleashed.matchbox.ExtractDate.DateComponent
+import io.archivesunleashed.matchbox.{DetectLanguageRDD, DetectMimeTypeTika, ExtractDateRDD,
+                                      ExtractDomainRDD, ExtractImageDetails, ExtractImageLinksRDD,
+                                      ExtractLinksRDD, GetExtensionMimeRDD, RemoveHTMLRDD}
+import io.archivesunleashed.matchbox.ExtractDateRDD.DateComponent
 import org.apache.commons.codec.binary.Hex
 import org.apache.commons.io.FilenameUtils
 import org.apache.hadoop.fs.{FileSystem, Path}
-import io.archivesunleashed.matchbox.ExtractDate.DateComponent.DateComponent
+import io.archivesunleashed.matchbox.ExtractDateRDD.DateComponent.DateComponent
 import java.net.URI
 import java.net.URL
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
-import org.apache.spark.sql.types.{IntegerType, StringType, StructField, StructType}
+import org.apache.spark.sql.types.{BinaryType, IntegerType, StringType, StructField, StructType}
 import org.apache.hadoop.io.LongWritable
 import org.apache.spark.{SerializableWritable, SparkContext}
 import org.apache.spark.rdd.RDD
@@ -87,6 +89,25 @@ package object archivesunleashed {
     * To load such an RDD, please see [[RecordLoader]].
     */
   implicit class WARecordRDD(rdd: RDD[ArchiveRecord]) extends java.io.Serializable {
+
+    /* Creates a column for Bytes as well in Dataframe.
+       Call KeepImages OR KeepValidPages on RDD depending upon the requirement before calling this method */
+    def all(): DataFrame = {
+      val records = rdd.map(r => Row(r.getCrawlDate, r.getUrl, r.getMimeType,
+          DetectMimeTypeTika(r.getBinaryBytes), r.getContentString, r.getBinaryBytes))
+
+      val schema = new StructType()
+        .add(StructField("crawl_date", StringType, true))
+        .add(StructField("url", StringType, true))
+        .add(StructField("mime_type_web_server", StringType, true))
+        .add(StructField("mime_type_tika", StringType, true))
+        .add(StructField("content", StringType, true))
+        .add(StructField("bytes", BinaryType, true))
+
+      val sqlContext = SparkSession.builder()
+      sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
     /** Removes all non-html-based data (images, executables, etc.) from html text. */
     def keepValidPages(): RDD[ArchiveRecord] = {
       rdd.filter(r =>
@@ -99,7 +120,7 @@ package object archivesunleashed {
           && r.getHttpStatus == "200")
     }
 
-    def pages(): DataFrame = {
+    def webpages(): DataFrame = {
       val records = rdd.keepValidPages()
         .map(r => Row(r.getCrawlDate, r.getUrl, r.getMimeType,
           DetectMimeTypeTika(r.getBinaryBytes), r.getContentString))
@@ -521,7 +542,7 @@ package object archivesunleashed {
       * @param component the selected DateComponent enum value
       */
     def keepDate(dates: List[String], component: DateComponent = DateComponent.YYYYMMDD): RDD[ArchiveRecord] = {
-      rdd.filter(r => dates.contains(ExtractDate(r.getCrawlDate, component)))
+      rdd.filter(r => dates.contains(ExtractDateRDD(r.getCrawlDate, component)))
     }
 
     /** Removes all data but selected exact URLs.
@@ -558,7 +579,7 @@ package object archivesunleashed {
       * @param lang a set of ISO 639-2 codes
       */
     def keepLanguages(lang: Set[String]): RDD[ArchiveRecord] = {
-      rdd.filter(r => lang.contains(DetectLanguage(RemoveHTMLRDD(r.getContentString))))
+      rdd.filter(r => lang.contains(DetectLanguageRDD(RemoveHTMLRDD(r.getContentString))))
     }
 
     /** Removes all content that does not pass Regular Expression test.
@@ -653,7 +674,7 @@ package object archivesunleashed {
       * @param lang a set of ISO 639-2 codes
       */
     def discardLanguages(lang: Set[String]): RDD[ArchiveRecord] = {
-      rdd.filter(r => !lang.contains(DetectLanguage(RemoveHTMLRDD(r.getContentString))))
+      rdd.filter(r => !lang.contains(DetectLanguageRDD(RemoveHTMLRDD(r.getContentString))))
     }
   }
 }

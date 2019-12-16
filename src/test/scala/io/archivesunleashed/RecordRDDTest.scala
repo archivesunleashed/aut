@@ -17,10 +17,8 @@
 package io.archivesunleashed
 
 import com.google.common.io.Resources
-import io.archivesunleashed.matchbox.ExtractDate.DateComponent
-// scalastyle:off underscore.import
-import io.archivesunleashed.matchbox._
-// scalastyle:on underscore.import
+import io.archivesunleashed.matchbox.ExtractDateRDD
+import io.archivesunleashed.matchbox.ExtractDateRDD.DateComponent
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -64,7 +62,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     val base = RecordLoader.loadArchives(arcPath, sc)
     val component = DateComponent.YYYY
     val r = base
-      .filter (x => ExtractDate(x.getCrawlDate, component) == testDate)
+      .filter (x => ExtractDateRDD(x.getCrawlDate, component) == testDate)
       .map ( mp => mp.getUrl).take(3)
     val r2 = base.keepDate(List(testDate), component)
       .map ( mp => mp.getUrl).take(3)

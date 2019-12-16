@@ -19,7 +19,7 @@ import de.l3s.boilerpipe.extractors.DefaultExtractor
 import java.io.IOException
 
 /** Extract raw text content from an HTML page, minus "boilerplate" content (using boilerpipe).  */
-object ExtractBoilerpipeText {
+object ExtractBoilerpipeTextRDD {
   /** Uses boilerpipe to extract raw text content from a page.
    *
    * ExtractBoilerpipeText removes boilerplate text (e.g. a copyright statement) from an HTML string.

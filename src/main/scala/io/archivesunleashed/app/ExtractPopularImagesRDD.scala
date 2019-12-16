@@ -21,7 +21,7 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.{RangePartitioner, SparkContext}
 
 /** Extract most popular images from an RDD. */
-object ExtractPopularImages {
+object ExtractPopularImagesRDD {
   val LIMIT_MAXIMUM: Int = 500
   val LIMIT_DENOMINATOR: Int = 250
   val MIN_WIDTH: Int = 30
