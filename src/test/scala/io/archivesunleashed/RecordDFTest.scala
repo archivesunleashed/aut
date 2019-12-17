@@ -25,13 +25,9 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 @RunWith(classOf[JUnitRunner])
 class RecordDFTest extends FunSuite with BeforeAndAfter {
   private val arcPath = Resources.getResource("arc/example.arc.gz").getPath
-  private val badPath = Resources.getResource("arc/badexample.arc.gz").getPath
   private val master = "local[4]"
   private val appName = "example-spark"
   private var sc: SparkContext = _
-  private val archive = "http://www.archive.org/"
-  private val sloan = "http://www.sloan.org"
-  private val regex = raw"Please visit our website at".r
 
   before {
     val conf = new SparkConf()
@@ -45,6 +41,42 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     val expected = "http://www.archive.org/"
     val base = RecordLoader.loadArchives(arcPath, sc).all()
       .keepValidPagesDF().take(1)(0)(1)
+    assert (base.toString == expected)
+  }
+
+  test("Discard MimeTypes") {
+    val expected = "filedesc://IAH-20080430204825-00000-blackbook.arc"
+    val MimeTypes = Set("text/html")
+    val base = RecordLoader.loadArchives(arcPath, sc).all()
+      .discardMimeTypesDF(MimeTypes).take(1)(0)(1)
+
+    assert (base.toString == expected)
+  }
+
+  test("Discard Date") {
+    val expected = "20080430"
+    val date = "20080429"
+    val base = RecordLoader.loadArchives(arcPath, sc).webpages()
+          .discardDateDF(date).take(1)(0)(0)
+
+    assert (base.toString == expected)
+  }
+
+  test("Discard Urls") {
+    val expected = "http://www.archive.org/index.php"
+    val URls = Set("http://www.archive.org/")
+    val base = RecordLoader.loadArchives(arcPath, sc).webpages()
+        .discardUrlsDF(URls).take(1)(0)(1)
+
+    assert (base.toString == expected)
+  }
+
+  test("Discard Domains") {
+    val expected = "http://www.hideout.com.br/"
+    val domains = Set("www.archive.org")
+    val base = RecordLoader.loadArchives(arcPath, sc).webpages()
+      .discardDomainsDF(domains).take(1)(0)(1)
+
     assert (base.toString == expected)
   }
 

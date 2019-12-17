@@ -21,6 +21,7 @@ import java.util.Base64
 
 import io.archivesunleashed.data.{ArchiveRecordInputFormat, ArchiveRecordWritable}
 import ArchiveRecordWritable.ArchiveFormat
+import io.archivesunleashed.df.{ExtractDomainDF}
 import io.archivesunleashed.matchbox.{DetectLanguageRDD, DetectMimeTypeTika, ExtractDateRDD,
                                       ExtractDomainRDD, ExtractImageDetails, ExtractImageLinksRDD,
                                       ExtractLinksRDD, GetExtensionMimeRDD, RemoveHTMLRDD}
@@ -32,6 +33,7 @@ import io.archivesunleashed.matchbox.ExtractDateRDD.DateComponent.DateComponent
 import java.net.URI
 import java.net.URL
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
+import org.apache.spark.sql.functions.udf
 import org.apache.spark.sql.types.{BinaryType, IntegerType, StringType, StructField, StructType}
 import org.apache.hadoop.io.LongWritable
 import org.apache.spark.{RangePartitioner, SerializableWritable, SparkContext}
@@ -90,13 +92,13 @@ package object archivesunleashed {
     */
   implicit class WARecordDF(df: DataFrame) extends java.io.Serializable {
 
+    val spark = SparkSession.builder().master("local").getOrCreate()
+    // scalastyle:off
+    import spark.implicits._
+    // scalastyle:on
+
+    /** Removes all non-html-based data (images, executables, etc.) from html text. */
     def keepValidPagesDF(): DataFrame = {
-
-      val spark = SparkSession.builder().master("local").getOrCreate()
-      // scalastyle:off
-      import spark.implicits._
-      // scalastyle:on
-
       df.filter($"crawl_date" isNotNull)
         .filter(!($"url".rlike(".*robots\\.txt$")) &&
                   ( $"mime_type_web_server".rlike("text/html") || 
@@ -106,6 +108,42 @@ package object archivesunleashed {
                   )
                )
         .filter($"HttpStatus" === 200)
+    }
+
+    /** Filters ArchiveRecord MimeTypes (web server).
+      *
+      * @param mimeTypes a list of Mime Types
+      */
+    def discardMimeTypesDF(mimeTypes: Set[String]): DataFrame = {
+      val filteredMimeType = udf((mimeType: String) => !mimeTypes.contains(mimeType))
+      df.filter(filteredMimeType($"mime_type_web_server"))
+    }
+
+    /** Filters detected dates.
+      *
+      * @param date a list of dates
+      */
+    def discardDateDF(date: String): DataFrame = {
+      val filteredDate = udf((date_ : String) => date_ != date)
+      df.filter(filteredDate($"crawl_date"))
+    }
+
+    /** Filters detected URLs.
+      *
+      * @param urls a list of urls
+      */    
+    def discardUrlsDF(urls: Set[String]): DataFrame = {
+      val filteredUrls = udf((url: String) => !urls.contains(url))
+      df.filter(filteredUrls($"url"))
+    }
+
+    /** Filters detected domains.
+      *
+      * @param domains a list of domains for the source domains
+      */
+    def discardDomainsDF(domains: Set[String]): DataFrame = {
+      val filteredDomains = udf((domain: String) => !domains.contains(domain))
+      df.filter(filteredDomains(ExtractDomainDF($"url")))
     }
   }
 
