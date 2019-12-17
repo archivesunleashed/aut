@@ -21,7 +21,7 @@ import java.util.Base64
 
 import io.archivesunleashed.data.{ArchiveRecordInputFormat, ArchiveRecordWritable}
 import ArchiveRecordWritable.ArchiveFormat
-import io.archivesunleashed.df._
+import io.archivesunleashed.df.{ExtractDomainDF}
 import io.archivesunleashed.matchbox.{DetectLanguageRDD, DetectMimeTypeTika, ExtractDateRDD,
                                       ExtractDomainRDD, ExtractImageDetails, ExtractImageLinksRDD,
                                       ExtractLinksRDD, GetExtensionMimeRDD, RemoveHTMLRDD}
