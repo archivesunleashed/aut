@@ -22,9 +22,9 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class ExtractDateTest extends FunSuite {
+class ExtractDateRDDTest extends FunSuite {
 
-  test("simple") {
+  test("RDD Extract Date") {
     val date = "20151204"
     assert(ExtractDateRDD(date, YYYY) == "2015")
     assert(ExtractDateRDD(date, MM) == "12")
@@ -36,7 +36,7 @@ class ExtractDateTest extends FunSuite {
     // scalastyle:on null
   }
 
-  test("more perfect") {
+  test("RDD Substring extract") {
     val date = "20151204"
     val startSS = 0
     val yearSS = 4

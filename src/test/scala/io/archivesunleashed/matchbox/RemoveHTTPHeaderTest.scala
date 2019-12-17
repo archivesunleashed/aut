@@ -27,11 +27,10 @@ class RemoveHTTPHeaderRDDTest extends FunSuite {
     val nohttp = "This has no Http"
     val removed = RemoveHTTPHeaderRDD(header)
     val unchanged = RemoveHTTPHeaderRDD(nohttp)
-    // scalastyle:off null
-    val error = RemoveHTTPHeaderRDD(null)
-    // scalastyle:on null
+    val nothing = RemoveHTTPHeaderRDD("")
     assert(removed == "Hello content")
     assert(unchanged == nohttp)
-    assert( error == "" )
+    assert(nothing == "")
+    assert("".matches(nothing))
   }
 }
