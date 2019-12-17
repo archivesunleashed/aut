@@ -31,10 +31,10 @@ import org.apache.hadoop.fs.{FileSystem, Path}
 import io.archivesunleashed.matchbox.ExtractDateRDD.DateComponent.DateComponent
 import java.net.URI
 import java.net.URL
-import org.apache.spark.sql.{DataFrame, Row, SparkSession}
+import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 import org.apache.spark.sql.types.{BinaryType, IntegerType, StringType, StructField, StructType}
 import org.apache.hadoop.io.LongWritable
-import org.apache.spark.{SerializableWritable, SparkContext}
+import org.apache.spark.{RangePartitioner, SerializableWritable, SparkContext}
 import org.apache.spark.rdd.RDD
 import scala.reflect.ClassTag
 import scala.util.matching.Regex
@@ -84,6 +84,32 @@ package object archivesunleashed {
   }
 
   /**
+    * A Wrapper class around DF to allow Dfs of type ARCRecord and WARCRecord to be queried via a fluent API.
+    *
+    * To load such an DF, please use [[RecordLoader]] and apply .all() on it.
+    */
+  implicit class WARecordDF(df: DataFrame) extends java.io.Serializable {
+
+    def keepValidPagesDF(): DataFrame = {
+
+      val spark = SparkSession.builder().master("local").getOrCreate()
+      // scalastyle:off
+      import spark.implicits._
+      // scalastyle:on
+
+      df.filter($"crawl_date" isNotNull)
+        .filter(!($"url".rlike(".*robots\\.txt$")) &&
+                  ( $"mime_type_web_server".rlike("text/html") || 
+                    $"mime_type_web_server".rlike("application/xhtml+xml") ||
+                    $"url".rlike("(?i).*htm$") ||
+                    $"url".rlike("(?i).*html$")
+                  )
+               )
+        .filter($"HttpStatus" === 200)
+    }
+  }
+
+  /**
     * A Wrapper class around RDD to allow RDDs of type ARCRecord and WARCRecord to be queried via a fluent API.
     *
     * To load such an RDD, please see [[RecordLoader]].
@@ -94,7 +120,7 @@ package object archivesunleashed {
        Call KeepImages OR KeepValidPages on RDD depending upon the requirement before calling this method */
     def all(): DataFrame = {
       val records = rdd.map(r => Row(r.getCrawlDate, r.getUrl, r.getMimeType,
-          DetectMimeTypeTika(r.getBinaryBytes), r.getContentString, r.getBinaryBytes))
+          DetectMimeTypeTika(r.getBinaryBytes), r.getContentString, r.getBinaryBytes, r.getHttpStatus))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -103,6 +129,7 @@ package object archivesunleashed {
         .add(StructField("mime_type_tika", StringType, true))
         .add(StructField("content", StringType, true))
         .add(StructField("bytes", BinaryType, true))
+        .add(StructField("HttpStatus", StringType, true))
 
       val sqlContext = SparkSession.builder()
       sqlContext.getOrCreate().createDataFrame(records, schema)
