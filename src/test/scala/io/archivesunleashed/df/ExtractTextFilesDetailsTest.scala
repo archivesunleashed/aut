@@ -22,11 +22,12 @@ import org.apache.spark.sql.functions.desc
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.{BeforeAndAfter, FunSuite}
+import org.scalatest.{BeforeAndAfter, FunSuite, Matchers}
 
 @RunWith(classOf[JUnitRunner])
-class TextFilesTest extends FunSuite with BeforeAndAfter {
+class TextFilesTest extends FunSuite with BeforeAndAfter with Matchers {
   private val warcPath = Resources.getResource("warc/example.txt.warc.gz").getPath
+  private val testPath = Resources.getResource("warc/example.warc.gz").getPath
   private val master = "local[4]"
   private val appName = "example-df"
   private var sc: SparkContext = _
@@ -44,7 +45,7 @@ class TextFilesTest extends FunSuite with BeforeAndAfter {
 
     val extracted = df.select("url", "filename", "extension",
       "mime_type_web_server", "mime_type_tika", "md5")
-      .orderBy(desc("md5")).head(1).toList
+      .orderBy(desc("md5")).head(2).toList
     assert(extracted.size == 1)
     assert("https://ruebot.net/files/aut-test-fixtures/aut-text.txt" == extracted(0)(0))
     assert("aut-text.txt" == extracted(0)(1))
@@ -52,6 +53,25 @@ class TextFilesTest extends FunSuite with BeforeAndAfter {
     assert("text/plain" == extracted(0)(3))
     assert("application/gzip" == extracted(0)(4))
     assert("32abd404fb560ecf14b75611f3cc5c2c" == extracted(0)(5))
+  }
+
+  test("Text Files DF robots.txt") {
+    val df = RecordLoader.loadArchives(testPath, sc)
+      .textFiles()
+
+    val robots = df.select("url").orderBy(desc("md5")).head(50).toList
+
+    assert(robots.size == 4)
+    robots(0)(0).toString should not include ("robots.txt")
+    robots(1)(0).toString should not include ("robots.txt")
+    robots(0)(0).toString should not include (".js")
+    robots(1)(0).toString should not include (".js")
+    robots(0)(0).toString should not include (".css")
+    robots(1)(0).toString should not include (".css")
+    robots(0)(0).toString should not include (".htm")
+    robots(1)(0).toString should not include (".htm")
+    robots(0)(0).toString should not include (".html")
+    robots(1)(0).toString should not include (".html")
   }
 
   after {
