@@ -185,6 +185,7 @@ package object archivesunleashed {
           && r.getHttpStatus == "200")
     }
 
+    /** Extracts webpages with columns for crawl data, url, MIME type, and content. */
     def webpages(): DataFrame = {
       val records = rdd.keepValidPages()
         .map(r => Row(r.getCrawlDate, r.getUrl, r.getMimeType,
@@ -201,6 +202,7 @@ package object archivesunleashed {
       sqlContext.getOrCreate().createDataFrame(records, schema)
     }
 
+    /** Extracts a webgraph with columns for crawl date, source url, destination url, and anchor text. */
     def webgraph(): DataFrame = {
       val records = rdd
         .keepValidPages()
