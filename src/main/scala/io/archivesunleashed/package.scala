@@ -538,7 +538,7 @@ package object archivesunleashed {
     def textFiles(): DataFrame = {
       val records = rdd
         .keepMimeTypes(Set("text/plain"))
-        .filter(r => r.getMimeType.endsWith("text/plain")
+        .filter(r => r.getMimeType == "text/plain"
           && (!r.getUrl.toLowerCase.endsWith("robots.txt")
             && !r.getUrl.toLowerCase.endsWith(".js")
             && !r.getUrl.toLowerCase.endsWith(".css")
