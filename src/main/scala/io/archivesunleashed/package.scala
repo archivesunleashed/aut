@@ -21,6 +21,7 @@ import java.util.Base64
 
 import io.archivesunleashed.data.{ArchiveRecordInputFormat, ArchiveRecordWritable}
 import ArchiveRecordWritable.ArchiveFormat
+import io.archivesunleashed.df.{ExtractDomainDF}
 import io.archivesunleashed.matchbox.{DetectLanguageRDD, DetectMimeTypeTika, ExtractDateRDD,
                                       ExtractDomainRDD, ExtractImageDetails, ExtractImageLinksRDD,
                                       ExtractLinksRDD, GetExtensionMimeRDD, RemoveHTMLRDD}
@@ -31,10 +32,11 @@ import org.apache.hadoop.fs.{FileSystem, Path}
 import io.archivesunleashed.matchbox.ExtractDateRDD.DateComponent.DateComponent
 import java.net.URI
 import java.net.URL
-import org.apache.spark.sql.{DataFrame, Row, SparkSession}
+import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
+import org.apache.spark.sql.functions.udf
 import org.apache.spark.sql.types.{BinaryType, IntegerType, StringType, StructField, StructType}
 import org.apache.hadoop.io.LongWritable
-import org.apache.spark.{SerializableWritable, SparkContext}
+import org.apache.spark.{RangePartitioner, SerializableWritable, SparkContext}
 import org.apache.spark.rdd.RDD
 import scala.reflect.ClassTag
 import scala.util.matching.Regex
@@ -84,6 +86,68 @@ package object archivesunleashed {
   }
 
   /**
+    * A Wrapper class around DF to allow Dfs of type ARCRecord and WARCRecord to be queried via a fluent API.
+    *
+    * To load such an DF, please use [[RecordLoader]] and apply .all() on it.
+    */
+  implicit class WARecordDF(df: DataFrame) extends java.io.Serializable {
+
+    val spark = SparkSession.builder().master("local").getOrCreate()
+    // scalastyle:off
+    import spark.implicits._
+    // scalastyle:on
+
+    /** Removes all non-html-based data (images, executables, etc.) from html text. */
+    def keepValidPagesDF(): DataFrame = {
+      df.filter($"crawl_date" isNotNull)
+        .filter(!($"url".rlike(".*robots\\.txt$")) &&
+                  ( $"mime_type_web_server".rlike("text/html") || 
+                    $"mime_type_web_server".rlike("application/xhtml+xml") ||
+                    $"url".rlike("(?i).*htm$") ||
+                    $"url".rlike("(?i).*html$")
+                  )
+               )
+        .filter($"HttpStatus" === 200)
+    }
+
+    /** Filters ArchiveRecord MimeTypes (web server).
+      *
+      * @param mimeTypes a list of Mime Types
+      */
+    def discardMimeTypesDF(mimeTypes: Set[String]): DataFrame = {
+      val filteredMimeType = udf((mimeType: String) => !mimeTypes.contains(mimeType))
+      df.filter(filteredMimeType($"mime_type_web_server"))
+    }
+
+    /** Filters detected dates.
+      *
+      * @param date a list of dates
+      */
+    def discardDateDF(date: String): DataFrame = {
+      val filteredDate = udf((date_ : String) => date_ != date)
+      df.filter(filteredDate($"crawl_date"))
+    }
+
+    /** Filters detected URLs.
+      *
+      * @param urls a list of urls
+      */    
+    def discardUrlsDF(urls: Set[String]): DataFrame = {
+      val filteredUrls = udf((url: String) => !urls.contains(url))
+      df.filter(filteredUrls($"url"))
+    }
+
+    /** Filters detected domains.
+      *
+      * @param domains a list of domains for the source domains
+      */
+    def discardDomainsDF(domains: Set[String]): DataFrame = {
+      val filteredDomains = udf((domain: String) => !domains.contains(domain))
+      df.filter(filteredDomains(ExtractDomainDF($"url")))
+    }
+  }
+
+  /**
     * A Wrapper class around RDD to allow RDDs of type ARCRecord and WARCRecord to be queried via a fluent API.
     *
     * To load such an RDD, please see [[RecordLoader]].
@@ -94,7 +158,7 @@ package object archivesunleashed {
        Call KeepImages OR KeepValidPages on RDD depending upon the requirement before calling this method */
     def all(): DataFrame = {
       val records = rdd.map(r => Row(r.getCrawlDate, r.getUrl, r.getMimeType,
-          DetectMimeTypeTika(r.getBinaryBytes), r.getContentString, r.getBinaryBytes))
+          DetectMimeTypeTika(r.getBinaryBytes), r.getContentString, r.getBinaryBytes, r.getHttpStatus))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -103,6 +167,7 @@ package object archivesunleashed {
         .add(StructField("mime_type_tika", StringType, true))
         .add(StructField("content", StringType, true))
         .add(StructField("bytes", BinaryType, true))
+        .add(StructField("HttpStatus", StringType, true))
 
       val sqlContext = SparkSession.builder()
       sqlContext.getOrCreate().createDataFrame(records, schema)
@@ -473,12 +538,13 @@ package object archivesunleashed {
     def textFiles(): DataFrame = {
       val records = rdd
         .keepMimeTypes(Set("text/plain"))
-        .filter(r => r.getUrl.toLowerCase.endsWith(".txt")
-          || !r.getUrl.toLowerCase.endsWith("robots.txt")
-          || !r.getUrl.toLowerCase.endsWith(".js")
-          || !r.getUrl.toLowerCase.endsWith(".css")
-          || !r.getUrl.toLowerCase.endsWith(".htm")
-          || !r.getUrl.toLowerCase.endsWith(".html"))
+        .filter(r => r.getMimeType.endsWith("text/plain")
+          && (!r.getUrl.toLowerCase.endsWith("robots.txt")
+            && !r.getUrl.toLowerCase.endsWith(".js")
+            && !r.getUrl.toLowerCase.endsWith(".css")
+            && !r.getUrl.toLowerCase.endsWith(".htm")
+            && !r.getUrl.toLowerCase.endsWith(".html"))
+        )
         .map(r => {
           val bytes = r.getBinaryBytes
           val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))

@@ -34,12 +34,9 @@ class RemoveHTMLRDDTest extends FunSuite {
       </body>
       </html>
       """
-
     val removed = RemoveHTMLRDD(html)
     assert(removed == "Here is some... HTML")
-    // scalastyle:off null
-    val empty = RemoveHTMLRDD(null)
-    // scalastyle:on null
-    assert(empty == "")
+    val nothing = RemoveHTMLRDD("")
+    assert(nothing == "")
   }
 }
