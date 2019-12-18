@@ -28,6 +28,7 @@ import org.scalatest.{BeforeAndAfter, FunSuite, Matchers}
 class TextFilesTest extends FunSuite with BeforeAndAfter with Matchers {
   private val warcPath = Resources.getResource("warc/example.txt.warc.gz").getPath
   private val testPath = Resources.getResource("warc/example.warc.gz").getPath
+  private val filedescPath = Resources.getResource("arc/example.arc.gz").getPath
   private val master = "local[4]"
   private val appName = "example-df"
   private var sc: SparkContext = _
@@ -72,6 +73,18 @@ class TextFilesTest extends FunSuite with BeforeAndAfter with Matchers {
     robots(1)(0).toString should not include (".htm")
     robots(0)(0).toString should not include (".html")
     robots(1)(0).toString should not include (".html")
+  }
+
+  test("Text Files DF dns or filedesc") {
+    val df = RecordLoader.loadArchives(filedescPath, sc)
+      .textFiles()
+
+    val issue362 = df.select("url").head(50).toList
+
+    issue362(0)(0).toString should not include ("filedesc://")
+    issue362(1)(0).toString should not include ("filedesc://")
+    issue362(0)(0).toString should not include ("dns:")
+    issue362(1)(0).toString should not include ("dns:")
   }
 
   after {
