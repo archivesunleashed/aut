@@ -24,19 +24,7 @@ import org.scalatest.junit.JUnitRunner
 @RunWith(classOf[JUnitRunner])
 class ExtractDateRDDTest extends FunSuite {
 
-  test("RDD Extract Date") {
-    val date = "20151204"
-    assert(ExtractDateRDD(date, YYYY) == "2015")
-    assert(ExtractDateRDD(date, MM) == "12")
-    assert(ExtractDateRDD(date, DD) == "04")
-    assert(ExtractDateRDD(date, YYYYMM) == "201512")
-    assert(ExtractDateRDD(date, YYYYMMDD) == date)
-    // scalastyle:off null
-    assert(ExtractDateRDD(null, YYYYMMDD) == "")
-    // scalastyle:on null
-  }
-
-  test("RDD Substring extract") {
+  test("RDD date extraction") {
     val date = "20151204"
     val startSS = 0
     val yearSS = 4
@@ -47,5 +35,8 @@ class ExtractDateRDDTest extends FunSuite {
     assert(ExtractDateRDD(date, DD) == date.substring(monthSS, daySS))
     assert(ExtractDateRDD(date, YYYYMM) == date.substring(startSS, monthSS))
     assert(ExtractDateRDD(date, YYYYMMDD) == date.substring(startSS, daySS))
+    // scalastyle:off null
+    assert(ExtractDateRDD(null, YYYYMMDD) == "")
+    // scalastyle:on null
   }
 }
