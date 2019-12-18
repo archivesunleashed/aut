@@ -543,7 +543,9 @@ package object archivesunleashed {
             && !r.getUrl.toLowerCase.endsWith(".js")
             && !r.getUrl.toLowerCase.endsWith(".css")
             && !r.getUrl.toLowerCase.endsWith(".htm")
-            && !r.getUrl.toLowerCase.endsWith(".html"))
+            && !r.getUrl.toLowerCase.endsWith(".html")
+            && !r.getUrl.toLowerCase.startsWith("dns:")
+            && !r.getUrl.toLowerCase.startsWith("filedesc:"))
         )
         .map(r => {
           val bytes = r.getBinaryBytes
