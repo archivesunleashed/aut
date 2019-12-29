@@ -21,7 +21,7 @@ import java.util.Base64
 
 import io.archivesunleashed.data.{ArchiveRecordInputFormat, ArchiveRecordWritable}
 import ArchiveRecordWritable.ArchiveFormat
-import io.archivesunleashed.df.{ExtractDomainDF}
+import io.archivesunleashed.df.{ExtractDateDF,ExtractDomainDF}
 import io.archivesunleashed.matchbox.{DetectLanguageRDD, DetectMimeTypeTika, ExtractDateRDD,
                                       ExtractDomainRDD, ExtractImageDetails, ExtractImageLinksRDD,
                                       ExtractLinksRDD, GetExtensionMimeRDD, RemoveHTMLRDD}
@@ -33,7 +33,7 @@ import io.archivesunleashed.matchbox.ExtractDateRDD.DateComponent.DateComponent
 import java.net.URI
 import java.net.URL
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
-import org.apache.spark.sql.functions.udf
+import org.apache.spark.sql.functions.{lit, udf}
 import org.apache.spark.sql.types.{BinaryType, IntegerType, StringType, StructField, StructType}
 import org.apache.hadoop.io.LongWritable
 import org.apache.spark.{RangePartitioner, SerializableWritable, SparkContext}
@@ -144,6 +144,43 @@ package object archivesunleashed {
     def discardDomainsDF(domains: Set[String]): DataFrame = {
       val filteredDomains = udf((domain: String) => !domains.contains(domain))
       df.filter(filteredDomains(ExtractDomainDF($"url")))
+    }
+
+    /** Removes all data that does not have selected HTTP status codes.
+     *
+     *  @param statusCodes a list of HTTP status codes
+     */
+    def keepHttpStatusDF(statusCodes: Set[String]): DataFrame = {
+      val takeHttpStatus = udf((statusCode: String) => statusCodes.contains(statusCode))
+      df.filter(takeHttpStatus($"HttpStatus"))
+    }
+
+    /** Removes all data that does not have selected date.
+      *
+      * @param dates a list of dates
+      * @param component the selected DateComponent string
+      */
+    def keepDateDF(dates: List[String], component: String = "YYYYMMDD"): DataFrame = {
+      val takeDate = udf((date : String) => dates.contains(date))
+      df.filter(takeDate(ExtractDateDF($"crawl_date",lit(component))))
+    }
+
+    /** Removes all data but selected exact URLs.
+      *
+      * @param urls a list of URLs to keep
+      */
+    def keepUrlsDF(urls: Set[String]): DataFrame = {
+      val takeUrls = udf((url: String) => urls.contains(url))
+      df.filter(takeUrls($"url"))
+    }
+
+    /** Removes all data but selected source domains.
+      *
+      * @param urls a list of urls for the source domains
+      */
+    def keepDomainsDF(domains: Set[String]): DataFrame = {
+      val takeDomains = udf((domain: String) => domains.contains(domain))
+      df.filter(takeDomains(ExtractDomainDF($"url")))
     }
   }
 

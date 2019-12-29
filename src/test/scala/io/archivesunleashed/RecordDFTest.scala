@@ -80,6 +80,42 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     assert (base.toString == expected)
   }
 
+  test("Keep HttpStatus") {
+    val expected = "http://www.archive.org/robots.txt"
+    val statusCodes = Set("200")
+    val base = RecordLoader.loadArchives(arcPath, sc).all()
+      .keepHttpStatusDF(statusCodes).take(1)(0)(1)
+
+    assert (base.toString == expected)
+  }
+
+  test("Keep Date") {
+    val expected = "http://www.archive.org/"
+    val dates = List("04")
+    val base = RecordLoader.loadArchives(arcPath, sc).webpages()
+      .keepDateDF(dates,"MM").take(1)(0)(1)
+
+    assert (base.toString == expected)
+  }
+
+  test("Keep Urls") {
+    val expected = "http://www.archive.org/"
+    val urls = Set("http://www.archive.org/")
+    val base = RecordLoader.loadArchives(arcPath, sc).webpages()
+      .keepUrlsDF(urls).take(1)(0)(1)
+
+    assert (base.toString == expected)
+  }
+
+  test("Keep Domains") {
+    val expected = "http://www.archive.org/robots.txt"
+    val domains = Set("www.archive.org")
+    val base = RecordLoader.loadArchives(arcPath, sc).all()
+      .keepDomainsDF(domains).take(1)(0)(1)
+
+    assert (base.toString == expected)
+  }
+
   after {
     if (sc != null) {
       sc.stop()
