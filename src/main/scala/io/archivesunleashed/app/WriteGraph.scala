@@ -18,7 +18,8 @@ import io.archivesunleashed.matchbox.{ComputeMD5RDD, WWWLink}
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.Row
+import org.apache.spark.sql.{DataFrame, Row, SparkSession}
+import org.apache.spark.sql.functions.monotonicallyIncreasingId
 
 /**
   * UDF for exporting an RDD representing a collection of links to a GEXF file.
@@ -44,6 +45,10 @@ object WriteGraph {
     "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
     "  xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns\n" +
     "  http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\"\n>"
+  val spark = SparkSession.builder().master("local").getOrCreate()
+  // scalastyle:off
+  import spark.implicits._
+  // scalastyle:on
 
   /** Writes graph nodes and edges to file.
    *
@@ -68,6 +73,17 @@ object WriteGraph {
       .union(rdd.map(r => r._1._3.escapeInvalidXML()))
       .distinct
       .zipWithUniqueId()
+  }
+
+  /** Produces a DF with ids and labels from a network-based DF, df.
+   * @param df a DF of elements with columns datestring, source, target and count
+   * @return an df containing coulmns Label and UniqueId
+   */
+  def nodesWithIdsDF (df: DataFrame): DataFrame = {
+    val Columns = Seq("crawl_date","source","target","count")
+    var output = df.toDF(Columns:_*)
+    output.select($"source".as("Node")).union(df.select($"target".as("Node"))).distinct
+      .withColumn("uniqueId", monotonicallyIncreasingId)
   }
 
   /** Produces the (label, id) combination from a nodeslist of an RDD that has the
