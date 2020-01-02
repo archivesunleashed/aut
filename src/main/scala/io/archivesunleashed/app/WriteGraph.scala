@@ -19,7 +19,7 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
-import org.apache.spark.sql.functions.monotonicallyIncreasingId
+import org.apache.spark.sql.functions.monotonically_increasing_id
 
 /**
   * UDF for exporting an RDD representing a collection of links to a GEXF file.
@@ -77,13 +77,13 @@ object WriteGraph {
 
   /** Produces a DF with ids and labels from a network-based DF, df.
    * @param df a DF of elements with columns datestring, source, target and count
-   * @return an df containing coulmns Label and UniqueId
+   * @return a df containing coulmns Label and UniqueId
    */
   def nodesWithIdsDF (df: DataFrame): DataFrame = {
     val Columns = Seq("crawl_date","source","target","count")
     var output = df.toDF(Columns:_*)
-    output.select($"source".as("Node")).union(df.select($"target".as("Node"))).distinct
-      .withColumn("uniqueId", monotonicallyIncreasingId)
+    output.select($"source".as("node")).union(df.select($"target".as("node"))).distinct
+      .withColumn("uniqueId", monotonically_increasing_id)
   }
 
   /** Produces the (label, id) combination from a nodeslist of an RDD that has the
@@ -124,6 +124,24 @@ object WriteGraph {
       .filter( r => r._2._1 != None)
       .map ({ case (dest, ((sid, source, date, weight), Some(did)))
         => (date, sid, did, weight)})
+  }
+
+  /**  Produces uniqueIds for edge lists from a DF, using nodesWithIdsDF 
+   * @param df an DF of elements with columns datestring, source, target, count
+   * @return a DF with columns date, sourceid, destinationid, count
+   */
+  def edgeNodesDF (df: DataFrame) : DataFrame = {
+    val Columns = Seq("crawl_date","source","target","count")
+    var output = df.toDF(Columns:_*)
+
+    val nodes = WriteGraph.nodesWithIdsDF(df)
+
+    output.join(nodes, $"target" === $"node")
+      .drop("target","node")
+      .select($"crawl_date".as("date"),$"source",$"uniqueID".as("did"),$"count".as("weight"))
+      .join(nodes, $"source" === $"node")
+      .drop("target","node")
+      .select($"date",$"uniqueID".as("sid"),$"did",$"weight")
   }
 
   /** Produces the GEXF output from a RDD of tuples and outputs it to gexfPath.
@@ -237,4 +255,34 @@ object WriteGraph {
       true
     }
   }
+/*
+  def asGraphmlDF (df: DataFrame, graphmlPath: String): Boolean = {
+    if (graphmlPath.isEmpty()) {
+      false
+    } else {
+      val nodes = nodesWithIdsDF(df)
+      val outFile = Files.newBufferedWriter(Paths.get(graphmlPath), StandardCharsets.UTF_8)
+      val edges = edgeNodes(rdd).map({ case (date, sid, did, weight) =>
+        edgeStart +
+        sid + targetChunk +
+        did + directedChunk +
+        "<data key=\"weight\">" + weight + "</data>\n" +
+        "<data key=\"crawlDate\">" + date + "</data>\n" +
+        edgeEnd})
+      outFile.write(graphmlHeader +
+        "<key id=\"label\" for=\"node\" attr.name=\"label\" attr.type=\"string\" />\n" +
+        "<key id=\"weight\" for=\"edge\" attr.name=\"weight\" attr.type=\"double\">\n" +
+        "<default>0.0</default>\n" +
+        "</key>\n" +
+        "<key id=\"crawlDate\" for=\"edge\" attr.name=\"crawlDate\" attr.type=\"string\" />\n" +
+        "<graph mode=\"static\" edgedefault=\"directed\">\n")
+      nodes.map(r => nodeStart + r._2 + "\">\n" +
+        "<data key=\"label\">" + r._1 + "</data>\n</node>\n").collect
+         .foreach(r => outFile.write(r))
+      edges.collect.foreach(r => outFile.write(r))
+      outFile.write("</graph>\n</graphml>")
+      outFile.close()
+      true
+    } 
+  }*/
 }
