@@ -16,9 +16,9 @@
 
 package io.archivesunleashed.app
 
-import io.archivesunleashed.{ArchiveRecord, DataFrameLoader, CountableRDD}
-import io.archivesunleashed.matchbox.{ExtractDomainRDD, ExtractLinksRDD}
 import io.archivesunleashed.df
+import io.archivesunleashed.matchbox.{ExtractDomainRDD, ExtractLinksRDD}
+import io.archivesunleashed.{ArchiveRecord, DataFrameLoader, CountableRDD}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.functions.desc
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
