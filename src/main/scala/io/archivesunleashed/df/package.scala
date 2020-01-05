@@ -15,13 +15,13 @@
  */
 package io.archivesunleashed
 
-import org.apache.commons.io.IOUtils
 import io.archivesunleashed.matchbox.{ComputeMD5RDD}
-import org.apache.spark.sql.functions.udf
-import org.apache.spark.sql.DataFrame
 import java.io.ByteArrayInputStream
 import java.io.FileOutputStream
 import java.util.Base64
+import org.apache.commons.io.IOUtils
+import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.functions.udf
 
 /**
   * UDFs for data frames.

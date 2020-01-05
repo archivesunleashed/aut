@@ -15,8 +15,8 @@
  */
 package io.archivesunleashed.df
 
-import io.archivesunleashed.DataFrameLoader
 import com.google.common.io.Resources
+import io.archivesunleashed.DataFrameLoader
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith

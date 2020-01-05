@@ -17,11 +17,11 @@
 package io.archivesunleashed
 
 import com.google.common.io.Resources
+import org.apache.commons.io.FilenameUtils
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
-import org.apache.commons.io.FilenameUtils
 
 @RunWith(classOf[JUnitRunner])
 class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
