@@ -19,7 +19,8 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
-import org.apache.spark.sql.functions.monotonically_increasing_id
+import org.apache.spark.sql.expressions.Window
+import org.apache.spark.sql.functions.{concat, desc, lit, row_number}
 
 /**
   * UDF for exporting an RDD representing a collection of links to a GEXF file.
@@ -82,8 +83,12 @@ object WriteGraph {
   def nodesWithIdsDF (df: DataFrame): DataFrame = {
     val Columns = Seq("crawl_date","source","target","count")
     var output = df.toDF(Columns:_*)
-    output.select($"source".as("node")).union(df.select($"target".as("node"))).distinct
-      .withColumn("uniqueId", monotonically_increasing_id)
+    val window = Window.orderBy(desc("node"))
+
+    output.select($"source".as("node"))
+          .union(df.select($"target".as("node")))
+          .distinct
+          .withColumn("uniqueId", row_number.over(window))
   }
 
   /** Produces the (label, id) combination from a nodeslist of an RDD that has the
@@ -255,34 +260,38 @@ object WriteGraph {
       true
     }
   }
-/*
+
   def asGraphmlDF (df: DataFrame, graphmlPath: String): Boolean = {
     if (graphmlPath.isEmpty()) {
       false
     } else {
-      val nodes = nodesWithIdsDF(df)
-      val outFile = Files.newBufferedWriter(Paths.get(graphmlPath), StandardCharsets.UTF_8)
-      val edges = edgeNodes(rdd).map({ case (date, sid, did, weight) =>
-        edgeStart +
-        sid + targetChunk +
-        did + directedChunk +
-        "<data key=\"weight\">" + weight + "</data>\n" +
-        "<data key=\"crawlDate\">" + date + "</data>\n" +
-        edgeEnd})
-      outFile.write(graphmlHeader +
-        "<key id=\"label\" for=\"node\" attr.name=\"label\" attr.type=\"string\" />\n" +
-        "<key id=\"weight\" for=\"edge\" attr.name=\"weight\" attr.type=\"double\">\n" +
-        "<default>0.0</default>\n" +
-        "</key>\n" +
-        "<key id=\"crawlDate\" for=\"edge\" attr.name=\"crawlDate\" attr.type=\"string\" />\n" +
-        "<graph mode=\"static\" edgedefault=\"directed\">\n")
-      nodes.map(r => nodeStart + r._2 + "\">\n" +
-        "<data key=\"label\">" + r._1 + "</data>\n</node>\n").collect
-         .foreach(r => outFile.write(r))
-      edges.collect.foreach(r => outFile.write(r))
-      outFile.write("</graph>\n</graphml>")
-      outFile.close()
+      val colName = graphmlHeader +
+            "<key id=\"label\" for=\"node\" attr.name=\"label\" attr.type=\"string\" />\n" +
+            "<key id=\"weight\" for=\"edge\" attr.name=\"weight\" attr.type=\"double\">\n" +
+            "<default>0.0</default>\n" +
+            "</key>\n" +
+            "<key id=\"crawlDate\" for=\"edge\" attr.name=\"crawlDate\" attr.type=\"string\" />\n" +
+            "<graph mode=\"static\" edgedefault=\"directed\">\n"
+
+      val nodes = WriteGraph.nodesWithIdsDF(df).select( concat(
+                                                        lit(nodeStart), $"uniqueId",
+                                                        lit("\">\n<data key=\"label\">"), $"node",
+                                                        lit("</data>\n</node>\n")).as(colName)
+                                                      )
+      val edges = WriteGraph.edgeNodesDF(df).select(  concat(
+                                                      lit(edgeStart), $"sid", 
+                                                      lit(targetChunk), $"did", 
+                                                      lit(directedChunk), 
+                                                      lit("<data key=\"weight\">"), $"weight", 
+                                                      lit("</data>\n<data key=\"crawlDate\">"),$"date").as(colName)
+                                                   )
+
+      nodes.union(edges)
+      .repartition(1)
+      .write
+      .option("header", "true")
+      .csv(graphmlPath)
       true
     } 
-  }*/
+  }
 }
