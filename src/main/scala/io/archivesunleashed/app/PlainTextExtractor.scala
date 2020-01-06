@@ -16,8 +16,8 @@
 
 package io.archivesunleashed.app
 
-import io.archivesunleashed.{ArchiveRecord, df}
 import io.archivesunleashed.matchbox.RemoveHTMLRDD
+import io.archivesunleashed.{ArchiveRecord, df}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 

@@ -21,8 +21,8 @@ import shapeless._
 import syntax.std.tuple._
 // scalastyle:on underscore.import
 import org.junit.runner.RunWith
-import org.scalatest.{ FunSuite, Matchers }
 import org.scalatest.junit.JUnitRunner
+import org.scalatest.{FunSuite, Matchers}
 
 import ops.tuple.FlatMapper
 import ops.tuple.ToList
