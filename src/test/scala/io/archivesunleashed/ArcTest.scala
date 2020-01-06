@@ -17,8 +17,8 @@
 package io.archivesunleashed
 
 import com.google.common.io.Resources
-import io.archivesunleashed.matchbox.{DetectLanguageRDD, DetectMimeTypeTika, ExtractLinksRDD, RemoveHTMLRDD, RemoveHTTPHeaderRDD}
 import io.archivesunleashed.matchbox.ExtractDateRDD.DateComponent
+import io.archivesunleashed.matchbox.{DetectLanguageRDD, DetectMimeTypeTika, ExtractLinksRDD, RemoveHTMLRDD, RemoveHTTPHeaderRDD}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner

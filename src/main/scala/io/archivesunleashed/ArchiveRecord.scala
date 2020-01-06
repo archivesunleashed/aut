@@ -16,18 +16,18 @@
 
 package io.archivesunleashed
 
-import java.text.SimpleDateFormat
 import java.io.ByteArrayInputStream
 import java.security.MessageDigest
+import java.text.SimpleDateFormat
 
 import io.archivesunleashed.data.{ArcRecordUtils, WarcRecordUtils, ArchiveRecordWritable}
 import io.archivesunleashed.matchbox.{ComputeMD5RDD, ExtractDateRDD, ExtractDomainRDD, RemoveHTTPHeaderRDD}
+import org.apache.commons.httpclient.{Header, HttpParser, StatusLine}
 import org.apache.spark.SerializableWritable
 import org.archive.io.arc.ARCRecord
 import org.archive.io.warc.WARCRecord
 import org.archive.util.ArchiveUtils
 import scala.util.Try
-import org.apache.commons.httpclient.{Header, HttpParser, StatusLine}
 
 /** Trait for a record in a web archive. */
 trait ArchiveRecord extends Serializable {

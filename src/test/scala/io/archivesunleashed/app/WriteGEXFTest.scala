@@ -17,11 +17,11 @@ package io.archivesunleashed.app
 
 import java.io.File
 import java.nio.file.{Files, Paths}
+import org.apache.spark.sql.Row
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
-import org.apache.spark.sql.Row
 import scala.io.Source
 
 @RunWith(classOf[JUnitRunner])

@@ -16,9 +16,9 @@
 package io.archivesunleashed.app
 
 import io.archivesunleashed.ArchiveRecord
-import org.apache.spark.{RangePartitioner, SparkContext}
 import org.apache.spark.sql.functions.{desc,first}
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
+import org.apache.spark.{RangePartitioner, SparkContext}
 
 /** Extract most popular images from a Data Frame. */
 object ExtractPopularImagesDF {
