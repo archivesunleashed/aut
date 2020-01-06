@@ -22,8 +22,8 @@ import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
-import scala.collection.mutable
 import scala.Byte
+import scala.collection.mutable
 
 @RunWith(classOf[JUnitRunner])
 class ExtractLinksRDDTest extends FunSuite {

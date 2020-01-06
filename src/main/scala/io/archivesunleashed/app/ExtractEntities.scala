@@ -15,10 +15,10 @@
  */
 package io.archivesunleashed.app
 
-import io.archivesunleashed.RecordLoader
 import io.archivesunleashed.matchbox.{ComputeMD5RDD, NERClassifier, RemoveHTMLRDD}
-import org.apache.spark.SparkContext
+import io.archivesunleashed.RecordLoader
 import org.apache.spark.rdd.RDD
+import org.apache.spark.SparkContext
 
 /** Performs Named Entity Recognition (NER) on a WARC or ARC file.
   *
