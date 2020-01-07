@@ -21,7 +21,7 @@ import java.util.Base64
 
 import io.archivesunleashed.data.{ArchiveRecordInputFormat, ArchiveRecordWritable}
 import ArchiveRecordWritable.ArchiveFormat
-import io.archivesunleashed.df.{ExtractDateDF,ExtractDomainDF}
+import io.archivesunleashed.df.{DetectMimeTypeTikaDF, ExtractDateDF, ExtractDomainDF}
 import io.archivesunleashed.matchbox.{DetectLanguageRDD, DetectMimeTypeTika, ExtractDateRDD,
                                       ExtractDomainRDD, ExtractImageDetails, ExtractImageLinksRDD,
                                       ExtractLinksRDD, GetExtensionMimeRDD, RemoveHTMLRDD}
@@ -146,6 +146,15 @@ package object archivesunleashed {
       df.filter(filteredDomains(ExtractDomainDF($"url")))
     }
 
+    /** Filters detected HTTP status codes.
+      *
+      * @param statusCodes a list of HTTP status codes
+      */
+    def discardHttpStatusDF(statusCodes: Set[String]): DataFrame = {
+      val filteredHttpStatus = udf((statusCode: String) => !statusCodes.contains(statusCode))
+      df.filter(filteredHttpStatus($"HttpStatus"))
+    }
+
     /** Removes all data that does not have selected HTTP status codes.
      *
      *  @param statusCodes a list of HTTP status codes
@@ -181,6 +190,24 @@ package object archivesunleashed {
     def keepDomainsDF(domains: Set[String]): DataFrame = {
       val takeDomains = udf((domain: String) => domains.contains(domain))
       df.filter(takeDomains(ExtractDomainDF($"url")))
+    }
+
+    /** Removes all data but selected mimeTypeTikas specified.
+      *
+      * @param mimeTypesTika a list of Mime Types Tika
+      */
+    def keepMimeTypesTikaDF(mimeTypes: Set[String]): DataFrame = {
+      val takeMimeTypeTika = udf((mimeTypeTika: String) => mimeTypes.contains(mimeTypeTika))
+      df.filter(takeMimeTypeTika(DetectMimeTypeTikaDF($"bytes")))
+    }
+
+    /** Removes all data but selected mimeTypes specified.
+      *
+      * @param mimeTypes a list of Mime Types
+      */
+    def keepMimeTypesDF(mimeTypes: Set[String]): DataFrame = {
+      val takeMimeType = udf((mimeType: String) => mimeTypes.contains(mimeType))
+      df.filter(takeMimeType($"mime_type_web_server"))
     }
   }
 
