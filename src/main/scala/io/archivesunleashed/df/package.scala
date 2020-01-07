@@ -57,6 +57,8 @@ package object df {
 
   val ExtractDateDF = udf((io.archivesunleashed.matchbox.ExtractDateRDD.apply(_: String, _: String)))
 
+  val DetectMimeTypeTikaDF = udf((io.archivesunleashed.matchbox.DetectMimeTypeTika.apply(_: Array[Byte])))
+
   /**
    * Given a dataframe, serializes binary object and saves to disk
    * @param df the input dataframe
