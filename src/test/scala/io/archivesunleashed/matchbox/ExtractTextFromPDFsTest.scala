@@ -19,8 +19,8 @@ package io.archivesunleashed.matchbox
 import org.apache.tika.parser.pdf.PDFParser
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
-import org.scalatest.Matchers
 import org.scalatest.junit.JUnitRunner
+import org.scalatest.Matchers
 
 @RunWith(classOf[JUnitRunner])
 class ExtractTextFromPDFsTest extends FunSuite with Matchers {

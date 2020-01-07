@@ -19,25 +19,28 @@ package io
 import java.security.MessageDigest
 import java.util.Base64
 
+import io.archivesunleashed.data.ArchiveRecordWritable.ArchiveFormat
 import io.archivesunleashed.data.{ArchiveRecordInputFormat, ArchiveRecordWritable}
+
 import ArchiveRecordWritable.ArchiveFormat
 import io.archivesunleashed.df.{DetectMimeTypeTikaDF, ExtractDateDF, ExtractDomainDF}
+
 import io.archivesunleashed.matchbox.{DetectLanguageRDD, DetectMimeTypeTika, ExtractDateRDD,
                                       ExtractDomainRDD, ExtractImageDetails, ExtractImageLinksRDD,
                                       ExtractLinksRDD, GetExtensionMimeRDD, RemoveHTMLRDD}
 import io.archivesunleashed.matchbox.ExtractDateRDD.DateComponent
-import org.apache.commons.codec.binary.Hex
-import org.apache.commons.io.FilenameUtils
-import org.apache.hadoop.fs.{FileSystem, Path}
 import io.archivesunleashed.matchbox.ExtractDateRDD.DateComponent.DateComponent
 import java.net.URI
 import java.net.URL
-import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
+import org.apache.commons.codec.binary.Hex
+import org.apache.commons.io.FilenameUtils
+import org.apache.hadoop.fs.{FileSystem, Path}
+import org.apache.hadoop.io.LongWritable
+import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.functions.{lit, udf}
 import org.apache.spark.sql.types.{BinaryType, IntegerType, StringType, StructField, StructType}
-import org.apache.hadoop.io.LongWritable
+import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 import org.apache.spark.{RangePartitioner, SerializableWritable, SparkContext}
-import org.apache.spark.rdd.RDD
 import scala.reflect.ClassTag
 import scala.util.matching.Regex
 
@@ -101,7 +104,7 @@ package object archivesunleashed {
     def keepValidPagesDF(): DataFrame = {
       df.filter($"crawl_date" isNotNull)
         .filter(!($"url".rlike(".*robots\\.txt$")) &&
-                  ( $"mime_type_web_server".rlike("text/html") || 
+                  ( $"mime_type_web_server".rlike("text/html") ||
                     $"mime_type_web_server".rlike("application/xhtml+xml") ||
                     $"url".rlike("(?i).*htm$") ||
                     $"url".rlike("(?i).*html$")
@@ -131,7 +134,7 @@ package object archivesunleashed {
     /** Filters detected URLs.
       *
       * @param urls a list of urls
-      */    
+      */
     def discardUrlsDF(urls: Set[String]): DataFrame = {
       val filteredUrls = udf((url: String) => !urls.contains(url))
       df.filter(filteredUrls($"url"))

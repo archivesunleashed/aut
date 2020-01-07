@@ -20,9 +20,9 @@ import java.io.File
 import java.nio.file.{Files, Paths}
 
 import com.google.common.io.Resources
-import io.archivesunleashed.{ArchiveRecord, RecordLoader}
 import io.archivesunleashed.app.ExtractGraphX.{EdgeData, VertexData, VertexDataPR}
 import io.archivesunleashed.matchbox.{ExtractDomainRDD, ExtractLinksRDD, WWWLink}
+import io.archivesunleashed.{ArchiveRecord, RecordLoader}
 import org.apache.commons.io.FileUtils
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith

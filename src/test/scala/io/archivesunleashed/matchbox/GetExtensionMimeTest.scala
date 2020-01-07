@@ -17,9 +17,9 @@
 package io.archivesunleashed.matchbox
 
 import com.google.common.io.Resources
-import org.apache.spark.sql.{DataFrame, Row}
 import io.archivesunleashed.{ArchiveRecord, RecordLoader}
 import org.apache.spark.sql.functions.desc
+import org.apache.spark.sql.{DataFrame, Row}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner

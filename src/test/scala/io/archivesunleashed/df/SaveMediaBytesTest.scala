@@ -19,15 +19,15 @@ package io.archivesunleashed
 import com.google.common.io.Resources
 import io.archivesunleashed.df.SaveBytes
 import io.archivesunleashed.matchbox.ComputeMD5RDD
-import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions.desc
+import org.apache.spark.sql.SparkSession
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
-import java.nio.file.{Paths, Files}
 import java.io.File
+import java.nio.file.{Paths, Files}
 import java.util.Base64
 
 case class TestMediaDetails(url: String, extension: String, mime_type: String,
