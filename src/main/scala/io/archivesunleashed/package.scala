@@ -275,6 +275,7 @@ package object archivesunleashed {
         .keepValidPages()
         .flatMap(r => ExtractLinksRDD(r.getUrl, r.getContentString)
         .map(t => (r.getCrawlDate, t._1, t._2, t._3)))
+        .filter(t => t._2 != "" && t._3 != "")
         .map(t => Row(t._1, t._2, t._3, t._4))
 
       val schema = new StructType()
