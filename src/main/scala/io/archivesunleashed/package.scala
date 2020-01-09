@@ -19,25 +19,28 @@ package io
 import java.security.MessageDigest
 import java.util.Base64
 
+import io.archivesunleashed.data.ArchiveRecordWritable.ArchiveFormat
 import io.archivesunleashed.data.{ArchiveRecordInputFormat, ArchiveRecordWritable}
+
 import ArchiveRecordWritable.ArchiveFormat
-import io.archivesunleashed.df.{ExtractDateDF,ExtractDomainDF}
+import io.archivesunleashed.df.{DetectMimeTypeTikaDF, ExtractDateDF, ExtractDomainDF}
+
 import io.archivesunleashed.matchbox.{DetectLanguageRDD, DetectMimeTypeTika, ExtractDateRDD,
                                       ExtractDomainRDD, ExtractImageDetails, ExtractImageLinksRDD,
                                       ExtractLinksRDD, GetExtensionMimeRDD, RemoveHTMLRDD}
 import io.archivesunleashed.matchbox.ExtractDateRDD.DateComponent
-import org.apache.commons.codec.binary.Hex
-import org.apache.commons.io.FilenameUtils
-import org.apache.hadoop.fs.{FileSystem, Path}
 import io.archivesunleashed.matchbox.ExtractDateRDD.DateComponent.DateComponent
 import java.net.URI
 import java.net.URL
-import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
+import org.apache.commons.codec.binary.Hex
+import org.apache.commons.io.FilenameUtils
+import org.apache.hadoop.fs.{FileSystem, Path}
+import org.apache.hadoop.io.LongWritable
+import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.functions.{lit, udf}
 import org.apache.spark.sql.types.{BinaryType, IntegerType, StringType, StructField, StructType}
-import org.apache.hadoop.io.LongWritable
+import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 import org.apache.spark.{RangePartitioner, SerializableWritable, SparkContext}
-import org.apache.spark.rdd.RDD
 import scala.reflect.ClassTag
 import scala.util.matching.Regex
 
@@ -101,7 +104,7 @@ package object archivesunleashed {
     def keepValidPagesDF(): DataFrame = {
       df.filter($"crawl_date" isNotNull)
         .filter(!($"url".rlike(".*robots\\.txt$")) &&
-                  ( $"mime_type_web_server".rlike("text/html") || 
+                  ( $"mime_type_web_server".rlike("text/html") ||
                     $"mime_type_web_server".rlike("application/xhtml+xml") ||
                     $"url".rlike("(?i).*htm$") ||
                     $"url".rlike("(?i).*html$")
@@ -131,7 +134,7 @@ package object archivesunleashed {
     /** Filters detected URLs.
       *
       * @param urls a list of urls
-      */    
+      */
     def discardUrlsDF(urls: Set[String]): DataFrame = {
       val filteredUrls = udf((url: String) => !urls.contains(url))
       df.filter(filteredUrls($"url"))
@@ -144,6 +147,15 @@ package object archivesunleashed {
     def discardDomainsDF(domains: Set[String]): DataFrame = {
       val filteredDomains = udf((domain: String) => !domains.contains(domain))
       df.filter(filteredDomains(ExtractDomainDF($"url")))
+    }
+
+    /** Filters detected HTTP status codes.
+      *
+      * @param statusCodes a list of HTTP status codes
+      */
+    def discardHttpStatusDF(statusCodes: Set[String]): DataFrame = {
+      val filteredHttpStatus = udf((statusCode: String) => !statusCodes.contains(statusCode))
+      df.filter(filteredHttpStatus($"HttpStatus"))
     }
 
     /** Removes all data that does not have selected HTTP status codes.
@@ -181,6 +193,24 @@ package object archivesunleashed {
     def keepDomainsDF(domains: Set[String]): DataFrame = {
       val takeDomains = udf((domain: String) => domains.contains(domain))
       df.filter(takeDomains(ExtractDomainDF($"url")))
+    }
+
+    /** Removes all data but selected mimeTypeTikas specified.
+      *
+      * @param mimeTypesTika a list of Mime Types Tika
+      */
+    def keepMimeTypesTikaDF(mimeTypes: Set[String]): DataFrame = {
+      val takeMimeTypeTika = udf((mimeTypeTika: String) => mimeTypes.contains(mimeTypeTika))
+      df.filter(takeMimeTypeTika(DetectMimeTypeTikaDF($"bytes")))
+    }
+
+    /** Removes all data but selected mimeTypes specified.
+      *
+      * @param mimeTypes a list of Mime Types
+      */
+    def keepMimeTypesDF(mimeTypes: Set[String]): DataFrame = {
+      val takeMimeType = udf((mimeType: String) => mimeTypes.contains(mimeType))
+      df.filter(takeMimeType($"mime_type_web_server"))
     }
   }
 
@@ -245,6 +275,7 @@ package object archivesunleashed {
         .keepValidPages()
         .flatMap(r => ExtractLinksRDD(r.getUrl, r.getContentString)
         .map(t => (r.getCrawlDate, t._1, t._2, t._3)))
+        .filter(t => t._2 != "" && t._3 != "")
         .map(t => Row(t._1, t._2, t._3, t._4))
 
       val schema = new StructType()

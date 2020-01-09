@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 package io.archivesunleashed.app
-import org.apache.spark.graphx.Graph
+import io.archivesunleashed.app.ExtractGraphX.{EdgeData, VertexData, VertexDataPR}
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
-import io.archivesunleashed.app.ExtractGraphX.{EdgeData, VertexData, VertexDataPR}
+import org.apache.spark.graphx.Graph
 
 import org.apache.spark.rdd.RDD
 
