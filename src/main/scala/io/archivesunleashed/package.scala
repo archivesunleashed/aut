@@ -23,7 +23,7 @@ import io.archivesunleashed.data.ArchiveRecordWritable.ArchiveFormat
 import io.archivesunleashed.data.{ArchiveRecordInputFormat, ArchiveRecordWritable}
 
 import ArchiveRecordWritable.ArchiveFormat
-import io.archivesunleashed.df.{DetectMimeTypeTikaDF, DetectLanguageDF, ExtractDateDF, ExtractDomainDF, RemoveHTMLDF}
+import io.archivesunleashed.df.{DetectLanguageDF, DetectMimeTypeTikaDF, ExtractDateDF, ExtractDomainDF, RemoveHTMLDF}
 
 import io.archivesunleashed.matchbox.{DetectLanguageRDD, DetectMimeTypeTika, ExtractDateRDD,
                                       ExtractDomainRDD, ExtractImageDetails, ExtractImageLinksRDD,
