@@ -19,7 +19,6 @@ package io.archivesunleashed
 import io.archivesunleashed.df.{DetectLanguageDF, RemoveHTMLDF}
 import com.google.common.io.Resources
 import org.apache.spark.{SparkConf, SparkContext}
-import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
@@ -31,8 +30,6 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
   private val master = "local[4]"
   private val appName = "example-spark"
   private var sc: SparkContext = _
-
-  
 
   before {
     val conf = new SparkConf()
