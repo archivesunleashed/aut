@@ -16,11 +16,13 @@
 
 package io.archivesunleashed
 
+import io.archivesunleashed.df.{DetectLanguageDF, RemoveHTMLDF}
 import com.google.common.io.Resources
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
+
 
 @RunWith(classOf[JUnitRunner])
 class RecordDFTest extends FunSuite with BeforeAndAfter {
@@ -89,6 +91,34 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     assert (base.toString == expected)
   }
 
+  test("Discard Content") {
+    val expected = "dns:www.archive.org"
+    val reg = Set("Content-Length: [0-9]{4}".r)
+    val base = RecordLoader.loadArchives(arcPath, sc).all()
+      .select("url", "content").discardContentDF(reg).take(2)(1)(0)
+
+    assert (base.toString == expected)
+  }
+
+  test("Discard UrlPatterns") {
+    val expected = "dns:www.archive.org"
+    val reg = Set(".*images.*".r)
+    val base = RecordLoader.loadArchives(arcPath, sc).all()
+      .select("url").discardUrlPatternsDF(reg).take(2)(1)(0)
+
+    assert (base.toString == expected)
+  }
+
+  test("Discard Languages") {
+    val expected = "dns:www.archive.org"
+    val reg = Set("th","de","ht")
+    val base = RecordLoader.loadArchives(arcPath, sc).all()
+      .select("url")
+      .discardLanguagesDF(reg).take(2)(1)(0)
+
+    assert (base.toString == expected)
+  }
+
   test("Keep HttpStatus") {
     val expected = "http://www.archive.org/robots.txt"
     val statusCodes = Set("200")
@@ -125,7 +155,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     assert (base.toString == expected)
   }
 
-  test("Keep keepMimeTypesTika") {
+  test("Keep MimeTypesTika") {
     val expected = "image/jpeg"
     val domains = Set("image/jpeg")
     val base = RecordLoader.loadArchives(arcPath, sc).all()
@@ -134,11 +164,50 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     assert (base.toString == expected)
   }
 
-  test("Keep keepMimeTypes") {
+  test("Keep MimeTypes") {
     val expected = "text/html"
     val domains = Set("text/html")
     val base = RecordLoader.loadArchives(arcPath, sc).all()
       .keepMimeTypesDF(domains).take(1)(0)(3)
+
+    assert (base.toString == expected)
+  }
+
+  test("Keep content") {
+    val expected = "http://www.archive.org/images/logoc.jpg"
+    val reg = Set("Content-Length: [0-9]{4}".r)
+    val base = RecordLoader.loadArchives(arcPath, sc).all()
+      .select("url", "content")
+      .keepContentDF(reg).take(1)(0)(0)
+
+    assert (base.toString == expected)
+  }
+
+  test("Keep UrlPatterns") {
+    val expected = "http://www.archive.org/images/go-button-gateway.gif"
+    val reg = Set("text/html")
+    val base = RecordLoader.loadArchives(arcPath, sc).all()
+      .select("url")
+      .keepUrlPatternsDF(Set(".*images.*".r)).take(2)(1)(0)
+
+    assert (base.toString == expected)
+  }
+
+  test("Keep Languages") {
+    val expected = "http://www.archive.org/images/logoc.jpg"
+    val reg = Set("th","de","ht")
+    val base = RecordLoader.loadArchives(arcPath, sc).all()
+      .select("url")
+      .keepLanguagesDF(reg).take(1)(0)(0)
+
+    assert (base.toString == expected)
+  }
+
+  test("Keep keepMimeTypes") {
+    val expected = "image/jpeg"
+    val base = RecordLoader.loadArchives(arcPath, sc).all()
+      .keepImagesDF()
+      .select("mime_type_tika").take(1)(0)(0)
 
     assert (base.toString == expected)
   }

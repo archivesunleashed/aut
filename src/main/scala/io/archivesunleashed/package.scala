@@ -23,7 +23,7 @@ import io.archivesunleashed.data.ArchiveRecordWritable.ArchiveFormat
 import io.archivesunleashed.data.{ArchiveRecordInputFormat, ArchiveRecordWritable}
 
 import ArchiveRecordWritable.ArchiveFormat
-import io.archivesunleashed.df.{DetectMimeTypeTikaDF, ExtractDateDF, ExtractDomainDF}
+import io.archivesunleashed.df.{DetectLanguageDF, DetectMimeTypeTikaDF, ExtractDateDF, ExtractDomainDF, RemoveHTMLDF}
 
 import io.archivesunleashed.matchbox.{DetectLanguageRDD, DetectMimeTypeTika, ExtractDateRDD,
                                       ExtractDomainRDD, ExtractImageDetails, ExtractImageLinksRDD,
@@ -158,6 +158,51 @@ package object archivesunleashed {
       df.filter(filteredHttpStatus($"HttpStatus"))
     }
 
+    /** Filters detected content (regex).
+      *
+      * @param contentREs a list of regular expressions
+      */
+    def discardContentDF(contentREs: Set[Regex]): DataFrame = {
+      val filteredContent = udf((c: String) => {
+                          !contentREs.map(re =>
+                          (re findFirstIn c) match {
+                            case Some(v) => true
+                            case None => false
+                          }).exists(identity)
+                        })
+      df.filter(filteredContent($"content"))
+    }
+
+    /** Filters detected URL patterns (regex).
+     *
+     *  @param urlREs a list of Regular expressions
+     */
+    def discardUrlPatternsDF(urlREs: Set[Regex]): DataFrame = {
+      val filteredUrlPatterns = udf((urlPattern: String) => {
+                              !urlREs.map(re =>
+                                urlPattern match {
+                                  case re() => true
+                                  case _ => false
+                              }).exists(identity)
+                            })
+      df.filter(filteredUrlPatterns($"url"))
+    }
+
+    /** Filters detected language.
+      *
+      * @param lang a set of ISO 639-2 codes
+      */
+    def discardLanguagesDF(lang: Set[String]): DataFrame = {
+      val filteredLanguage = udf((language: String) => !lang.contains(language))
+      df.filter(filteredLanguage(DetectLanguageDF(RemoveHTMLDF($"content"))))
+    }
+
+    /** Removes all data except images. */
+    def keepImagesDF(): DataFrame = {
+      val takeImages = udf((date: String, mimeType: String) => date != null && mimeType.startsWith("image/"))
+      df.filter(takeImages($"crawl_date", DetectMimeTypeTikaDF($"bytes")))
+    }
+
     /** Removes all data that does not have selected HTTP status codes.
      *
      *  @param statusCodes a list of HTTP status codes
@@ -211,6 +256,45 @@ package object archivesunleashed {
     def keepMimeTypesDF(mimeTypes: Set[String]): DataFrame = {
       val takeMimeType = udf((mimeType: String) => mimeTypes.contains(mimeType))
       df.filter(takeMimeType($"mime_type_web_server"))
+    }
+
+    /** Removes all content that does not pass Regular Expression test.
+      *
+      * @param contentREs a list of regular expressions to keep
+      */
+    def keepContentDF(contentREs: Set[Regex]): DataFrame = {
+      val takeContent = udf((c: String) => {
+                          contentREs.map(re =>
+                            (re findFirstIn c) match {
+                              case Some(v) => true
+                              case None => false
+                          }).exists(identity)
+                        })
+      df.filter(takeContent($"content"))
+    }
+
+    /** Removes all data but selected URL patterns.
+      *
+      * @param urlREs a list of regular expressions
+      */
+    def keepUrlPatternsDF(urlREs: Set[Regex]): DataFrame = {
+      val takeUrlPatterns = udf((urlPattern: String) => {
+                              urlREs.map(re =>
+                                urlPattern match {
+                                  case re() => true
+                                  case _ => false
+                              }).exists(identity)
+                            })
+      df.filter(takeUrlPatterns($"url"))
+    }
+
+    /** Removes all data not in selected language.
+      *
+      * @param lang a set of ISO 639-2 codes
+      */
+    def keepLanguagesDF(lang: Set[String]): DataFrame = {
+      val takeLanguage = udf((language: String) => lang.contains(language))
+      df.filter(takeLanguage((DetectLanguageDF(RemoveHTMLDF($"content")))))
     }
   }
 
