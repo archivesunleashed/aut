@@ -27,7 +27,7 @@ import io.archivesunleashed.df.{DetectLanguageDF, DetectMimeTypeTikaDF, ExtractD
 
 import io.archivesunleashed.matchbox.{DetectLanguageRDD, DetectMimeTypeTika, ExtractDateRDD,
                                       ExtractDomainRDD, ExtractImageDetails, ExtractImageLinksRDD,
-                                      ExtractLinksRDD, GetExtensionMimeRDD, RemoveHTMLRDD}
+                                      ExtractLinksRDD, GetExtensionMimeRDD, RemoveHTMLRDD, RemoveHTTPHeaderRDD}
 import io.archivesunleashed.matchbox.ExtractDateRDD.DateComponent
 import io.archivesunleashed.matchbox.ExtractDateRDD.DateComponent.DateComponent
 import java.net.URI
@@ -340,13 +340,16 @@ package object archivesunleashed {
     def webpages(): DataFrame = {
       val records = rdd.keepValidPages()
         .map(r => Row(r.getCrawlDate, r.getUrl, r.getMimeType,
-          DetectMimeTypeTika(r.getBinaryBytes), r.getContentString))
+          DetectMimeTypeTika(r.getBinaryBytes),
+          DetectLanguageRDD(RemoveHTMLRDD(RemoveHTTPHeaderRDD(r.getContentString))),
+          r.getContentString))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("mime_type_web_server", StringType, true))
         .add(StructField("mime_type_tika", StringType, true))
+        .add(StructField("language", StringType, true))
         .add(StructField("content", StringType, true))
 
       val sqlContext = SparkSession.builder()
