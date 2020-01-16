@@ -110,7 +110,7 @@ package object archivesunleashed {
                     $"url".rlike("(?i).*html$")
                   )
                )
-        .filter($"HttpStatus" === 200)
+        .filter($"http_status_code" === 200)
     }
 
     /** Filters ArchiveRecord MimeTypes (web server).
@@ -155,7 +155,7 @@ package object archivesunleashed {
       */
     def discardHttpStatusDF(statusCodes: Set[String]): DataFrame = {
       val filteredHttpStatus = udf((statusCode: String) => !statusCodes.contains(statusCode))
-      df.filter(filteredHttpStatus($"HttpStatus"))
+      df.filter(filteredHttpStatus($"http_status_code"))
     }
 
     /** Filters detected content (regex).
@@ -209,7 +209,7 @@ package object archivesunleashed {
      */
     def keepHttpStatusDF(statusCodes: Set[String]): DataFrame = {
       val takeHttpStatus = udf((statusCode: String) => statusCodes.contains(statusCode))
-      df.filter(takeHttpStatus($"HttpStatus"))
+      df.filter(takeHttpStatus($"http_status_code"))
     }
 
     /** Removes all data that does not have selected date.
@@ -309,7 +309,8 @@ package object archivesunleashed {
        Call KeepImages OR KeepValidPages on RDD depending upon the requirement before calling this method */
     def all(): DataFrame = {
       val records = rdd.map(r => Row(r.getCrawlDate, r.getUrl, r.getMimeType,
-          DetectMimeTypeTika(r.getBinaryBytes), r.getContentString, r.getBinaryBytes, r.getHttpStatus))
+          DetectMimeTypeTika(r.getBinaryBytes), r.getContentString,
+          r.getBinaryBytes, r.getHttpStatus, r.getArchiveFilename))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -318,7 +319,8 @@ package object archivesunleashed {
         .add(StructField("mime_type_tika", StringType, true))
         .add(StructField("content", StringType, true))
         .add(StructField("bytes", BinaryType, true))
-        .add(StructField("HttpStatus", StringType, true))
+        .add(StructField("http_status_code", StringType, true))
+        .add(StructField("archive_filename", StringType, true))
 
       val sqlContext = SparkSession.builder()
       sqlContext.getOrCreate().createDataFrame(records, schema)
