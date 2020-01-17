@@ -63,7 +63,7 @@
   <repositories>
     <repository>
       <id>maven</id>
-      <url>http://repo.maven.apache.org/maven2/</url>
+      <url>https://repo.maven.apache.org/maven2/</url>
     </repository>
     <repository>
       <id>mvn-repo</id>
