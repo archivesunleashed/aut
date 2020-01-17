@@ -39,8 +39,6 @@ If you would like to use the Archives Unleashed Toolkit with PySpark and Jupyter
 
 ### Apache Spark
 
-##### Installing and Running Apache Spark
-
 Download and unzip [Apache Spark](https://spark.apache.org) to a location of your choice.
 
 ```bash
@@ -48,37 +46,21 @@ curl -L "https://archive.apache.org/dist/spark/spark-2.4.4/spark-2.4.4-bin-hadoo
 tar -xvf spark-2.4.4-bin-hadoop2.7.tgz
 ```
 
-#### Running Apache Spark Shell (Scala)
-
-Many of our documentation examples take place in the Apache Spark Shell, which is in essence a [Scala REPL](https://docs.scala-lang.org/overviews/repl/overview.html).
-
-To run Apache Spark Shell:
-
-```
-spark-2.4.4-bin-hadoop2.7/bin/spark-shell
-```
-
-You should see something like:
-
-```
-Spark context Web UI available at http://10.0.1.44:4041
-Spark context available as 'sc' (master = local[10], app id = local-1572059365536).
-Spark session available as 'spark'.
-Welcome to
-      ____              __
-     / __/__  ___ _____/ /__
-    _\ \/ _ \/ _ `/ __/  '_/
-   /___/ .__/\_,_/_/ /_/\_\   version 2.4.4
-      /_/
-         
-Using Scala version 2.11.12 (OpenJDK 64-Bit Server VM, Java 1.8.0_222)
-Type in expressions to have them evaluated.
-Type :help for more information.
-
-scala> 
-```
-
 ## Getting Started
+
+### Building Locally
+
+Clone the repo:
+
+```shell
+$ git clone http://github.com/archivesunleashed/aut.git
+```
+
+You can then build The Archives Unleashed Toolkit.
+
+```shell
+$ mvn clean install
+```
 
 ### Archives Unleashed Toolkit with Spark Shell
 
@@ -121,12 +103,14 @@ $ spark-shell --jars /path/to/aut-0.18.1-fatjar.jar
 HEAD (built locally):
 
 ```shell
-$ spark-shell --jars /path/to/aut-0.18.2-SNAPSHOT-fatjar.jar
+$ spark-shell --jars /path/to/aut/target/aut-0.18.2-SNAPSHOT-fatjar.jar
 ```
 
 ### Archives Unleashed Toolkit with PySpark
 
-To run PySpark with the Archives Unleashed Toolkit loaded, you will need to provide PySpark with the Java/Scala package, and the Python bindings. The Java/Scala packages can be provided with `--packages` or `--jars` as described above. The Python bindings can be [downloaded](https://github.com/archivesunleashed/aut/releases/download/aut-0.18.1/aut-0.18.1.zip), or [built locally](#Introduction) (the zip file will be found in the `target` directory.
+To run PySpark with the Archives Unleashed Toolkit loaded, you will need to provide PySpark with the Java/Scala package, and the Python bindings. The Java/Scala packages can be provided with `--packages` or `--jars` as described above. The Python bindings can be [downloaded](https://github.com/archivesunleashed/aut/releases/download/aut-0.18.1/aut-0.18.1.zip), or [built locally](#building-locally) (the zip file will be found in the `target` directory.
+
+In each of the examples below, `/path/to/python` is listed. If you are unsure where your Python is, it can be found with `which python`.
 
 #### As a package
 
@@ -158,7 +142,7 @@ $ export PYSPARK_PYTHON=/path/to/python; export PYSPARK_DRIVER_PYTHON=/path/to/p
 
 ### Archives Unleashed Toolkit with Jupyter
 
-To run a Jupyter Notebook with the Archives Unleashed Toolkit loaded, you will need to provide PySpark the Java/Scala package, and the Python bindings. The Java/Scala packages can be provided with `--packages` or `--jars` as described above. The Python bindings can be [downloaded](https://github.com/archivesunleashed/aut/releases/download/aut-0.18.1/aut-0.18.1.zip), or [built locally](#Introduction) (the zip file will be found in the `target` directory.
+To run a [Jupyter Notebook](https://jupyter.org/install) with the Archives Unleashed Toolkit loaded, you will need to provide PySpark the Java/Scala package, and the Python bindings. The Java/Scala packages can be provided with `--packages` or `--jars` as described above. The Python bindings can be [downloaded](https://github.com/archivesunleashed/aut/releases/download/aut-0.18.1/aut-0.18.1.zip), or [built locally](#Introduction) (the zip file will be found in the `target` directory.
 
 #### As a package
 
