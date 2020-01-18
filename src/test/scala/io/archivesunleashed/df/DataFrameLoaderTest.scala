@@ -68,8 +68,9 @@ class DataFrameLoaderTest extends FunSuite with BeforeAndAfter {
     assert(r_2(1) == "Advanced Search")
 
     val r_3 = imageLinks.take(100)(99)
-    assert(r_3.get(0) == "http://www.archive.org/details/secretarmiesb00spivrich")
-    assert(r_3.get(1) == "http://www.archive.org/images/star.png")
+    assert(r_3.get(0) == "20080430")
+    assert(r_3.get(1) == "http://www.archive.org/details/secretarmiesb00spivrich")
+    assert(r_3.get(2) == "http://www.archive.org/images/star.png")
 
     val r_4 = images.take(1)(0)
     assert(r_4.getAs[String](url) == "http://www.archive.org/images/logoc.jpg")
