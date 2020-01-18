@@ -14,7 +14,7 @@ class WebArchive:
     def webpages(self):
         return DataFrame(self.loader.webpages(self.path), self.sqlContext)
 
-    def links(self):
+    def webgraph(self):
         return DataFrame(self.loader.webgraph(self.path), self.sqlContext)
 
     def images(self):
