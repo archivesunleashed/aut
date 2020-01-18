@@ -36,7 +36,9 @@ class WebArchive:
         return DataFrame(self.loader.spreadsheets(self.path), self.sqlContext)
 
     def presentation_program(self):
-        return DataFrame(self.loader.presentationProgramFiles(self.path), self.sqlContext)
+        return DataFrame(
+            self.loader.presentationProgramFiles(self.path), self.sqlContext
+        )
 
     def word_processor(self):
         return DataFrame(self.loader.wordProcessorFiles(self.path), self.sqlContext)
