@@ -363,7 +363,7 @@ package object archivesunleashed {
       val records = rdd
         .keepValidPages()
         .flatMap(r => ExtractLinksRDD(r.getUrl, r.getContentString)
-        .map(t => (r.getCrawlDate, t._1, t._2, t._3)))
+          .map(t => (r.getCrawlDate, t._1, t._2, t._3)))
         .filter(t => t._2 != "" && t._3 != "")
         .map(t => Row(t._1, t._2, t._3, t._4))
 
@@ -381,14 +381,16 @@ package object archivesunleashed {
     def imageLinks(): DataFrame = {
       val records = rdd
         .keepValidPages()
-        .flatMap(r => {
+        .flatMap(r => ({
           val src = r.getUrl
           val imageUrls = ExtractImageLinksRDD(src, r.getContentString)
           imageUrls.map(url => (src, url))
         })
-        .map(t => Row(t._1, t._2))
+          .map(t => (r.getCrawlDate, t._1, t._2)))
+        .map(t => Row(t._1, t._2, t._3))
 
       val schema = new StructType()
+        .add(StructField("crawl_date", StringType, true))
         .add(StructField("src", StringType, true))
         .add(StructField("image_url", StringType, true))
 
@@ -406,12 +408,13 @@ package object archivesunleashed {
           val url = new URL(r.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
           val extension = GetExtensionMimeRDD(url.getPath(), mimeTypeTika)
-          (r.getUrl, filename, extension, r.getMimeType, mimeTypeTika,
+          (r.getCrawlDate, r.getUrl, filename, extension, r.getMimeType, mimeTypeTika,
             image.width, image.height, image.md5Hash, image.sha1Hash, image.body)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10, t._11))
 
       val schema = new StructType()
+        .add(StructField("crawl_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -442,12 +445,13 @@ package object archivesunleashed {
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
           val extension = GetExtensionMimeRDD(url.getPath(), r._2)
-          (r._1.getUrl, filename, extension, r._1.getMimeType,
+          (r._1.getCrawlDate, r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
 
       val schema = new StructType()
+        .add(StructField("crawl_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -476,12 +480,13 @@ package object archivesunleashed {
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
           val extension = GetExtensionMimeRDD(url.getPath(), r._2)
-          (r._1.getUrl, filename, extension, r._1.getMimeType,
+          (r._1.getCrawlDate, r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
 
       val schema = new StructType()
+        .add(StructField("crawl_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -510,12 +515,13 @@ package object archivesunleashed {
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
           val extension = GetExtensionMimeRDD(url.getPath(), r._2)
-          (r._1.getUrl, filename, extension, r._1.getMimeType,
+          (r._1.getCrawlDate, r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
 
       val schema = new StructType()
+        .add(StructField("crawl_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -577,12 +583,13 @@ package object archivesunleashed {
             }
           }
           val extension = GetExtensionMimeRDD(url.getPath(), mimeType)
-          (r._1.getUrl, filename, extension, r._1.getMimeType,
+          (r._1.getCrawlDate, r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
 
       val schema = new StructType()
+        .add(StructField("crawl_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -623,12 +630,13 @@ package object archivesunleashed {
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
           val extension = GetExtensionMimeRDD(url.getPath(), r._2)
-          (r._1.getUrl, filename, extension, r._1.getMimeType,
+          (r._1.getCrawlDate, r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
 
       val schema = new StructType()
+        .add(StructField("crawl_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -674,12 +682,13 @@ package object archivesunleashed {
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
           val extension = GetExtensionMimeRDD(url.getPath(), r._2)
-          (r._1.getUrl, filename, extension, r._1.getMimeType,
+          (r._1.getCrawlDate, r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
 
       val schema = new StructType()
+        .add(StructField("crawl_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -714,12 +723,13 @@ package object archivesunleashed {
           val url = new URL(r.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
           val extension = FilenameUtils.getExtension(url.getPath())
-          (r.getUrl, filename, extension, r.getMimeType,
+          (r.getCrawlDate, r.getUrl, filename, extension, r.getMimeType,
             DetectMimeTypeTika(r.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
 
       val schema = new StructType()
+        .add(StructField("crawl_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
