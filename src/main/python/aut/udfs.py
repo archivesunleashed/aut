@@ -1,5 +1,6 @@
 from pyspark.sql.functions import udf
 from pyspark.sql.types import StringType
+import hashlib
 
 
 def extract_domain(url):
@@ -32,3 +33,8 @@ def remove_http_header(content):
 
 
 remove_http_header = udf(remove_http_header, StringType())
+
+def compute_MD5(bytes):
+    return hashlib.md5(bytes).hexdigest()
+
+compute_MD5 = udf(compute_MD5, StringType())
