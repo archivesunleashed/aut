@@ -54,6 +54,14 @@ class WriteGraphXMLTest extends FunSuite with BeforeAndAfter{
     assert(lines(expectedLine) == """<nodes>""")
   }
 
+  test ("Test if GraphML path is empty") {
+    val networkrdd = ExtractGraphX.extractGraphX(sc.parallelize(network))
+    val pRank = ExtractGraphX.runPageRankAlgorithm(networkrdd)
+    val graphml = WriteGraphXML(pRank, testFile)
+    assert(graphml)
+    assert(!WriteGraphXML(pRank, ""))
+  }
+
   after {
     if (sc != null) {
       sc.stop()
