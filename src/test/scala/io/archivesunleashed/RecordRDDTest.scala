@@ -43,14 +43,14 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Expect no valid pages") {
+  test("Expect no valid pages RDD") {
     val expectedLength = 0
     val base = RecordLoader.loadArchives(badPath, sc)
       .keepValidPages().take(2)
     assert (base.length == expectedLength)
   }
 
-  test ("Expect no images") {
+  test ("Expect no images RDD") {
     val expectedLength = 0
     val base = RecordLoader.loadArchives(badPath, sc)
       .keepValidPages().take(2)
@@ -165,7 +165,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
       "http://www.archive.org/index.php").deep)
   }
 
-  test ("Discard MIMEtype Tikai RDD") {
+  test ("Discard MIMEtype Tika RDD") {
     val base = RecordLoader.loadArchives(arcPath, sc)
     val mime = Set ("text/plain", "image/jpeg")
     val r2 = base.discardMimeTypesTika(mime)
