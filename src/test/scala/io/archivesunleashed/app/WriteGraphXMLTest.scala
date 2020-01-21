@@ -42,7 +42,7 @@ class WriteGraphXMLTest extends FunSuite with BeforeAndAfter{
       sc = new SparkContext(conf)
     }
 
-  test("Create the graph xml file") {
+  test("Create the graph XML file") {
     val headerLocation = 0
     val expectedLine = 13
     val networkrdd = ExtractGraphX.extractGraphX(sc.parallelize(network))

@@ -46,7 +46,7 @@ class WriteGraphMLTest extends FunSuite with BeforeAndAfter{
       sc = new SparkContext(conf)
     }
 
-  test("Create graphml the file") {
+  test("Create GraphML the file") {
     val networkrdd = sc.parallelize(network)
     val lineCheck = (0, 15, 22, 30)
     WriteGraphML(networkrdd, testFile)
