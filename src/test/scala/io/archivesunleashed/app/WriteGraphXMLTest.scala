@@ -42,7 +42,7 @@ class WriteGraphXMLTest extends FunSuite with BeforeAndAfter{
       sc = new SparkContext(conf)
     }
 
-  test("creates the file") {
+  test("Create the graph xml file") {
     val headerLocation = 0
     val expectedLine = 13
     val networkrdd = ExtractGraphX.extractGraphX(sc.parallelize(network))
@@ -52,14 +52,6 @@ class WriteGraphXMLTest extends FunSuite with BeforeAndAfter{
     val lines = Source.fromFile(testFile).getLines.toList
     assert(lines(headerLocation) == """<?xml version="1.0" encoding="UTF-8"?>""")
     assert(lines(expectedLine) == """<nodes>""")
-  }
-
-  test ("returns a Bool depending on pass or failure") {
-    val networkrdd = ExtractGraphX.extractGraphX(sc.parallelize(network))
-    val pRank = ExtractGraphX.runPageRankAlgorithm(networkrdd)
-    val graphml = WriteGraphXML(pRank, testFile)
-    assert(graphml)
-    assert(!WriteGraphXML(pRank, ""))
   }
 
   after {

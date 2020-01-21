@@ -43,21 +43,21 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("no valid pages") {
+  test("Expect no valid pages") {
     val expectedLength = 0
     val base = RecordLoader.loadArchives(badPath, sc)
       .keepValidPages().take(2)
     assert (base.length == expectedLength)
   }
 
-  test ("no images") {
+  test ("Expect no images") {
     val expectedLength = 0
     val base = RecordLoader.loadArchives(badPath, sc)
       .keepValidPages().take(2)
     assert (base.length == expectedLength)
   }
 
-  test("keep date") {
+  test("Keep date RDD") {
     val testDate = "2008"
     val base = RecordLoader.loadArchives(arcPath, sc)
     val component = DateComponent.YYYY
@@ -68,7 +68,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
       .map ( mp => mp.getUrl).take(3)
     assert (r2.sameElements(r)) }
 
-  test ("keep http status codes") {
+  test ("Keep HTTP status codes RDD") {
     val expected = 94
     val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
@@ -77,7 +77,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     assert (r2 == expected)
   }
 
-  test ("keep urls") {
+  test ("Keep URLs RDD") {
     val expected = 1
     val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
@@ -86,7 +86,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     assert (r2 == expected)
   }
 
-  test ("keep url patterns") {
+  test ("Keep URL patterns RDD") {
     val expected = 1
     val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
@@ -95,7 +95,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     assert (r2 == expected)
   }
 
-  test ("check for domains") {
+  test ("Keep domains RDD") {
     val expected = 91
     val base2 = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
@@ -104,7 +104,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     assert (x2 == expected )
   }
 
-  test ("keep languages") {
+  test ("Keep languages RDD") {
     val base2 = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
     val langs: Set[String] = Set("en", "fr")
@@ -115,7 +115,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     assert (r2.sameElements(r))
   }
 
-  test ("discard languages") {
+  test ("Discard languages RDD") {
     val base2 = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
     val langs: Set[String] = Set("fr")
@@ -125,7 +125,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     assert (r2.sameElements(r))
   }
 
-  test ("keep mime tika") {
+  test ("Keep MIMEtype Tika RDD") {
     val base = RecordLoader.loadArchives(arcPath, sc)
     val mime = Set ("text/plain", "image/jpeg")
     val r2 = base.keepMimeTypesTika(mime)
@@ -135,7 +135,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
       "http://www.archive.org/images/logoc.jpg").deep)
   }
 
-  test ("keep mime web server") {
+  test ("Keep MIMEtype RDD") {
     val base = RecordLoader.loadArchives(arcPath, sc)
     val mime = Set ("text/plain", "image/jpeg")
     val r2 = base.keepMimeTypes(mime)
@@ -145,7 +145,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
       "http://www.archive.org/images/logoc.jpg").deep)
   }
 
-  test ("check for keep content"){
+  test ("Keep content RDD"){
     val expected = 1
     val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
@@ -156,7 +156,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     assert (y1 == expected)
   }
 
-  test ("discard mime web server") {
+  test ("Discard MIMEtype RDD") {
     val base = RecordLoader.loadArchives(arcPath, sc)
     val mime = Set ("text/plain", "image/jpeg")
     val r2 = base.discardMimeTypes(mime)
@@ -165,7 +165,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
       "http://www.archive.org/index.php").deep)
   }
 
-  test ("discard mime tika") {
+  test ("Discard MIMEtype Tikai RDD") {
     val base = RecordLoader.loadArchives(arcPath, sc)
     val mime = Set ("text/plain", "image/jpeg")
     val r2 = base.discardMimeTypesTika(mime)
@@ -174,7 +174,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
       "http://www.archive.org/", "http://www.archive.org/index.php").deep)
   }
 
-  test ("discard date") {
+  test ("Discard date RDD") {
     val base = RecordLoader.loadArchives(arcPath, sc)
     val date = "20080430"
     val r = base.filter( x=> x.getCrawlDate != date).collect()
@@ -182,7 +182,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     assert (r.deep == Array().deep)
   }
 
-  test ("discard urls") {
+  test ("Discard URLs RDD") {
     val expected = 94
     val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
@@ -191,7 +191,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     assert (r2 == expected)
   }
 
-  test ("discard url patterns") {
+  test ("Discard URL patterns RDD") {
     val expected = 93
     val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
@@ -200,7 +200,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     assert (r2 == expected)
   }
 
-  test ("discard http status codes") {
+  test ("Discard HTTP status codes RDD") {
     val expected = 46
     val base = RecordLoader.loadArchives(arcPath, sc)
     val statusCodes: Set[String] = Set ("200", "404")
@@ -208,7 +208,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     assert (r2 == expected)
   }
 
-  test ("discard domains") {
+  test ("Discard domains RDD") {
     val expected = 94
     val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
@@ -217,7 +217,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     assert (r2 == expected)
   }
 
-  test ("discard content") {
+  test ("Discard content RDD") {
     val expected = 93
     val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()

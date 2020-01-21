@@ -38,7 +38,7 @@ class DomainFrequencyExtractorTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("DomainFrequencyExtractor") {
+  test("Domain frequency extractor RDD & DF") {
     val rdd = RecordLoader.loadArchives(arcPath, sc).keepValidPages()
     val df = RecordLoader.loadArchives(arcPath, sc).webpages()
 

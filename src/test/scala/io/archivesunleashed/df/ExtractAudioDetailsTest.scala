@@ -38,7 +38,7 @@ class AudioTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Audio DF extraction") {
+  test("Audio files extraction DF") {
     val df = RecordLoader.loadArchives(warcPath, sc)
       .audio()
 

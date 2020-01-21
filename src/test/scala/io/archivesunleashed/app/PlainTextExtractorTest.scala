@@ -38,7 +38,7 @@ class PlainTextExtractorTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("PlainTextExtractorTest") {
+  test("Plain text extractor RDD & DF") {
     val rdd = RecordLoader.loadArchives(arcPath, sc).keepValidPages()
     val df = RecordLoader.loadArchives(arcPath, sc).webpages()
     val rddResults = PlainTextExtractor(rdd).collect()

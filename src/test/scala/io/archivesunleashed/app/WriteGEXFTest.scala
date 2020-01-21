@@ -45,7 +45,7 @@ class WriteGEXFTest extends FunSuite with BeforeAndAfter{
       sc = new SparkContext(conf)
     }
 
-  test("creates the file") {
+  test("Creates the gexf file") {
     val testLines = (0, 12, 22, 34)
     val networkrdd = sc.parallelize(network)
     WriteGEXF(networkrdd, testFile)
@@ -57,7 +57,7 @@ class WriteGEXFTest extends FunSuite with BeforeAndAfter{
     assert(lines(testLines._4) == """</edges>""")
   }
 
-  test("creates the file from Array[Row]") {
+  test("Creates the gexf file from Array[Row]") {
     val testLines = (0, 12, 22, 34)
     if (Files.exists(Paths.get(testFile))) {
       new File(testFile).delete()
@@ -72,13 +72,6 @@ class WriteGEXFTest extends FunSuite with BeforeAndAfter{
     assert(lines(testLines._3) == """</attvalues>""")
     assert(lines(testLines._4) == """</edges>""")
     assert(!WriteGEXF(networkarray ,""))
-  }
-
-  test ("returns a Bool depending on pass or failure") {
-    val networkrdd = sc.parallelize(network)
-    val gexf = WriteGEXF(networkrdd, testFile)
-    assert(gexf)
-    assert(!WriteGEXF(networkrdd, ""))
   }
 
   after {

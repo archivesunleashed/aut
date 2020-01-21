@@ -64,7 +64,7 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
       sc = new SparkContext(conf)
   }
 
-  test("creates the file") {
+  test("Create the graph file") {
     val testLines = (0, 12, 22, 34)
     val networkrdd = sc.parallelize(network)
     WriteGraph.asGexf(networkrdd, testFile)
@@ -76,7 +76,7 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
     assert(lines(testLines._4) == """</edges>""")
   }
 
-  test("creates the file from Array[Row]") {
+  test("Create the graph file from Array[Row]") {
     val testLines = (0, 12, 22, 34)
     if (Files.exists(Paths.get(testFile))) {
       new File(testFile).delete()
@@ -94,14 +94,7 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
     assert(!WriteGraph(networkarray, ""))
   }
 
-  test ("returns a Bool depending on pass or failure") {
-    val networkrdd = sc.parallelize(network)
-    val gexf = WriteGraph.asGexf(networkrdd, testFile)
-    assert(gexf)
-    assert(!WriteGraph.asGexf(networkrdd, ""))
-  }
-
-  test ("Nodes zip with ids") {
+  test ("Nodes zip with IDs") {
     val networkrdd = sc.parallelize(networkWithDuplication)
     val nodeIds = WriteGraph.nodesWithIds(networkrdd).collect
     val expected = ("Source3", 0)
