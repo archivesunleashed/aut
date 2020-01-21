@@ -9,5 +9,9 @@
       <directory>src/main/python/aut/</directory>
       <outputDirectory></outputDirectory>
     </fileSet>
+    <fileSet>
+      <directory>src/main/python/lib</directory>
+      <outputDirectory></outputDirectory>
+    </fileSet>
   </fileSets>
 </assembly>

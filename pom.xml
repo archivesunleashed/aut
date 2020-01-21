@@ -345,7 +345,32 @@
         <version>${build-helper.plugin.version}</version>
       </plugin>
 
-      <!-- this is to create a zip of PySpark modules -->
+      <!-- This is to create a zip of PySpark modules -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.6.0</version>
+        <executions>
+          <execution>
+            <id>build-python-dependencies</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>pip</executable>
+              <workingDirectory>src/main/python/aut</workingDirectory>
+              <arguments>
+                <argument>install</argument>
+                <argument>-r</argument>
+                <argument>requirements.txt</argument>
+                <argument>-t</argument>
+                <argument>../lib</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.6</version>
@@ -366,7 +391,6 @@
           </execution>
         </executions>
       </plugin>
-
     </plugins>
   </build>
 
