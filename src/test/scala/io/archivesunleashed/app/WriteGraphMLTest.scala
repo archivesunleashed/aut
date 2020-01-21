@@ -58,6 +58,13 @@ class WriteGraphMLTest extends FunSuite with BeforeAndAfter{
     assert(lines(lineCheck._4) == """<data key="weight">3</data>""")
   }
 
+  test ("Test if GraphML path is empty") {
+    val networkrdd = sc.parallelize(network)
+    val graphml = WriteGraphML(networkrdd, testFile)
+    assert(graphml)
+    assert(!WriteGraphML(networkrdd, ""))
+  }
+
   after {
     if (sc != null) {
       sc.stop()

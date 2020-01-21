@@ -94,6 +94,13 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
     assert(!WriteGraph(networkarray, ""))
   }
 
+  test ("Test if GEXF path is empty") {
+    val networkrdd = sc.parallelize(network)
+    val gexf = WriteGraph.asGexf(networkrdd, testFile)
+    assert(gexf)
+    assert(!WriteGraph.asGexf(networkrdd, ""))
+  }
+
   test ("Nodes ZIP with IDs") {
     val networkrdd = sc.parallelize(networkWithDuplication)
     val nodeIds = WriteGraph.nodesWithIds(networkrdd).collect

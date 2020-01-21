@@ -74,6 +74,13 @@ class WriteGEXFTest extends FunSuite with BeforeAndAfter{
     assert(!WriteGEXF(networkarray ,""))
   }
 
+  test("Test if GEXF path is empty") {
+    val networkrdd = sc.parallelize(network)
+    val gexf = WriteGEXF(networkrdd, testFile)
+    assert(gexf)
+    assert(!WriteGEXF(networkrdd, ""))
+  }
+
   after {
     if (sc != null) {
       sc.stop()
