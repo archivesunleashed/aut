@@ -39,7 +39,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("keep Valid Pages") {
+  test("Keep valid pages DF") {
     val expected = "http://www.archive.org/"
     val base = RecordLoader.loadArchives(arcPath, sc)
       .all()
@@ -48,7 +48,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     assert (base.toString == expected)
   }
 
-  test("Discard MimeTypes") {
+  test("Discard MIMEtypes DF") {
     val expected = "filedesc://IAH-20080430204825-00000-blackbook.arc"
     val mimeTypes = Set("text/html")
     val base = RecordLoader.loadArchives(arcPath, sc)
@@ -59,7 +59,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     assert (base.toString == expected)
   }
 
-  test("Discard Date") {
+  test("Discard date DF") {
     val expected = "20080430"
     val date = "20080429"
     val base = RecordLoader.loadArchives(arcPath, sc)
@@ -70,7 +70,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     assert (base.toString == expected)
   }
 
-  test("Discard Urls") {
+  test("Discard URLs DF") {
     val expected = "http://www.archive.org/index.php"
     val url = Set("http://www.archive.org/")
     val base = RecordLoader.loadArchives(arcPath, sc)
@@ -81,7 +81,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     assert (base.toString == expected)
   }
 
-  test("Discard Domains") {
+  test("Discard domains DF") {
     val expected = "http://www.hideout.com.br/"
     val domain = Set("www.archive.org")
     val base = RecordLoader.loadArchives(arcPath, sc)
@@ -92,7 +92,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     assert (base.toString == expected)
   }
 
-  test("Discard HttpStatus") {
+  test("Discard HTTP status DF") {
     val expected = "200"
     val statusCode = Set("000")
     val base = RecordLoader.loadArchives(arcPath, sc)
@@ -103,7 +103,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     assert (base.toString == expected)
   }
 
-  test("Discard Content") {
+  test("Discard content DF") {
     val expected = "dns:www.archive.org"
     val contentRegex = Set("Content-Length: [0-9]{4}".r)
     val base = RecordLoader.loadArchives(arcPath, sc)
@@ -115,7 +115,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     assert (base.toString == expected)
   }
 
-  test("Discard UrlPatterns") {
+  test("Discard URL patterns DF") {
     val expected = "dns:www.archive.org"
     val urlRegex = Set(".*images.*".r)
     val base = RecordLoader.loadArchives(arcPath, sc)
@@ -127,7 +127,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     assert (base.toString == expected)
   }
 
-  test("Discard Languages") {
+  test("Discard languages DF") {
     val expected = "dns:www.archive.org"
     val languages = Set("th","de","ht")
     val base = RecordLoader.loadArchives(arcPath, sc)
@@ -139,7 +139,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     assert (base.toString == expected)
   }
 
-  test("Keep HttpStatus") {
+  test("Keep HTTP status DF") {
     val expected = "http://www.archive.org/robots.txt"
     val statusCode = Set("200")
     val base = RecordLoader.loadArchives(arcPath, sc)
@@ -150,7 +150,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     assert (base.toString == expected)
   }
 
-  test("Keep Date") {
+  test("Keep date DF") {
     val expected = "http://www.archive.org/"
     val month = List("04")
     val base = RecordLoader.loadArchives(arcPath, sc)
@@ -161,7 +161,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     assert (base.toString == expected)
   }
 
-  test("Keep Urls") {
+  test("Keep URLs DF") {
     val expected = "http://www.archive.org/"
     val url = Set("http://www.archive.org/")
     val base = RecordLoader.loadArchives(arcPath, sc)
@@ -172,7 +172,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     assert (base.toString == expected)
   }
 
-  test("Keep Domains") {
+  test("Keep domains DF") {
     val expected = "http://www.archive.org/robots.txt"
     val domain = Set("www.archive.org")
     val base = RecordLoader.loadArchives(arcPath, sc)
@@ -183,7 +183,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     assert (base.toString == expected)
   }
 
-  test("Keep MimeTypesTika") {
+  test("Keep MIMEtypes Tika DF") {
     val expected = "image/jpeg"
     val mimeType = Set("image/jpeg")
     val base = RecordLoader.loadArchives(arcPath, sc)
@@ -194,7 +194,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     assert (base.toString == expected)
   }
 
-  test("Keep MimeTypes") {
+  test("Keep MIMEtypes DF") {
     val expected = "text/html"
     val mimeType = Set("text/html")
     val base = RecordLoader.loadArchives(arcPath, sc)
@@ -205,7 +205,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     assert (base.toString == expected)
   }
 
-  test("Keep content") {
+  test("Keep content DF") {
     val expected = "http://www.archive.org/images/logoc.jpg"
     val contentRegex = Set("Content-Length: [0-9]{4}".r)
     val base = RecordLoader.loadArchives(arcPath, sc)
@@ -217,7 +217,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     assert (base.toString == expected)
   }
 
-  test("Keep UrlPatterns") {
+  test("Keep URL patterns DF") {
     val expected = "http://www.archive.org/images/go-button-gateway.gif"
     val urlRegex = Set(".*images.*".r)
     val base = RecordLoader.loadArchives(arcPath, sc)
@@ -229,7 +229,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     assert (base.toString == expected)
   }
 
-  test("Keep Languages") {
+  test("Keep languages DF") {
     val expected = "http://www.archive.org/images/logoc.jpg"
     val languages = Set("th","de","ht")
     val base = RecordLoader.loadArchives(arcPath, sc)
@@ -241,7 +241,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     assert (base.toString == expected)
   }
 
-  test("Keep keepMimeTypes") {
+  test("Keep images DF") {
     val expected = "image/jpeg"
     val base = RecordLoader.loadArchives(arcPath, sc)
       .all()

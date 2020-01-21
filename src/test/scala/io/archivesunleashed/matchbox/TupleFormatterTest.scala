@@ -29,13 +29,13 @@ import ops.tuple.ToList
 
 @RunWith(classOf[JUnitRunner])
 class TupleFormatterTest extends FunSuite with Matchers {
-  test("tab delimit") {
+  test("Tab delimit") {
     val tuple = (("ab", "bl", ("c", 9)), "d", 5, ("hi", 1))
     assert(TupleFormatter.tabDelimit(tuple) == "ab\tbl\tc\t9\td\t5\thi\t1")
     assert(TupleFormatter.tabDelimit.isInstanceOf[Poly1])
   }
 
-  test("just flatten") {
+  test("Just flatten") {
     val tuple = ("an", 1, "cr", ("x", 3, ("NO", "YES")), "perhaps", "maybe", 3, (0,1))
     val flatTuple = ("an", 1, "cr", "x", 3, "NO", "YES", "perhaps", "maybe", 3, 0, 1)
     assert(TupleFormatter.flatten(tuple) == flatTuple)

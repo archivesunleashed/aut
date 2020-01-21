@@ -41,11 +41,11 @@ class WarcTest extends FunSuite with BeforeAndAfter {
     records = RecordLoader.loadArchives(warcPath, sc)
   }
 
-  test("count records") {
+  test("Count records") {
     assert(299L == records.count)
   }
 
-  test("warc extract domain") {
+  test("WARC extract domain RDD") {
     val take = 10
     val expectedLength = 3
     val r = records
@@ -57,7 +57,7 @@ class WarcTest extends FunSuite with BeforeAndAfter {
     assert(r.length == expectedLength)
   }
 
-  test("warc get content") {
+  test("WARC get content RDD") {
     val a = RecordLoader.loadArchives(warcPath, sc)
       .map(r => r.getContentString)
       .take(1)

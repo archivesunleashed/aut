@@ -39,7 +39,7 @@ class SimpleDfTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("count records") {
+  test("Count records DF") {
     val df = RecordLoader.loadArchives(arcPath, sc)
       .webpages()
 

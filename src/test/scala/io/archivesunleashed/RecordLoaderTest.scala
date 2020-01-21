@@ -37,7 +37,7 @@ class RecordLoaderTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("loads Warc") {
+  test("Load WARC") {
     val base = RecordLoader.loadArchives(warcPath, sc)
       .keepValidPages()
       .map(x => x.getUrl)

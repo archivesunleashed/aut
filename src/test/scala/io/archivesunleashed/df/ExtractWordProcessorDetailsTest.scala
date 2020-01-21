@@ -38,7 +38,7 @@ class WordProcessorFilesTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Word Processor DF extraction") {
+  test("Word processor files extraction DF") {
     val df = RecordLoader.loadArchives(warcPath, sc)
       .wordProcessorFiles()
 

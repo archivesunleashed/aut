@@ -24,7 +24,7 @@ import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class ExtractImageLinksRDDTest extends FunSuite {
-  test("simple") {
+  test("Extract simple image links RDD") {
     val fragment =
       """Image here: <img src="http://foo.bar.com/pic.png"> and another <img src="http://baz.org/a/b/banner.jpg"/>"""
     val extracted = ExtractImageLinksRDD("", fragment).toList
@@ -33,7 +33,7 @@ class ExtractImageLinksRDDTest extends FunSuite {
     assert("http://baz.org/a/b/banner.jpg" == extracted(1))
   }
 
-  test("relative") {
+  test("Extract relative image links RDD") {
     val fragment =
       """Image here: <img src="pic.png"> and another <img src="http://baz.org/a/b/banner.jpg"/> and <img src="../logo.gif"/>"""
     val extracted = ExtractImageLinksRDD("http://foo.bar.com/a/page.html", fragment)
@@ -43,7 +43,7 @@ class ExtractImageLinksRDDTest extends FunSuite {
     assert("http://foo.bar.com/logo.gif" == extracted(2))
   }
 
-  test("errors") {
+  test("Test image link errors RDD") {
     val fragment =
       """Image here: <img src="pic.png"> and another <img src="http://baz.org/a/b/banner.jpg"/> and <img src="../logo.gif"/>"""
     assert(ExtractImageLinksRDD("", "") == Nil)
