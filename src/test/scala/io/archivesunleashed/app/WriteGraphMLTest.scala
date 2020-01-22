@@ -46,7 +46,7 @@ class WriteGraphMLTest extends FunSuite with BeforeAndAfter{
       sc = new SparkContext(conf)
     }
 
-  test("creates the file") {
+  test("Create GraphML the file") {
     val networkrdd = sc.parallelize(network)
     val lineCheck = (0, 15, 22, 30)
     WriteGraphML(networkrdd, testFile)
@@ -58,7 +58,7 @@ class WriteGraphMLTest extends FunSuite with BeforeAndAfter{
     assert(lines(lineCheck._4) == """<data key="weight">3</data>""")
   }
 
-  test ("returns a Bool depending on pass or failure") {
+  test ("Test if GraphML path is empty") {
     val networkrdd = sc.parallelize(network)
     val graphml = WriteGraphML(networkrdd, testFile)
     assert(graphml)

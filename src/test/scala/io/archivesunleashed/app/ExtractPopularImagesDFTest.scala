@@ -39,7 +39,7 @@ class ExtractPopularImagesDFTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("extracts popular images") {
+  test("Extract popular images DF") {
     val highTest = 507
     val exampledf = RecordLoader.loadArchives(arcPath, sc).images()
     val imagesLowLimit = ExtractPopularImagesDF(exampledf, 3)

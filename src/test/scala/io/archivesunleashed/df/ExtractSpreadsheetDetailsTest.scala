@@ -38,7 +38,7 @@ class ExtractSpreadsheetDetailsTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Spreadsheet DF extraction") {
+  test("Spreadsheet files extraction DF") {
     val df = RecordLoader.loadArchives(warcPath, sc)
       .spreadsheets()
 

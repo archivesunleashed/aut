@@ -38,7 +38,7 @@ class PresentationProgramFilesTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Presentation Program DF extraction") {
+  test("Presentation program files extraction DF") {
     val df = RecordLoader.loadArchives(warcPath, sc)
       .presentationProgramFiles()
 

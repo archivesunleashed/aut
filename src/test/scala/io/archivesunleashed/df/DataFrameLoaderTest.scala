@@ -44,7 +44,7 @@ class DataFrameLoaderTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Test DataFrameLoader") {
+  test("Test DataFrameLoader (connection to PySpark)") {
     val df = new DataFrameLoader(sc)
     val validPages = df.webpages(arcPath)
     val hyperlinks = df.webgraph(arcPath)

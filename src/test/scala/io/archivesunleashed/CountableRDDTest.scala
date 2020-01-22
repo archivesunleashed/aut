@@ -38,7 +38,7 @@ class CountableRDDTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("count records") {
+  test("Count records; Extract Domain RDD ") {
     val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
       .map(r => ExtractDomainRDD(r.getUrl))

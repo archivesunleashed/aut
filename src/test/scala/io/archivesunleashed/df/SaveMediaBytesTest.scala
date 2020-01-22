@@ -49,7 +49,7 @@ class SaveMediaBytesTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Save audio bytes to disk") {
+  test("Save audio bytes to disk DF") {
     val df = RecordLoader.loadArchives(warcPath, sc)
       .audio()
 
@@ -67,7 +67,7 @@ class SaveMediaBytesTest extends FunSuite with BeforeAndAfter {
     Files.delete(Paths.get(fileName))
   }
 
-  test("Attempt to save invalid audio") {
+  test("Attempt to save invalid audio DF") {
     val dummyEncBytes = Base64.getEncoder.encodeToString(Array.range(0, 127)
       .map(_.toByte))
     val dummyMD5 = ComputeMD5RDD(dummyEncBytes.getBytes)
