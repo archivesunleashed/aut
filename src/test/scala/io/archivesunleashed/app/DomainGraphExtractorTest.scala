@@ -38,7 +38,7 @@ class DomainGraphExtractorTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("DomainGraphExtractor") {
+  test("Domain graph extractor RDD") {
     val rdd = RecordLoader.loadArchives(arcPath, sc)
     val rddResult = DomainGraphExtractor(rdd).collect()
 

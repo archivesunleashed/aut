@@ -40,7 +40,7 @@ class TextFilesTest extends FunSuite with BeforeAndAfter with Matchers {
     sc = new SparkContext(conf)
   }
 
-  test("Text Files DF extraction") {
+  test("Text files extraction DF") {
     val df = RecordLoader.loadArchives(warcPath, sc)
       .textFiles()
 
@@ -56,7 +56,7 @@ class TextFilesTest extends FunSuite with BeforeAndAfter with Matchers {
     assert("32abd404fb560ecf14b75611f3cc5c2c" == extracted(0)(5))
   }
 
-  test("Text Files DF robots.txt") {
+  test("Text files robots.txt DF") {
     val df = RecordLoader.loadArchives(testPath, sc)
       .textFiles()
 
@@ -75,7 +75,7 @@ class TextFilesTest extends FunSuite with BeforeAndAfter with Matchers {
     robots(1)(0).toString should not include (".html")
   }
 
-  test("Text Files DF dns or filedesc") {
+  test("Text files dns or filedesc DF") {
     val df = RecordLoader.loadArchives(filedescPath, sc)
       .textFiles()
 

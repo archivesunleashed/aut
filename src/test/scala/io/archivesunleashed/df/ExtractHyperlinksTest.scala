@@ -39,7 +39,7 @@ class ExtractHyperlinksTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("count records") {
+  test("Extract links DF") {
     val df = RecordLoader.loadArchives(arcPath, sc)
       .webpages()
 

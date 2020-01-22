@@ -48,7 +48,7 @@ import scala.util.Try
          sc = new SparkContext(conf)
        }
 
-    test ("Case classes are empty") {
+    test ("Check for empty classes") {
       val pageRank = 0.56
       val weak = 4
       val strong = 5
@@ -65,7 +65,7 @@ import scala.util.Try
       assert(testPR.strong == strong)
     }
 
-     test("creates a network with pagerank scores") {
+     test("Create a network with pagerank scores") {
        val pageRank = 0.9943090942904987
        val connected = -649648005
        val minEdges = 5
@@ -83,7 +83,7 @@ import scala.util.Try
        assert(pRank(0)._2.strong == connected)
      }
 
-     test("creates a network using dynamic PR") {
+     test("Create a network using dynamic pagerank") {
        val dynPageRank = 0.9999999999999986
        val connected = -1054421350
        val minEdges = 5

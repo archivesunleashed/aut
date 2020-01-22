@@ -31,13 +31,13 @@ class ExtractBoilerPipeTextTest extends FunSuite {
    <footer>Copyright 2017</footer>"""
   var boiler = """Copyright 2017"""
 
-  test("Collects boilerpipe") {
+  test("Collects boilerpipe RDD") {
     assert(ExtractBoilerpipeTextRDD(text) == boiler)
     assert(ExtractBoilerpipeTextRDD("") == "")
     assert(ExtractBoilerpipeTextRDD("All Rights Reserved.") == "")
   }
 
-  test("Removes Header information") {
+  test("Removes HTTP header information RDD") {
     assert(ExtractBoilerpipeTextRDD(header + text) == boiler)
   }
 }

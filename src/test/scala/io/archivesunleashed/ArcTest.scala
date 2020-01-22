@@ -41,11 +41,11 @@ class ArcTest extends FunSuite with BeforeAndAfter {
 
   val dayMonthTestA = "200805"
 
-  test("count records") {
+  test("Count records") {
     assert(RecordLoader.loadArchives(arcPath, sc).count == 300L)
   }
 
-  test("filter date") {
+  test("Filter date RDD") {
     val startSS = 0
     val monthSS = 6
     val four = RecordLoader.loadArchives(arcPath, sc)
@@ -62,7 +62,7 @@ class ArcTest extends FunSuite with BeforeAndAfter {
     five.foreach(date => assert(date.substring(startSS, monthSS) == dayMonthTestA))
   }
 
-  test("filter url pattern") {
+  test("Filter URL pattern RDD") {
     val keepMatches = RecordLoader.loadArchives(arcPath, sc)
       .keepUrlPatterns(Set("http://www.archive.org/about/.*".r))
     val discardMatches = RecordLoader.loadArchives(arcPath, sc)
@@ -71,14 +71,14 @@ class ArcTest extends FunSuite with BeforeAndAfter {
     assert(discardMatches.count == 284L)
   }
 
-  test("count links") {
+  test("Count links RDD") {
     val links = RecordLoader.loadArchives(arcPath, sc)
       .map(r => ExtractLinksRDD(r.getUrl, r.getContentString))
       .reduce((a, b) => a ++ b)
     assert(links.size == 664)
   }
 
-  test("detect language") {
+  test("Detect language RDD") {
     val languageCounts = RecordLoader.loadArchives(arcPath, sc)
       .keepMimeTypes(Set("text/html"))
       .map(r => RemoveHTMLRDD(r.getContentString))
@@ -99,7 +99,7 @@ class ArcTest extends FunSuite with BeforeAndAfter {
     }
   }
 
-  test("detect mime type tika") {
+  test("Detect MIMEtype Tika RDD") {
     val mimeTypeCounts = RecordLoader.loadArchives(arcPath, sc)
       .map(r => RemoveHTTPHeaderRDD(r.getContentString))
       .groupBy(content => DetectMimeTypeTika(content.getBytes))
