@@ -38,7 +38,7 @@ class DomainGraphExtractorDfTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Web Graph Extractor") {
+  test("Domain graph extractor DF") {
     val TESTLENGTH = 166
     val TESTRESULT = 280
     val df = RecordLoader.loadArchives(arcPath, sc).webgraph()

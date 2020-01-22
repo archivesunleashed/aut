@@ -70,7 +70,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("command line app tests") {
+  test("Command line app functionality tests") {
     for {a <- testSuccessCmds} {
       app.CommandLineAppRunner.test(a, sc)
       assert(Files.exists(Paths.get(outputDir)))

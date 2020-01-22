@@ -36,7 +36,7 @@ class ComputeImageSizeTest extends FunSuite {
   var image: Array[Byte] = ios.toByteArray();
   ios.close()
 
-  test ("check images") {
+  test ("Check images and provide size RDD") {
     val imageSize = (10, 10)
     val emptyImageSize = (0, 0)
     assert(ComputeImageSize(image) == imageSize)

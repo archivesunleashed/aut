@@ -38,7 +38,7 @@ class VideoTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Video DF extraction") {
+  test("Video files extraction DF") {
     val df = RecordLoader.loadArchives(warcPath, sc)
       .videos()
 

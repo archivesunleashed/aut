@@ -39,7 +39,7 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Extract Dates DataFrame YYYY") {
+  test("Extract dates YYYY DF") {
     val df = RecordLoader.loadArchives(arcPath, sc)
       .webpages()
 
@@ -77,7 +77,7 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
     assert(results(2).get(3) == "http://www.sloan.org")
   }
 
-  test("Extract Dates DataFrame YYYYMM") {
+  test("Extract dates YYYYMM DF") {
     val df = RecordLoader.loadArchives(arcPath, sc)
       .webpages()
 
@@ -115,7 +115,7 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
     assert(results(2).get(3) == "http://www.sloan.org")
   }
 
-  test("Extract Dates DataFrame MM") {
+  test("Extract dates MM DF") {
     val df = RecordLoader.loadArchives(arcPath, sc)
       .webpages()
 
@@ -153,7 +153,7 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
     assert(results(2).get(3) == "http://www.sloan.org")
   }
 
-  test("Extract Dates DataFrame DD") {
+  test("Extract dates DD DF") {
     val df = RecordLoader.loadArchives(arcPath, sc)
       .webpages()
 
@@ -191,7 +191,7 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
     assert(results(2).get(3) == "http://www.sloan.org")
   }
 
-  test("Extract Dates DataFrame YYYYMMDD") {
+  test("Extract dates YYYYMMDD DF") {
     val df = RecordLoader.loadArchives(arcPath, sc)
       .webpages()
 

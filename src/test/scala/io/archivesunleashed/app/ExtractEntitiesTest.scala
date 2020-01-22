@@ -51,7 +51,7 @@ class ExtractEntitiesTest extends FunSuite with BeforeAndAfter {
     LOG.info("Output can be found in " + tempDir.getPath)
   }
 
-  test("Extract from Record") {
+  test("Extract entities from record") {
     val e = ExtractEntities.extractFromRecords(iNerClassifierFile, archivePath, tempDir + "/scrapeArcEntities", sc).take(3).last
     assert(e._1 == "hello")
   }
