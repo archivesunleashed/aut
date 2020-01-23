@@ -5,7 +5,6 @@ from aut.udfs import (
     detect_language,
     extract_domain,
     remove_html,
-    remove_html_no_external_lib,
     remove_http_headers,
     remove_prefix_www,
 )
@@ -19,5 +18,4 @@ __all__ = [
     "remove_html",
     "remove_prefix_www",
     "remove_http_headers",
-    "remove_html_no_external_lib",
 ]

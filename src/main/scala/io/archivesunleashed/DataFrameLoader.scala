@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
- package io.archivesunleashed
+package io.archivesunleashed
 
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.DataFrame

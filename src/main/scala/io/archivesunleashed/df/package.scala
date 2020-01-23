@@ -24,10 +24,10 @@ import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions.udf
 
 /**
-  * UDFs for data frames.
+  * UDFs for DataFrames.
   */
 package object df {
-  // UDFs for use with data frames go here, tentatively. There are couple of ways we could build UDFs,
+  // UDFs for use with DataFrames go here, tentatively. There are couple of ways we could build UDFs,
   // by wrapping matchbox UDFs or by reimplementing them. The following examples illustrate. Obviously, we'll
   // need to populate more UDFs over time, but this is a start.
 
