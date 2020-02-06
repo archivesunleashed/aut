@@ -83,13 +83,13 @@ $ spark-shell --help
 Release version:
 
 ```shell
-$ spark-shell --packages "io.archivesunleashed:aut:0.50.0"
+$ spark-shell --packages "io.archivesunleashed:aut:0.50.0" --repositories "https://jitpack.io"
 ```
 
 HEAD (built locally):
 
 ```shell
-$ spark-shell --packages "io.archivesunleashed:aut:0.18.2-SNAPSHOT"
+$ spark-shell --packages "io.archivesunleashed:aut:0.18.2-SNAPSHOT" --repositories "https://jitpack.io"
 ```
 
 #### With an UberJar
@@ -117,13 +117,13 @@ In each of the examples below, `/path/to/python` is listed. If you are unsure wh
 Release version:
 
 ```shell
-$ export PYSPARK_PYTHON=/path/to/python; export PYSPARK_DRIVER_PYTHON=/path/to/python; /path/to/spark/bin/pyspark --py-files aut-0.50.0.zip --packages "io.archivesunleashed:aut:0.50.0"
+$ export PYSPARK_PYTHON=/path/to/python; export PYSPARK_DRIVER_PYTHON=/path/to/python; /path/to/spark/bin/pyspark --py-files aut-0.50.0.zip --packages "io.archivesunleashed:aut:0.50.0" --repositories "https://jitpack.io"
 ```
 
 HEAD (built locally):
 
 ```shell
-$ export PYSPARK_PYTHON=/path/to/python; export PYSPARK_DRIVER_PYTHON=/path/to/python; /path/to/spark/bin/pyspark --py-files /home/nruest/Projects/au/aut/target/aut.zip --packages "io.archivesunleashed:aut:0.18.2-SNAPSHOT"
+$ export PYSPARK_PYTHON=/path/to/python; export PYSPARK_DRIVER_PYTHON=/path/to/python; /path/to/spark/bin/pyspark --py-files /home/nruest/Projects/au/aut/target/aut.zip --packages "io.archivesunleashed:aut:0.18.2-SNAPSHOT" --repositories "https://jitpack.io"
 ```
 
 #### With an UberJar
@@ -149,13 +149,13 @@ To run a [Jupyter Notebook](https://jupyter.org/install) with the Archives Unlea
 Release version:
 
 ```shell
-$ export PYSPARK_DRIVER_PYTHON=jupyter; export PYSPARK_DRIVER_PYTHON_OPTS=notebook; /path/to/spark/bin/pyspark --py-files aut-0.50.0.zip --packages "io.archivesunleashed:aut:0.50.0"
+$ export PYSPARK_DRIVER_PYTHON=jupyter; export PYSPARK_DRIVER_PYTHON_OPTS=notebook; /path/to/spark/bin/pyspark --py-files aut-0.50.0.zip --packages "io.archivesunleashed:aut:0.50.0" --repositories "https://jitpack.io"
 ```
 
 HEAD (built locally):
 
 ```shell 
-$ export PYSPARK_DRIVER_PYTHON=jupyter; export PYSPARK_DRIVER_PYTHON_OPTS=notebook; /path/to/spark/bin/pyspark --py-files /home/nruest/Projects/au/aut/target/aut.zip --packages "io.archivesunleashed:aut:0.18.2-SNAPSHOT"
+$ export PYSPARK_DRIVER_PYTHON=jupyter; export PYSPARK_DRIVER_PYTHON_OPTS=notebook; /path/to/spark/bin/pyspark --py-files /home/nruest/Projects/au/aut/target/aut.zip --packages "io.archivesunleashed:aut:0.18.2-SNAPSHOT" --repositories "https://jitpack.io"
 ```
 
 #### With an UberJar
