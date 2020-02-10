@@ -41,9 +41,9 @@ class DataFrameLoader(sc: SparkContext) {
   }
 
   /* Create a DataFrame with source page, and image url. */
-  def imageGraph(path: String): DataFrame = {
+  def imagegraph(path: String): DataFrame = {
     RecordLoader.loadArchives(path, sc)
-      .imageGraph()
+      .imagegraph()
   }
 
   /** Create a DataFrame with image url, filename, extension, mime_type_web_servr, mime_type_tika, width, height, md5, and raw bytes. */
