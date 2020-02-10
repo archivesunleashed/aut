@@ -48,7 +48,7 @@ class DataFrameLoaderTest extends FunSuite with BeforeAndAfter {
     val df = new DataFrameLoader(sc)
     val validPages = df.webpages(arcPath)
     val hyperlinks = df.webgraph(arcPath)
-    val imageLinks = df.imageLinks(arcPath)
+    val imageGraph = df.imageGraph(arcPath)
     val images = df.images(arcPath)
     val pdfs = df.pdfs(pdfPath)
     val audio = df.audio(mediaPath)
@@ -67,7 +67,7 @@ class DataFrameLoaderTest extends FunSuite with BeforeAndAfter {
     assert(r_2(0) == "http://web.archive.org/collections/web/advanced.html")
     assert(r_2(1) == "Advanced Search")
 
-    val r_3 = imageLinks.take(100)(99)
+    val r_3 = imageGraph.take(100)(99)
     assert(r_3.get(0) == "20080430")
     assert(r_3.get(1) == "http://www.archive.org/details/secretarmiesb00spivrich")
     assert(r_3.get(2) == "http://www.archive.org/images/star.png")

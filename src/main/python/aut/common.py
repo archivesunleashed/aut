@@ -21,7 +21,7 @@ class WebArchive:
         return DataFrame(self.loader.images(self.path), self.sqlContext)
 
     def image_links(self):
-        return DataFrame(self.loader.imageLinks(self.path), self.sqlContext)
+        return DataFrame(self.loader.imageGraph(self.path), self.sqlContext)
 
     def pdfs(self):
         return DataFrame(self.loader.pdfs(self.path), self.sqlContext)
