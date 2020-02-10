@@ -378,7 +378,7 @@ package object archivesunleashed {
     }
 
     /* Extracts all the images links from a source page. */
-    def imageLinks(): DataFrame = {
+    def imagegraph(): DataFrame = {
       val records = rdd
         .keepValidPages()
         .flatMap(r => ({
