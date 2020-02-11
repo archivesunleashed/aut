@@ -378,21 +378,19 @@ package object archivesunleashed {
     }
 
     /* Extracts all the images links from a source page. */
-    def imageLinks(): DataFrame = {
+    def imagegraph(): DataFrame = {
       val records = rdd
         .keepValidPages()
-        .flatMap(r => ({
-          val src = r.getUrl
-          val imageUrls = ExtractImageLinksRDD(src, r.getContentString)
-          imageUrls.map(url => (src, url))
-        })
-          .map(t => (r.getCrawlDate, t._1, t._2)))
-        .map(t => Row(t._1, t._2, t._3))
+        .flatMap(r => ExtractImageLinksRDD(r.getUrl, r.getContentString)
+          .map(t => (r.getCrawlDate, t._1, t._2, t._3)))
+        .filter(t => t._2 != "" && t._3 != "")
+        .map(t => Row(t._1, t._2, t._3, t._4))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
         .add(StructField("src", StringType, true))
         .add(StructField("image_url", StringType, true))
+        .add(StructField("alt_text", StringType, true))
 
       val sqlContext = SparkSession.builder();
       sqlContext.getOrCreate().createDataFrame(records, schema)
