@@ -9,7 +9,7 @@
 
 The Archives Unleashed Toolkit is an open-source platform for analyzing web archives built on [Apache Spark](http://spark.apache.org/), which provides powerful tools for analytics and data processing. This toolkit is part of the [Archives Unleashed Project](http://archivesunleashed.org/).
 
-The following two articles give a nice overview of the project:
+The following two articles give an overview of the project:
 
 + Jimmy Lin, Ian Milligan, Jeremy Wiebe, and Alice Zhou. [Warcbase: Scalable Analytics Infrastructure for Exploring Web Archives](https://dl.acm.org/authorize.cfm?key=N46731). _ACM Journal on Computing and Cultural Heritage_, 10(4), Article 22, 2017.
 + Nick Ruest, Jimmy Lin, Ian Milligan, Samantha Fritz. [The Archives Unleashed Project: Technology, Process, and Community to Improve Scholarly Access to Web Archives](https://arxiv.org/abs/2001.05399). 2020.
