@@ -43,6 +43,7 @@ import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 import org.apache.spark.{RangePartitioner, SerializableWritable, SparkContext}
 import scala.reflect.ClassTag
 import scala.util.matching.Regex
+import scala.util.Try
 
 /**
   * Package object which supplies implicits to augment generic RDDs with AUT-specific transformations.
@@ -95,6 +96,8 @@ package object archivesunleashed {
     */
   implicit class WARecordDF(df: DataFrame) extends java.io.Serializable {
 
+    def hasColumn(df: DataFrame, path: String) = Try(df(path)).isSuccess
+
     val spark = SparkSession.builder().master("local").getOrCreate()
     // scalastyle:off
     import spark.implicits._
@@ -137,7 +140,9 @@ package object archivesunleashed {
       */
     def discardUrlsDF(urls: Set[String]): DataFrame = {
       val filteredUrls = udf((url: String) => !urls.contains(url))
-      df.filter(filteredUrls($"url"))
+      if(hasColumn(df, "url"))
+        return df.filter(filteredUrls($"url"))
+      df.filter(filteredUrls($"src"))
     }
 
     /** Filters detected domains.
@@ -146,7 +151,9 @@ package object archivesunleashed {
       */
     def discardDomainsDF(domains: Set[String]): DataFrame = {
       val filteredDomains = udf((domain: String) => !domains.contains(domain))
-      df.filter(filteredDomains(ExtractDomainDF($"url")))
+      if(hasColumn(df, "url"))
+        return df.filter(filteredDomains(ExtractDomainDF($"url")))
+      df.filter(filteredDomains(ExtractDomainDF($"src")))
     }
 
     /** Filters detected HTTP status codes.
@@ -185,7 +192,9 @@ package object archivesunleashed {
                                   case _ => false
                               }).exists(identity)
                             })
-      df.filter(filteredUrlPatterns($"url"))
+      if(hasColumn(df, "url"))
+        return df.filter(filteredUrlPatterns($"url"))
+      df.filter(filteredUrlPatterns($"src"))
     }
 
     /** Filters detected language.
@@ -228,7 +237,9 @@ package object archivesunleashed {
       */
     def keepUrlsDF(urls: Set[String]): DataFrame = {
       val takeUrls = udf((url: String) => urls.contains(url))
-      df.filter(takeUrls($"url"))
+      if(hasColumn(df, "url"))
+        return df.filter(takeUrls($"url"))
+      df.filter(takeUrls($"src"))
     }
 
     /** Removes all data but selected source domains.
@@ -237,7 +248,9 @@ package object archivesunleashed {
       */
     def keepDomainsDF(domains: Set[String]): DataFrame = {
       val takeDomains = udf((domain: String) => domains.contains(domain))
-      df.filter(takeDomains(ExtractDomainDF($"url")))
+      if(hasColumn(df, "url"))
+        return df.filter(takeDomains(ExtractDomainDF($"url")))
+      df.filter(takeDomains(ExtractDomainDF($"src")))
     }
 
     /** Removes all data but selected mimeTypeTikas specified.
@@ -285,7 +298,9 @@ package object archivesunleashed {
                                   case _ => false
                               }).exists(identity)
                             })
-      df.filter(takeUrlPatterns($"url"))
+      if(hasColumn(df, "url"))
+        return df.filter(takeUrlPatterns($"url"))
+      df.filter(takeUrlPatterns($"src"))
     }
 
     /** Removes all data not in selected language.
