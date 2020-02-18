@@ -27,20 +27,22 @@ object ExtractImageLinksRDD {
     *
     * @param src the src link
     * @param html the content from which links are to be extracted
-    * @return a sequence of image links.
+    * @return a sequence of (source, image link, alt-text).
     */
-  def apply(src: String, html: String): Seq[String] = {
+  def apply(src: String, html: String): Seq[(String, String, String)] = {
     if (html.isEmpty) Nil
     try {
-      val output = mutable.MutableList[String]()
+      val output = mutable.MutableList[(String, String, String)]()
       val doc = Jsoup.parse(html)
       val links: Elements = doc.select("img[src]")
+      val alt: Elements = doc.select("img[alt]")
       val it = links.iterator()
       while (it.hasNext) {
         val link = it.next()
         link.setBaseUri(src)
         val target = link.attr("abs:src")
-        output += (target)
+        val altText = link.attr("alt")
+        output += ((src, target, altText))
       }
       output
     } catch {

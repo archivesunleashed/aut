@@ -73,23 +73,36 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
   test("Discard URLs DF") {
     val expected = "http://www.archive.org/index.php"
     val url = Set("http://www.archive.org/")
-    val base = RecordLoader.loadArchives(arcPath, sc)
-      .webpages()
+    val base1 = RecordLoader.loadArchives(arcPath, sc)
+        .webpages()
+        .discardUrlsDF(url)
+        .take(1)(0)(1)
+
+    val base2 = RecordLoader.loadArchives(arcPath, sc)
+      .webgraph()
       .discardUrlsDF(url)
       .take(1)(0)(1)
 
-    assert (base.toString == expected)
+    assert (base1.toString == expected)
+    assert (base2.toString == expected)
   }
 
   test("Discard domains DF") {
-    val expected = "http://www.hideout.com.br/"
+    val expected1 = "http://www.hideout.com.br/"
     val domain = Set("www.archive.org")
-    val base = RecordLoader.loadArchives(arcPath, sc)
+    val base1 = RecordLoader.loadArchives(arcPath, sc)
       .webpages()
       .discardDomainsDF(domain)
       .take(1)(0)(1)
 
-    assert (base.toString == expected)
+    val expected2 = "http://deadlists.com/deadlists/showresults.asp?KEY=12/16/78"
+    val base2 = RecordLoader.loadArchives(arcPath, sc)
+      .webgraph()
+      .discardDomainsDF(domain)
+      .take(1)(0)(1)
+
+    assert(base1.toString == expected1)
+    assert(base2.toString == expected2)
   }
 
   test("Discard HTTP status DF") {
@@ -116,15 +129,24 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
   }
 
   test("Discard URL patterns DF") {
-    val expected = "dns:www.archive.org"
-    val urlRegex = Set(".*images.*".r)
-    val base = RecordLoader.loadArchives(arcPath, sc)
+    val expected1 = "dns:www.archive.org"
+    val urlRegex1 = Set(".*images.*".r)
+    val base1 = RecordLoader.loadArchives(arcPath, sc)
       .all()
       .select("url")
-      .discardUrlPatternsDF(urlRegex)
+      .discardUrlPatternsDF(urlRegex1)
       .take(2)(1)(0)
 
-    assert (base.toString == expected)
+    val expected2 = "http://www.archive.org/details/DrinkingWithBob-MadonnaAdoptsAfricanBaby887"
+    val urlRegex2 = Set(".*index.*".r)
+    val base2 = RecordLoader.loadArchives(arcPath, sc)
+      .webgraph()
+      .select("src")
+      .discardUrlPatternsDF(urlRegex2)
+      .take(2)(1)(0)
+
+    assert (base1.toString == expected1)
+    assert (base2.toString == expected2)
   }
 
   test("Discard languages DF") {
@@ -164,23 +186,36 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
   test("Keep URLs DF") {
     val expected = "http://www.archive.org/"
     val url = Set("http://www.archive.org/")
-    val base = RecordLoader.loadArchives(arcPath, sc)
+    val base1 = RecordLoader.loadArchives(arcPath, sc)
       .webpages()
       .keepUrlsDF(url)
       .take(1)(0)(1)
 
-    assert (base.toString == expected)
+    val base2 = RecordLoader.loadArchives(arcPath, sc)
+      .webgraph()
+      .keepUrlsDF(url)
+      .take(1)(0)(1)
+
+    assert (base1.toString == expected)
+    assert (base2.toString == expected)
   }
 
   test("Keep domains DF") {
-    val expected = "http://www.archive.org/robots.txt"
+    val expected1 = "http://www.archive.org/robots.txt"
     val domain = Set("www.archive.org")
-    val base = RecordLoader.loadArchives(arcPath, sc)
+    val base1 = RecordLoader.loadArchives(arcPath, sc)
       .all()
       .keepDomainsDF(domain)
       .take(1)(0)(1)
 
-    assert (base.toString == expected)
+    val expected2 = "http://www.archive.org/"
+    val base2 = RecordLoader.loadArchives(arcPath, sc)
+      .webgraph()
+      .keepDomainsDF(domain)
+      .take(1)(0)(1)
+
+    assert (base1.toString == expected1)
+    assert (base2.toString == expected2)
   }
 
   test("Keep MIMEtypes Tika DF") {
@@ -218,15 +253,24 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
   }
 
   test("Keep URL patterns DF") {
-    val expected = "http://www.archive.org/images/go-button-gateway.gif"
-    val urlRegex = Set(".*images.*".r)
-    val base = RecordLoader.loadArchives(arcPath, sc)
+    val expected1 = "http://www.archive.org/images/go-button-gateway.gif"
+    val urlRegex1 = Set(".*images.*".r)
+    val base1 = RecordLoader.loadArchives(arcPath, sc)
       .all()
       .select("url")
-      .keepUrlPatternsDF(urlRegex)
+      .keepUrlPatternsDF(urlRegex1)
       .take(2)(1)(0)
 
-    assert (base.toString == expected)
+    val expected2 = "http://www.archive.org/index.php"
+    val urlRegex2 = Set(".*index.*".r)
+    val base2 = RecordLoader.loadArchives(arcPath, sc)
+      .webgraph()
+      .select("src")
+      .keepUrlPatternsDF(urlRegex2)
+      .take(2)(1)(0)
+
+    assert (base1.toString == expected1)
+    assert (base2.toString == expected2)
   }
 
   test("Keep languages DF") {
