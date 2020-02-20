@@ -43,8 +43,8 @@ If you would like to use the Archives Unleashed Toolkit with PySpark and Jupyter
 Download and unzip [Apache Spark](https://spark.apache.org) to a location of your choice.
 
 ```bash
-curl -L "https://archive.apache.org/dist/spark/spark-2.4.4/spark-2.4.4-bin-hadoop2.7.tgz" > spark-2.4.4-bin-hadoop2.7.tgz
-tar -xvf spark-2.4.4-bin-hadoop2.7.tgz
+curl -L "https://archive.apache.org/dist/spark/spark-2.4.5/spark-2.4.5-bin-hadoop2.7.tgz" > spark-2.4.5-bin-hadoop2.7.tgz
+tar -xvf spark-2.4.5-bin-hadoop2.7.tgz
 ```
 
 ## Getting Started
