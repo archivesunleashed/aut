@@ -59,6 +59,8 @@ package object df {
 
   val DetectMimeTypeTikaDF = udf((io.archivesunleashed.matchbox.DetectMimeTypeTika.apply(_: Array[Byte])))
 
+  val discardHttpStatusDF = udf((statusCode: String, statusCodes: Seq[String]) => !statusCodes.contains(statusCode))
+
   /**
    * Given a dataframe, serializes binary object and saves to disk
    * @param df the input dataframe
