@@ -16,28 +16,29 @@
 
 package io.archivesunleashed
 
-import io.archivesunleashed.df.{DetectLanguageDF, RemoveHTMLDF}
+import io.archivesunleashed.df._
 import com.google.common.io.Resources
 import org.apache.spark.{SparkConf, SparkContext}
+import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
-
+import org.apache.spark.sql.functions.lit
 
 @RunWith(classOf[JUnitRunner])
-class RecordDFTest extends FunSuite with BeforeAndAfter {
+class RecordDFTest extends FunSuite {
   private val arcPath = Resources.getResource("arc/example.arc.gz").getPath
   private val master = "local[4]"
   private val appName = "example-spark"
-  private var sc: SparkContext = _
-
-  before {
-    val conf = new SparkConf()
-      .setMaster(master)
-      .setAppName(appName)
-    conf.set("spark.driver.allowMultipleContexts", "true");
-    sc = new SparkContext(conf)
-  }
+  val conf = new SparkConf()
+        .setMaster(master)
+        .setAppName(appName)
+  conf.set("spark.driver.allowMultipleContexts", "true");
+  private var sc: SparkContext = new SparkContext(conf)
+  val spark = SparkSession.builder().config(sc.getConf).master("local").getOrCreate()
+  // scalastyle:off
+  import spark.implicits._
+  // scalastyle:on
 
   test("Keep valid pages DF") {
     val expected = "http://www.archive.org/"
@@ -48,239 +49,106 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     assert (base.toString == expected)
   }
 
-  test("Discard MIMEtypes DF") {
-    val expected = "filedesc://IAH-20080430204825-00000-blackbook.arc"
-    val mimeTypes = Set("text/html")
+  test("hasHttpStatusDF") {
+    val expected = "000"
     val base = RecordLoader.loadArchives(arcPath, sc)
       .all()
-      .discardMimeTypesDF(mimeTypes)
-      .take(1)(0)(1)
+      .select($"http_status_code")
+      .filter(hasHttpStatusDF($"http_status_code", lit(Array("200","000"))))
+      .take(1)(0)(0) 
 
     assert (base.toString == expected)
   }
 
-  test("Discard date DF") {
-    val expected = "20080430"
-    val date = "20080429"
-    val base = RecordLoader.loadArchives(arcPath, sc)
-      .webpages()
-      .discardDateDF(date)
-      .take(1)(0)(0)
-
-    assert (base.toString == expected)
-  }
-
-  test("Discard URLs DF") {
-    val expected = "http://www.archive.org/index.php"
-    val url = Set("http://www.archive.org/")
-    val base1 = RecordLoader.loadArchives(arcPath, sc)
-        .webpages()
-        .discardUrlsDF(url)
-        .take(1)(0)(1)
-
-    val base2 = RecordLoader.loadArchives(arcPath, sc)
-      .webgraph()
-      .discardUrlsDF(url)
-      .take(1)(0)(1)
-
-    assert (base1.toString == expected)
-    assert (base2.toString == expected)
-  }
-
-  test("Discard domains DF") {
-    val expected1 = "http://www.hideout.com.br/"
-    val domain = Set("www.archive.org")
-    val base1 = RecordLoader.loadArchives(arcPath, sc)
-      .webpages()
-      .discardDomainsDF(domain)
-      .take(1)(0)(1)
-
-    val expected2 = "http://deadlists.com/deadlists/showresults.asp?KEY=12/16/78"
-    val base2 = RecordLoader.loadArchives(arcPath, sc)
-      .webgraph()
-      .discardDomainsDF(domain)
-      .take(1)(0)(1)
-
-    assert(base1.toString == expected1)
-    assert(base2.toString == expected2)
-  }
-
-  test("Discard HTTP status DF") {
-    val expected = "200"
-    val statusCode = Set("000")
-    val base = RecordLoader.loadArchives(arcPath, sc)
-      .all()
-      .discardHttpStatusDF(statusCode)
-      .take(1)(0)(6)
-
-    assert (base.toString == expected)
-  }
-
-  test("Discard content DF") {
-    val expected = "dns:www.archive.org"
-    val contentRegex = Set("Content-Length: [0-9]{4}".r)
-    val base = RecordLoader.loadArchives(arcPath, sc)
-      .all()
-      .select("url", "content")
-      .discardContentDF(contentRegex)
-      .take(2)(1)(0)
-
-    assert (base.toString == expected)
-  }
-
-  test("Discard URL patterns DF") {
-    val expected1 = "dns:www.archive.org"
-    val urlRegex1 = Set(".*images.*".r)
-    val base1 = RecordLoader.loadArchives(arcPath, sc)
-      .all()
-      .select("url")
-      .discardUrlPatternsDF(urlRegex1)
-      .take(2)(1)(0)
-
-    val expected2 = "http://www.archive.org/details/DrinkingWithBob-MadonnaAdoptsAfricanBaby887"
-    val urlRegex2 = Set(".*index.*".r)
-    val base2 = RecordLoader.loadArchives(arcPath, sc)
-      .webgraph()
-      .select("src")
-      .discardUrlPatternsDF(urlRegex2)
-      .take(2)(1)(0)
-
-    assert (base1.toString == expected1)
-    assert (base2.toString == expected2)
-  }
-
-  test("Discard languages DF") {
-    val expected = "dns:www.archive.org"
-    val languages = Set("th","de","ht")
-    val base = RecordLoader.loadArchives(arcPath, sc)
-      .all()
-      .select("url")
-      .discardLanguagesDF(languages)
-      .take(2)(1)(0)
-
-    assert (base.toString == expected)
-  }
-
-  test("Keep HTTP status DF") {
-    val expected = "http://www.archive.org/robots.txt"
-    val statusCode = Set("200")
-    val base = RecordLoader.loadArchives(arcPath, sc)
-      .all()
-      .keepHttpStatusDF(statusCode)
-      .take(1)(0)(1)
-
-    assert (base.toString == expected)
-  }
-
-  test("Keep date DF") {
-    val expected = "http://www.archive.org/"
-    val month = List("04")
-    val base = RecordLoader.loadArchives(arcPath, sc)
-      .webpages()
-      .keepDateDF(month,"MM")
-      .take(1)(0)(1)
-
-    assert (base.toString == expected)
-  }
-
-  test("Keep URLs DF") {
-    val expected = "http://www.archive.org/"
-    val url = Set("http://www.archive.org/")
-    val base1 = RecordLoader.loadArchives(arcPath, sc)
-      .webpages()
-      .keepUrlsDF(url)
-      .take(1)(0)(1)
-
-    val base2 = RecordLoader.loadArchives(arcPath, sc)
-      .webgraph()
-      .keepUrlsDF(url)
-      .take(1)(0)(1)
-
-    assert (base1.toString == expected)
-    assert (base2.toString == expected)
-  }
-
-  test("Keep domains DF") {
+  test("hasUrlsDF") {
     val expected1 = "http://www.archive.org/robots.txt"
-    val domain = Set("www.archive.org")
-    val base1 = RecordLoader.loadArchives(arcPath, sc)
-      .all()
-      .keepDomainsDF(domain)
-      .take(1)(0)(1)
-
     val expected2 = "http://www.archive.org/"
+    val base1 = RecordLoader.loadArchives(arcPath, sc)
+                            .all()
+                            .select($"url")
+                            .filter(hasUrlsDF($"url", lit(Array("http://www.archive.org/","http://www.archive.org/robots.txt"))))
+                            .take(1)(0)(0)
+
     val base2 = RecordLoader.loadArchives(arcPath, sc)
-      .webgraph()
-      .keepDomainsDF(domain)
-      .take(1)(0)(1)
+                            .all()
+                            .select($"url")
+                            .filter(hasUrlsDF($"url", lit(Array("http://www.archive.org/"))))
+                            .take(1)(0)(0)
 
     assert (base1.toString == expected1)
     assert (base2.toString == expected2)
+  }
+
+  test("hasDomainsDF") {
+    val expected = "http://www.archive.org/robots.txt"
+    val base1 = RecordLoader.loadArchives(arcPath, sc)
+                            .all()
+                            .select($"url")
+                            .filter(hasDomainsDF(ExtractDomainDF($"url"), lit(Array("www.archive.org"))))
+                            .take(1)(0)(0)
+
+    assert (base1.toString == expected)
   }
 
   test("Keep MIMEtypes Tika DF") {
     val expected = "image/jpeg"
     val mimeType = Set("image/jpeg")
     val base = RecordLoader.loadArchives(arcPath, sc)
-      .all()
-      .keepMimeTypesTikaDF(mimeType)
-      .take(1)(0)(2)
+                           .all()
+                           .keepMimeTypesTikaDF(mimeType)
+                           .take(1)(0)(2)
 
     assert (base.toString == expected)
   }
 
-  test("Keep MIMEtypes DF") {
+  test("hasMimeTypesDF") {
     val expected = "text/html"
-    val mimeType = Set("text/html")
     val base = RecordLoader.loadArchives(arcPath, sc)
-      .all()
-      .keepMimeTypesDF(mimeType)
-      .take(1)(0)(3)
+                           .all()
+                           .select($"mime_type_web_server")
+                           .filter(hasMimeTypesDF($"mime_type_web_server", lit(Array("text/html"))))
+                           .take(1)(0)(0)
 
     assert (base.toString == expected)
   }
 
-  test("Keep content DF") {
+  test("hasContentDF") {
     val expected = "http://www.archive.org/images/logoc.jpg"
-    val contentRegex = Set("Content-Length: [0-9]{4}".r)
     val base = RecordLoader.loadArchives(arcPath, sc)
-      .all()
-      .select("url", "content")
-      .keepContentDF(contentRegex)
-      .take(1)(0)(0)
+                           .all()
+                           .select($"url",$"content")
+                           .filter(hasContentDF($"content", lit(Array("Content-Length: [0-9]{4}"))))
+                           .take(1)(0)(0)
 
     assert (base.toString == expected)
   }
 
-  test("Keep URL patterns DF") {
+  test("hasUrlPatternsDF") {
     val expected1 = "http://www.archive.org/images/go-button-gateway.gif"
-    val urlRegex1 = Set(".*images.*".r)
     val base1 = RecordLoader.loadArchives(arcPath, sc)
-      .all()
-      .select("url")
-      .keepUrlPatternsDF(urlRegex1)
-      .take(2)(1)(0)
+                            .all()
+                            .select($"url")
+                            .filter(hasUrlPatternsDF($"url", lit(Array(".*images.*"))))
+                            .take(2)(1)(0)
 
-    val expected2 = "http://www.archive.org/index.php"
-    val urlRegex2 = Set(".*index.*".r)
+    val expected2 = "http://www.archive.org/index.php?skin=classic"
     val base2 = RecordLoader.loadArchives(arcPath, sc)
-      .webgraph()
-      .select("src")
-      .keepUrlPatternsDF(urlRegex2)
-      .take(2)(1)(0)
+                            .all()
+                            .select($"url")
+                            .filter(hasUrlPatternsDF($"url", lit(Array(".*index.*"))))
+                            .take(3)(1)(0)
 
     assert (base1.toString == expected1)
     assert (base2.toString == expected2)
   }
 
-  test("Keep languages DF") {
-    val expected = "http://www.archive.org/images/logoc.jpg"
-    val languages = Set("th","de","ht")
+  test("hasLanguagesDF") {
+    val expected = "de"
     val base = RecordLoader.loadArchives(arcPath, sc)
-      .all()
-      .select("url")
-      .keepLanguagesDF(languages)
-      .take(1)(0)(0)
+                           .all()
+                           .select(DetectLanguageDF(RemoveHTMLDF($"content")).as("language"))
+                           .filter(hasLanguagesDF(DetectLanguageDF(RemoveHTMLDF($"content")), lit(Array("de","ht"))))
+                           .take(1)(0)(0)
 
     assert (base.toString == expected)
   }
@@ -294,11 +162,5 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
       .take(1)(0)(0)
 
     assert (base.toString == expected)
-  }
-
-  after {
-    if (sc != null) {
-      sc.stop()
-    }
   }
 }
