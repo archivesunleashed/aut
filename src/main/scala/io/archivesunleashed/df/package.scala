@@ -60,17 +60,17 @@ package object df {
 
   val DetectMimeTypeTikaDF = udf((io.archivesunleashed.matchbox.DetectMimeTypeTika.apply(_: Array[Byte])))
 
-  val hasHttpStatusDF = udf((statusCode: String, statusCodes: Seq[String]) => statusCodes.contains(statusCode))
+  val hasHttpStatus = udf((statusCode: String, statusCodes: Seq[String]) => statusCodes.contains(statusCode))
 
-  val hasMimeTypesDF = udf((mimeType: String, mimeTypes: Seq[String]) => mimeTypes.contains(mimeType))
+  val hasMimeTypes = udf((mimeType: String, mimeTypes: Seq[String]) => mimeTypes.contains(mimeType))
 
-  val hasDateDF = udf((date_ : String, date: String) => date_ == date)
+  val hasDate = udf((date_ : String, date: String) => date_ == date)
 
-  val hasUrlsDF = udf((url: String, urls: Seq[String]) => urls.contains(url))
+  val hasUrls = udf((url: String, urls: Seq[String]) => urls.contains(url))
 
-  val hasDomainsDF = udf((domain: String, domains: Seq[String]) => domains.contains(domain))
+  val hasDomains = udf((domain: String, domains: Seq[String]) => domains.contains(domain))
 
-  val hasContentDF = udf((c: String, contentREs: Seq[String]) => {
+  val hasContent = udf((c: String, contentREs: Seq[String]) => {
                           contentREs.map(re =>
                           (re.r findFirstIn c) match {
                             case Some(v) => true
@@ -78,7 +78,7 @@ package object df {
                           }).exists(identity)
                         })
 
-  val hasUrlPatternsDF = udf((urlPattern: String, urlREs: Seq[String]) => {
+  val hasUrlPatterns = udf((urlPattern: String, urlREs: Seq[String]) => {
                               urlREs.map(re =>
                                 urlPattern match {
                                   case re.r() => true
@@ -86,7 +86,7 @@ package object df {
                               }).exists(identity)
                             })
 
-  val hasLanguagesDF = udf((language: String, languages: Seq[String]) => languages.contains(language))
+  val hasLanguages = udf((language: String, languages: Seq[String]) => languages.contains(language))
 
   /**
    * Given a dataframe, serializes binary object and saves to disk
