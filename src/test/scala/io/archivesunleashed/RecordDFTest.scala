@@ -76,16 +76,16 @@ class RecordDFTest extends FunSuite with BeforeAndAfter{
     val expected1 = "http://www.archive.org/robots.txt"
     val expected2 = "http://www.archive.org/"
     val base1 = RecordLoader.loadArchives(arcPath, sc)
-                            .all()
-                            .select($"url")
-                            .filter(hasUrls($"url", lit(Array("http://www.archive.org/","http://www.archive.org/robots.txt"))))
-                            .take(1)(0)(0)
+        .all()
+        .select($"url")
+        .filter(hasUrls($"url", lit(Array("http://www.archive.org/","http://www.archive.org/robots.txt"))))
+        .take(1)(0)(0)
 
     val base2 = RecordLoader.loadArchives(arcPath, sc)
-                            .all()
-                            .select($"url")
-                            .filter(hasUrls($"url", lit(Array("http://www.archive.org/"))))
-                            .take(1)(0)(0)
+        .all()
+        .select($"url")
+        .filter(hasUrls($"url", lit(Array("http://www.archive.org/"))))
+        .take(1)(0)(0)
 
     assert (base1.toString == expected1)
     assert (base2.toString == expected2)
@@ -99,10 +99,10 @@ class RecordDFTest extends FunSuite with BeforeAndAfter{
 
     val expected = "http://www.archive.org/robots.txt"
     val base1 = RecordLoader.loadArchives(arcPath, sc)
-                            .all()
-                            .select($"url")
-                            .filter(hasDomains(ExtractDomainDF($"url"), lit(Array("www.archive.org"))))
-                            .take(1)(0)(0)
+    	.all()
+    	.select($"url")
+    	.filter(hasDomains(ExtractDomainDF($"url"), lit(Array("www.archive.org"))))
+    	.take(1)(0)(0)
 
     assert (base1.toString == expected)
   }
@@ -111,9 +111,9 @@ class RecordDFTest extends FunSuite with BeforeAndAfter{
     val expected = "image/jpeg"
     val mimeType = Set("image/jpeg")
     val base = RecordLoader.loadArchives(arcPath, sc)
-                           .all()
-                           .keepMimeTypesTikaDF(mimeType)
-                           .take(1)(0)(2)
+    	.all()
+    	.keepMimeTypesTikaDF(mimeType)
+    	.take(1)(0)(2)
 
     assert (base.toString == expected)
   }
@@ -126,10 +126,10 @@ class RecordDFTest extends FunSuite with BeforeAndAfter{
 
     val expected = "text/html"
     val base = RecordLoader.loadArchives(arcPath, sc)
-                           .all()
-                           .select($"mime_type_web_server")
-                           .filter(hasMimeTypes($"mime_type_web_server", lit(Array("text/html"))))
-                           .take(1)(0)(0)
+   		.all()
+   		.select($"mime_type_web_server")
+   		.filter(hasMimeTypes($"mime_type_web_server", lit(Array("text/html"))))
+   		.take(1)(0)(0)
 
     assert (base.toString == expected)
   }
@@ -142,10 +142,10 @@ class RecordDFTest extends FunSuite with BeforeAndAfter{
 
     val expected = "http://www.archive.org/images/logoc.jpg"
     val base = RecordLoader.loadArchives(arcPath, sc)
-                           .all()
-                           .select($"url",$"content")
-                           .filter(hasContent($"content", lit(Array("Content-Length: [0-9]{4}"))))
-                           .take(1)(0)(0)
+       .all()
+       .select($"url",$"content")
+       .filter(hasContent($"content", lit(Array("Content-Length: [0-9]{4}"))))
+       .take(1)(0)(0)
 
     assert (base.toString == expected)
   }
@@ -158,17 +158,17 @@ class RecordDFTest extends FunSuite with BeforeAndAfter{
 
     val expected1 = "http://www.archive.org/images/go-button-gateway.gif"
     val base1 = RecordLoader.loadArchives(arcPath, sc)
-                            .all()
-                            .select($"url")
-                            .filter(hasUrlPatterns($"url", lit(Array(".*images.*"))))
-                            .take(2)(1)(0)
+    	.all()
+    	.select($"url")
+    	.filter(hasUrlPatterns($"url", lit(Array(".*images.*"))))
+    	.take(2)(1)(0)
 
     val expected2 = "http://www.archive.org/index.php?skin=classic"
     val base2 = RecordLoader.loadArchives(arcPath, sc)
-                            .all()
-                            .select($"url")
-                            .filter(hasUrlPatterns($"url", lit(Array(".*index.*"))))
-                            .take(3)(1)(0)
+    	.all()
+    	.select($"url")
+    	.filter(hasUrlPatterns($"url", lit(Array(".*index.*"))))
+    	.take(3)(1)(0)
 
     assert (base1.toString == expected1)
     assert (base2.toString == expected2)
@@ -182,10 +182,10 @@ class RecordDFTest extends FunSuite with BeforeAndAfter{
 
     val expected = "de"
     val base = RecordLoader.loadArchives(arcPath, sc)
-                           .all()
-                           .select(DetectLanguageDF(RemoveHTMLDF($"content")).as("language"))
-                           .filter(hasLanguages(DetectLanguageDF(RemoveHTMLDF($"content")), lit(Array("de","ht"))))
-                           .take(1)(0)(0)
+       .all()
+       .select(DetectLanguageDF(RemoveHTMLDF($"content")).as("language"))
+       .filter(hasLanguages(DetectLanguageDF(RemoveHTMLDF($"content")), lit(Array("de","ht"))))
+       .take(1)(0)(0)
 
     assert (base.toString == expected)
   }
