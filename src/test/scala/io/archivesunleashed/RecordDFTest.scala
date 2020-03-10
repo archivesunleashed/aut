@@ -159,9 +159,9 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     val expected1 = "http://www.archive.org/images/go-button-gateway.gif"
     val base1 = RecordLoader.loadArchives(arcPath, sc)
 		.all()
-    	.select($"url")
-    	.filter(hasUrlPatterns($"url", lit(Array(".*images.*"))))
-    	.take(2)(1)(0)
+		.select($"url")
+		.filter(hasUrlPatterns($"url", lit(Array(".*images.*"))))
+		.take(2)(1)(0)
 
     val expected2 = "http://www.archive.org/index.php?skin=classic"
     val base2 = RecordLoader.loadArchives(arcPath, sc)
