@@ -165,10 +165,10 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
 
     val expected2 = "http://www.archive.org/index.php?skin=classic"
     val base2 = RecordLoader.loadArchives(arcPath, sc)
-    	.all()
-    	.select($"url")
-    	.filter(hasUrlPatterns($"url", lit(Array(".*index.*"))))
-    	.take(3)(1)(0)
+		.all()
+		.select($"url")
+		.filter(hasUrlPatterns($"url", lit(Array(".*index.*"))))
+		.take(3)(1)(0)
 
     assert (base1.toString == expected1)
     assert (base2.toString == expected2)
@@ -182,10 +182,10 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
 
     val expected = "de"
     val base = RecordLoader.loadArchives(arcPath, sc)
-       .all()
-       .select(DetectLanguageDF(RemoveHTMLDF($"content")).as("language"))
-       .filter(hasLanguages(DetectLanguageDF(RemoveHTMLDF($"content")), lit(Array("de","ht"))))
-       .take(1)(0)(0)
+		.all()
+		.select(DetectLanguageDF(RemoveHTMLDF($"content")).as("language"))
+		.filter(hasLanguages(DetectLanguageDF(RemoveHTMLDF($"content")), lit(Array("de","ht"))))
+		.take(1)(0)(0)
 
     assert (base.toString == expected)
   }
