@@ -17,15 +17,15 @@
 package io.archivesunleashed
 
 import io.archivesunleashed.df.{DetectLanguageDF, ExtractDomainDF, RemoveHTMLDF,
-                                hasContent, hasDate, hasDomains, hasHttpStatus, 
+                                hasContent, hasDate, hasDomains, hasHttpStatus,
                                 hasLanguages, hasMimeTypes, hasUrlPatterns, hasUrls}
 import com.google.common.io.Resources
-import org.apache.spark.{SparkConf, SparkContext}
+import org.apache.spark.sql.functions.lit
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
+import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
-import org.apache.spark.sql.functions.lit
 
 @RunWith(classOf[JUnitRunner])
 class RecordDFTest extends FunSuite with BeforeAndAfter {
@@ -42,15 +42,6 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Keep valid pages DF") {
-    val expected = "http://www.archive.org/"
-    val base = RecordLoader.loadArchives(arcPath, sc)
-	  .all()
-	  .keepValidPagesDF()
-	  .take(1)(0)(1)
-    assert (base.toString == expected)
-  }
-
   test("hasHttpStatus") {
     val spark = SparkSession.builder().master("local").getOrCreate()
     // scalastyle:off
@@ -62,7 +53,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
 	  .all()
 	  .select($"http_status_code")
 	  .filter(hasHttpStatus($"http_status_code", lit(Array("200","000"))))
-	  .take(1)(0)(0) 
+	  .take(1)(0)(0)
 
     assert (base.toString == expected)
   }
@@ -105,17 +96,6 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
 	  .take(1)(0)(0)
 
     assert (base1.toString == expected)
-  }
-
-  test("Keep MIMEtypes Tika DF") {
-    val expected = "image/jpeg"
-    val mimeType = Set("image/jpeg")
-    val base = RecordLoader.loadArchives(arcPath, sc)
-	  .all()
-	  .keepMimeTypesTikaDF(mimeType)
-	  .take(1)(0)(2)
-
-    assert (base.toString == expected)
   }
 
   test("hasMimeTypes") {
@@ -186,17 +166,6 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
 	  .select(DetectLanguageDF(RemoveHTMLDF($"content")).as("language"))
 	  .filter(hasLanguages(DetectLanguageDF(RemoveHTMLDF($"content")), lit(Array("de","ht"))))
 	  .take(1)(0)(0)
-
-    assert (base.toString == expected)
-  }
-
-  test("Keep images DF") {
-    val expected = "image/jpeg"
-    val base = RecordLoader.loadArchives(arcPath, sc)
-      .all()
-      .keepImagesDF()
-      .select("mime_type_tika")
-      .take(1)(0)(0)
 
     assert (base.toString == expected)
   }

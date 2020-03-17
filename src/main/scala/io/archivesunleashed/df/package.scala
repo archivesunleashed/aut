@@ -71,20 +71,20 @@ package object df {
   val hasDomains = udf((domain: String, domains: Seq[String]) => domains.contains(domain))
 
   val hasContent = udf((c: String, contentREs: Seq[String]) => {
-                          contentREs.map(re =>
-                          (re.r findFirstIn c) match {
-                            case Some(v) => true
-                            case None => false
-                          }).exists(identity)
-                        })
+    contentREs.map(re =>
+        (re.r findFirstIn c) match {
+          case Some(v) => true
+          case None => false
+        }).exists(identity)
+  })
 
   val hasUrlPatterns = udf((urlPattern: String, urlREs: Seq[String]) => {
-                              urlREs.map(re =>
-                                urlPattern match {
-                                  case re.r() => true
-                                  case _ => false
-                              }).exists(identity)
-                            })
+    urlREs.map(re =>
+        urlPattern match {
+          case re.r() => true
+          case _ => false
+        }).exists(identity)
+  })
 
   val hasLanguages = udf((language: String, languages: Seq[String]) => languages.contains(language))
 
