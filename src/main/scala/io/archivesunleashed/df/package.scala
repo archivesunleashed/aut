@@ -60,9 +60,11 @@ package object df {
 
   val DetectMimeTypeTikaDF = udf((io.archivesunleashed.matchbox.DetectMimeTypeTika.apply(_: Array[Byte])))
 
-  val hasHttpStatus = udf((statusCode: String, statusCodes: Seq[String]) => statusCodes.contains(statusCode))
+  val hasHTTPStatus = udf((statusCode: String, statusCodes: Seq[String]) => statusCodes.contains(statusCode))
 
-  val hasMimeTypes = udf((mimeType: String, mimeTypes: Seq[String]) => mimeTypes.contains(mimeType))
+  val hasMIMETypes = udf((mimeType: String, mimeTypes: Seq[String]) => mimeTypes.contains(mimeType))
+
+  val hasMIMETypesTika = udf((mimeTypeTika: String, mimeTypes: Seq[String]) => mimeTypes.contains(mimeTypeTika))
 
   val hasDate = udf((date_ : String, date: String) => date_ == date)
 

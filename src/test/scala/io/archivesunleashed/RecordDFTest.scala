@@ -17,8 +17,9 @@
 package io.archivesunleashed
 
 import io.archivesunleashed.df.{DetectLanguageDF, ExtractDomainDF, RemoveHTMLDF,
-                                hasContent, hasDate, hasDomains, hasHttpStatus,
-                                hasLanguages, hasMimeTypes, hasUrlPatterns, hasUrls}
+                                hasContent, hasDate, hasDomains, hasHTTPStatus,
+                                hasLanguages, hasMIMETypes, hasMIMETypesTika,
+                                hasUrlPatterns, hasUrls}
 import com.google.common.io.Resources
 import org.apache.spark.sql.functions.lit
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
@@ -42,7 +43,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("hasHttpStatus") {
+  test("Has HTTP Status") {
     val spark = SparkSession.builder().master("local").getOrCreate()
     // scalastyle:off
     import spark.implicits._
@@ -52,13 +53,13 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     val base = RecordLoader.loadArchives(arcPath, sc)
 	  .all()
 	  .select($"http_status_code")
-	  .filter(hasHttpStatus($"http_status_code", lit(Array("200","000"))))
+	  .filter(hasHTTPStatus($"http_status_code", lit(Array("200","000"))))
 	  .take(1)(0)(0)
 
     assert (base.toString == expected)
   }
 
-  test("hasUrls") {
+  test("Has URLs") {
     val spark = SparkSession.builder().master("local").getOrCreate()
     // scalastyle:off
     import spark.implicits._
@@ -82,7 +83,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     assert (base2.toString == expected2)
   }
 
-  test("hasDomains") {
+  test("Has domains") {
     val spark = SparkSession.builder().master("local").getOrCreate()
     // scalastyle:off
     import spark.implicits._
@@ -98,7 +99,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     assert (base1.toString == expected)
   }
 
-  test("hasMimeTypes") {
+  test("Has MIME Types") {
     val spark = SparkSession.builder().master("local").getOrCreate()
     // scalastyle:off
     import spark.implicits._
@@ -108,13 +109,29 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     val base = RecordLoader.loadArchives(arcPath, sc)
 	  .all()
 	  .select($"mime_type_web_server")
-	  .filter(hasMimeTypes($"mime_type_web_server", lit(Array("text/html"))))
+	  .filter(hasMIMETypes($"mime_type_web_server", lit(Array("text/html"))))
 	  .take(1)(0)(0)
 
     assert (base.toString == expected)
   }
 
-  test("hasContent") {
+  test("Has MIME Types Tika") {
+    val spark = SparkSession.builder().master("local").getOrCreate()
+    // scalastyle:off
+    import spark.implicits._
+    // scalastyle:on
+
+    val expected = "text/html"
+    val base = RecordLoader.loadArchives(arcPath, sc)
+	  .all()
+	  .select($"mime_type_web_server")
+	  .filter(hasMIMETypesTika($"mime_type_web_server", lit(Array("text/html"))))
+	  .take(1)(0)(0)
+
+    assert (base.toString == expected)
+  }
+
+  test("Has Content") {
     val spark = SparkSession.builder().master("local").getOrCreate()
     // scalastyle:off
     import spark.implicits._
@@ -130,7 +147,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     assert (base.toString == expected)
   }
 
-  test("hasUrlPatterns") {
+  test("Has URL Patterns") {
     val spark = SparkSession.builder().master("local").getOrCreate()
     // scalastyle:off
     import spark.implicits._
@@ -154,7 +171,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     assert (base2.toString == expected2)
   }
 
-  test("hasLanguages") {
+  test("Has Languages") {
     val spark = SparkSession.builder().master("local").getOrCreate()
     // scalastyle:off
     import spark.implicits._
