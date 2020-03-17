@@ -72,6 +72,8 @@ package object df {
 
   val hasDomains = udf((domain: String, domains: Seq[String]) => domains.contains(domain))
 
+  val hasImages = udf((date: String, mimeType: String) => date != null && mimeType.startsWith("image/"))
+
   val hasContent = udf((c: String, contentREs: Seq[String]) => {
     contentREs.map(re =>
         (re.r findFirstIn c) match {

@@ -16,10 +16,11 @@
 
 package io.archivesunleashed
 
-import io.archivesunleashed.df.{DetectLanguageDF, ExtractDomainDF, RemoveHTMLDF,
+import io.archivesunleashed.df.{DetectLanguageDF, DetectMimeTypeTikaDF,
+                                ExtractDomainDF, RemoveHTMLDF,
                                 hasContent, hasDate, hasDomains, hasHTTPStatus,
-                                hasLanguages, hasMIMETypes, hasMIMETypesTika,
-                                hasUrlPatterns, hasUrls}
+                                hasImages, hasLanguages, hasMIMETypes,
+                                hasMIMETypesTika, hasUrlPatterns, hasUrls}
 import com.google.common.io.Resources
 import org.apache.spark.sql.functions.lit
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
@@ -125,7 +126,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     val base = RecordLoader.loadArchives(arcPath, sc)
 	  .all()
 	  .select($"mime_type_web_server")
-	  .filter(hasMIMETypesTika($"mime_type_web_server", lit(Array("text/html"))))
+	  .filter(hasMIMETypesTika($"mime_type_tika", lit(Array("text/html"))))
 	  .take(1)(0)(0)
 
     assert (base.toString == expected)
@@ -186,6 +187,23 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
 
     assert (base.toString == expected)
   }
+
+  test("Has Images") {
+    val spark = SparkSession.builder().master("local").getOrCreate()
+    // scalastyle:off
+    import spark.implicits._
+    // scalastyle:on
+
+    val expected = "image/jpeg"
+    val base = RecordLoader.loadArchives(arcPath, sc)
+	  .all()
+    .select($"mime_type_tika")
+	  .filter(hasImages($"crawl_date", DetectMimeTypeTikaDF($"bytes")))
+	  .take(1)(0)(0)
+
+    assert (base.toString == expected)
+  }
+
 
   after {
     if (sc != null) {
