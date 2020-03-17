@@ -90,6 +90,32 @@ package object archivesunleashed {
   }
 
   /**
+    * A Wrapper class around DF to allow Dfs of type ARCRecord and WARCRecord to be queried via a fluent API.
+    *
+    * To load such an DF, please use [[RecordLoader]] and apply .all() on it.
+    */
+  implicit class WARecordDF(df: DataFrame) extends java.io.Serializable {
+
+    val spark = SparkSession.builder().master("local").getOrCreate()
+    // scalastyle:off
+    import spark.implicits._
+    // scalastyle:on
+
+    /** Removes all non-html-based data (images, executables, etc.) from html text. */
+    def keepValidPagesDF(): DataFrame = {
+      df.filter($"crawl_date" isNotNull)
+        .filter(!($"url".rlike(".*robots\\.txt$")) &&
+                  ( $"mime_type_web_server".rlike("text/html") ||
+                    $"mime_type_web_server".rlike("application/xhtml+xml") ||
+                    $"url".rlike("(?i).*htm$") ||
+                    $"url".rlike("(?i).*html$")
+                  )
+               )
+        .filter($"http_status_code" === 200)
+    }
+  }
+
+  /**
     * A Wrapper class around RDD to allow RDDs of type ARCRecord and WARCRecord to be queried via a fluent API.
     *
     * To load such an RDD, please see [[RecordLoader]].

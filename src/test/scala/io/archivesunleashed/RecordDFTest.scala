@@ -44,6 +44,16 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
+  test("Keep valid pages DF") {
+    val expected = "http://www.archive.org/"
+    val base = RecordLoader.loadArchives(arcPath, sc)
+      .all()
+      .keepValidPagesDF()
+      .take(1)(0)(1)
+
+    assert (base.toString == expected)
+  }
+
   test("Has HTTP Status") {
     val spark = SparkSession.builder().master("local").getOrCreate()
     // scalastyle:off
@@ -203,7 +213,6 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
 
     assert (base.toString == expected)
   }
-
 
   after {
     if (sc != null) {
