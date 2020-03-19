@@ -24,7 +24,7 @@ import org.scalatest.junit.JUnitRunner
 @RunWith(classOf[JUnitRunner])
 class ExtractDateRDDTest extends FunSuite {
 
-  test("RDD date extraction") {
+  test("Date extraction RDD") {
     val date = "20151204"
     val startSS = 0
     val yearSS = 4

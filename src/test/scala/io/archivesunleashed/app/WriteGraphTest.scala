@@ -64,7 +64,7 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
       sc = new SparkContext(conf)
   }
 
-  test("creates the file") {
+  test("Create the graph file") {
     val testLines = (0, 12, 22, 34)
     val networkrdd = sc.parallelize(network)
     WriteGraph.asGexf(networkrdd, testFile)
@@ -76,7 +76,7 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
     assert(lines(testLines._4) == """</edges>""")
   }
 
-  test("creates the file from Array[Row]") {
+  test("Create the graph file from Array[Row]") {
     val testLines = (0, 12, 22, 34)
     if (Files.exists(Paths.get(testFile))) {
       new File(testFile).delete()
@@ -94,14 +94,14 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
     assert(!WriteGraph(networkarray, ""))
   }
 
-  test ("returns a Bool depending on pass or failure") {
+  test ("Test if GEXF path is empty") {
     val networkrdd = sc.parallelize(network)
     val gexf = WriteGraph.asGexf(networkrdd, testFile)
     assert(gexf)
     assert(!WriteGraph.asGexf(networkrdd, ""))
   }
 
-  test ("Nodes zip with ids") {
+  test ("Nodes ZIP with IDs") {
     val networkrdd = sc.parallelize(networkWithDuplication)
     val nodeIds = WriteGraph.nodesWithIds(networkrdd).collect
     val expected = ("Source3", 0)
@@ -120,7 +120,7 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
     assert (WriteGraph.nodeIdFromLabel(Option(null)) == -1)
   }
 
-  test ("Gets the id from a lookup") {
+  test ("Gets the ID from a lookup") {
     val nodes = WriteGraph.nodesWithIds(sc.parallelize(network))
     val empty = -1
     val expected = 6
@@ -130,7 +130,7 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
     assert (WriteGraph.nodeIdFromLabel(badlookup) == empty)
   }
 
-  test ("Edge ids are captured from lookup") {
+  test ("Edge IDs are captured from lookup") {
     val edges = WriteGraph.edgeNodes(sc.parallelize(network))
     val expected = Array((date1, 6, 3, 3),
       (date2, 7, 4, 4),
@@ -138,7 +138,7 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
     assert(edges.collect.deep == expected)
   }
 
-  test ("Graphml produces correct output") {
+  test ("GraphML produces correct output") {
     val testLines = (0, 12, 30, 37)
     val networkrdd = sc.parallelize(network)
     WriteGraph.asGraphml(networkrdd, testFile)
@@ -150,7 +150,7 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
     assert(lines(testLines._4) == """<edge source="0" target="5" type="directed">""")
   }
 
-  test ("Graphml works with unescaped xml data") {
+  test ("GraphML works with unescaped XML data") {
     val testLines = (0, 12, 30, 37)
     val networkrdd = sc.parallelize(unescapedNetwork)
     WriteGraph.asGraphml(networkrdd, testFile)
@@ -162,7 +162,7 @@ class WriteGraphTest extends FunSuite with BeforeAndAfter{
     assert(lines(testLines._4) == """<edge source="7" target="4" type="directed">""")
   }
 
-  test( "Gexf works with unescaped xml data") {
+  test( "GEXF works with unescaped XML data") {
     val testLines = (0, 12, 29, 31)
     val networkrdd = sc.parallelize(unescapedNetwork)
     WriteGraph(networkrdd, testFile2)

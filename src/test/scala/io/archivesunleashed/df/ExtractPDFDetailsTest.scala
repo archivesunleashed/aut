@@ -38,7 +38,7 @@ class ExtractPDFDetailsTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("PDF DF extraction") {
+  test("PDF files extraction DF") {
     val df = RecordLoader.loadArchives(warcPath, sc)
       .pdfs()
 

@@ -35,7 +35,7 @@ class ExtractLinksRDDTest extends FunSuite {
   val twitter = "http://www.twitter.com/"
   val head = "a search engine"
 
-  test("simple") {
+  test("Extract simple links RDD") {
     val extracted: Seq[(String, String, String)] = ExtractLinksRDD("", fragment)
     assert(extracted.size == 2)
     assert(url == extracted.head._2)
@@ -44,7 +44,7 @@ class ExtractLinksRDDTest extends FunSuite {
     assert("Twitter" == extracted.last._3)
   }
 
-  test("relative") {
+  test("Extract relative links RDD") {
     val fragmentLocal: String = "Here is <a href=\"http://www.google.com\">" +
     "a search engine</a>.\nHere is a <a href=\"page.html\">a relative URL</a>.\n"
     val fooFragmentLocal = "http://www.foobar.org/page.html"
@@ -56,7 +56,7 @@ class ExtractLinksRDDTest extends FunSuite {
     assert("a relative URL" == extracted.last._3)
   }
 
-  test("errors") {
+  test("Test link errors RDD") {
     val bytes: Array[Byte] = "wronglyTyped".getBytes()
     val invalid: String = "Here is a fake url <a href=\"http://www.google.com\"> bogus search engine</a>."
     // scalastyle:off null

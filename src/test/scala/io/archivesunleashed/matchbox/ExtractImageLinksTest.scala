@@ -24,27 +24,32 @@ import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class ExtractImageLinksRDDTest extends FunSuite {
-  test("simple") {
-    val fragment =
-      """Image here: <img src="http://foo.bar.com/pic.png"> and another <img src="http://baz.org/a/b/banner.jpg"/>"""
-    val extracted = ExtractImageLinksRDD("", fragment).toList
+  test("Extract simple image links RDD") {
+    val fragment: String =
+      """Image here: <img src="http://foo.bar.com/pic.png" alt="picture"> and another <img src="http://baz.org/a/b/banner.jpg" alt="baz banner"/>"""
+    val extracted: Seq[(String, String, String)] = ExtractImageLinksRDD("", fragment)
     assert(extracted.size == 2)
-    assert("http://foo.bar.com/pic.png" == extracted(0))
-    assert("http://baz.org/a/b/banner.jpg" == extracted(1))
+    assert("http://foo.bar.com/pic.png" == extracted(0)._2)
+    assert("picture" == extracted(0)._3)
+    assert("http://baz.org/a/b/banner.jpg" == extracted(1)._2)
+    assert("baz banner" == extracted(1)._3)
   }
 
-  test("relative") {
-    val fragment =
-      """Image here: <img src="pic.png"> and another <img src="http://baz.org/a/b/banner.jpg"/> and <img src="../logo.gif"/>"""
-    val extracted = ExtractImageLinksRDD("http://foo.bar.com/a/page.html", fragment)
+  test("Extract relative image links RDD") {
+    val fragment: String =
+      """Image here: <img src="pic.png" alt="picture"> and another <img src="http://baz.org/a/b/banner.jpg" alt="baz banner" /> and <img src="../logo.gif" alt="LOGO" />"""
+    val extracted: Seq[(String, String, String)] = ExtractImageLinksRDD("http://foo.bar.com/a/page.html", fragment)
     assert(extracted.size == 3)
-    assert("http://foo.bar.com/a/pic.png" == extracted(0))
-    assert("http://baz.org/a/b/banner.jpg" == extracted(1))
-    assert("http://foo.bar.com/logo.gif" == extracted(2))
+    assert("http://foo.bar.com/a/pic.png" == extracted(0)._2)
+    assert("picture" == extracted(0)._3)
+    assert("http://baz.org/a/b/banner.jpg" == extracted(1)._2)
+    assert("baz banner" == extracted(1)._3)
+    assert("http://foo.bar.com/logo.gif" == extracted(2)._2)
+    assert("LOGO" == extracted(2)._3)
   }
 
-  test("errors") {
-    val fragment =
+  test("Test image link errors RDD") {
+    val fragment: String =
       """Image here: <img src="pic.png"> and another <img src="http://baz.org/a/b/banner.jpg"/> and <img src="../logo.gif"/>"""
     assert(ExtractImageLinksRDD("", "") == Nil)
     // Need way of creating an exception here

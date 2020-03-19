@@ -23,13 +23,11 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
-class ExtractPopularImagesDFTest extends FunSuite with BeforeAndAfter {
+class ExtractImageDetailsDFTest extends FunSuite with BeforeAndAfter {
   private val arcPath = Resources.getResource("arc/example.arc.gz").getPath
   private var sc: SparkContext = _
   private val master = "local[4]"
   private val appName = "example-spark"
-  private val testVertexFile = "temporaryTestVertexDir"
-  private val testEdgesFile = "temporaryTestEdgesDir"
 
   before {
     val conf = new SparkConf()
@@ -39,14 +37,13 @@ class ExtractPopularImagesDFTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Extract popular images DF") {
-    val highTest = 507
-    val exampledf = RecordLoader.loadArchives(arcPath, sc).images()
-    val imagesLowLimit = ExtractPopularImagesDF(exampledf, 3)
-    val imagesHighLimit = ExtractPopularImagesDF(exampledf, highTest)
-    val response = "1"
-    assert (imagesLowLimit.take(1)(0)(1).toString == response)
-    assert (imagesHighLimit.take(1)(0)(1).toString == response)
+  test("Extracts image details DF") {
+    val exampledf = RecordLoader.loadArchives(arcPath, sc).keepImages().all()
+    val imageDetails = ExtractImageDetailsDF(exampledf)
+    val response1 = "http://www.archive.org/images/logoc.jpg"
+    val response2 = "logoc.jpg"
+    assert (imageDetails.take(1)(0)(1).toString == response1)
+    assert (imageDetails.take(1)(0)(2).toString == response2)
   }
   after {
     if (sc != null) {

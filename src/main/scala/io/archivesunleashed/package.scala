@@ -43,6 +43,7 @@ import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 import org.apache.spark.{RangePartitioner, SerializableWritable, SparkContext}
 import scala.reflect.ClassTag
 import scala.util.matching.Regex
+import scala.util.Try
 
 /**
   * Package object which supplies implicits to augment generic RDDs with AUT-specific transformations.
@@ -112,190 +113,6 @@ package object archivesunleashed {
                )
         .filter($"http_status_code" === 200)
     }
-
-    /** Filters ArchiveRecord MimeTypes (web server).
-      *
-      * @param mimeTypes a list of Mime Types
-      */
-    def discardMimeTypesDF(mimeTypes: Set[String]): DataFrame = {
-      val filteredMimeType = udf((mimeType: String) => !mimeTypes.contains(mimeType))
-      df.filter(filteredMimeType($"mime_type_web_server"))
-    }
-
-    /** Filters detected dates.
-      *
-      * @param date a list of dates
-      */
-    def discardDateDF(date: String): DataFrame = {
-      val filteredDate = udf((date_ : String) => date_ != date)
-      df.filter(filteredDate($"crawl_date"))
-    }
-
-    /** Filters detected URLs.
-      *
-      * @param urls a list of urls
-      */
-    def discardUrlsDF(urls: Set[String]): DataFrame = {
-      val filteredUrls = udf((url: String) => !urls.contains(url))
-      df.filter(filteredUrls($"url"))
-    }
-
-    /** Filters detected domains.
-      *
-      * @param domains a list of domains for the source domains
-      */
-    def discardDomainsDF(domains: Set[String]): DataFrame = {
-      val filteredDomains = udf((domain: String) => !domains.contains(domain))
-      df.filter(filteredDomains(ExtractDomainDF($"url")))
-    }
-
-    /** Filters detected HTTP status codes.
-      *
-      * @param statusCodes a list of HTTP status codes
-      */
-    def discardHttpStatusDF(statusCodes: Set[String]): DataFrame = {
-      val filteredHttpStatus = udf((statusCode: String) => !statusCodes.contains(statusCode))
-      df.filter(filteredHttpStatus($"http_status_code"))
-    }
-
-    /** Filters detected content (regex).
-      *
-      * @param contentREs a list of regular expressions
-      */
-    def discardContentDF(contentREs: Set[Regex]): DataFrame = {
-      val filteredContent = udf((c: String) => {
-                          !contentREs.map(re =>
-                          (re findFirstIn c) match {
-                            case Some(v) => true
-                            case None => false
-                          }).exists(identity)
-                        })
-      df.filter(filteredContent($"content"))
-    }
-
-    /** Filters detected URL patterns (regex).
-     *
-     *  @param urlREs a list of Regular expressions
-     */
-    def discardUrlPatternsDF(urlREs: Set[Regex]): DataFrame = {
-      val filteredUrlPatterns = udf((urlPattern: String) => {
-                              !urlREs.map(re =>
-                                urlPattern match {
-                                  case re() => true
-                                  case _ => false
-                              }).exists(identity)
-                            })
-      df.filter(filteredUrlPatterns($"url"))
-    }
-
-    /** Filters detected language.
-      *
-      * @param lang a set of ISO 639-2 codes
-      */
-    def discardLanguagesDF(lang: Set[String]): DataFrame = {
-      val filteredLanguage = udf((language: String) => !lang.contains(language))
-      df.filter(filteredLanguage(DetectLanguageDF(RemoveHTMLDF($"content"))))
-    }
-
-    /** Removes all data except images. */
-    def keepImagesDF(): DataFrame = {
-      val takeImages = udf((date: String, mimeType: String) => date != null && mimeType.startsWith("image/"))
-      df.filter(takeImages($"crawl_date", DetectMimeTypeTikaDF($"bytes")))
-    }
-
-    /** Removes all data that does not have selected HTTP status codes.
-     *
-     *  @param statusCodes a list of HTTP status codes
-     */
-    def keepHttpStatusDF(statusCodes: Set[String]): DataFrame = {
-      val takeHttpStatus = udf((statusCode: String) => statusCodes.contains(statusCode))
-      df.filter(takeHttpStatus($"http_status_code"))
-    }
-
-    /** Removes all data that does not have selected date.
-      *
-      * @param dates a list of dates
-      * @param component the selected DateComponent string
-      */
-    def keepDateDF(dates: List[String], component: String = "YYYYMMDD"): DataFrame = {
-      val takeDate = udf((date : String) => dates.contains(date))
-      df.filter(takeDate(ExtractDateDF($"crawl_date",lit(component))))
-    }
-
-    /** Removes all data but selected exact URLs.
-      *
-      * @param urls a list of URLs to keep
-      */
-    def keepUrlsDF(urls: Set[String]): DataFrame = {
-      val takeUrls = udf((url: String) => urls.contains(url))
-      df.filter(takeUrls($"url"))
-    }
-
-    /** Removes all data but selected source domains.
-      *
-      * @param urls a list of urls for the source domains
-      */
-    def keepDomainsDF(domains: Set[String]): DataFrame = {
-      val takeDomains = udf((domain: String) => domains.contains(domain))
-      df.filter(takeDomains(ExtractDomainDF($"url")))
-    }
-
-    /** Removes all data but selected mimeTypeTikas specified.
-      *
-      * @param mimeTypesTika a list of Mime Types Tika
-      */
-    def keepMimeTypesTikaDF(mimeTypes: Set[String]): DataFrame = {
-      val takeMimeTypeTika = udf((mimeTypeTika: String) => mimeTypes.contains(mimeTypeTika))
-      df.filter(takeMimeTypeTika(DetectMimeTypeTikaDF($"bytes")))
-    }
-
-    /** Removes all data but selected mimeTypes specified.
-      *
-      * @param mimeTypes a list of Mime Types
-      */
-    def keepMimeTypesDF(mimeTypes: Set[String]): DataFrame = {
-      val takeMimeType = udf((mimeType: String) => mimeTypes.contains(mimeType))
-      df.filter(takeMimeType($"mime_type_web_server"))
-    }
-
-    /** Removes all content that does not pass Regular Expression test.
-      *
-      * @param contentREs a list of regular expressions to keep
-      */
-    def keepContentDF(contentREs: Set[Regex]): DataFrame = {
-      val takeContent = udf((c: String) => {
-                          contentREs.map(re =>
-                            (re findFirstIn c) match {
-                              case Some(v) => true
-                              case None => false
-                          }).exists(identity)
-                        })
-      df.filter(takeContent($"content"))
-    }
-
-    /** Removes all data but selected URL patterns.
-      *
-      * @param urlREs a list of regular expressions
-      */
-    def keepUrlPatternsDF(urlREs: Set[Regex]): DataFrame = {
-      val takeUrlPatterns = udf((urlPattern: String) => {
-                              urlREs.map(re =>
-                                urlPattern match {
-                                  case re() => true
-                                  case _ => false
-                              }).exists(identity)
-                            })
-      df.filter(takeUrlPatterns($"url"))
-    }
-
-    /** Removes all data not in selected language.
-      *
-      * @param lang a set of ISO 639-2 codes
-      */
-    def keepLanguagesDF(lang: Set[String]): DataFrame = {
-      val takeLanguage = udf((language: String) => lang.contains(language))
-      df.filter(takeLanguage((DetectLanguageDF(RemoveHTMLDF($"content")))))
-    }
   }
 
   /**
@@ -363,7 +180,7 @@ package object archivesunleashed {
       val records = rdd
         .keepValidPages()
         .flatMap(r => ExtractLinksRDD(r.getUrl, r.getContentString)
-        .map(t => (r.getCrawlDate, t._1, t._2, t._3)))
+          .map(t => (r.getCrawlDate, t._1, t._2, t._3)))
         .filter(t => t._2 != "" && t._3 != "")
         .map(t => Row(t._1, t._2, t._3, t._4))
 
@@ -378,19 +195,19 @@ package object archivesunleashed {
     }
 
     /* Extracts all the images links from a source page. */
-    def imageLinks(): DataFrame = {
+    def imagegraph(): DataFrame = {
       val records = rdd
         .keepValidPages()
-        .flatMap(r => {
-          val src = r.getUrl
-          val imageUrls = ExtractImageLinksRDD(src, r.getContentString)
-          imageUrls.map(url => (src, url))
-        })
-        .map(t => Row(t._1, t._2))
+        .flatMap(r => ExtractImageLinksRDD(r.getUrl, r.getContentString)
+          .map(t => (r.getCrawlDate, t._1, t._2, t._3)))
+        .filter(t => t._2 != "" && t._3 != "")
+        .map(t => Row(t._1, t._2, t._3, t._4))
 
       val schema = new StructType()
+        .add(StructField("crawl_date", StringType, true))
         .add(StructField("src", StringType, true))
         .add(StructField("image_url", StringType, true))
+        .add(StructField("alt_text", StringType, true))
 
       val sqlContext = SparkSession.builder();
       sqlContext.getOrCreate().createDataFrame(records, schema)
@@ -406,12 +223,13 @@ package object archivesunleashed {
           val url = new URL(r.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
           val extension = GetExtensionMimeRDD(url.getPath(), mimeTypeTika)
-          (r.getUrl, filename, extension, r.getMimeType, mimeTypeTika,
+          (r.getCrawlDate, r.getUrl, filename, extension, r.getMimeType, mimeTypeTika,
             image.width, image.height, image.md5Hash, image.sha1Hash, image.body)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10, t._11))
 
       val schema = new StructType()
+        .add(StructField("crawl_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -442,12 +260,13 @@ package object archivesunleashed {
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
           val extension = GetExtensionMimeRDD(url.getPath(), r._2)
-          (r._1.getUrl, filename, extension, r._1.getMimeType,
+          (r._1.getCrawlDate, r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
 
       val schema = new StructType()
+        .add(StructField("crawl_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -476,12 +295,13 @@ package object archivesunleashed {
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
           val extension = GetExtensionMimeRDD(url.getPath(), r._2)
-          (r._1.getUrl, filename, extension, r._1.getMimeType,
+          (r._1.getCrawlDate, r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
 
       val schema = new StructType()
+        .add(StructField("crawl_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -510,12 +330,13 @@ package object archivesunleashed {
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
           val extension = GetExtensionMimeRDD(url.getPath(), r._2)
-          (r._1.getUrl, filename, extension, r._1.getMimeType,
+          (r._1.getCrawlDate, r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
 
       val schema = new StructType()
+        .add(StructField("crawl_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -577,12 +398,13 @@ package object archivesunleashed {
             }
           }
           val extension = GetExtensionMimeRDD(url.getPath(), mimeType)
-          (r._1.getUrl, filename, extension, r._1.getMimeType,
+          (r._1.getCrawlDate, r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
 
       val schema = new StructType()
+        .add(StructField("crawl_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -623,12 +445,13 @@ package object archivesunleashed {
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
           val extension = GetExtensionMimeRDD(url.getPath(), r._2)
-          (r._1.getUrl, filename, extension, r._1.getMimeType,
+          (r._1.getCrawlDate, r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
 
       val schema = new StructType()
+        .add(StructField("crawl_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -674,12 +497,13 @@ package object archivesunleashed {
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
           val extension = GetExtensionMimeRDD(url.getPath(), r._2)
-          (r._1.getUrl, filename, extension, r._1.getMimeType,
+          (r._1.getCrawlDate, r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
 
       val schema = new StructType()
+        .add(StructField("crawl_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -714,12 +538,13 @@ package object archivesunleashed {
           val url = new URL(r.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
           val extension = FilenameUtils.getExtension(url.getPath())
-          (r.getUrl, filename, extension, r.getMimeType,
+          (r.getCrawlDate, r.getUrl, filename, extension, r.getMimeType,
             DetectMimeTypeTika(r.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8))
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
 
       val schema = new StructType()
+        .add(StructField("crawl_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))

@@ -38,9 +38,9 @@ class ImageLinksTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Fetch image links") {
+  test("Image links extraction DF") {
     val df = RecordLoader.loadArchives(arcPath, sc)
-      .imageLinks()
+      .imagegraph()
 
     // We need this in order to use the $-notation
     val spark = SparkSession.builder().master("local").getOrCreate()

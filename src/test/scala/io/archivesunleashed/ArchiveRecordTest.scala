@@ -46,12 +46,12 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("count records") {
+  test("Count records") {
     assert(RecordLoader.loadArchives(arcPath, sc).count == 300L)
     assert(RecordLoader.loadArchives(warcPath, sc).count == 299L)
   }
 
-  test("Resource name produces expected result.") {
+  test("Resource name produces expected result") {
     val textSampleArc = RecordLoader.loadArchives(arcPath, sc)
      .map(x => FilenameUtils.getName(x.getArchiveFilename))
      .take(3)
@@ -81,7 +81,7 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
     assert(textSampleWarc.deep == Array("", exampleUrl, exampleUrl).deep)
   }
 
-  test("Urls") {
+  test("URLs") {
     val textSampleArc = RecordLoader.loadArchives(arcPath, sc)
      .map(x => x.getUrl).take(3)
     val textSampleWarc = RecordLoader.loadArchives(warcPath, sc)
@@ -92,7 +92,7 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
       "http://www.archive.org/robots.txt", "http://www.archive.org/").deep)
   }
 
-  test("Mime-Type") {
+  test("MIMEtype") {
     val textSampleArc = RecordLoader.loadArchives(arcPath, sc)
       .map(x => x.getMimeType).take(3)
     val textSampleWarc = RecordLoader.loadArchives(warcPath, sc)
@@ -103,7 +103,7 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
       "text/html").deep)
   }
 
-  test("Get Http Status") {
+  test("Get HTTP status") {
     val textSampleArc = RecordLoader.loadArchives(arcPath, sc)
       .map(x => x.getHttpStatus).take(3)
     val textSampleWarc = RecordLoader.loadArchives(warcPath, sc)

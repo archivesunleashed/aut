@@ -39,7 +39,7 @@ class ExtractPopularImagesRDDTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("extracts popular images") {
+  test("Extract popular images RDD") {
     val highTest = 507
     val examplerdd = RecordLoader.loadArchives(arcPath, sc)
     val imagesLowLimit = ExtractPopularImagesRDD(examplerdd, 3, sc)

@@ -42,26 +42,26 @@ class ExtractDomainRDDTest extends FunSuite {
   private val data3 = Seq.newBuilder.+=(
     ("http://www.seetorontonow.canada-booknow.com\\booking_results.php", "www.seetorontonow.canada-booknow.com")).result()
 
-  test("simple") {
+  test("Extract simple domain extraction RDD") {
     data1.foreach {
       case (link, domain) => assert(ExtractDomainRDD(link) == domain)
     }
   }
 
-  test("withBase") {
+  test("Extract domains with base RDD") {
     data2.foreach {
       case (link, base, domain) => assert(ExtractDomainRDD(link, base) == domain)
     }
   }
 
-  test("error") {
+  test("Test for domain errors RDD") {
     // scalastyle:off null
     assert(ExtractDomainRDD(null) == "")
     assert(ExtractDomainRDD(index, null) == "")
     // scalastyle:on null
   }
 
-  test("backslash") {
+  test("Test for domain backslash RDD") {
     data3.foreach {
       case (link, domain) => assert(ExtractDomainRDD(link) == domain)
     }

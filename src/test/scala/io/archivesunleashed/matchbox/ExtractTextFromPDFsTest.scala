@@ -24,7 +24,7 @@ import org.scalatest.Matchers
 
 @RunWith(classOf[JUnitRunner])
 class ExtractTextFromPDFsTest extends FunSuite with Matchers {
-  test("get parser") {
+  test("Get PDF parser") {
     ExtractTextFromPDFs.pdfParser shouldBe a[PDFParser]
   }
 }

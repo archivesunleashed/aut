@@ -24,7 +24,7 @@ import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class RemoveHTMLRDDTest extends FunSuite {
-  test("simple") {
+  test("Remove HTML RDD") {
     val html =
       """
       <html>
