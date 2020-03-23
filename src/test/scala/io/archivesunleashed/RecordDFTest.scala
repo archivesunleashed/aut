@@ -214,6 +214,22 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     assert (base.toString == expected)
   }
 
+  test("Has Date") {
+    val spark = SparkSession.builder().master("local").getOrCreate()
+    // scalastyle:off
+    import spark.implicits._
+    // scalastyle:on
+
+    val expected = Array("20080430")
+    val base = RecordLoader.loadArchives(arcPath, sc)
+      .all()
+      .select($"crawl_date")
+      .filter(!hasDate($"crawl_date", lit(expected)))
+      .take(1)(0)(0)
+
+    assert (base.toString == "20080430")
+  }
+
   after {
     if (sc != null) {
       sc.stop()

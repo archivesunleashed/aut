@@ -66,7 +66,7 @@ package object df {
 
   val hasMIMETypesTika = udf((mimeType: String, mimeTypesTika: Seq[String]) => mimeTypesTika.contains(mimeType))
 
-  val hasDate = udf((date_ : String, date: String) => date_ == date)
+  val hasDate = udf((date_ : String, date: Seq[String]) => date_ == date)
 
   val hasUrls = udf((url: String, urls: Seq[String]) => urls.contains(url))
 
