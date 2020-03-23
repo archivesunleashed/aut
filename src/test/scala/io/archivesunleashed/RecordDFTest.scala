@@ -224,7 +224,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     val base = RecordLoader.loadArchives(arcPath, sc)
       .all()
       .select($"crawl_date")
-      .filter(!hasDate($"crawl_date", lit(expected)))
+      .filter(hasDate($"crawl_date", lit(expected)))
       .take(1)(0)(0)
 
     assert (base.toString == "20080430")
