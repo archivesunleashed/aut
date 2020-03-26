@@ -21,13 +21,13 @@ import org.apache.spark.sql.DataFrame
 
 class DataFrameLoader(sc: SparkContext) {
 
-  /** Create a DataFram with crawl_date, url, mime_type_web_server, and content. */
+  /** Create a DataFrame with crawl_date, url, mime_type_web_server, and content. */
   def webpages(path: String): DataFrame = {
     RecordLoader.loadArchives(path, sc)
       .webpages()
   }
 
-  /** Create a DataFram with crawl_date, url, mime_type_web_server, content and bytes. */
+  /** Create a DataFrame with crawl_date, url, mime_type_web_server, content and bytes. */
   def all(path: String): DataFrame = {
     RecordLoader.loadArchives(path, sc)
       .keepValidPages()
