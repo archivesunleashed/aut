@@ -16,39 +16,20 @@
 
 package io.archivesunleashed.app
 
-import io.archivesunleashed.df.{ExtractDomainDF}
-import io.archivesunleashed.matchbox.{ExtractDomainRDD}
-import io.archivesunleashed.{ArchiveRecord, DataFrameLoader, CountableRDD}
-import org.apache.spark.rdd.RDD
+import io.archivesunleashed.{ArchiveRecord, DataFrameLoader}
 import org.apache.spark.sql.functions.desc
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
-object DomainFrequencyExtractor {
-  /** Extract domain frequency from web archive using RDD.
-    *
-    * @param records RDD[ArchiveRecord] obtained from RecordLoader
-    * @return RDD[(String,Int))], which is (domain, count)
-    */
-  def apply(records: RDD[ArchiveRecord]): RDD[(String, Int)] = {
-      records
-        .keepValidPages()
-        .map(r => ExtractDomainRDD(r.getUrl))
-        .countItems()
-  }
+object ImageGraphExtractor {
 
-  /** Extract domain frequency from web archive using DataFrame and Spark SQL.
+  /** Extract image graph from web archive using DataFrame and Spark SQL.
     *
     * @param d DataFrame obtained from RecordLoader
-    * @return Dataset[Row], where the schema is (domain, count)
+    * @return Dataset[Row], where the schema is (crawl date, src, image url,
+    *   alt text)
     */
   def apply(d: DataFrame): Dataset[Row] = {
     val spark = SparkSession.builder().master("local").getOrCreate()
-    // scalastyle:off
-    import spark.implicits._
-    // scalastyle:on
-
-    d.groupBy(ExtractDomainDF($"url").as("domain"))
-      .count()
-      .sort($"count".desc)
+    d
   }
 }

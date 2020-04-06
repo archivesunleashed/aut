@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.archivesunleashed.app
 
 import com.google.common.io.Resources
@@ -23,28 +24,33 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
-class ExtractImageDetailsDFTest extends FunSuite with BeforeAndAfter {
-  private val arcPath = Resources.getResource("arc/example.arc.gz").getPath
+class WebPagesExtractorTest extends FunSuite with BeforeAndAfter {
+  private val arcPath = Resources.getResource("warc/example.warc.gz").getPath
   private var sc: SparkContext = _
   private val master = "local[4]"
   private val appName = "example-spark"
 
   before {
     val conf = new SparkConf()
-    .setMaster(master)
-    .setAppName(appName)
-    conf.set("spark.driver.allowMultipleContexts", "true");
+      .setMaster(master)
+      .setAppName(appName)
+    conf.set("spark.driver.allowMultipleContexts", "true")
     sc = new SparkContext(conf)
   }
 
-  test("Extracts image details DF") {
-    val exampledf = RecordLoader.loadArchives(arcPath, sc).keepImages().all()
-    val imageDetails = ExtractImageDetailsDF(exampledf)
-    val response1 = "http://www.archive.org/images/logoc.jpg"
-    val response2 = "logoc.jpg"
-    assert (imageDetails.take(1)(0)(1).toString == response1)
-    assert (imageDetails.take(1)(0)(2).toString == response2)
+  test("Web pages extractor DF") {
+    val df = RecordLoader.loadArchives(arcPath, sc).webpages()
+    val dfResults = WebPagesExtractor(df).collect()
+    val RESULTSLENGTH = 94
+
+    assert(dfResults.length == RESULTSLENGTH)
+    assert(dfResults(0).get(0) == "20080430")
+    assert(dfResults(0).get(1) == "http://www.archive.org/")
+    assert(dfResults(0).get(2) == "text/html")
+    assert(dfResults(0).get(3) == "text/html")
+    assert(dfResults(0).get(4) == "en")
   }
+
   after {
     if (sc != null) {
       sc.stop()

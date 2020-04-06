@@ -23,31 +23,15 @@ import io.archivesunleashed.df.{ExtractDomainDF, RemoveHTMLDF,
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
-object PlainTextExtractor {
-  /** Extract plain text from web archive using RDD.
-    *
-    * @param records RDD[ArchiveRecord] obtained from RecordLoader
-    * @return RDD[(String, String, String, String)], which is
-    *         (crawl date, domain, url, text)
-    */
-  def apply(records: RDD[ArchiveRecord]): RDD[(String, String, String, String)] = {
-    records
-      .keepValidPages()
-      .map(r => (r.getCrawlDate, r.getDomain, r.getUrl,
-        RemoveHTMLRDD(RemoveHTTPHeaderRDD(r.getContentString))))
-  }
-
-  /** Extract plain text from web archive using DataFrame and Spark SQL.
+object WebPagesExtractor {
+  /** Extract web pages from web archive using DataFrame and Spark SQL.
     *
     * @param d DataFrame obtained from RecordLoader
-    * @return Dataset[Row], where the schema is (crawl date, domain, url, text)
+    * @return Dataset[Row], where the schema is (crawl date, url,
+    *   mime_type_web_server, mime_type_tika, language, content)
     */
   def apply(d: DataFrame): Dataset[Row] = {
     val spark = SparkSession.builder().master("local").getOrCreate()
-    // scalastyle:off
-    import spark.implicits._
-    // scalastyle:on
-    d.select($"crawl_date", ExtractDomainDF($"url").as("domain"),
-      $"url", RemoveHTMLDF(RemoveHTTPHeaderDF($"content")).as("text"))
+    d
   }
 }
