@@ -24,11 +24,11 @@ import org.apache.spark.sql.functions.desc
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
 object DomainGraphExtractor {
-  /** Extract domain graph from web archive using MapReduce.
+  /** Extract domain graph from web archive using RDD.
     *
     * @param records RDD[ArchiveRecord] obtained from RecordLoader
     * @return RDD[(String, String, String), Int],
-    *         which holds ((CrawlDate, SourceDomain, DestinationDomain), Frequency)
+    *         which is ((CrawlDate, SourceDomain, DestinationDomain), Frequency)
     */
   def apply(records: RDD[ArchiveRecord]): RDD[((String, String, String), Int)] = {
     records
@@ -44,9 +44,9 @@ object DomainGraphExtractor {
       .filter(r => r._2 > 5)
   }
 
-  /** Extract domain graph from web archive using Data Frame and Spark SQL.
+  /** Extract domain graph from web archive using DataFrame and Spark SQL.
     *
-    * @param d Data frame obtained from RecordLoader
+    * @param d DataFrame obtained from RecordLoader
     * @return Dataset[Row], where the schema is (CrawlDate, SrcDomain, DestDomain, count)
     */
   def apply(d: DataFrame): Dataset[Row] = {
