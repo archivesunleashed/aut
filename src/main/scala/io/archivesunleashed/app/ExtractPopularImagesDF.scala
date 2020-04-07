@@ -27,7 +27,7 @@ object ExtractPopularImagesDF {
 
   /** Extracts the <i>n</i> most popular images from an Data Frame within a given size range.
    *
-   * @param d Data frame obtained from RecordLoader
+   * @param d DataFrame obtained from RecordLoader
    * @param limit number of most popular images in the output
    * @param minWidth of image
    * @param minHeight of image

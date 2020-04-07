@@ -48,11 +48,11 @@ import org.rogach.scallop.ScallopConf
  * FORMAT is meant to work with DomainGraphExtractor
  * Two supported options are TEXT (default) or GEXF
  *
- * If --df is present, the program will use data frame to carry out analysis
+ * If --df is present, the program will use a DataFrame to carry out analysis
  *
  * If --split is present, the program will put results for each input file in its own folder. Otherwise they will be merged.
  *
- * If --partition N is present, the program will partition RDD or Data Frame according to N before writing results.
+ * If --partition N is present, the program will partition RDD or DataFrame according to N before writing results.
  * Otherwise, the partition is left as is.
  */
 
@@ -127,7 +127,7 @@ class CommandLineApp(conf: CmdAppConf) {
       })
   )
 
-  /** Maps extractor type string to Data Frame Extractors.
+  /** Maps extractor type string to DataFrame Extractors.
     *
     * Each closure takes a list of file names to be extracted, loads them using RecordLoader,
     * performs the extraction, and saves results to file by calling save method of
@@ -157,6 +157,14 @@ class CommandLineApp(conf: CmdAppConf) {
           save(DomainGraphExtractor(df))
         }
       }),
+    "ImageGraphExtractor" ->
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).imagegraph()
+        inputFiles.tail foreach { f =>
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).imagegraph())
+        }
+        save(ImageGraphExtractor(df))
+      }),
     "PlainTextExtractor" ->
       ((inputFiles: List[String]) => {
         var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).webpages()
@@ -164,13 +172,21 @@ class CommandLineApp(conf: CmdAppConf) {
           df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).webpages())
         }
         save(PlainTextExtractor(df))
+      }),
+    "WebPagesExtractor" ->
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).webpages()
+        inputFiles.tail foreach { f =>
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).webpages())
+        }
+        save(WebPagesExtractor(df))
       })
   )
 
-  /** Generic routine for saving Dataset obtained from querying Data Frames to file.
+  /** Generic routine for saving Dataset obtained from querying DataFrames to file.
     * Files may be merged according to options specified in 'partition' setting.
     *
-    * @param d generic dataset obtained from querying Data Frame
+    * @param d generic dataset obtained from querying DataFrame
     * @return Unit
     */
 
@@ -222,14 +238,14 @@ class CommandLineApp(conf: CmdAppConf) {
     }
   }
 
-  /** Prepare for invoking Data Frame implementation of extractors.
+  /** Prepare for invoking DataFrame implementation of extractors.
     *
     * @return Any
     */
 
   def dfHandler(): Any = {
     if (!(dfExtractors contains configuration.extractor())) {
-      logger.error(configuration.extractor() + " not supported with data frame. " +
+      logger.error(configuration.extractor() + " not supported with DataFrame. " +
         "The following extractors are supported: ")
       dfExtractors foreach { tuple => logger.error(tuple._1) }
       throw new IllegalArgumentException()
@@ -290,7 +306,7 @@ class CommandLineApp(conf: CmdAppConf) {
     }
   }
 
-  /** Choose either Data Frame implementation or RDD implementation of extractors
+  /** Choose either DataFrame implementation or RDD implementation of extractors
     * depending on the option specified in command line arguments.
     *
     * @return Any
