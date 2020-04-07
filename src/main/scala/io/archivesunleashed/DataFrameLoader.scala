@@ -40,7 +40,7 @@ class DataFrameLoader(sc: SparkContext) {
       .webgraph()
   }
 
-  /* Create a DataFrame with source page, and image url. */
+  /* Create a DataFrame with crawl date, source page, image url, and alt text. */
   def imagegraph(path: String): DataFrame = {
     RecordLoader.loadArchives(path, sc)
       .imagegraph()
