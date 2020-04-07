@@ -40,6 +40,8 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
   private val dfOpt = "--df"
   private val plainTextOpt = "PlainTextExtractor"
   private val domainGraphOpt = "DomainGraphExtractor"
+  private val imageGraphOpt = "ImageGraphExtractor"
+  private val webPagesOpt = "WebPagesExtractor"
   private var sc: SparkContext = _
   private val testSuccessCmds = Array(
     Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, "DomainFrequencyExtractor"),
@@ -53,7 +55,11 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
     Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, plainTextOpt, dfOpt, "--split"),
     Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, plainTextOpt, dfOpt, "--partition", "1"),
     Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, plainTextOpt, "--split"),
-    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, "--partition", "1", extractOpt, plainTextOpt)
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, "--partition", "1", extractOpt, plainTextOpt),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, imageGraphOpt, dfOpt),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, imageGraphOpt, dfOpt, "--partition", "1"),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, webPagesOpt, dfOpt),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, webPagesOpt, dfOpt, "--partition", "1")
   )
 
   private val testFailCmds = Array(
