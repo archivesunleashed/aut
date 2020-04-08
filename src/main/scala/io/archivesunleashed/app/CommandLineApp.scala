@@ -46,7 +46,7 @@ import org.rogach.scallop.ScallopConf
  * OUTPUT_DIRECTORY is the directory to put result in
  *
  * FORMAT is meant to work with DomainGraphExtractor
- * Two supported options are TEXT (default) or GEXF
+ * Three supported options are TEXT (default), GEXF, or GRAPHML
  *
  * If --df is present, the program will use a DataFrame to carry out analysis
  *
@@ -82,7 +82,7 @@ class CmdAppConf(args: Seq[String]) extends ScallopConf(args) {
   val input = opt[List[String]](descr = "input file path", required = true)
   val output = opt[String](descr = "output directory path", required = true)
   val outputFormat = opt[String](descr =
-    "output format for DomainGraphExtractor, one of TEXT or GEXF")
+    "output format for DomainGraphExtractor, one of TEXT, GEXF, or GRAPHML")
   val split = opt[Boolean]()
   val df = opt[Boolean]()
   val partition = opt[Int]()
@@ -117,6 +117,9 @@ class CommandLineApp(conf: CmdAppConf) {
         if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "GEXF") {
           new File(saveTarget).mkdirs()
           WriteGEXF(DomainGraphExtractor(rdd), Paths.get(saveTarget).toString + "/GEXF.xml")
+        } else if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "GRAPHML") {
+          new File(saveTarget).mkdirs()
+          WriteGraphML(DomainGraphExtractor(rdd), Paths.get(saveTarget).toString + "/GRAPHML.xml")
         } else {
           save(DomainGraphExtractor(rdd))
         }
@@ -153,6 +156,9 @@ class CommandLineApp(conf: CmdAppConf) {
         if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "GEXF") {
           new File(saveTarget).mkdirs()
           WriteGEXF(DomainGraphExtractor(df).collect(), Paths.get(saveTarget).toString + "/GEXF.xml")
+        } else if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "GRAPHML") {
+          new File(saveTarget).mkdirs()
+          WriteGraphML(DomainGraphExtractor(df).collect(), Paths.get(saveTarget).toString + "/GRAPHML.xml")
         } else {
           save(DomainGraphExtractor(df))
         }
