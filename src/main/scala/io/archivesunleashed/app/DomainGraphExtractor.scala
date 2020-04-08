@@ -16,7 +16,7 @@
 
 package io.archivesunleashed.app
 
-import io.archivesunleashed.df
+import io.archivesunleashed.df.{ExtractDomainDF, RemovePrefixWWWDF}
 import io.archivesunleashed.matchbox.{ExtractDomainRDD, ExtractLinksRDD}
 import io.archivesunleashed.{ArchiveRecord, DataFrameLoader, CountableRDD}
 import org.apache.spark.rdd.RDD
@@ -36,8 +36,8 @@ object DomainGraphExtractor {
       .map(r => (r.getCrawlDate, ExtractLinksRDD(r.getUrl, r.getContentString)))
       .flatMap(r => r._2.map(f =>
         (r._1,
-          ExtractDomainRDD(f._1).replaceAll("^\\\\s*www\\\\.", ""),
-          ExtractDomainRDD(f._2).replaceAll("^\\\\s*www\\\\.", ""))
+          ExtractDomainRDD(f._1).replaceAll("^\\s*www\\.", ""),
+          ExtractDomainRDD(f._2).replaceAll("^\\s*www\\.", ""))
         ))
       .filter(r => r._2 != "" && r._3 != "")
       .countItems()
@@ -54,10 +54,14 @@ object DomainGraphExtractor {
     // scalastyle:off
     import spark.implicits._
     // scalastyle:on
-    d.select($"crawl_date",
-      df.RemovePrefixWWWDF(df.ExtractDomainDF($"src")).as("src_domain"),
-      df.RemovePrefixWWWDF(df.ExtractDomainDF($"dest")).as("dest_domain"))
-      .filter("src_domain != ''").filter("dest_domain != ''")
-      .groupBy($"crawl_date", $"src_domain", $"dest_domain").count().orderBy(desc("count"))
+    d.groupBy(
+        $"crawl_date",
+        RemovePrefixWWWDF(ExtractDomainDF($"src")).as("src_domain"),
+        RemovePrefixWWWDF(ExtractDomainDF($"dest")).as("dest_domain"))
+    .count()
+    .filter(!($"dest_domain"===""))
+    .filter(!($"src_domain"===""))
+    .filter($"count" > 5)
+    .orderBy(desc("count"))
   }
 }
