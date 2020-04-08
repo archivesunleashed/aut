@@ -45,9 +45,9 @@ class DomainGraphExtractorTest extends FunSuite with BeforeAndAfter {
     assert(rddResult.length == 9)
 
     assert(rddResult(0)._1._1 == "20080430")
-    assert(rddResult(0)._1._2 == "www.archive.org")
-    assert(rddResult(0)._1._3 == "www.archive.org")
-    assert(rddResult(0)._2 == 269)
+    assert(rddResult(0)._1._2 == "archive.org")
+    assert(rddResult(0)._1._3 == "archive.org")
+    assert(rddResult(0)._2 == 280)
   }
 
   after {
