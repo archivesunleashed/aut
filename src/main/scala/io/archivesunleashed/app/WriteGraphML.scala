@@ -90,6 +90,12 @@ object WriteGraphML {
    */
   def makeFile(data: Array[Row], graphmlPath: String): Boolean = {
     val outFile = Files.newBufferedWriter(Paths.get(graphmlPath), StandardCharsets.UTF_8)
+    val nodes = scala.collection.mutable.Set[String]()
+
+    data foreach { d =>
+      nodes.add(d.get(1).asInstanceOf[String])
+      nodes.add(d.get(2).asInstanceOf[String])
+    }
 
     outFile.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
       "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\"\n" +
@@ -103,12 +109,11 @@ object WriteGraphML {
       "<key id=\"crawlDate\" for=\"edge\" attr.name=\"crawlDate\" attr.type=\"string\" />\n" +
       "<graph mode=\"static\" edgedefault=\"directed\">\n")
 
-    data foreach { n =>
-      outFile.write("<node id=\"" + ComputeMD5RDD(n.get(1).asInstanceOf[String].getBytes) + "\">\n" +
-        "<data key=\"label\">" + n.get(1).asInstanceOf[String].escapeInvalidXML() + "</data>\n</node>\n" +
-        "<node id=\"" + ComputeMD5RDD(n.get(2).asInstanceOf[String].getBytes) + "\">\n" +
-        "<data key=\"label\">" + n.get(2).asInstanceOf[String].escapeInvalidXML() + "</data>\n</node>\n")
+    nodes foreach { n =>
+      outFile.write("<node id=\"" + ComputeMD5RDD(n.asInstanceOf[String].getBytes) + "\">\n" +
+        "<data key=\"label\">" + n.asInstanceOf[String].escapeInvalidXML() + "</data>\n</node>\n")
     }
+
     data foreach { e =>
       outFile.write("<edge source=\"" + ComputeMD5RDD(e.get(1).asInstanceOf[String].getBytes) + "\" target=\"" +
         ComputeMD5RDD(e.get(2).asInstanceOf[String].getBytes) + "\" type=\"directed\">\n" +
