@@ -35,7 +35,7 @@ class WriteGEXFTest extends FunSuite with BeforeAndAfter{
   private val networkDf = Seq(("Date1", "Source1", "Destination1", 3),
                          ("Date2", "Source2", "Destination2", 4),
                          ("Date3", "Source3", "Destination3", 100))
-  private val testFile = "temporaryTestFile.txt"
+  private val testFile = "temporaryTestFile.gexf"
 
   before {
     val conf = new SparkConf()

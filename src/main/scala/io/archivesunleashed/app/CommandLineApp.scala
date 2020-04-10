@@ -116,10 +116,10 @@ class CommandLineApp(conf: CmdAppConf) {
       ((rdd: RDD[ArchiveRecord]) => {
         if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "GEXF") {
           new File(saveTarget).mkdirs()
-          WriteGEXF(DomainGraphExtractor(rdd), Paths.get(saveTarget).toString + "/GEXF.xml")
+          WriteGEXF(DomainGraphExtractor(rdd), Paths.get(saveTarget).toString + "/GEXF.gexf")
         } else if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "GRAPHML") {
           new File(saveTarget).mkdirs()
-          WriteGraphML(DomainGraphExtractor(rdd), Paths.get(saveTarget).toString + "/GRAPHML.xml")
+          WriteGraphML(DomainGraphExtractor(rdd), Paths.get(saveTarget).toString + "/GRAPHML.graphml")
         } else {
           save(DomainGraphExtractor(rdd))
         }
@@ -155,10 +155,10 @@ class CommandLineApp(conf: CmdAppConf) {
         }
         if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "GEXF") {
           new File(saveTarget).mkdirs()
-          WriteGEXF(DomainGraphExtractor(df).collect(), Paths.get(saveTarget).toString + "/GEXF.xml")
+          WriteGEXF(DomainGraphExtractor(df).collect(), Paths.get(saveTarget).toString + "/GEXF.gexf")
         } else if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "GRAPHML") {
           new File(saveTarget).mkdirs()
-          WriteGraphML(DomainGraphExtractor(df).collect(), Paths.get(saveTarget).toString + "/GRAPHML.xml")
+          WriteGraphML(DomainGraphExtractor(df).collect(), Paths.get(saveTarget).toString + "/GRAPHML.graphml")
         } else {
           save(DomainGraphExtractor(df))
         }
