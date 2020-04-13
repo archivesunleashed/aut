@@ -600,11 +600,6 @@
       <version>${spark.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.spark</groupId>
-      <artifactId>spark-graphx_2.11</artifactId>
-      <version>${spark.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.xerial.snappy</groupId>
       <artifactId>snappy-java</artifactId>
       <version>1.1.4</version>
