@@ -17,12 +17,11 @@ package io.archivesunleashed.app
 
 import java.io.File
 import java.nio.file.{Files, Paths}
-
+import org.apache.spark.sql.Row
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
-
 import scala.io.Source
 
 @RunWith(classOf[JUnitRunner])
@@ -36,7 +35,10 @@ class WriteGraphMLTest extends FunSuite with BeforeAndAfter{
   private val network = Seq((("Date1", "Source1", "Destination1"), linkCountOne),
                          (("Date2", "Source2", "Destination2"), linkCountTwo),
                          (("Date3", "Source3", "Destination3"), linkCountThree))
-  private val testFile = "temporaryTestFile.txt"
+  private val networkDf = Seq(("Date1", "Source1", "Destination1", linkCountOne),
+                         ("Date2", "Source2", "Destination2", linkCountTwo),
+                         ("Date3", "Source3", "Destination3", linkCountThree))
+  private val testFile = "temporaryTestFile.graphml"
 
   before {
     val conf = new SparkConf()
@@ -54,6 +56,23 @@ class WriteGraphMLTest extends FunSuite with BeforeAndAfter{
     val lines = Source.fromFile(testFile).getLines.toList
     assert(lines(lineCheck._1) == """<?xml version="1.0" encoding="UTF-8"?>""")
     assert(lines(lineCheck._2) == """<data key="label">Source1</data>""")
+    assert(lines(lineCheck._3) == """</node>""")
+    assert(lines(lineCheck._4) == """<data key="weight">3</data>""")
+  }
+
+  test("Create WriteGraphML file from Array[Row]") {
+    val lineCheck = (0, 15, 22, 30)
+    if (Files.exists(Paths.get(testFile))) {
+      new File(testFile).delete()
+    }
+    val networkarray = Array(Row.fromTuple(networkDf(0)),
+      Row.fromTuple(networkDf(1)), Row.fromTuple(networkDf(2)))
+    val ret = WriteGraphML(networkarray, testFile)
+    assert(ret)
+    assert(Files.exists(Paths.get(testFile)))
+    val lines = Source.fromFile(testFile).getLines.toList
+    assert(lines(lineCheck._1) == """<?xml version="1.0" encoding="UTF-8"?>""")
+    assert(lines(lineCheck._2) == """<data key="label">Destination2</data>""")
     assert(lines(lineCheck._3) == """</node>""")
     assert(lines(lineCheck._4) == """<data key="weight">3</data>""")
   }
