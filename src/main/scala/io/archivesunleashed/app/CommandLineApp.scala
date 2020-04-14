@@ -46,13 +46,13 @@ import org.rogach.scallop.ScallopConf
  * OUTPUT_DIRECTORY is the directory to put result in
  *
  * FORMAT is meant to work with DomainGraphExtractor
- * Two supported options are TEXT (default) or GEXF
+ * Three supported options are TEXT (default), GEXF, or GRAPHML
  *
- * If --df is present, the program will use data frame to carry out analysis
+ * If --df is present, the program will use a DataFrame to carry out analysis
  *
  * If --split is present, the program will put results for each input file in its own folder. Otherwise they will be merged.
  *
- * If --partition N is present, the program will partition RDD or Data Frame according to N before writing results.
+ * If --partition N is present, the program will partition RDD or DataFrame according to N before writing results.
  * Otherwise, the partition is left as is.
  */
 
@@ -82,7 +82,7 @@ class CmdAppConf(args: Seq[String]) extends ScallopConf(args) {
   val input = opt[List[String]](descr = "input file path", required = true)
   val output = opt[String](descr = "output directory path", required = true)
   val outputFormat = opt[String](descr =
-    "output format for DomainGraphExtractor, one of TEXT or GEXF")
+    "output format for DomainGraphExtractor, one of TEXT, GEXF, or GRAPHML")
   val split = opt[Boolean]()
   val df = opt[Boolean]()
   val partition = opt[Int]()
@@ -116,7 +116,10 @@ class CommandLineApp(conf: CmdAppConf) {
       ((rdd: RDD[ArchiveRecord]) => {
         if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "GEXF") {
           new File(saveTarget).mkdirs()
-          WriteGEXF(DomainGraphExtractor(rdd), Paths.get(saveTarget).toString + "/GEXF.xml")
+          WriteGEXF(DomainGraphExtractor(rdd), Paths.get(saveTarget).toString + "/GEXF.gexf")
+        } else if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "GRAPHML") {
+          new File(saveTarget).mkdirs()
+          WriteGraphML(DomainGraphExtractor(rdd), Paths.get(saveTarget).toString + "/GRAPHML.graphml")
         } else {
           save(DomainGraphExtractor(rdd))
         }
@@ -127,7 +130,7 @@ class CommandLineApp(conf: CmdAppConf) {
       })
   )
 
-  /** Maps extractor type string to Data Frame Extractors.
+  /** Maps extractor type string to DataFrame Extractors.
     *
     * Each closure takes a list of file names to be extracted, loads them using RecordLoader,
     * performs the extraction, and saves results to file by calling save method of
@@ -152,10 +155,21 @@ class CommandLineApp(conf: CmdAppConf) {
         }
         if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "GEXF") {
           new File(saveTarget).mkdirs()
-          WriteGEXF(DomainGraphExtractor(df).collect(), Paths.get(saveTarget).toString + "/GEXF.xml")
+          WriteGEXF(DomainGraphExtractor(df).collect(), Paths.get(saveTarget).toString + "/GEXF.gexf")
+        } else if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "GRAPHML") {
+          new File(saveTarget).mkdirs()
+          WriteGraphML(DomainGraphExtractor(df).collect(), Paths.get(saveTarget).toString + "/GRAPHML.graphml")
         } else {
           save(DomainGraphExtractor(df))
         }
+      }),
+    "ImageGraphExtractor" ->
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).imagegraph()
+        inputFiles.tail foreach { f =>
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).imagegraph())
+        }
+        save(ImageGraphExtractor(df))
       }),
     "PlainTextExtractor" ->
       ((inputFiles: List[String]) => {
@@ -164,13 +178,21 @@ class CommandLineApp(conf: CmdAppConf) {
           df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).webpages())
         }
         save(PlainTextExtractor(df))
+      }),
+    "WebPagesExtractor" ->
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).webpages()
+        inputFiles.tail foreach { f =>
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).webpages())
+        }
+        save(WebPagesExtractor(df))
       })
   )
 
-  /** Generic routine for saving Dataset obtained from querying Data Frames to file.
+  /** Generic routine for saving Dataset obtained from querying DataFrames to file.
     * Files may be merged according to options specified in 'partition' setting.
     *
-    * @param d generic dataset obtained from querying Data Frame
+    * @param d generic dataset obtained from querying DataFrame
     * @return Unit
     */
 
@@ -222,14 +244,14 @@ class CommandLineApp(conf: CmdAppConf) {
     }
   }
 
-  /** Prepare for invoking Data Frame implementation of extractors.
+  /** Prepare for invoking DataFrame implementation of extractors.
     *
     * @return Any
     */
 
   def dfHandler(): Any = {
     if (!(dfExtractors contains configuration.extractor())) {
-      logger.error(configuration.extractor() + " not supported with data frame. " +
+      logger.error(configuration.extractor() + " not supported with DataFrame. " +
         "The following extractors are supported: ")
       dfExtractors foreach { tuple => logger.error(tuple._1) }
       throw new IllegalArgumentException()
@@ -290,7 +312,7 @@ class CommandLineApp(conf: CmdAppConf) {
     }
   }
 
-  /** Choose either Data Frame implementation or RDD implementation of extractors
+  /** Choose either DataFrame implementation or RDD implementation of extractors
     * depending on the option specified in command line arguments.
     *
     * @return Any

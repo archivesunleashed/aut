@@ -16,13 +16,18 @@
 
 package io.archivesunleashed
 
-import io.archivesunleashed.df.{DetectLanguageDF, RemoveHTMLDF}
+import io.archivesunleashed.df.{DetectLanguageDF, DetectMimeTypeTikaDF,
+                                ExtractDomainDF, RemoveHTMLDF,
+                                hasContent, hasDate, hasDomains, hasHTTPStatus,
+                                hasImages, hasLanguages, hasMIMETypes,
+                                hasMIMETypesTika, hasUrlPatterns, hasUrls}
 import com.google.common.io.Resources
+import org.apache.spark.sql.functions.lit
+import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
-
 
 @RunWith(classOf[JUnitRunner])
 class RecordDFTest extends FunSuite with BeforeAndAfter {
@@ -45,255 +50,184 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
       .all()
       .keepValidPagesDF()
       .take(1)(0)(1)
+
     assert (base.toString == expected)
   }
 
-  test("Discard MIMEtypes DF") {
-    val expected = "filedesc://IAH-20080430204825-00000-blackbook.arc"
-    val mimeTypes = Set("text/html")
+  test("Has HTTP Status") {
+    val spark = SparkSession.builder().master("local").getOrCreate()
+    // scalastyle:off
+    import spark.implicits._
+    // scalastyle:on
+
+    val expected = "000"
     val base = RecordLoader.loadArchives(arcPath, sc)
       .all()
-      .discardMimeTypesDF(mimeTypes)
-      .take(1)(0)(1)
-
-    assert (base.toString == expected)
-  }
-
-  test("Discard date DF") {
-    val expected = "20080430"
-    val date = "20080429"
-    val base = RecordLoader.loadArchives(arcPath, sc)
-      .webpages()
-      .discardDateDF(date)
+      .select($"http_status_code")
+      .filter(hasHTTPStatus($"http_status_code", lit(Array("200","000"))))
       .take(1)(0)(0)
 
     assert (base.toString == expected)
   }
 
-  test("Discard URLs DF") {
-    val expected = "http://www.archive.org/index.php"
-    val url = Set("http://www.archive.org/")
-    val base1 = RecordLoader.loadArchives(arcPath, sc)
-        .webpages()
-        .discardUrlsDF(url)
-        .take(1)(0)(1)
+  test("Has URLs") {
+    val spark = SparkSession.builder().master("local").getOrCreate()
+    // scalastyle:off
+    import spark.implicits._
+    // scalastyle:on
 
-    val base2 = RecordLoader.loadArchives(arcPath, sc)
-      .webgraph()
-      .discardUrlsDF(url)
-      .take(1)(0)(1)
-
-    assert (base1.toString == expected)
-    assert (base2.toString == expected)
-  }
-
-  test("Discard domains DF") {
-    val expected1 = "http://www.hideout.com.br/"
-    val domain = Set("www.archive.org")
-    val base1 = RecordLoader.loadArchives(arcPath, sc)
-      .webpages()
-      .discardDomainsDF(domain)
-      .take(1)(0)(1)
-
-    val expected2 = "http://deadlists.com/deadlists/showresults.asp?KEY=12/16/78"
-    val base2 = RecordLoader.loadArchives(arcPath, sc)
-      .webgraph()
-      .discardDomainsDF(domain)
-      .take(1)(0)(1)
-
-    assert(base1.toString == expected1)
-    assert(base2.toString == expected2)
-  }
-
-  test("Discard HTTP status DF") {
-    val expected = "200"
-    val statusCode = Set("000")
-    val base = RecordLoader.loadArchives(arcPath, sc)
-      .all()
-      .discardHttpStatusDF(statusCode)
-      .take(1)(0)(6)
-
-    assert (base.toString == expected)
-  }
-
-  test("Discard content DF") {
-    val expected = "dns:www.archive.org"
-    val contentRegex = Set("Content-Length: [0-9]{4}".r)
-    val base = RecordLoader.loadArchives(arcPath, sc)
-      .all()
-      .select("url", "content")
-      .discardContentDF(contentRegex)
-      .take(2)(1)(0)
-
-    assert (base.toString == expected)
-  }
-
-  test("Discard URL patterns DF") {
-    val expected1 = "dns:www.archive.org"
-    val urlRegex1 = Set(".*images.*".r)
-    val base1 = RecordLoader.loadArchives(arcPath, sc)
-      .all()
-      .select("url")
-      .discardUrlPatternsDF(urlRegex1)
-      .take(2)(1)(0)
-
-    val expected2 = "http://www.archive.org/details/DrinkingWithBob-MadonnaAdoptsAfricanBaby887"
-    val urlRegex2 = Set(".*index.*".r)
-    val base2 = RecordLoader.loadArchives(arcPath, sc)
-      .webgraph()
-      .select("src")
-      .discardUrlPatternsDF(urlRegex2)
-      .take(2)(1)(0)
-
-    assert (base1.toString == expected1)
-    assert (base2.toString == expected2)
-  }
-
-  test("Discard languages DF") {
-    val expected = "dns:www.archive.org"
-    val languages = Set("th","de","ht")
-    val base = RecordLoader.loadArchives(arcPath, sc)
-      .all()
-      .select("url")
-      .discardLanguagesDF(languages)
-      .take(2)(1)(0)
-
-    assert (base.toString == expected)
-  }
-
-  test("Keep HTTP status DF") {
-    val expected = "http://www.archive.org/robots.txt"
-    val statusCode = Set("200")
-    val base = RecordLoader.loadArchives(arcPath, sc)
-      .all()
-      .keepHttpStatusDF(statusCode)
-      .take(1)(0)(1)
-
-    assert (base.toString == expected)
-  }
-
-  test("Keep date DF") {
-    val expected = "http://www.archive.org/"
-    val month = List("04")
-    val base = RecordLoader.loadArchives(arcPath, sc)
-      .webpages()
-      .keepDateDF(month,"MM")
-      .take(1)(0)(1)
-
-    assert (base.toString == expected)
-  }
-
-  test("Keep URLs DF") {
-    val expected = "http://www.archive.org/"
-    val url = Set("http://www.archive.org/")
-    val base1 = RecordLoader.loadArchives(arcPath, sc)
-      .webpages()
-      .keepUrlsDF(url)
-      .take(1)(0)(1)
-
-    val base2 = RecordLoader.loadArchives(arcPath, sc)
-      .webgraph()
-      .keepUrlsDF(url)
-      .take(1)(0)(1)
-
-    assert (base1.toString == expected)
-    assert (base2.toString == expected)
-  }
-
-  test("Keep domains DF") {
     val expected1 = "http://www.archive.org/robots.txt"
-    val domain = Set("www.archive.org")
-    val base1 = RecordLoader.loadArchives(arcPath, sc)
-      .all()
-      .keepDomainsDF(domain)
-      .take(1)(0)(1)
-
     val expected2 = "http://www.archive.org/"
-    val base2 = RecordLoader.loadArchives(arcPath, sc)
-      .webgraph()
-      .keepDomainsDF(domain)
-      .take(1)(0)(1)
-
-    assert (base1.toString == expected1)
-    assert (base2.toString == expected2)
-  }
-
-  test("Keep MIMEtypes Tika DF") {
-    val expected = "image/jpeg"
-    val mimeType = Set("image/jpeg")
-    val base = RecordLoader.loadArchives(arcPath, sc)
-      .all()
-      .keepMimeTypesTikaDF(mimeType)
-      .take(1)(0)(2)
-
-    assert (base.toString == expected)
-  }
-
-  test("Keep MIMEtypes DF") {
-    val expected = "text/html"
-    val mimeType = Set("text/html")
-    val base = RecordLoader.loadArchives(arcPath, sc)
-      .all()
-      .keepMimeTypesDF(mimeType)
-      .take(1)(0)(3)
-
-    assert (base.toString == expected)
-  }
-
-  test("Keep content DF") {
-    val expected = "http://www.archive.org/images/logoc.jpg"
-    val contentRegex = Set("Content-Length: [0-9]{4}".r)
-    val base = RecordLoader.loadArchives(arcPath, sc)
-      .all()
-      .select("url", "content")
-      .keepContentDF(contentRegex)
-      .take(1)(0)(0)
-
-    assert (base.toString == expected)
-  }
-
-  test("Keep URL patterns DF") {
-    val expected1 = "http://www.archive.org/images/go-button-gateway.gif"
-    val urlRegex1 = Set(".*images.*".r)
     val base1 = RecordLoader.loadArchives(arcPath, sc)
       .all()
-      .select("url")
-      .keepUrlPatternsDF(urlRegex1)
-      .take(2)(1)(0)
+      .select($"url")
+      .filter(hasUrls($"url", lit(Array("http://www.archive.org/","http://www.archive.org/robots.txt"))))
+      .take(1)(0)(0)
 
-    val expected2 = "http://www.archive.org/index.php"
-    val urlRegex2 = Set(".*index.*".r)
     val base2 = RecordLoader.loadArchives(arcPath, sc)
-      .webgraph()
-      .select("src")
-      .keepUrlPatternsDF(urlRegex2)
-      .take(2)(1)(0)
+      .all()
+      .select($"url")
+      .filter(hasUrls($"url", lit(Array("http://www.archive.org/"))))
+      .take(1)(0)(0)
 
     assert (base1.toString == expected1)
     assert (base2.toString == expected2)
   }
 
-  test("Keep languages DF") {
-    val expected = "http://www.archive.org/images/logoc.jpg"
-    val languages = Set("th","de","ht")
+  test("Has domains") {
+    val spark = SparkSession.builder().master("local").getOrCreate()
+    // scalastyle:off
+    import spark.implicits._
+    // scalastyle:on
+
+    val expected = "http://www.archive.org/robots.txt"
+    val base1 = RecordLoader.loadArchives(arcPath, sc)
+      .all()
+      .select($"url")
+      .filter(hasDomains(ExtractDomainDF($"url"), lit(Array("www.archive.org"))))
+      .take(1)(0)(0)
+
+    assert (base1.toString == expected)
+  }
+
+  test("Has MIME Types") {
+    val spark = SparkSession.builder().master("local").getOrCreate()
+    // scalastyle:off
+    import spark.implicits._
+    // scalastyle:on
+
+    val expected = "text/html"
     val base = RecordLoader.loadArchives(arcPath, sc)
       .all()
-      .select("url")
-      .keepLanguagesDF(languages)
+      .select($"mime_type_web_server")
+      .filter(hasMIMETypes($"mime_type_web_server", lit(Array("text/html"))))
       .take(1)(0)(0)
 
     assert (base.toString == expected)
   }
 
-  test("Keep images DF") {
-    val expected = "image/jpeg"
+  test("Has MIME Types Tika") {
+    val spark = SparkSession.builder().master("local").getOrCreate()
+    // scalastyle:off
+    import spark.implicits._
+    // scalastyle:on
+
+    val expected = "text/html"
     val base = RecordLoader.loadArchives(arcPath, sc)
       .all()
-      .keepImagesDF()
-      .select("mime_type_tika")
+      .select($"mime_type_web_server")
+      .filter(hasMIMETypesTika($"mime_type_tika", lit(Array("text/html"))))
       .take(1)(0)(0)
 
     assert (base.toString == expected)
+  }
+
+  test("Has Content") {
+    val spark = SparkSession.builder().master("local").getOrCreate()
+    // scalastyle:off
+    import spark.implicits._
+    // scalastyle:on
+
+    val expected = "http://www.archive.org/images/logoc.jpg"
+    val base = RecordLoader.loadArchives(arcPath, sc)
+      .all()
+      .select($"url",$"content")
+      .filter(hasContent($"content", lit(Array("Content-Length: [0-9]{4}"))))
+      .take(1)(0)(0)
+
+    assert (base.toString == expected)
+  }
+
+  test("Has URL Patterns") {
+    val spark = SparkSession.builder().master("local").getOrCreate()
+    // scalastyle:off
+    import spark.implicits._
+    // scalastyle:on
+
+    val expected1 = "http://www.archive.org/images/go-button-gateway.gif"
+    val base1 = RecordLoader.loadArchives(arcPath, sc)
+      .all()
+      .select($"url")
+      .filter(hasUrlPatterns($"url", lit(Array(".*images.*"))))
+      .take(2)(1)(0)
+
+    val expected2 = "http://www.archive.org/index.php?skin=classic"
+    val base2 = RecordLoader.loadArchives(arcPath, sc)
+      .all()
+      .select($"url")
+      .filter(hasUrlPatterns($"url", lit(Array(".*index.*"))))
+      .take(3)(1)(0)
+
+    assert (base1.toString == expected1)
+    assert (base2.toString == expected2)
+  }
+
+  test("Has Languages") {
+    val spark = SparkSession.builder().master("local").getOrCreate()
+    // scalastyle:off
+    import spark.implicits._
+    // scalastyle:on
+
+    val expected = "de"
+    val base = RecordLoader.loadArchives(arcPath, sc)
+      .all()
+      .select(DetectLanguageDF(RemoveHTMLDF($"content")).as("language"))
+      .filter(hasLanguages(DetectLanguageDF(RemoveHTMLDF($"content")), lit(Array("de","ht"))))
+      .take(1)(0)(0)
+
+    assert (base.toString == expected)
+  }
+
+  test("Has Images") {
+    val spark = SparkSession.builder().master("local").getOrCreate()
+    // scalastyle:off
+    import spark.implicits._
+    // scalastyle:on
+
+    val expected = "image/jpeg"
+    val base = RecordLoader.loadArchives(arcPath, sc)
+      .all()
+      .select($"mime_type_tika")
+      .filter(hasImages($"crawl_date", DetectMimeTypeTikaDF($"bytes")))
+      .take(1)(0)(0)
+
+    assert (base.toString == expected)
+  }
+
+  test("Has Date") {
+    val spark = SparkSession.builder().master("local").getOrCreate()
+    // scalastyle:off
+    import spark.implicits._
+    // scalastyle:on
+
+    val expected = Array("20080430")
+    val base = RecordLoader.loadArchives(arcPath, sc)
+      .all()
+      .select($"crawl_date")
+      .filter(hasDate($"crawl_date", lit(expected)))
+      .take(1)(0)(0)
+
+    assert (base.toString == "20080430")
   }
 
   after {

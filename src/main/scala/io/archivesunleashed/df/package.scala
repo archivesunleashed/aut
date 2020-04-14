@@ -22,6 +22,7 @@ import java.util.Base64
 import org.apache.commons.io.IOUtils
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions.udf
+import scala.util.matching.Regex
 
 /**
   * UDFs for data frames.
@@ -58,6 +59,38 @@ package object df {
   val ExtractDateDF = udf((io.archivesunleashed.matchbox.ExtractDateRDD.apply(_: String, _: String)))
 
   val DetectMimeTypeTikaDF = udf((io.archivesunleashed.matchbox.DetectMimeTypeTika.apply(_: Array[Byte])))
+
+  val hasHTTPStatus = udf((statusCode: String, statusCodes: Seq[String]) => statusCodes.contains(statusCode))
+
+  val hasMIMETypes = udf((mimeType: String, mimeTypes: Seq[String]) => mimeTypes.contains(mimeType))
+
+  val hasMIMETypesTika = udf((mimeType: String, mimeTypesTika: Seq[String]) => mimeTypesTika.contains(mimeType))
+
+  val hasDate = udf((date_ : String, date: Seq[String]) => date.contains(date_))
+
+  val hasUrls = udf((url: String, urls: Seq[String]) => urls.contains(url))
+
+  val hasDomains = udf((domain: String, domains: Seq[String]) => domains.contains(domain))
+
+  val hasImages = udf((date: String, mimeType: String) => date != null && mimeType.startsWith("image/"))
+
+  val hasContent = udf((c: String, contentREs: Seq[String]) => {
+    contentREs.map(re =>
+        (re.r findFirstIn c) match {
+          case Some(v) => true
+          case None => false
+        }).exists(identity)
+  })
+
+  val hasUrlPatterns = udf((urlPattern: String, urlREs: Seq[String]) => {
+    urlREs.map(re =>
+        urlPattern match {
+          case re.r() => true
+          case _ => false
+        }).exists(identity)
+  })
+
+  val hasLanguages = udf((language: String, languages: Seq[String]) => languages.contains(language))
 
   /**
    * Given a dataframe, serializes binary object and saves to disk

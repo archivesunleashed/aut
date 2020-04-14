@@ -24,7 +24,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
-class DomainGraphExtractorDfTest extends FunSuite with BeforeAndAfter {
+class WebPagesExtractorTest extends FunSuite with BeforeAndAfter {
   private val arcPath = Resources.getResource("warc/example.warc.gz").getPath
   private var sc: SparkContext = _
   private val master = "local[4]"
@@ -38,18 +38,17 @@ class DomainGraphExtractorDfTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Domain graph extractor DF") {
-    val TESTLENGTH = 9
-    val TESTRESULT = 280
-    val df = RecordLoader.loadArchives(arcPath, sc).webgraph()
-    val dfResult = DomainGraphExtractor(df).collect()
+  test("Web pages extractor DF") {
+    val df = RecordLoader.loadArchives(arcPath, sc).webpages()
+    val dfResults = WebPagesExtractor(df).collect()
+    val RESULTSLENGTH = 94
 
-    assert(dfResult.length == TESTLENGTH)
-
-    assert(dfResult(0).get(0) == "20080430")
-    assert(dfResult(0).get(1) == "archive.org")
-    assert(dfResult(0).get(2) == "archive.org")
-    assert(dfResult(0).get(3) == TESTRESULT)
+    assert(dfResults.length == RESULTSLENGTH)
+    assert(dfResults(0).get(0) == "20080430")
+    assert(dfResults(0).get(1) == "http://www.archive.org/")
+    assert(dfResults(0).get(2) == "text/html")
+    assert(dfResults(0).get(3) == "text/html")
+    assert(dfResults(0).get(4) == "en")
   }
 
   after {
