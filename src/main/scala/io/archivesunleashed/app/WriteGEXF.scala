@@ -21,7 +21,7 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.Row
 
 /**
-  * UDF for exporting an RDD representing a collection of links to a GEXF file.
+  * UDF for exporting an RDD or DataFrame representing a collection of links to a GEXF file.
   */
 object WriteGEXF {
 
