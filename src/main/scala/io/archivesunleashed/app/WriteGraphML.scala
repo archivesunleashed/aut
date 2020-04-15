@@ -25,9 +25,10 @@ import org.apache.spark.sql.Row
   */
 object WriteGraphML {
 
-  /** Writes graph nodes and edges to file.
+  /** Writes graph nodes and edges to file (rdd).
    *
-   * @param rdd RDD of elements in format ((datestring, source, target), count)
+   * @param rdd RDD of elements in format ((CrawlDate, SourceDomain,
+   *        DestinationDomain), Frequency)
    * @param graphmlPath output file
    */
   def apply(rdd: RDD[((String, String, String), Int)], graphmlPath: String): Boolean = {
@@ -38,6 +39,12 @@ object WriteGraphML {
     }
   }
 
+  /** Writes graph nodes and edges to file (df).
+   *
+   * @param ds Array[Row] elements in format (CrawlDate, SrcDomain,
+   *        DestDomain, count)
+   * @param graphmlPath output file
+   */
   def apply(ds: Array[Row], graphmlPath: String): Boolean = {
     if (graphmlPath.isEmpty()) {
       false
@@ -48,7 +55,8 @@ object WriteGraphML {
 
   /** Produces the GraphML output from an RDD of tuples and outputs it to graphmlPath.
    *
-   * @param rdd RDD of elements in format ((datestring, source, target), count)
+   * @param rdd RDD of elements in format ((CrawlDate, SourceDomain,
+   *        DestinationDomain), Frequency)
    * @param graphmlPath output file
    * @return true on successful run.
    */
@@ -84,7 +92,8 @@ object WriteGraphML {
 
   /** Produces the GraphML output from an Array[Row] and outputs it to graphmlPath.
    *
-   * @param data a Dataset[Row] of elements in format (datestring, source, target, count)
+   * @param data a Dataset[Row] of elements in format (CrawlDate, SrcDomain,
+   *        DestDomain, count)
    * @param graphmlPath output file
    * @return true on success.
    */
