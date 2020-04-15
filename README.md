@@ -63,6 +63,40 @@ You can then build The Archives Unleashed Toolkit.
 $ mvn clean install
 ```
 
+### Archives Unleashed Toolkit with Spark Submit
+
+The Toolkit offers a variety of extraction jobs with
+[`spark-submit`](https://spark.apache.org/docs/latest/submitting-applications.html)
+. These extraction jobs have a few configuration options, and analysis can use
+RDD or DataFrame in most cases.
+
+The extraction jobs have a basic outline of:
+
+```shell
+spark-submit --class io.archivesunleashed.app.CommandLinAppRunner PATH_TO_AUT_JAR --extractor EXTRACTOR --input INPUT DIRECTORY --output OUTPUT DIRECTORY
+```
+
+Additional flags include:
+
+* `--output-format FORMAT` (Used only for the `DomainGraphExtractor`, and the
+  options are `TEXT` (default) or `GEXF`.)
+* `--df` (The extractor will use a DataFrame to carry out analysis.)
+* `--split` (The extractor will put results for each input file in its own
+  directory. Each directory name will be the name of the ARC/WARC file parsed.)
+* `--partition N` (The extractor will partition RDD or DataFrame according to N
+  before writing results. The is useful to combine all the results to a single
+  file.)
+
+Available extraction jobs:
+
+- `DomainFrequencyExtractor`
+- `DomainGraphExtractor`
+- `ImageGraphExtractor`
+- `PlainTextExtractor`
+- `WebPagesExtractor`
+
+More documentation on using the Toolkit with `spark-submit` can be found [here](https://github.com/archivesunleashed/aut-docs/blob/master/current/aut-spark-submit-app.md).
+
 ### Archives Unleashed Toolkit with Spark Shell
 
 There are a two options for loading the Archives Unleashed Toolkit. The advantages and disadvantages of using either option are going to depend on your setup (single machine vs cluster):
