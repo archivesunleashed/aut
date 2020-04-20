@@ -39,17 +39,9 @@ class PlainTextExtractorTest extends FunSuite with BeforeAndAfter {
   }
 
   test("Plain text extractor RDD & DF") {
-    val rdd = RecordLoader.loadArchives(arcPath, sc).keepValidPages()
     val df = RecordLoader.loadArchives(arcPath, sc).webpages()
-    val rddResults = PlainTextExtractor(rdd).collect()
     val dfResults = PlainTextExtractor(df).collect()
     val RESULTSLENGTH = 94
-
-    assert(rddResults.length == RESULTSLENGTH)
-    assert(rddResults(0)._1 == "20080430")
-    assert(rddResults(0)._2 == "www.archive.org")
-    assert(rddResults(0)._3 == "http://www.archive.org/")
-    assert(rddResults(0)._4 == "Please visit our website at: http://www.archive.org")
 
     assert(dfResults.length == RESULTSLENGTH)
     assert(dfResults(0).get(0) == "20080430")

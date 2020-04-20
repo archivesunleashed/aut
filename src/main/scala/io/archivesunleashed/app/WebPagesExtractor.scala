@@ -16,11 +16,9 @@
 
 package io.archivesunleashed.app
 
-import io.archivesunleashed.matchbox.{RemoveHTMLRDD, RemoveHTTPHeaderRDD}
 import io.archivesunleashed.ArchiveRecord
 import io.archivesunleashed.df.{ExtractDomainDF, RemoveHTMLDF,
                                 RemoveHTTPHeaderDF}
-import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
 object WebPagesExtractor {
