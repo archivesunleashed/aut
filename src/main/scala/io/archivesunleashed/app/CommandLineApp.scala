@@ -45,7 +45,7 @@ import org.rogach.scallop.ScallopConf
  * OUTPUT_DIRECTORY is the directory to put result in
  *
  * FORMAT is meant to work with DomainGraphExtractor
- * Three supported options are TEXT (default), GEXF, or GRAPHML
+ * Three supported options are CSV (default), GEXF, or GRAPHML
  *
  * If --split is present, the program will put results for each input file in its own folder. Otherwise they will be merged.
  *
@@ -79,7 +79,7 @@ class CmdAppConf(args: Seq[String]) extends ScallopConf(args) {
   val input = opt[List[String]](descr = "input file path", required = true)
   val output = opt[String](descr = "output directory path", required = true)
   val outputFormat = opt[String](descr =
-    "output format for DomainGraphExtractor, one of TEXT, GEXF, or GRAPHML")
+    "output format for DomainGraphExtractor, one of CSV, GEXF, or GRAPHML")
   val split = opt[Boolean]()
   val partition = opt[Int]()
   verify()
@@ -226,8 +226,7 @@ class CommandLineApp(conf: CmdAppConf) {
     }
   }
 
-  /** Choose either DataFrame implementation or RDD implementation of extractors
-    * depending on the option specified in command line arguments.
+  /** Process the handler.
     *
     * @return Any
     */
