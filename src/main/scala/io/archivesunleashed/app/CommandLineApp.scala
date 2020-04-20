@@ -20,7 +20,6 @@ import java.nio.file.{Files, Paths}
 
 import io.archivesunleashed.{ArchiveRecord, RecordLoader}
 import org.apache.log4j.Logger
-import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{Dataset, Row}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.rogach.scallop.exceptions.ScallopException
@@ -48,11 +47,9 @@ import org.rogach.scallop.ScallopConf
  * FORMAT is meant to work with DomainGraphExtractor
  * Three supported options are TEXT (default), GEXF, or GRAPHML
  *
- * If --df is present, the program will use a DataFrame to carry out analysis
- *
  * If --split is present, the program will put results for each input file in its own folder. Otherwise they will be merged.
  *
- * If --partition N is present, the program will partition RDD or DataFrame according to N before writing results.
+ * If --partition N is present, the program will partition the DataFrame according to N before writing results.
  * Otherwise, the partition is left as is.
  */
 
@@ -84,7 +81,6 @@ class CmdAppConf(args: Seq[String]) extends ScallopConf(args) {
   val outputFormat = opt[String](descr =
     "output format for DomainGraphExtractor, one of TEXT, GEXF, or GRAPHML")
   val split = opt[Boolean]()
-  val df = opt[Boolean]()
   val partition = opt[Int]()
   verify()
 }
@@ -100,36 +96,6 @@ class CommandLineApp(conf: CmdAppConf) {
   private var saveTarget = ""
   private var sparkCtx : Option[SparkContext] = None
 
-  /** Maps extractor type string to RDD extractors.
-    *
-    * Each closure takes a RDD[ArchiveRecord] obtained from RecordLoader, performs the extraction, and
-    * saves results to file by calling save method of CommandLineApp class.
-    * Closures return nothing.
-    */
-
-  private val rddExtractors = Map[String, RDD[ArchiveRecord] => Any](
-    "DomainFrequencyExtractor" ->
-      ((rdd: RDD[ArchiveRecord]) => {
-        save(DomainFrequencyExtractor(rdd))
-      }),
-    "DomainGraphExtractor" ->
-      ((rdd: RDD[ArchiveRecord]) => {
-        if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "GEXF") {
-          new File(saveTarget).mkdirs()
-          WriteGEXF(DomainGraphExtractor(rdd), Paths.get(saveTarget).toString + "/GEXF.gexf")
-        } else if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "GRAPHML") {
-          new File(saveTarget).mkdirs()
-          WriteGraphML(DomainGraphExtractor(rdd), Paths.get(saveTarget).toString + "/GRAPHML.graphml")
-        } else {
-          save(DomainGraphExtractor(rdd))
-        }
-      }),
-    "PlainTextExtractor" ->
-      ((rdd: RDD[ArchiveRecord]) => {
-        save(PlainTextExtractor(rdd))
-      })
-  )
-
   /** Maps extractor type string to DataFrame Extractors.
     *
     * Each closure takes a list of file names to be extracted, loads them using RecordLoader,
@@ -138,7 +104,7 @@ class CommandLineApp(conf: CmdAppConf) {
     * Closures return nothing.
     */
 
-  private val dfExtractors = Map[String, List[String] => Any](
+  private val extractors = Map[String, List[String] => Any](
     "DomainFrequencyExtractor" ->
       ((inputFiles: List[String]) => {
         var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).webpages()
@@ -208,21 +174,6 @@ class CommandLineApp(conf: CmdAppConf) {
     }
   }
 
-  /** Generic routine for saving RDD obtained from Map Reduce operation of extractors.
-    *
-    * @param r RDD obtained by applying RDD extractors to original RDD
-    * @tparam T template class name for RDD. Not used.
-    * @return Unit
-    */
-
-  def save[T](r: RDD[T]): Unit = {
-    if (!configuration.partition.isEmpty) {
-      r.coalesce(configuration.partition()).saveAsTextFile(saveTarget)
-    } else {
-      r.saveAsTextFile(saveTarget)
-    }
-  }
-
   /** Verify the validity of command line arguments regarding input and output files.
     *
     * All input files need to exist, and ouput files should not exist, for this to pass.
@@ -244,21 +195,21 @@ class CommandLineApp(conf: CmdAppConf) {
     }
   }
 
-  /** Prepare for invoking DataFrame implementation of extractors.
+  /** Prepare for invoking extractors.
     *
     * @return Any
     */
 
-  def dfHandler(): Any = {
-    if (!(dfExtractors contains configuration.extractor())) {
-      logger.error(configuration.extractor() + " not supported with DataFrame. " +
+  def handler(): Any = {
+    if (!(extractors contains configuration.extractor())) {
+      logger.error(configuration.extractor() + " not supported. " +
         "The following extractors are supported: ")
-      dfExtractors foreach { tuple => logger.error(tuple._1) }
+      extractors foreach { tuple => logger.error(tuple._1) }
       throw new IllegalArgumentException()
     }
 
     val extractFunction: List[String] => Any =
-      dfExtractors get configuration.extractor() match {
+      extractors get configuration.extractor() match {
         case Some(func) => func
         case None =>
           throw new InternalError()
@@ -275,54 +226,13 @@ class CommandLineApp(conf: CmdAppConf) {
     }
   }
 
-  /** Prepare for invoking RDD implementation of extractors.
-    *
-    * @return Any
-    */
-
-  def rddHandler(): Any = {
-    if (!(rddExtractors contains configuration.extractor())) {
-      logger.error(configuration.extractor() +
-      " not supported with RDD. The following extractors are supported: ")
-      rddExtractors foreach { tuple => logger.error(tuple._1) }
-      throw new IllegalArgumentException()
-    }
-
-    val extractFunction: RDD[ArchiveRecord] => Any =
-      rddExtractors get configuration.extractor() match {
-        case Some(func) => func
-        case None =>
-          throw new InternalError()
-      }
-
-    if (!configuration.split.isEmpty && configuration.split()) {
-      configuration.input() foreach { f =>
-        val archive = RecordLoader.loadArchives(f, sparkCtx.get)
-        saveTarget =  Paths.get(configuration.output(), Paths.get(f).getFileName.toString).toString
-        extractFunction(archive)
-      }
-    } else {
-      var nameList = configuration.input()
-      var rdd =  RecordLoader.loadArchives(nameList.head, sparkCtx.get)
-      nameList.tail foreach { f =>
-        rdd = rdd.union(RecordLoader.loadArchives(f, sparkCtx.get))
-      }
-      saveTarget = Paths.get(configuration.output()).toString
-      extractFunction(rdd)
-    }
-  }
-
   /** Choose either DataFrame implementation or RDD implementation of extractors
     * depending on the option specified in command line arguments.
     *
     * @return Any
     */
   def process(): Any = {
-    if (!configuration.df.isEmpty && configuration.df()) {
-      dfHandler()
-    } else {
-      rddHandler()
-    }
+    handler()
   }
 
   /** Set Spark context to be used.
@@ -350,7 +260,7 @@ object CommandLineAppRunner {
       case x: Throwable => throw x
     }
 
-    val conf = new SparkConf().setAppName("AUTCommandLineApp")
+    val conf = new SparkConf().setAppName("Archives Unleashed Toolkit")
     conf.set("spark.driver.allowMultipleContexts", "true")
     app.setSparkContext(new SparkContext(conf))
     app.process()
