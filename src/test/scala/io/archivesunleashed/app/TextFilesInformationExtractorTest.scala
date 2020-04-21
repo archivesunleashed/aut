@@ -24,8 +24,8 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
-class WebPagesExtractorTest extends FunSuite with BeforeAndAfter {
-  private val arcPath = Resources.getResource("warc/example.warc.gz").getPath
+class TextFilesInformationExtractorTest extends FunSuite with BeforeAndAfter {
+  private val arcPath = Resources.getResource("warc/example.txt.warc.gz").getPath
   private var sc: SparkContext = _
   private val master = "local[4]"
   private val appName = "example-spark"
@@ -38,18 +38,19 @@ class WebPagesExtractorTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Web pages extractor DF") {
-    val df = RecordLoader.loadArchives(arcPath, sc).webpages()
-    val dfResults = WebPagesExtractor(df).collect()
-    val RESULTSLENGTH = 94
+  test("Text files information extractor DF") {
+    val df = RecordLoader.loadArchives(arcPath, sc).textFiles()
+    val dfResults = TextFilesInformationExtractor(df).collect()
+    val RESULTSLENGTH = 1
 
     assert(dfResults.length == RESULTSLENGTH)
-    assert(dfResults(0).get(0) == "20080430")
-    assert(dfResults(0).get(1) == "archive.org")
-    assert(dfResults(0).get(2) == "http://www.archive.org/")
-    assert(dfResults(0).get(3) == "text/html")
-    assert(dfResults(0).get(4) == "text/html")
-    assert(dfResults(0).get(5) == "en")
+    assert(dfResults(0).get(0) == "https://ruebot.net/files/aut-test-fixtures/aut-text.txt")
+    assert(dfResults(0).get(1) == "aut-text.txt")
+    assert(dfResults(0).get(2) == "txt")
+    assert(dfResults(0).get(3) == "text/plain")
+    assert(dfResults(0).get(4) == "application/gzip")
+    assert(dfResults(0).get(5) == "32abd404fb560ecf14b75611f3cc5c2c")
+    assert(dfResults(0).get(6) == "9dc9d163d933085348e90cd2b6e523e3139d3e88")
   }
 
   after {

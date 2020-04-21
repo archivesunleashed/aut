@@ -54,7 +54,25 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
     Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, imageGraphOpt),
     Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, imageGraphOpt, "--partition", "1"),
     Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, webPagesOpt),
-    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, webPagesOpt, "--partition", "1")
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, webPagesOpt, "--partition", "1"),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, "AudioInformationExtractor"),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, "AudioInformationExtractor", "--partition", "1"),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, "ImageInformationExtractor"),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, "ImageInformationExtractor", "--partition", "1"),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, "PDFInformationExtractor"),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, "PDFInformationExtractor", "--partition", "1"),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, "PresentationProgramInformationExtractor"),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, "PresentationProgramInformationExtractor", "--partition", "1"),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, "SpreadsheetInformationExtractor"),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, "SpreadsheetInformationExtractor", "--partition", "1"),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, "TextFilesInformationExtractor"),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, "TextFilesInformationExtractor", "--partition", "1"),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, "VideoInformationExtractor"),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, "VideoInformationExtractor", "--partition", "1"),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, "WordProcessorInformationExtractor"),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, "WordProcessorInformationExtractor", "--partition", "1"),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, "WebGraphExtractor"),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, "WebGraphExtractor", "--partition", "1")
   )
 
   private val testFailCmds = Array(
