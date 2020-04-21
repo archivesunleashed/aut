@@ -24,8 +24,8 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
-class WebPagesExtractorTest extends FunSuite with BeforeAndAfter {
-  private val arcPath = Resources.getResource("warc/example.warc.gz").getPath
+class AudioInformationExtractorTest extends FunSuite with BeforeAndAfter {
+  private val arcPath = Resources.getResource("warc/example.media.warc.gz").getPath
   private var sc: SparkContext = _
   private val master = "local[4]"
   private val appName = "example-spark"
@@ -38,18 +38,19 @@ class WebPagesExtractorTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Web pages extractor DF") {
-    val df = RecordLoader.loadArchives(arcPath, sc).webpages()
-    val dfResults = WebPagesExtractor(df).collect()
-    val RESULTSLENGTH = 94
+  test("Audio information extractor DF") {
+    val df = RecordLoader.loadArchives(arcPath, sc).audio()
+    val dfResults = AudioInformationExtractor(df).collect()
+    val RESULTSLENGTH = 1
 
     assert(dfResults.length == RESULTSLENGTH)
-    assert(dfResults(0).get(0) == "20080430")
-    assert(dfResults(0).get(1) == "archive.org")
-    assert(dfResults(0).get(2) == "http://www.archive.org/")
-    assert(dfResults(0).get(3) == "text/html")
-    assert(dfResults(0).get(4) == "text/html")
-    assert(dfResults(0).get(5) == "en")
+    assert(dfResults(0).get(0) == "https://ruebot.net/files/feniz.mp3")
+    assert(dfResults(0).get(1) == "feniz.mp3")
+    assert(dfResults(0).get(2) == "mp3")
+    assert(dfResults(0).get(3) == "audio/mpeg")
+    assert(dfResults(0).get(4) == "audio/mpeg")
+    assert(dfResults(0).get(5) == "f7e7ec84b12c294e19af1ba41732c733")
+    assert(dfResults(0).get(6) == "a3eb95dbbea76460529d0d9ebdde5faabaff544a")
   }
 
   after {

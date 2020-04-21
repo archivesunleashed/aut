@@ -34,26 +34,32 @@ import org.rogach.scallop.ScallopConf
  *   --input INPUT_FILE ...
  *   --output OUTPUT_DIRECTORY
  *   [--output-format FORMAT]
- *   [--df]
  *   [--split]
  *   [--partiton]
  *
  * where EXTRACTOR is one of
- * DomainFrequencyExtractor, DomainGraphExtractor or PlainTextExtractor
+ * AudioInformationExtractor, DomainFrequencyExtractor, DomainGraphExtractor,
+ * ImageGraphExtractor, ImageInformationExtractor, PDFInformationExtractor,
+ * PlainTextExtractor, PresentationProgramInformationExtractor,
+ * SpreadsheetInformationExtractor, TextFilesInformationExtractor,
+ * VideoInformationExtractor, WebGraphExtractor, WebPagesExtractor,
+ * or WordProcessorInformationExtractor.
  *
  * INPUT_FILE is a list of input files separated by space (or path containing wildcard)
  * OUTPUT_DIRECTORY is the directory to put result in
  *
  * FORMAT is meant to work with DomainGraphExtractor
- * Three supported options are CSV (default), GEXF, or GRAPHML
+ * Four supported options are csv (default), and gexf, graphml as
+ * additional options for DomainGraphExtractor.
  *
- * If --split is present, the program will put results for each input file in its own folder. Otherwise they will be merged.
+ * If --split is present, the program will put results for each input file in its own folder.
+ * Otherwise they will be merged.
  *
- * If --partition N is present, the program will partition the DataFrame according to N before writing results.
- * Otherwise, the partition is left as is.
+ * If --partition N is present, the program will partition the DataFrame according
+ * to N before writing results. Otherwise, the partition is left as is.
  */
 
-/** Construct a Scallop option reader from command line argument string list
+/** Construct a Scallop option reader from command line argument string list.
   *
   * @param args list of command line arguments passed as is from argv
   */
@@ -79,7 +85,7 @@ class CmdAppConf(args: Seq[String]) extends ScallopConf(args) {
   val input = opt[List[String]](descr = "input file path", required = true)
   val output = opt[String](descr = "output directory path", required = true)
   val outputFormat = opt[String](descr =
-    "output format for DomainGraphExtractor, one of CSV, GEXF, or GRAPHML")
+    "output format for DomainGraphExtractor, one of csv, gexf, or graphml")
   val split = opt[Boolean]()
   val partition = opt[Int]()
   verify()
@@ -105,6 +111,14 @@ class CommandLineApp(conf: CmdAppConf) {
     */
 
   private val extractors = Map[String, List[String] => Any](
+    "AudioInformationExtractor" ->
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).audio()
+        inputFiles.tail foreach { f =>
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).audio())
+        }
+        save(AudioInformationExtractor(df))
+      }),
     "DomainFrequencyExtractor" ->
       ((inputFiles: List[String]) => {
         var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).webpages()
@@ -119,15 +133,23 @@ class CommandLineApp(conf: CmdAppConf) {
         inputFiles.tail foreach { f =>
           df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).webgraph())
         }
-        if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "GEXF") {
+        if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "gexf") {
           new File(saveTarget).mkdirs()
           WriteGEXF(DomainGraphExtractor(df).collect(), Paths.get(saveTarget).toString + "/GEXF.gexf")
-        } else if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "GRAPHML") {
+        } else if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "graphml") {
           new File(saveTarget).mkdirs()
           WriteGraphML(DomainGraphExtractor(df).collect(), Paths.get(saveTarget).toString + "/GRAPHML.graphml")
         } else {
           save(DomainGraphExtractor(df))
         }
+      }),
+    "ImageInformationExtractor" ->
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).images()
+        inputFiles.tail foreach { f =>
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).images())
+        }
+        save(ImageInformationExtractor(df))
       }),
     "ImageGraphExtractor" ->
       ((inputFiles: List[String]) => {
@@ -137,6 +159,14 @@ class CommandLineApp(conf: CmdAppConf) {
         }
         save(ImageGraphExtractor(df))
       }),
+    "PDFInformationExtractor" ->
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).pdfs()
+        inputFiles.tail foreach { f =>
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).pdfs())
+        }
+        save(PDFInformationExtractor(df))
+      }),
     "PlainTextExtractor" ->
       ((inputFiles: List[String]) => {
         var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).webpages()
@@ -145,6 +175,46 @@ class CommandLineApp(conf: CmdAppConf) {
         }
         save(PlainTextExtractor(df))
       }),
+    "PresentationProgramInformationExtractor" ->
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).presentationProgramFiles()
+        inputFiles.tail foreach { f =>
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).presentationProgramFiles())
+        }
+        save(PresentationProgramInformationExtractor(df))
+      }),
+    "SpreadsheetInformationExtractor" ->
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).spreadsheets()
+        inputFiles.tail foreach { f =>
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).spreadsheets())
+        }
+        save(SpreadsheetInformationExtractor(df))
+      }),
+    "TextFilesInformationExtractor" ->
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).textFiles()
+        inputFiles.tail foreach { f =>
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).textFiles())
+        }
+        save(TextFilesInformationExtractor(df))
+      }),
+    "VideoInformationExtractor" ->
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).videos()
+        inputFiles.tail foreach { f =>
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).videos())
+        }
+        save(VideoInformationExtractor(df))
+      }),
+    "WebGraphExtractor" ->
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).webgraph()
+        inputFiles.tail foreach { f =>
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).webgraph())
+        }
+        save(WebGraphExtractor(df))
+      }),
     "WebPagesExtractor" ->
       ((inputFiles: List[String]) => {
         var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).webpages()
@@ -152,6 +222,14 @@ class CommandLineApp(conf: CmdAppConf) {
           df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).webpages())
         }
         save(WebPagesExtractor(df))
+      }),
+    "WordProcessorInformationExtractor" ->
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).wordProcessorFiles()
+        inputFiles.tail foreach { f =>
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).wordProcessorFiles())
+        }
+        save(WordProcessorInformationExtractor(df))
       })
   )
 
