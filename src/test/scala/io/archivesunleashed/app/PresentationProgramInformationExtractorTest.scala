@@ -24,8 +24,8 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
-class DomainGraphExtractorDfTest extends FunSuite with BeforeAndAfter {
-  private val arcPath = Resources.getResource("warc/example.warc.gz").getPath
+class PresentationProgramInformationExtractorTest extends FunSuite with BeforeAndAfter {
+  private val arcPath = Resources.getResource("warc/example.docs.warc.gz").getPath
   private var sc: SparkContext = _
   private val master = "local[4]"
   private val appName = "example-spark"
@@ -38,18 +38,19 @@ class DomainGraphExtractorDfTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Domain graph extractor DF") {
-    val TESTLENGTH = 9
-    val TESTRESULT = 280
-    val df = RecordLoader.loadArchives(arcPath, sc).webgraph()
-    val dfResult = DomainGraphExtractor(df).collect()
+  test("Presentation program information extractor DF") {
+    val df = RecordLoader.loadArchives(arcPath, sc).presentationProgramFiles()
+    val dfResults = PresentationProgramInformationExtractor(df).collect()
+    val RESULTSLENGTH = 2
 
-    assert(dfResult.length == TESTLENGTH)
-
-    assert(dfResult(0).get(0) == "20080430")
-    assert(dfResult(0).get(1) == "archive.org")
-    assert(dfResult(0).get(2) == "archive.org")
-    assert(dfResult(0).get(3) == TESTRESULT)
+    assert(dfResults.length == RESULTSLENGTH)
+    assert(dfResults(0).get(0) == "https://ruebot.net/files/aut-test-fixtures/aut-test-fixtures.pptx")
+    assert(dfResults(0).get(1) == "aut-test-fixtures.pptx")
+    assert(dfResults(0).get(2) == "pptx")
+    assert(dfResults(0).get(3) == "application/vnd.openxmlformats-officedocument.presentationml.presentation")
+    assert(dfResults(0).get(4) == "application/vnd.openxmlformats-officedocument.presentationml.presentation")
+    assert(dfResults(0).get(5) == "7a7b1fe4b6d311376eaced9de3b682ee")
+    assert(dfResults(0).get(6) == "86fadca47b134b68247ccde62da4ce3f62b4d2ec")
   }
 
   after {

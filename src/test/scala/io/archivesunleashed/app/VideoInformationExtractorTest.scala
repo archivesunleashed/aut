@@ -24,8 +24,8 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
-class DomainGraphExtractorDfTest extends FunSuite with BeforeAndAfter {
-  private val arcPath = Resources.getResource("warc/example.warc.gz").getPath
+class VideoInformationExtractorTest extends FunSuite with BeforeAndAfter {
+  private val arcPath = Resources.getResource("warc/example.media.warc.gz").getPath
   private var sc: SparkContext = _
   private val master = "local[4]"
   private val appName = "example-spark"
@@ -38,18 +38,19 @@ class DomainGraphExtractorDfTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Domain graph extractor DF") {
-    val TESTLENGTH = 9
-    val TESTRESULT = 280
-    val df = RecordLoader.loadArchives(arcPath, sc).webgraph()
-    val dfResult = DomainGraphExtractor(df).collect()
+  test("Video information extractor DF") {
+    val df = RecordLoader.loadArchives(arcPath, sc).videos()
+    val dfResults = VideoInformationExtractor(df).collect()
+    val RESULTSLENGTH = 1
 
-    assert(dfResult.length == TESTLENGTH)
-
-    assert(dfResult(0).get(0) == "20080430")
-    assert(dfResult(0).get(1) == "archive.org")
-    assert(dfResult(0).get(2) == "archive.org")
-    assert(dfResult(0).get(3) == TESTRESULT)
+    assert(dfResults.length == RESULTSLENGTH)
+    assert(dfResults(0).get(0) == "https://ruebot.net/2018-11-12%2016.14.11.mp4")
+    assert(dfResults(0).get(1) == "2018-11-12%2016.14.11.mp4")
+    assert(dfResults(0).get(2) == "mp4")
+    assert(dfResults(0).get(3) == "video/mp4")
+    assert(dfResults(0).get(4) == "video/mp4")
+    assert(dfResults(0).get(5) == "2cde7de3213a87269957033f6315fce2")
+    assert(dfResults(0).get(6) == "f28c72fa4c0464a1a2b81fdc539b28cf574ac4c2")
   }
 
   after {
