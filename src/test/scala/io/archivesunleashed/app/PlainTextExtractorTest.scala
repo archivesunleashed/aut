@@ -38,16 +38,17 @@ class PlainTextExtractorTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Plain text extractor RDD & DF") {
+  test("Plain text extractor") {
     val df = RecordLoader.loadArchives(arcPath, sc).webpages()
     val dfResults = PlainTextExtractor(df).collect()
     val RESULTSLENGTH = 94
 
     assert(dfResults.length == RESULTSLENGTH)
-    assert(dfResults(0).get(0) == "20080430")
-    assert(dfResults(0).get(1) == "www.archive.org")
-    assert(dfResults(0).get(2) == "http://www.archive.org/")
-    assert(dfResults(0).get(3) == "Please visit our website at: http://www.archive.org")
+    assert(dfResults(0).get(0) == "")
+    assert(dfResults(34).get(0)
+      .toString
+        .startsWith("Internet Archive Frequently Asked Questions Web | "))
+    assert(dfResults(50).get(0) == "")
   }
 
   after {
