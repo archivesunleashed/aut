@@ -29,12 +29,9 @@ class WriteGEXFTest extends FunSuite with BeforeAndAfter{
   private var sc: SparkContext = _
   private val master = "local[4]"
   private val appName = "example-spark"
-  private val network = Seq((("Date1", "Source1", "Destination1"), 3),
-                         (("Date2", "Source2", "Destination2"), 4),
-                         (("Date3", "Source3", "Destination3"), 100))
-  private val networkDf = Seq(("Date1", "Source1", "Destination1", 3),
-                         ("Date2", "Source2", "Destination2", 4),
-                         ("Date3", "Source3", "Destination3", 100))
+  private val network = Seq(("Date1", "Source1", "Destination1", 3),
+                          ("Date2", "Source2", "Destination2", 4),
+                          ("Date3", "Source3", "Destination3", 100))
   private val testFile = "temporaryTestFile.gexf"
 
   before {
@@ -45,25 +42,13 @@ class WriteGEXFTest extends FunSuite with BeforeAndAfter{
       sc = new SparkContext(conf)
     }
 
-  test("Creates the GEXF file") {
-    val testLines = (0, 12, 22, 34)
-    val networkrdd = sc.parallelize(network)
-    WriteGEXF(networkrdd, testFile)
-    assert(Files.exists(Paths.get(testFile)))
-    val lines = Source.fromFile(testFile).getLines.toList
-    assert(lines(testLines._1) == """<?xml version="1.0" encoding="UTF-8"?>""")
-    assert(lines(testLines._2) == """<node id="f61def1ec71cd27401b8c821f04b7c27" label="Destination1" />""")
-    assert(lines(testLines._3) == """</attvalues>""")
-    assert(lines(testLines._4) == """</edges>""")
-  }
-
   test("Creates the GEXF file from Array[Row]") {
     val testLines = (0, 12, 22, 34)
     if (Files.exists(Paths.get(testFile))) {
       new File(testFile).delete()
     }
-    val networkarray = Array(Row.fromTuple(networkDf(0)),
-      Row.fromTuple(networkDf(1)), Row.fromTuple(networkDf(2)))
+    val networkarray = Array(Row.fromTuple(network(0)),
+      Row.fromTuple(network(1)), Row.fromTuple(network(2)))
     val ret = WriteGEXF(networkarray, testFile)
     assert(ret)
     val lines = Source.fromFile(testFile).getLines.toList
@@ -75,10 +60,12 @@ class WriteGEXFTest extends FunSuite with BeforeAndAfter{
   }
 
   test("Test if GEXF path is empty") {
-    val networkrdd = sc.parallelize(network)
-    val gexf = WriteGEXF(networkrdd, testFile)
+    val networkGraph = sc.parallelize(network)
+    val networkarray = Array(Row.fromTuple(network(0)),
+      Row.fromTuple(network(1)), Row.fromTuple(network(2)))
+    val gexf = WriteGEXF(networkarray, testFile)
     assert(gexf)
-    assert(!WriteGEXF(networkrdd, ""))
+    assert(!WriteGEXF(networkarray, ""))
   }
 
   after {

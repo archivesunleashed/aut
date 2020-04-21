@@ -16,24 +16,28 @@
 
 package io.archivesunleashed.app
 
-import io.archivesunleashed.df.{ExtractDomainDF}
-import io.archivesunleashed.{ArchiveRecord, DataFrameLoader}
-import org.apache.spark.sql.functions.desc
+import io.archivesunleashed.ArchiveRecord
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
-object DomainFrequencyExtractor {
-  /** Extract domain frequency from web archive using DataFrame and Spark SQL.
+object PresentationProgramInformationExtractor {
+  /** Extract information about presentation program files
+    * from web archive using DataFrame and Spark SQL.
     *
     * @param d DataFrame obtained from RecordLoader
-    * @return Dataset[Row], where the schema is (domain, count)
+    * @return Dataset[Row], where the schema is (crawl date, url,
+    *   mime_type_web_server, mime_type_tika, language, content)
     */
   def apply(d: DataFrame): Dataset[Row] = {
     val spark = SparkSession.builder().master("local").getOrCreate()
     // scalastyle:off
     import spark.implicits._
     // scalastyle:on
-    d.groupBy(ExtractDomainDF($"url").as("domain"))
-      .count()
-      .sort($"count".desc)
+    d.select($"url",
+             $"filename",
+             $"extension",
+             $"mime_type_web_server",
+             $"mime_type_tika",
+             $"md5",
+             $"sha1")
   }
 }

@@ -17,7 +17,6 @@
 package io.archivesunleashed.app
 
 import io.archivesunleashed.{ArchiveRecord, DataFrameLoader}
-import org.apache.spark.sql.functions.desc
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
 object ImageGraphExtractor {

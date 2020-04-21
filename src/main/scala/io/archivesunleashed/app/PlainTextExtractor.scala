@@ -16,27 +16,12 @@
 
 package io.archivesunleashed.app
 
-import io.archivesunleashed.matchbox.{RemoveHTMLRDD, RemoveHTTPHeaderRDD}
 import io.archivesunleashed.ArchiveRecord
 import io.archivesunleashed.df.{ExtractDomainDF, RemoveHTMLDF,
                                 RemoveHTTPHeaderDF}
-import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
 object PlainTextExtractor {
-  /** Extract plain text from web archive using RDD.
-    *
-    * @param records RDD[ArchiveRecord] obtained from RecordLoader
-    * @return RDD[(String, String, String, String)], which is
-    *         (crawl date, domain, url, text)
-    */
-  def apply(records: RDD[ArchiveRecord]): RDD[(String, String, String, String)] = {
-    records
-      .keepValidPages()
-      .map(r => (r.getCrawlDate, r.getDomain, r.getUrl,
-        RemoveHTMLRDD(RemoveHTTPHeaderRDD(r.getContentString))))
-  }
-
   /** Extract plain text from web archive using DataFrame and Spark SQL.
     *
     * @param d DataFrame obtained from RecordLoader

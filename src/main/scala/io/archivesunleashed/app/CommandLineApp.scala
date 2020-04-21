@@ -20,7 +20,6 @@ import java.nio.file.{Files, Paths}
 
 import io.archivesunleashed.{ArchiveRecord, RecordLoader}
 import org.apache.log4j.Logger
-import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{Dataset, Row}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.rogach.scallop.exceptions.ScallopException
@@ -35,28 +34,32 @@ import org.rogach.scallop.ScallopConf
  *   --input INPUT_FILE ...
  *   --output OUTPUT_DIRECTORY
  *   [--output-format FORMAT]
- *   [--df]
  *   [--split]
  *   [--partiton]
  *
  * where EXTRACTOR is one of
- * DomainFrequencyExtractor, DomainGraphExtractor or PlainTextExtractor
+ * AudioInformationExtractor, DomainFrequencyExtractor, DomainGraphExtractor,
+ * ImageGraphExtractor, ImageInformationExtractor, PDFInformationExtractor,
+ * PlainTextExtractor, PresentationProgramInformationExtractor,
+ * SpreadsheetInformationExtractor, TextFilesInformationExtractor,
+ * VideoInformationExtractor, WebGraphExtractor, WebPagesExtractor,
+ * or WordProcessorInformationExtractor.
  *
  * INPUT_FILE is a list of input files separated by space (or path containing wildcard)
  * OUTPUT_DIRECTORY is the directory to put result in
  *
  * FORMAT is meant to work with DomainGraphExtractor
- * Three supported options are TEXT (default), GEXF, or GRAPHML
+ * Four supported options are csv (default), and gexf, graphml as
+ * additional options for DomainGraphExtractor.
  *
- * If --df is present, the program will use a DataFrame to carry out analysis
+ * If --split is present, the program will put results for each input file in its own folder.
+ * Otherwise they will be merged.
  *
- * If --split is present, the program will put results for each input file in its own folder. Otherwise they will be merged.
- *
- * If --partition N is present, the program will partition RDD or DataFrame according to N before writing results.
- * Otherwise, the partition is left as is.
+ * If --partition N is present, the program will partition the DataFrame according
+ * to N before writing results. Otherwise, the partition is left as is.
  */
 
-/** Construct a Scallop option reader from command line argument string list
+/** Construct a Scallop option reader from command line argument string list.
   *
   * @param args list of command line arguments passed as is from argv
   */
@@ -82,9 +85,8 @@ class CmdAppConf(args: Seq[String]) extends ScallopConf(args) {
   val input = opt[List[String]](descr = "input file path", required = true)
   val output = opt[String](descr = "output directory path", required = true)
   val outputFormat = opt[String](descr =
-    "output format for DomainGraphExtractor, one of TEXT, GEXF, or GRAPHML")
+    "output format for DomainGraphExtractor, one of csv, gexf, or graphml")
   val split = opt[Boolean]()
-  val df = opt[Boolean]()
   val partition = opt[Int]()
   verify()
 }
@@ -100,36 +102,6 @@ class CommandLineApp(conf: CmdAppConf) {
   private var saveTarget = ""
   private var sparkCtx : Option[SparkContext] = None
 
-  /** Maps extractor type string to RDD extractors.
-    *
-    * Each closure takes a RDD[ArchiveRecord] obtained from RecordLoader, performs the extraction, and
-    * saves results to file by calling save method of CommandLineApp class.
-    * Closures return nothing.
-    */
-
-  private val rddExtractors = Map[String, RDD[ArchiveRecord] => Any](
-    "DomainFrequencyExtractor" ->
-      ((rdd: RDD[ArchiveRecord]) => {
-        save(DomainFrequencyExtractor(rdd))
-      }),
-    "DomainGraphExtractor" ->
-      ((rdd: RDD[ArchiveRecord]) => {
-        if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "GEXF") {
-          new File(saveTarget).mkdirs()
-          WriteGEXF(DomainGraphExtractor(rdd), Paths.get(saveTarget).toString + "/GEXF.gexf")
-        } else if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "GRAPHML") {
-          new File(saveTarget).mkdirs()
-          WriteGraphML(DomainGraphExtractor(rdd), Paths.get(saveTarget).toString + "/GRAPHML.graphml")
-        } else {
-          save(DomainGraphExtractor(rdd))
-        }
-      }),
-    "PlainTextExtractor" ->
-      ((rdd: RDD[ArchiveRecord]) => {
-        save(PlainTextExtractor(rdd))
-      })
-  )
-
   /** Maps extractor type string to DataFrame Extractors.
     *
     * Each closure takes a list of file names to be extracted, loads them using RecordLoader,
@@ -138,7 +110,15 @@ class CommandLineApp(conf: CmdAppConf) {
     * Closures return nothing.
     */
 
-  private val dfExtractors = Map[String, List[String] => Any](
+  private val extractors = Map[String, List[String] => Any](
+    "AudioInformationExtractor" ->
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).audio()
+        inputFiles.tail foreach { f =>
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).audio())
+        }
+        save(AudioInformationExtractor(df))
+      }),
     "DomainFrequencyExtractor" ->
       ((inputFiles: List[String]) => {
         var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).webpages()
@@ -153,15 +133,23 @@ class CommandLineApp(conf: CmdAppConf) {
         inputFiles.tail foreach { f =>
           df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).webgraph())
         }
-        if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "GEXF") {
+        if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "gexf") {
           new File(saveTarget).mkdirs()
           WriteGEXF(DomainGraphExtractor(df).collect(), Paths.get(saveTarget).toString + "/GEXF.gexf")
-        } else if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "GRAPHML") {
+        } else if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "graphml") {
           new File(saveTarget).mkdirs()
           WriteGraphML(DomainGraphExtractor(df).collect(), Paths.get(saveTarget).toString + "/GRAPHML.graphml")
         } else {
           save(DomainGraphExtractor(df))
         }
+      }),
+    "ImageInformationExtractor" ->
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).images()
+        inputFiles.tail foreach { f =>
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).images())
+        }
+        save(ImageInformationExtractor(df))
       }),
     "ImageGraphExtractor" ->
       ((inputFiles: List[String]) => {
@@ -171,6 +159,14 @@ class CommandLineApp(conf: CmdAppConf) {
         }
         save(ImageGraphExtractor(df))
       }),
+    "PDFInformationExtractor" ->
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).pdfs()
+        inputFiles.tail foreach { f =>
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).pdfs())
+        }
+        save(PDFInformationExtractor(df))
+      }),
     "PlainTextExtractor" ->
       ((inputFiles: List[String]) => {
         var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).webpages()
@@ -179,6 +175,46 @@ class CommandLineApp(conf: CmdAppConf) {
         }
         save(PlainTextExtractor(df))
       }),
+    "PresentationProgramInformationExtractor" ->
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).presentationProgramFiles()
+        inputFiles.tail foreach { f =>
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).presentationProgramFiles())
+        }
+        save(PresentationProgramInformationExtractor(df))
+      }),
+    "SpreadsheetInformationExtractor" ->
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).spreadsheets()
+        inputFiles.tail foreach { f =>
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).spreadsheets())
+        }
+        save(SpreadsheetInformationExtractor(df))
+      }),
+    "TextFilesInformationExtractor" ->
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).textFiles()
+        inputFiles.tail foreach { f =>
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).textFiles())
+        }
+        save(TextFilesInformationExtractor(df))
+      }),
+    "VideoInformationExtractor" ->
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).videos()
+        inputFiles.tail foreach { f =>
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).videos())
+        }
+        save(VideoInformationExtractor(df))
+      }),
+    "WebGraphExtractor" ->
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).webgraph()
+        inputFiles.tail foreach { f =>
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).webgraph())
+        }
+        save(WebGraphExtractor(df))
+      }),
     "WebPagesExtractor" ->
       ((inputFiles: List[String]) => {
         var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).webpages()
@@ -186,6 +222,14 @@ class CommandLineApp(conf: CmdAppConf) {
           df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).webpages())
         }
         save(WebPagesExtractor(df))
+      }),
+    "WordProcessorInformationExtractor" ->
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).wordProcessorFiles()
+        inputFiles.tail foreach { f =>
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).wordProcessorFiles())
+        }
+        save(WordProcessorInformationExtractor(df))
       })
   )
 
@@ -205,21 +249,6 @@ class CommandLineApp(conf: CmdAppConf) {
       d.write
         .option("timestampFormat", "yyyy/MM/dd HH:mm:ss ZZ")
         .csv(saveTarget)
-    }
-  }
-
-  /** Generic routine for saving RDD obtained from Map Reduce operation of extractors.
-    *
-    * @param r RDD obtained by applying RDD extractors to original RDD
-    * @tparam T template class name for RDD. Not used.
-    * @return Unit
-    */
-
-  def save[T](r: RDD[T]): Unit = {
-    if (!configuration.partition.isEmpty) {
-      r.coalesce(configuration.partition()).saveAsTextFile(saveTarget)
-    } else {
-      r.saveAsTextFile(saveTarget)
     }
   }
 
@@ -244,21 +273,21 @@ class CommandLineApp(conf: CmdAppConf) {
     }
   }
 
-  /** Prepare for invoking DataFrame implementation of extractors.
+  /** Prepare for invoking extractors.
     *
     * @return Any
     */
 
-  def dfHandler(): Any = {
-    if (!(dfExtractors contains configuration.extractor())) {
-      logger.error(configuration.extractor() + " not supported with DataFrame. " +
+  def handler(): Any = {
+    if (!(extractors contains configuration.extractor())) {
+      logger.error(configuration.extractor() + " not supported. " +
         "The following extractors are supported: ")
-      dfExtractors foreach { tuple => logger.error(tuple._1) }
+      extractors foreach { tuple => logger.error(tuple._1) }
       throw new IllegalArgumentException()
     }
 
     val extractFunction: List[String] => Any =
-      dfExtractors get configuration.extractor() match {
+      extractors get configuration.extractor() match {
         case Some(func) => func
         case None =>
           throw new InternalError()
@@ -275,54 +304,12 @@ class CommandLineApp(conf: CmdAppConf) {
     }
   }
 
-  /** Prepare for invoking RDD implementation of extractors.
-    *
-    * @return Any
-    */
-
-  def rddHandler(): Any = {
-    if (!(rddExtractors contains configuration.extractor())) {
-      logger.error(configuration.extractor() +
-      " not supported with RDD. The following extractors are supported: ")
-      rddExtractors foreach { tuple => logger.error(tuple._1) }
-      throw new IllegalArgumentException()
-    }
-
-    val extractFunction: RDD[ArchiveRecord] => Any =
-      rddExtractors get configuration.extractor() match {
-        case Some(func) => func
-        case None =>
-          throw new InternalError()
-      }
-
-    if (!configuration.split.isEmpty && configuration.split()) {
-      configuration.input() foreach { f =>
-        val archive = RecordLoader.loadArchives(f, sparkCtx.get)
-        saveTarget =  Paths.get(configuration.output(), Paths.get(f).getFileName.toString).toString
-        extractFunction(archive)
-      }
-    } else {
-      var nameList = configuration.input()
-      var rdd =  RecordLoader.loadArchives(nameList.head, sparkCtx.get)
-      nameList.tail foreach { f =>
-        rdd = rdd.union(RecordLoader.loadArchives(f, sparkCtx.get))
-      }
-      saveTarget = Paths.get(configuration.output()).toString
-      extractFunction(rdd)
-    }
-  }
-
-  /** Choose either DataFrame implementation or RDD implementation of extractors
-    * depending on the option specified in command line arguments.
+  /** Process the handler.
     *
     * @return Any
     */
   def process(): Any = {
-    if (!configuration.df.isEmpty && configuration.df()) {
-      dfHandler()
-    } else {
-      rddHandler()
-    }
+    handler()
   }
 
   /** Set Spark context to be used.
@@ -350,7 +337,7 @@ object CommandLineAppRunner {
       case x: Throwable => throw x
     }
 
-    val conf = new SparkConf().setAppName("AUTCommandLineApp")
+    val conf = new SparkConf().setAppName("Archives Unleashed Toolkit")
     conf.set("spark.driver.allowMultipleContexts", "true")
     app.setSparkContext(new SparkContext(conf))
     app.process()

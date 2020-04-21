@@ -67,8 +67,7 @@ $ mvn clean install
 
 The Toolkit offers a variety of extraction jobs with
 [`spark-submit`](https://spark.apache.org/docs/latest/submitting-applications.html)
-. These extraction jobs have a few configuration options, and analysis can use
-RDD or DataFrame in most cases.
+. These extraction jobs have a few configuration options.
 
 The extraction jobs have a basic outline of:
 
@@ -80,7 +79,6 @@ Additional flags include:
 
 * `--output-format FORMAT` (Used only for the `DomainGraphExtractor`, and the
   options are `TEXT` (default) or `GEXF`.)
-* `--df` (The extractor will use a DataFrame to carry out analysis.)
 * `--split` (The extractor will put results for each input file in its own
   directory. Each directory name will be the name of the ARC/WARC file parsed.)
 * `--partition N` (The extractor will partition RDD or DataFrame according to N
