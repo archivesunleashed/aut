@@ -77,8 +77,8 @@ spark-submit --class io.archivesunleashed.app.CommandLinAppRunner PATH_TO_AUT_JA
 
 Additional flags include:
 
-* `--output-format FORMAT` (Used only for the `DomainGraphExtractor`, and the
-  options are `TEXT` (default) or `GEXF`.)
+* `--output-format FORMAT` (`csv` (default) or `parquet`. `DomainGraphExtractor` 
+  has two additional output options `graphml` or `gexf`.)
 * `--split` (The extractor will put results for each input file in its own
   directory. Each directory name will be the name of the ARC/WARC file parsed.)
 * `--partition N` (The extractor will partition RDD or DataFrame according to N
