@@ -32,6 +32,6 @@ object PlainTextExtractor {
     // scalastyle:off
     import spark.implicits._
     // scalastyle:on
-    d.select(ExtractBoilerpipeTextDF(RemoveHTMLDF($"content")).as("content"))
+    d.select(ExtractBoilerpipeTextDF($"content").as("content"))
   }
 }
