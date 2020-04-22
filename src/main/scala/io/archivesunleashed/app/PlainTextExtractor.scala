@@ -17,8 +17,7 @@
 package io.archivesunleashed.app
 
 import io.archivesunleashed.ArchiveRecord
-import io.archivesunleashed.df.{ExtractBoilerpipeTextDF, RemoveHTMLDF,
-                                RemoveHTTPHeaderDF}
+import io.archivesunleashed.df.{ExtractBoilerpipeTextDF}
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
 object PlainTextExtractor {
