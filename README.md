@@ -20,11 +20,13 @@ The following two articles provide an overview of the project:
 
 The Archives Unleashed Toolkit requires Java 8.
 
-For macOS: You can find information on Java [here](https://java.com/en/download/help/mac_install.xml), or install with [homebrew](https://brew.sh) and then:
+For macOS: You can find information on Java [here](https://java.com/en/download/help/mac_install.xml). We recommend [OpenJDK](https://adoptopenjdk.net/). The easiest way is to install with [homebrew](https://brew.sh) and then:
 
 ```bash
-brew cask install java8
+brew cask install adoptopenjdk/openjdk/adoptopenjdk8
 ```
+
+If you run into difficulties with homebrew, installation instructions can be found [here](https://adoptopenjdk.net/).
 
 On Debian based system you can install Java using `apt`:
 
