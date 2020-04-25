@@ -16,11 +16,9 @@
 
 package io.archivesunleashed.app
 
-import io.archivesunleashed.matchbox.{RemoveHTMLRDD, RemoveHTTPHeaderRDD}
 import io.archivesunleashed.ArchiveRecord
 import io.archivesunleashed.df.{ExtractDomainDF, RemoveHTMLDF,
-                                RemoveHTTPHeaderDF}
-import org.apache.spark.rdd.RDD
+                                RemoveHTTPHeaderDF, RemovePrefixWWWDF}
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
 object WebPagesExtractor {
@@ -32,6 +30,15 @@ object WebPagesExtractor {
     */
   def apply(d: DataFrame): Dataset[Row] = {
     val spark = SparkSession.builder().master("local").getOrCreate()
-    d
+    // scalastyle:off
+    import spark.implicits._
+    // scalastyle:on
+    d.select($"crawl_date",
+             RemovePrefixWWWDF(ExtractDomainDF($"url")).as("domain"),
+             $"url",
+             $"mime_type_web_server",
+             $"mime_type_tika",
+             $"language",
+             RemoveHTMLDF(RemoveHTTPHeaderDF(($"content"))).alias("content"))
   }
 }

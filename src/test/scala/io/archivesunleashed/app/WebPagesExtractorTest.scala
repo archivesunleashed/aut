@@ -45,10 +45,11 @@ class WebPagesExtractorTest extends FunSuite with BeforeAndAfter {
 
     assert(dfResults.length == RESULTSLENGTH)
     assert(dfResults(0).get(0) == "20080430")
-    assert(dfResults(0).get(1) == "http://www.archive.org/")
-    assert(dfResults(0).get(2) == "text/html")
+    assert(dfResults(0).get(1) == "archive.org")
+    assert(dfResults(0).get(2) == "http://www.archive.org/")
     assert(dfResults(0).get(3) == "text/html")
-    assert(dfResults(0).get(4) == "en")
+    assert(dfResults(0).get(4) == "text/html")
+    assert(dfResults(0).get(5) == "en")
   }
 
   after {

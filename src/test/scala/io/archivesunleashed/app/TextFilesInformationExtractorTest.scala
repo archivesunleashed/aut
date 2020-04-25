@@ -24,8 +24,8 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
-class PlainTextExtractorTest extends FunSuite with BeforeAndAfter {
-  private val arcPath = Resources.getResource("warc/example.warc.gz").getPath
+class TextFilesInformationExtractorTest extends FunSuite with BeforeAndAfter {
+  private val arcPath = Resources.getResource("warc/example.txt.warc.gz").getPath
   private var sc: SparkContext = _
   private val master = "local[4]"
   private val appName = "example-spark"
@@ -38,19 +38,19 @@ class PlainTextExtractorTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Plain text extractor") {
-    val df = RecordLoader.loadArchives(arcPath, sc).webpages()
-    val dfResults = PlainTextExtractor(df).collect()
-    val RESULTSLENGTH = 94
+  test("Text files information extractor DF") {
+    val df = RecordLoader.loadArchives(arcPath, sc).textFiles()
+    val dfResults = TextFilesInformationExtractor(df).collect()
+    val RESULTSLENGTH = 1
 
     assert(dfResults.length == RESULTSLENGTH)
-    assert(dfResults(0).get(0) == "")
-    assert(dfResults(4).get(0)
-      .toString
-      .startsWith("Author: Spivak, John L. (John Louis), b. 1897 Published: 1939"))
-    assert(dfResults(50).get(0)
-      .toString
-      .startsWith("How many hours in a day They tell me 24 "))
+    assert(dfResults(0).get(0) == "https://ruebot.net/files/aut-test-fixtures/aut-text.txt")
+    assert(dfResults(0).get(1) == "aut-text.txt")
+    assert(dfResults(0).get(2) == "txt")
+    assert(dfResults(0).get(3) == "text/plain")
+    assert(dfResults(0).get(4) == "application/gzip")
+    assert(dfResults(0).get(5) == "32abd404fb560ecf14b75611f3cc5c2c")
+    assert(dfResults(0).get(6) == "9dc9d163d933085348e90cd2b6e523e3139d3e88")
   }
 
   after {

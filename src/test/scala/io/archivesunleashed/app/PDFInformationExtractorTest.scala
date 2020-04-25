@@ -24,8 +24,8 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
-class PlainTextExtractorTest extends FunSuite with BeforeAndAfter {
-  private val arcPath = Resources.getResource("warc/example.warc.gz").getPath
+class PDFInformationExtractorTest extends FunSuite with BeforeAndAfter {
+  private val arcPath = Resources.getResource("warc/example.pdf.warc.gz").getPath
   private var sc: SparkContext = _
   private val master = "local[4]"
   private val appName = "example-spark"
@@ -38,19 +38,19 @@ class PlainTextExtractorTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Plain text extractor") {
-    val df = RecordLoader.loadArchives(arcPath, sc).webpages()
-    val dfResults = PlainTextExtractor(df).collect()
-    val RESULTSLENGTH = 94
+  test("PDF information extractor DF") {
+    val df = RecordLoader.loadArchives(arcPath, sc).pdfs()
+    val dfResults = PDFInformationExtractor(df).collect()
+    val RESULTSLENGTH = 2
 
     assert(dfResults.length == RESULTSLENGTH)
-    assert(dfResults(0).get(0) == "")
-    assert(dfResults(4).get(0)
-      .toString
-      .startsWith("Author: Spivak, John L. (John Louis), b. 1897 Published: 1939"))
-    assert(dfResults(50).get(0)
-      .toString
-      .startsWith("How many hours in a day They tell me 24 "))
+    assert(dfResults(0).get(0) == "https://yorkspace.library.yorku.ca/xmlui/bitstream/handle/10315/36158/cost-analysis.pdf?sequence=1&isAllowed=y")
+    assert(dfResults(0).get(1) == "cost-analysis.pdf")
+    assert(dfResults(0).get(2) == "pdf")
+    assert(dfResults(0).get(3) == "application/pdf")
+    assert(dfResults(0).get(4) == "application/pdf")
+    assert(dfResults(0).get(5) == "aaba59d2287afd40c996488a39bbc0dd")
+    assert(dfResults(0).get(6) == "569c28e0e8faa6945d6ca88fcd9e195825052c71")
   }
 
   after {

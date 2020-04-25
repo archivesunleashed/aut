@@ -24,8 +24,8 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
-class PlainTextExtractorTest extends FunSuite with BeforeAndAfter {
-  private val arcPath = Resources.getResource("warc/example.warc.gz").getPath
+class AudioInformationExtractorTest extends FunSuite with BeforeAndAfter {
+  private val arcPath = Resources.getResource("warc/example.media.warc.gz").getPath
   private var sc: SparkContext = _
   private val master = "local[4]"
   private val appName = "example-spark"
@@ -38,19 +38,19 @@ class PlainTextExtractorTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Plain text extractor") {
-    val df = RecordLoader.loadArchives(arcPath, sc).webpages()
-    val dfResults = PlainTextExtractor(df).collect()
-    val RESULTSLENGTH = 94
+  test("Audio information extractor DF") {
+    val df = RecordLoader.loadArchives(arcPath, sc).audio()
+    val dfResults = AudioInformationExtractor(df).collect()
+    val RESULTSLENGTH = 1
 
     assert(dfResults.length == RESULTSLENGTH)
-    assert(dfResults(0).get(0) == "")
-    assert(dfResults(4).get(0)
-      .toString
-      .startsWith("Author: Spivak, John L. (John Louis), b. 1897 Published: 1939"))
-    assert(dfResults(50).get(0)
-      .toString
-      .startsWith("How many hours in a day They tell me 24 "))
+    assert(dfResults(0).get(0) == "https://ruebot.net/files/feniz.mp3")
+    assert(dfResults(0).get(1) == "feniz.mp3")
+    assert(dfResults(0).get(2) == "mp3")
+    assert(dfResults(0).get(3) == "audio/mpeg")
+    assert(dfResults(0).get(4) == "audio/mpeg")
+    assert(dfResults(0).get(5) == "f7e7ec84b12c294e19af1ba41732c733")
+    assert(dfResults(0).get(6) == "a3eb95dbbea76460529d0d9ebdde5faabaff544a")
   }
 
   after {

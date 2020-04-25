@@ -24,7 +24,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
-class PlainTextExtractorTest extends FunSuite with BeforeAndAfter {
+class WebGraphExtractorTest extends FunSuite with BeforeAndAfter {
   private val arcPath = Resources.getResource("warc/example.warc.gz").getPath
   private var sc: SparkContext = _
   private val master = "local[4]"
@@ -38,19 +38,16 @@ class PlainTextExtractorTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Plain text extractor") {
-    val df = RecordLoader.loadArchives(arcPath, sc).webpages()
-    val dfResults = PlainTextExtractor(df).collect()
-    val RESULTSLENGTH = 94
+  test("Web graph extractor DF") {
+    val df = RecordLoader.loadArchives(arcPath, sc).webgraph()
+    val dfResults = WebGraphExtractor(df).collect()
+    val RESULTSLENGTH = 622
 
     assert(dfResults.length == RESULTSLENGTH)
-    assert(dfResults(0).get(0) == "")
-    assert(dfResults(4).get(0)
-      .toString
-      .startsWith("Author: Spivak, John L. (John Louis), b. 1897 Published: 1939"))
-    assert(dfResults(50).get(0)
-      .toString
-      .startsWith("How many hours in a day They tell me 24 "))
+    assert(dfResults(0).get(0) == "20080430")
+    assert(dfResults(0).get(1) == "http://www.archive.org/")
+    assert(dfResults(0).get(2) == "http://www.archive.org")
+    assert(dfResults(0).get(3) == "http://www.archive.org")
   }
 
   after {

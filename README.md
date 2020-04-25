@@ -2,8 +2,8 @@
 [![Build Status](https://travis-ci.org/archivesunleashed/aut.svg?branch=master)](https://travis-ci.org/archivesunleashed/aut)
 [![codecov](https://codecov.io/gh/archivesunleashed/aut/branch/master/graph/badge.svg)](https://codecov.io/gh/archivesunleashed/aut)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.archivesunleashed/aut/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.archivesunleashed/aut)
-[![Javadoc](https://javadoc-badge.appspot.com/io.archivesunleashed/aut.svg?label=javadoc)](http://api.docs.archivesunleashed.io/0.50.0/apidocs/index.html)
-[![Scaladoc](https://javadoc-badge.appspot.com/io.archivesunleashed/aut.svg?label=scaladoc)](http://api.docs.archivesunleashed.io/0.50.0/scaladocs/index.html)
+[![Javadoc](https://javadoc-badge.appspot.com/io.archivesunleashed/aut.svg?label=javadoc)](http://api.docs.archivesunleashed.io/0.60.0/apidocs/index.html)
+[![Scaladoc](https://javadoc-badge.appspot.com/io.archivesunleashed/aut.svg?label=scaladoc)](http://api.docs.archivesunleashed.io/0.60.0/scaladocs/index.html)
 [![LICENSE](https://img.shields.io/badge/license-Apache-blue.svg?style=flat)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Contribution Guidelines](http://img.shields.io/badge/CONTRIBUTING-Guidelines-blue.svg)](./CONTRIBUTING.md)
 
@@ -20,11 +20,13 @@ The following two articles provide an overview of the project:
 
 The Archives Unleashed Toolkit requires Java 8.
 
-For macOS: You can find information on Java [here](https://java.com/en/download/help/mac_install.xml), or install with [homebrew](https://brew.sh) and then:
+For macOS: You can find information on Java [here](https://java.com/en/download/help/mac_install.xml). We recommend [OpenJDK](https://adoptopenjdk.net/). The easiest way is to install with [homebrew](https://brew.sh) and then:
 
 ```bash
-brew cask install java8
+brew cask install adoptopenjdk/openjdk/adoptopenjdk8
 ```
+
+If you run into difficulties with homebrew, installation instructions can be found [here](https://adoptopenjdk.net/).
 
 On Debian based system you can install Java using `apt`:
 
@@ -63,6 +65,38 @@ You can then build The Archives Unleashed Toolkit.
 $ mvn clean install
 ```
 
+### Archives Unleashed Toolkit with Spark Submit
+
+The Toolkit offers a variety of extraction jobs with
+[`spark-submit`](https://spark.apache.org/docs/latest/submitting-applications.html)
+. These extraction jobs have a few configuration options.
+
+The extraction jobs have a basic outline of:
+
+```shell
+spark-submit --class io.archivesunleashed.app.CommandLinAppRunner PATH_TO_AUT_JAR --extractor EXTRACTOR --input INPUT DIRECTORY --output OUTPUT DIRECTORY
+```
+
+Additional flags include:
+
+* `--output-format FORMAT` (`csv` (default) or `parquet`. `DomainGraphExtractor` 
+  has two additional output options `graphml` or `gexf`.)
+* `--split` (The extractor will put results for each input file in its own
+  directory. Each directory name will be the name of the ARC/WARC file parsed.)
+* `--partition N` (The extractor will partition RDD or DataFrame according to N
+  before writing results. The is useful to combine all the results to a single
+  file.)
+
+Available extraction jobs:
+
+- `DomainFrequencyExtractor`
+- `DomainGraphExtractor`
+- `ImageGraphExtractor`
+- `PlainTextExtractor`
+- `WebPagesExtractor`
+
+More documentation on using the Toolkit with `spark-submit` can be found [here](https://github.com/archivesunleashed/aut-docs/blob/master/current/aut-spark-submit-app.md).
+
 ### Archives Unleashed Toolkit with Spark Shell
 
 There are a two options for loading the Archives Unleashed Toolkit. The advantages and disadvantages of using either option are going to depend on your setup (single machine vs cluster):
@@ -84,7 +118,7 @@ $ spark-shell --help
 Release version:
 
 ```shell
-$ spark-shell --packages "io.archivesunleashed:aut:0.50.0" --repositories "https://jitpack.io"
+$ spark-shell --packages "io.archivesunleashed:aut:0.60.0" --repositories "https://jitpack.io"
 ```
 
 HEAD (built locally):
@@ -98,7 +132,7 @@ $ spark-shell --packages "io.archivesunleashed:aut:0.18.2-SNAPSHOT" --repositori
 Release version:
 
 ```shell
-$ spark-shell --jars /path/to/aut-0.50.0-fatjar.jar
+$ spark-shell --jars /path/to/aut-0.60.0-fatjar.jar
 ```
 
 HEAD (built locally):
@@ -109,7 +143,7 @@ $ spark-shell --jars /path/to/aut/target/aut-0.18.2-SNAPSHOT-fatjar.jar
 
 ### Archives Unleashed Toolkit with PySpark
 
-To run PySpark with the Archives Unleashed Toolkit loaded, you will need to provide PySpark with the Java/Scala package, and the Python bindings. The Java/Scala packages can be provided with `--packages` or `--jars` as described above. The Python bindings can be [downloaded](https://github.com/archivesunleashed/aut/releases/download/aut-0.50.0/aut-0.50.0.zip), or [built locally](#building-locally) (the zip file will be found in the `target` directory.
+To run PySpark with the Archives Unleashed Toolkit loaded, you will need to provide PySpark with the Java/Scala package, and the Python bindings. The Java/Scala packages can be provided with `--packages` or `--jars` as described above. The Python bindings can be [downloaded](https://github.com/archivesunleashed/aut/releases/download/aut-0.60.0/aut-0.60.0.zip), or [built locally](#building-locally) (the zip file will be found in the `target` directory.
 
 In each of the examples below, `/path/to/python` is listed. If you are unsure where your Python is, it can be found with `which python`.
 
@@ -118,7 +152,7 @@ In each of the examples below, `/path/to/python` is listed. If you are unsure wh
 Release version:
 
 ```shell
-$ export PYSPARK_PYTHON=/path/to/python; export PYSPARK_DRIVER_PYTHON=/path/to/python; /path/to/spark/bin/pyspark --py-files aut-0.50.0.zip --packages "io.archivesunleashed:aut:0.50.0" --repositories "https://jitpack.io"
+$ export PYSPARK_PYTHON=/path/to/python; export PYSPARK_DRIVER_PYTHON=/path/to/python; /path/to/spark/bin/pyspark --py-files aut-0.60.0.zip --packages "io.archivesunleashed:aut:0.60.0" --repositories "https://jitpack.io"
 ```
 
 HEAD (built locally):
@@ -132,7 +166,7 @@ $ export PYSPARK_PYTHON=/path/to/python; export PYSPARK_DRIVER_PYTHON=/path/to/p
 Release version:
 
 ```shell
-$ export PYSPARK_PYTHON=/path/to/python; export PYSPARK_DRIVER_PYTHON=/path/to/python; /path/to/spark/bin/pyspark --py-files aut-0.50.0.zip --jars /path/to/aut-0.50.0-fatjar.jar
+$ export PYSPARK_PYTHON=/path/to/python; export PYSPARK_DRIVER_PYTHON=/path/to/python; /path/to/spark/bin/pyspark --py-files aut-0.60.0.zip --jars /path/to/aut-0.60.0-fatjar.jar
 ```
 
 HEAD (built locally):
@@ -143,14 +177,14 @@ $ export PYSPARK_PYTHON=/path/to/python; export PYSPARK_DRIVER_PYTHON=/path/to/p
 
 ### Archives Unleashed Toolkit with Jupyter
 
-To run a [Jupyter Notebook](https://jupyter.org/install) with the Archives Unleashed Toolkit loaded, you will need to provide PySpark the Java/Scala package, and the Python bindings. The Java/Scala packages can be provided with `--packages` or `--jars` as described above. The Python bindings can be [downloaded](https://github.com/archivesunleashed/aut/releases/download/aut-0.50.0/aut-0.50.0.zip), or [built locally](#Introduction) (the zip file will be found in the `target` directory.
+To run a [Jupyter Notebook](https://jupyter.org/install) with the Archives Unleashed Toolkit loaded, you will need to provide PySpark the Java/Scala package, and the Python bindings. The Java/Scala packages can be provided with `--packages` or `--jars` as described above. The Python bindings can be [downloaded](https://github.com/archivesunleashed/aut/releases/download/aut-0.60.0/aut-0.60.0.zip), or [built locally](#Introduction) (the zip file will be found in the `target` directory.
 
 #### As a package
 
 Release version:
 
 ```shell
-$ export PYSPARK_DRIVER_PYTHON=jupyter; export PYSPARK_DRIVER_PYTHON_OPTS=notebook; /path/to/spark/bin/pyspark --py-files aut-0.50.0.zip --packages "io.archivesunleashed:aut:0.50.0" --repositories "https://jitpack.io"
+$ export PYSPARK_DRIVER_PYTHON=jupyter; export PYSPARK_DRIVER_PYTHON_OPTS=notebook; /path/to/spark/bin/pyspark --py-files aut-0.60.0.zip --packages "io.archivesunleashed:aut:0.60.0" --repositories "https://jitpack.io"
 ```
 
 HEAD (built locally):
@@ -164,7 +198,7 @@ $ export PYSPARK_DRIVER_PYTHON=jupyter; export PYSPARK_DRIVER_PYTHON_OPTS=notebo
 Release version:
 
 ```shell
-$ export PYSPARK_DRIVER_PYTHON=jupyter; export PYSPARK_DRIVER_PYTHON_OPTS=notebook; /path/to/spark/bin/pyspark --py-files aut-0.50.0.zip --jars /path/to/aut-0.50.0-fatjar.jar
+$ export PYSPARK_DRIVER_PYTHON=jupyter; export PYSPARK_DRIVER_PYTHON_OPTS=notebook; /path/to/spark/bin/pyspark --py-files aut-0.60.0.zip --jars /path/to/aut-0.60.0-fatjar.jar
 ```
 
 HEAD (built locally):

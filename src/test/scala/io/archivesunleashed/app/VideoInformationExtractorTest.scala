@@ -24,8 +24,8 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
-class PlainTextExtractorTest extends FunSuite with BeforeAndAfter {
-  private val arcPath = Resources.getResource("warc/example.warc.gz").getPath
+class VideoInformationExtractorTest extends FunSuite with BeforeAndAfter {
+  private val arcPath = Resources.getResource("warc/example.media.warc.gz").getPath
   private var sc: SparkContext = _
   private val master = "local[4]"
   private val appName = "example-spark"
@@ -38,19 +38,19 @@ class PlainTextExtractorTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Plain text extractor") {
-    val df = RecordLoader.loadArchives(arcPath, sc).webpages()
-    val dfResults = PlainTextExtractor(df).collect()
-    val RESULTSLENGTH = 94
+  test("Video information extractor DF") {
+    val df = RecordLoader.loadArchives(arcPath, sc).videos()
+    val dfResults = VideoInformationExtractor(df).collect()
+    val RESULTSLENGTH = 1
 
     assert(dfResults.length == RESULTSLENGTH)
-    assert(dfResults(0).get(0) == "")
-    assert(dfResults(4).get(0)
-      .toString
-      .startsWith("Author: Spivak, John L. (John Louis), b. 1897 Published: 1939"))
-    assert(dfResults(50).get(0)
-      .toString
-      .startsWith("How many hours in a day They tell me 24 "))
+    assert(dfResults(0).get(0) == "https://ruebot.net/2018-11-12%2016.14.11.mp4")
+    assert(dfResults(0).get(1) == "2018-11-12%2016.14.11.mp4")
+    assert(dfResults(0).get(2) == "mp4")
+    assert(dfResults(0).get(3) == "video/mp4")
+    assert(dfResults(0).get(4) == "video/mp4")
+    assert(dfResults(0).get(5) == "2cde7de3213a87269957033f6315fce2")
+    assert(dfResults(0).get(6) == "f28c72fa4c0464a1a2b81fdc539b28cf574ac4c2")
   }
 
   after {
