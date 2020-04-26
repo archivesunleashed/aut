@@ -20,11 +20,13 @@ The following two articles provide an overview of the project:
 
 The Archives Unleashed Toolkit requires Java 8.
 
-For macOS: You can find information on Java [here](https://java.com/en/download/help/mac_install.xml), or install with [homebrew](https://brew.sh) and then:
+For macOS: You can find information on Java [here](https://java.com/en/download/help/mac_install.xml). We recommend [OpenJDK](https://adoptopenjdk.net/). The easiest way is to install with [homebrew](https://brew.sh) and then:
 
 ```bash
-brew cask install java8
+brew cask install adoptopenjdk/openjdk/adoptopenjdk8
 ```
+
+If you run into difficulties with homebrew, installation instructions can be found [here](https://adoptopenjdk.net/).
 
 On Debian based system you can install Java using `apt`:
 
@@ -67,8 +69,7 @@ $ mvn clean install
 
 The Toolkit offers a variety of extraction jobs with
 [`spark-submit`](https://spark.apache.org/docs/latest/submitting-applications.html)
-. These extraction jobs have a few configuration options, and analysis can use
-RDD or DataFrame in most cases.
+. These extraction jobs have a few configuration options.
 
 The extraction jobs have a basic outline of:
 
@@ -78,9 +79,8 @@ spark-submit --class io.archivesunleashed.app.CommandLinAppRunner PATH_TO_AUT_JA
 
 Additional flags include:
 
-* `--output-format FORMAT` (Used only for the `DomainGraphExtractor`, and the
-  options are `TEXT` (default) or `GEXF`.)
-* `--df` (The extractor will use a DataFrame to carry out analysis.)
+* `--output-format FORMAT` (`csv` (default) or `parquet`. `DomainGraphExtractor` 
+  has two additional output options `graphml` or `gexf`.)
 * `--split` (The extractor will put results for each input file in its own
   directory. Each directory name will be the name of the ARC/WARC file parsed.)
 * `--partition N` (The extractor will partition RDD or DataFrame according to N

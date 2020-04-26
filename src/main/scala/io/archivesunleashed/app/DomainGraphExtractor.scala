@@ -17,33 +17,11 @@
 package io.archivesunleashed.app
 
 import io.archivesunleashed.df.{ExtractDomainDF, RemovePrefixWWWDF}
-import io.archivesunleashed.matchbox.{ExtractDomainRDD, ExtractLinksRDD}
-import io.archivesunleashed.{ArchiveRecord, DataFrameLoader, CountableRDD}
-import org.apache.spark.rdd.RDD
+import io.archivesunleashed.{ArchiveRecord, DataFrameLoader}
 import org.apache.spark.sql.functions.desc
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
 object DomainGraphExtractor {
-  /** Extract domain graph from web archive using RDD.
-    *
-    * @param records RDD[ArchiveRecord] obtained from RecordLoader
-    * @return RDD[(String, String, String), Int],
-    *         which is ((CrawlDate, SourceDomain, DestinationDomain), Frequency)
-    */
-  def apply(records: RDD[ArchiveRecord]): RDD[((String, String, String), Int)] = {
-    records
-      .keepValidPages()
-      .map(r => (r.getCrawlDate, ExtractLinksRDD(r.getUrl, r.getContentString)))
-      .flatMap(r => r._2.map(f =>
-        (r._1,
-          ExtractDomainRDD(f._1).replaceAll("^\\s*www\\.", ""),
-          ExtractDomainRDD(f._2).replaceAll("^\\s*www\\.", ""))
-        ))
-      .filter(r => r._2 != "" && r._3 != "")
-      .countItems()
-      .filter(r => r._2 > 5)
-  }
-
   /** Extract domain graph from web archive using DataFrame and Spark SQL.
     *
     * @param d DataFrame obtained from RecordLoader

@@ -24,7 +24,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
-class DomainGraphExtractorTest extends FunSuite with BeforeAndAfter {
+class DomainGraphExtractorDfTest extends FunSuite with BeforeAndAfter {
   private val arcPath = Resources.getResource("warc/example.warc.gz").getPath
   private var sc: SparkContext = _
   private val master = "local[4]"
@@ -38,16 +38,18 @@ class DomainGraphExtractorTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Domain graph extractor RDD") {
-    val rdd = RecordLoader.loadArchives(arcPath, sc)
-    val rddResult = DomainGraphExtractor(rdd).collect()
+  test("Domain graph extractor DF") {
+    val TESTLENGTH = 9
+    val TESTRESULT = 280
+    val df = RecordLoader.loadArchives(arcPath, sc).webgraph()
+    val dfResult = DomainGraphExtractor(df).collect()
 
-    assert(rddResult.length == 9)
+    assert(dfResult.length == TESTLENGTH)
 
-    assert(rddResult(0)._1._1 == "20080430")
-    assert(rddResult(0)._1._2 == "archive.org")
-    assert(rddResult(0)._1._3 == "archive.org")
-    assert(rddResult(0)._2 == 280)
+    assert(dfResult(0).get(0) == "20080430")
+    assert(dfResult(0).get(1) == "archive.org")
+    assert(dfResult(0).get(2) == "archive.org")
+    assert(dfResult(0).get(3) == TESTRESULT)
   }
 
   after {

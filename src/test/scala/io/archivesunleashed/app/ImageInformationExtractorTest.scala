@@ -24,7 +24,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
-class PlainTextExtractorTest extends FunSuite with BeforeAndAfter {
+class ImageInformationExtractorTest extends FunSuite with BeforeAndAfter {
   private val arcPath = Resources.getResource("warc/example.warc.gz").getPath
   private var sc: SparkContext = _
   private val master = "local[4]"
@@ -38,19 +38,21 @@ class PlainTextExtractorTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Plain text extractor") {
-    val df = RecordLoader.loadArchives(arcPath, sc).webpages()
-    val dfResults = PlainTextExtractor(df).collect()
-    val RESULTSLENGTH = 94
+  test("Image information extractor DF") {
+    val df = RecordLoader.loadArchives(arcPath, sc).images()
+    val dfResults = ImageInformationExtractor(df).collect()
+    val RESULTSLENGTH = 55
 
     assert(dfResults.length == RESULTSLENGTH)
-    assert(dfResults(0).get(0) == "")
-    assert(dfResults(4).get(0)
-      .toString
-      .startsWith("Author: Spivak, John L. (John Louis), b. 1897 Published: 1939"))
-    assert(dfResults(50).get(0)
-      .toString
-      .startsWith("How many hours in a day They tell me 24 "))
+    assert(dfResults(0).get(0) == "http://www.archive.org/images/logoc.jpg")
+    assert(dfResults(0).get(1) == "logoc.jpg")
+    assert(dfResults(0).get(2) == "jpg")
+    assert(dfResults(0).get(3) == "image/jpeg")
+    assert(dfResults(0).get(4) == "image/jpeg")
+    assert(dfResults(0).get(5) == 70)
+    assert(dfResults(0).get(6) == 56)
+    assert(dfResults(0).get(7) == "8211d1fbb9b03d8522a1ae378f9d1b24")
+    assert(dfResults(0).get(8) == "a671e68fc211ee4996a91e99297f246b2c5faa1a")
   }
 
   after {

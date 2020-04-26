@@ -14,81 +14,25 @@
  * limitations under the License.
  */
 package io.archivesunleashed.app
+
 import io.archivesunleashed.matchbox.{ComputeMD5RDD, WWWLink}
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
-import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.Row
 
-/**
-  * UDF for exporting an RDD or DataFrame representing a collection of links to a GEXF file.
-  */
 object WriteGEXF {
-
   /** Writes graph nodes and edges to file.
    *
    * @param rdd RDD of elements in format ((datestring, source, target), count)
    * @param gexfPath output file
    * @return Unit().
    */
-  def apply(rdd: RDD[((String, String, String), Int)], gexfPath: String): Boolean = {
-    if (gexfPath.isEmpty()) {
-      false
-    } else
-    {
-      makeFile (rdd, gexfPath)
-    }
-  }
-
   def apply(ds: Array[Row], gexfPath: String): Boolean = {
     if (gexfPath.isEmpty())  {
       false
     } else {
       makeFile (ds, gexfPath)
     }
-  }
-
-  /** Produces the GEXF output from a RDD of tuples and outputs it to gexfPath.
-   *
-   * @param rdd a RDD of elements in format ((datestring, source, target), count)
-   * @param gexfPath output file
-   * @return true on success.
-   */
-  def makeFile (rdd: RDD[((String, String, String), Int)], gexfPath: String): Boolean = {
-    val outFile = Files.newBufferedWriter(Paths.get(gexfPath), StandardCharsets.UTF_8)
-    val endAttribute = "\" />\n"
-    val nodeStart = "<node id=\""
-    val labelStart = "\" label=\""
-    val edges = rdd.map(r => "<edge source=\"" + ComputeMD5RDD(r._1._2.getBytes) + "\" target=\"" +
-      ComputeMD5RDD(r._1._3.getBytes) + "\" weight=\"" + r._2 +
-      "\" type=\"directed\">\n" +
-      "<attvalues>\n" +
-      "<attvalue for=\"0\" value=\"" + r._1._1 + endAttribute +
-      "</attvalues>\n" +
-      "</edge>\n").collect
-    val nodes = rdd.flatMap(r => List(nodeStart +
-      ComputeMD5RDD(r._1._2.getBytes) + labelStart +
-      r._1._2.escapeInvalidXML() + endAttribute,
-      nodeStart +
-      ComputeMD5RDD(r._1._3.getBytes) + labelStart +
-      r._1._3.escapeInvalidXML() + endAttribute)).distinct.collect
-    outFile.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-      "<gexf xmlns=\"http://www.gexf.net/1.3draft\"\n" +
-      "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-      "  xsi:schemaLocation=\"http://www.gexf.net/1.3draft\n" +
-      "                       http://www.gexf.net/1.3draft/gexf.xsd\"\n" +
-      "  version=\"1.3\">\n" +
-      "<graph mode=\"static\" defaultedgetype=\"directed\">\n" +
-      "<attributes class=\"edge\">\n" +
-      "  <attribute id=\"0\" title=\"crawlDate\" type=\"string\" />\n" +
-      "</attributes>\n" +
-      "<nodes>\n")
-    nodes.foreach(r => outFile.write(r))
-    outFile.write("</nodes>\n<edges>\n")
-    edges.foreach(r => outFile.write(r))
-    outFile.write("</edges>\n</graph>\n</gexf>")
-    outFile.close()
-    true
   }
 
   /** Produces the GEXF output from an Array[Row] and outputs it to gexfPath.

@@ -32,10 +32,7 @@ class WriteGraphMLTest extends FunSuite with BeforeAndAfter{
   private val linkCountOne = 3
   private val linkCountTwo = 4
   private val linkCountThree = 100
-  private val network = Seq((("Date1", "Source1", "Destination1"), linkCountOne),
-                         (("Date2", "Source2", "Destination2"), linkCountTwo),
-                         (("Date3", "Source3", "Destination3"), linkCountThree))
-  private val networkDf = Seq(("Date1", "Source1", "Destination1", linkCountOne),
+  private val network = Seq(("Date1", "Source1", "Destination1", linkCountOne),
                          ("Date2", "Source2", "Destination2", linkCountTwo),
                          ("Date3", "Source3", "Destination3", linkCountThree))
   private val testFile = "temporaryTestFile.graphml"
@@ -48,25 +45,13 @@ class WriteGraphMLTest extends FunSuite with BeforeAndAfter{
       sc = new SparkContext(conf)
     }
 
-  test("Create GraphML the file") {
-    val networkrdd = sc.parallelize(network)
-    val lineCheck = (0, 15, 22, 30)
-    WriteGraphML(networkrdd, testFile)
-    assert(Files.exists(Paths.get(testFile)))
-    val lines = Source.fromFile(testFile).getLines.toList
-    assert(lines(lineCheck._1) == """<?xml version="1.0" encoding="UTF-8"?>""")
-    assert(lines(lineCheck._2) == """<data key="label">Source1</data>""")
-    assert(lines(lineCheck._3) == """</node>""")
-    assert(lines(lineCheck._4) == """<data key="weight">3</data>""")
-  }
-
   test("Create WriteGraphML file from Array[Row]") {
     val lineCheck = (0, 15, 22, 30)
     if (Files.exists(Paths.get(testFile))) {
       new File(testFile).delete()
     }
-    val networkarray = Array(Row.fromTuple(networkDf(0)),
-      Row.fromTuple(networkDf(1)), Row.fromTuple(networkDf(2)))
+    val networkarray = Array(Row.fromTuple(network(0)),
+      Row.fromTuple(network(1)), Row.fromTuple(network(2)))
     val ret = WriteGraphML(networkarray, testFile)
     assert(ret)
     assert(Files.exists(Paths.get(testFile)))
@@ -78,10 +63,11 @@ class WriteGraphMLTest extends FunSuite with BeforeAndAfter{
   }
 
   test ("Test if GraphML path is empty") {
-    val networkrdd = sc.parallelize(network)
-    val graphml = WriteGraphML(networkrdd, testFile)
+    val networkarray = Array(Row.fromTuple(network(0)),
+      Row.fromTuple(network(1)), Row.fromTuple(network(2)))
+    val graphml = WriteGraphML(networkarray, testFile)
     assert(graphml)
-    assert(!WriteGraphML(networkrdd, ""))
+    assert(!WriteGraphML(networkarray, ""))
   }
 
   after {
