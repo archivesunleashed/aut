@@ -42,20 +42,11 @@ class DomainFrequencyExtractorTest extends FunSuite with BeforeAndAfter {
     val df = RecordLoader.loadArchives(arcPath, sc).webpages()
     val dfResults = DomainFrequencyExtractor(df).collect()
 
-    // Results should be:
-    // +------------------+-----+
-    // |            Domain|count|
-    // +------------------+-----+
-    // |   www.archive.org|   91|
-    // |     deadlists.com|    2|
-    // |www.hideout.com.br|    1|
-    // +------------------+-----+
-
-    assert(dfResults(0).get(0) == "www.archive.org")
+    assert(dfResults(0).get(0) == "archive.org")
     assert(dfResults(0).get(1) == 91)
     assert(dfResults(1).get(0) == "deadlists.com")
     assert(dfResults(1).get(1) == 2)
-    assert(dfResults(2).get(0) == "www.hideout.com.br")
+    assert(dfResults(2).get(0) == "hideout.com.br")
     assert(dfResults(2).get(1) == 1)
   }
 
