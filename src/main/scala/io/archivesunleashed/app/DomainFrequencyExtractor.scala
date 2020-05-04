@@ -16,7 +16,7 @@
 
 package io.archivesunleashed.app
 
-import io.archivesunleashed.df.{ExtractDomainDF}
+import io.archivesunleashed.df.{ExtractDomainDF,  RemovePrefixWWWDF}
 import io.archivesunleashed.{ArchiveRecord, DataFrameLoader}
 import org.apache.spark.sql.functions.desc
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
@@ -32,7 +32,7 @@ object DomainFrequencyExtractor {
     // scalastyle:off
     import spark.implicits._
     // scalastyle:on
-    d.groupBy(ExtractDomainDF($"url").as("domain"))
+    d.groupBy(RemovePrefixWWWDF(ExtractDomainDF($"url")).as("domain"))
       .count()
       .sort($"count".desc)
   }
