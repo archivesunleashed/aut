@@ -347,6 +347,14 @@ class CommandLineApp(conf: CmdAppConf) {
     }
   }
 
+  /** Set the app name.
+    *
+    * @return String
+    */
+   def setAppName(): String = {
+     "aut - " + configuration.extractor()
+   }
+
   /** Prepare for invoking extractors.
     *
     * @return Any
@@ -411,7 +419,8 @@ object CommandLineAppRunner {
       case x: Throwable => throw x
     }
 
-    val conf = new SparkConf().setAppName("Archives Unleashed Toolkit")
+    val appName = app.setAppName()
+    val conf = new SparkConf().setAppName(appName)
     conf.set("spark.driver.allowMultipleContexts", "true")
     app.setSparkContext(new SparkContext(conf))
     app.process()
