@@ -17,8 +17,7 @@
 package io.archivesunleashed.app
 
 import io.archivesunleashed.ArchiveRecord
-import io.archivesunleashed.df.{ExtractDomainDF, RemoveHTMLDF,
-                                RemoveHTTPHeaderDF}
+import io.archivesunleashed.df.{ExtractBoilerpipeTextDF}
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
 object PlainTextExtractor {
@@ -32,7 +31,6 @@ object PlainTextExtractor {
     // scalastyle:off
     import spark.implicits._
     // scalastyle:on
-    d.select($"crawl_date", ExtractDomainDF($"url").as("domain"),
-      $"url", RemoveHTMLDF(RemoveHTTPHeaderDF($"content")).as("text"))
+    d.select(ExtractBoilerpipeTextDF($"content").as("content"))
   }
 }

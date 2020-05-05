@@ -2,8 +2,9 @@
 [![Build Status](https://travis-ci.org/archivesunleashed/aut.svg?branch=master)](https://travis-ci.org/archivesunleashed/aut)
 [![codecov](https://codecov.io/gh/archivesunleashed/aut/branch/master/graph/badge.svg)](https://codecov.io/gh/archivesunleashed/aut)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.archivesunleashed/aut/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.archivesunleashed/aut)
-[![Javadoc](https://javadoc-badge.appspot.com/io.archivesunleashed/aut.svg?label=javadoc)](http://api.docs.archivesunleashed.io/0.60.0/apidocs/index.html)
-[![Scaladoc](https://javadoc-badge.appspot.com/io.archivesunleashed/aut.svg?label=scaladoc)](http://api.docs.archivesunleashed.io/0.60.0/scaladocs/index.html)
+[![Javadoc](https://javadoc-badge.appspot.com/io.archivesunleashed/aut.svg?label=javadoc)](http://api.docs.archivesunleashed.io/0.70.0/apidocs/index.html)
+[![Scaladoc](https://javadoc-badge.appspot.com/io.archivesunleashed/aut.svg?label=scaladoc)](http://api.docs.archivesunleashed.io/0.70.0/scaladocs/index.html)
+[![UserDocs](https://img.shields.io/badge/UserDocs-0.70.0-green?style=flat)](https://github.com/archivesunleashed/aut-docs/tree/master/aut-0.70.0#the-archives-unleashed-toolkit-latest-documentation)
 [![LICENSE](https://img.shields.io/badge/license-Apache-blue.svg?style=flat)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Contribution Guidelines](http://img.shields.io/badge/CONTRIBUTING-Guidelines-blue.svg)](./CONTRIBUTING.md)
 
@@ -20,11 +21,13 @@ The following two articles provide an overview of the project:
 
 The Archives Unleashed Toolkit requires Java 11.
 
-For macOS: You can find information on Java [here](https://java.com/en/download/help/mac_install.xml), or install with [homebrew](https://brew.sh) and then:
+For macOS: You can find information on Java [here](https://java.com/en/download/help/mac_install.xml). We recommend [OpenJDK](https://adoptopenjdk.net/). The easiest way is to install with [homebrew](https://brew.sh) and then:
 
 ```bash
 brew cask install java11
 ```
+
+If you run into difficulties with homebrew, installation instructions can be found [here](https://adoptopenjdk.net/).
 
 On Debian based system you can install Java using `apt`:
 
@@ -54,13 +57,13 @@ tar -xvf spark-3.0.0-preview-bin-hadoop2.7.tgz
 Clone the repo:
 
 ```shell
-$ git clone http://github.com/archivesunleashed/aut.git
+git clone http://github.com/archivesunleashed/aut.git
 ```
 
 You can then build The Archives Unleashed Toolkit.
 
 ```shell
-$ mvn clean install
+mvn clean install
 ```
 
 ### Archives Unleashed Toolkit with Spark Submit
@@ -72,13 +75,13 @@ The Toolkit offers a variety of extraction jobs with
 The extraction jobs have a basic outline of:
 
 ```shell
-spark-submit --class io.archivesunleashed.app.CommandLinAppRunner PATH_TO_AUT_JAR --extractor EXTRACTOR --input INPUT DIRECTORY --output OUTPUT DIRECTORY
+spark-submit --class io.archivesunleashed.app.CommandLineAppRunner PATH_TO_AUT_JAR --extractor EXTRACTOR --input INPUT DIRECTORY --output OUTPUT DIRECTORY
 ```
 
 Additional flags include:
 
-* `--output-format FORMAT` (Used only for the `DomainGraphExtractor`, and the
-  options are `TEXT` (default) or `GEXF`.)
+* `--output-format FORMAT` (`csv` (default) or `parquet`. `DomainGraphExtractor` 
+  has two additional output options `graphml` or `gexf`.)
 * `--split` (The extractor will put results for each input file in its own
   directory. Each directory name will be the name of the ARC/WARC file parsed.)
 * `--partition N` (The extractor will partition RDD or DataFrame according to N
@@ -87,11 +90,20 @@ Additional flags include:
 
 Available extraction jobs:
 
+- `AudioInformationExtractor`
 - `DomainFrequencyExtractor`
 - `DomainGraphExtractor`
 - `ImageGraphExtractor`
+- `ImageInformationExtractor`
+- `PDFInformationExtractor`
 - `PlainTextExtractor`
+- `PresentationProgramInformationExtractor`
+- `SpreadsheetInformationExtractor`
+- `TextFilesInformationExtractor`
+- `VideoInformationExtractor`
+- `WebGraphExtractor`
 - `WebPagesExtractor`
+- `WordProcessorInformationExtractor`
 
 More documentation on using the Toolkit with `spark-submit` can be found [here](https://github.com/archivesunleashed/aut-docs/blob/master/current/aut-spark-submit-app.md).
 
@@ -100,7 +112,7 @@ More documentation on using the Toolkit with `spark-submit` can be found [here](
 There are a two options for loading the Archives Unleashed Toolkit. The advantages and disadvantages of using either option are going to depend on your setup (single machine vs cluster):
 
 ```shell
-$ spark-shell --help
+spark-shell --help
 
   --jars JARS                 Comma-separated list of jars to include on the driver
                               and executor classpaths.
@@ -116,13 +128,13 @@ $ spark-shell --help
 Release version:
 
 ```shell
-$ spark-shell --packages "io.archivesunleashed:aut:0.60.0" --repositories "https://jitpack.io"
+spark-shell --packages "io.archivesunleashed:aut:0.70.0"
 ```
 
 HEAD (built locally):
 
 ```shell
-$ spark-shell --packages "io.archivesunleashed:aut:0.18.2-SNAPSHOT" --repositories "https://jitpack.io"
+spark-shell --packages "io.archivesunleashed:aut:0.70.1-SNAPSHOT"
 ```
 
 #### With an UberJar
@@ -130,18 +142,18 @@ $ spark-shell --packages "io.archivesunleashed:aut:0.18.2-SNAPSHOT" --repositori
 Release version:
 
 ```shell
-$ spark-shell --jars /path/to/aut-0.60.0-fatjar.jar
+spark-shell --jars /path/to/aut-0.70.0-fatjar.jar
 ```
 
 HEAD (built locally):
 
 ```shell
-$ spark-shell --jars /path/to/aut/target/aut-0.18.2-SNAPSHOT-fatjar.jar
+spark-shell --jars /path/to/aut/target/aut-0.70.1-SNAPSHOT-fatjar.jar
 ```
 
 ### Archives Unleashed Toolkit with PySpark
 
-To run PySpark with the Archives Unleashed Toolkit loaded, you will need to provide PySpark with the Java/Scala package, and the Python bindings. The Java/Scala packages can be provided with `--packages` or `--jars` as described above. The Python bindings can be [downloaded](https://github.com/archivesunleashed/aut/releases/download/aut-0.60.0/aut-0.60.0.zip), or [built locally](#building-locally) (the zip file will be found in the `target` directory.
+To run PySpark with the Archives Unleashed Toolkit loaded, you will need to provide PySpark with the Java/Scala package, and the Python bindings. The Java/Scala packages can be provided with `--packages` or `--jars` as described above. The Python bindings can be [downloaded](https://github.com/archivesunleashed/aut/releases/download/aut-0.70.0/aut-0.70.0.zip), or [built locally](#building-locally) (the zip file will be found in the `target` directory.
 
 In each of the examples below, `/path/to/python` is listed. If you are unsure where your Python is, it can be found with `which python`.
 
@@ -150,13 +162,13 @@ In each of the examples below, `/path/to/python` is listed. If you are unsure wh
 Release version:
 
 ```shell
-$ export PYSPARK_PYTHON=/path/to/python; export PYSPARK_DRIVER_PYTHON=/path/to/python; /path/to/spark/bin/pyspark --py-files aut-0.60.0.zip --packages "io.archivesunleashed:aut:0.60.0" --repositories "https://jitpack.io"
+export PYSPARK_PYTHON=/path/to/python; export PYSPARK_DRIVER_PYTHON=/path/to/python; /path/to/spark/bin/pyspark --py-files aut-0.70.0.zip --packages "io.archivesunleashed:aut:0.70.0"
 ```
 
 HEAD (built locally):
 
 ```shell
-$ export PYSPARK_PYTHON=/path/to/python; export PYSPARK_DRIVER_PYTHON=/path/to/python; /path/to/spark/bin/pyspark --py-files /home/nruest/Projects/au/aut/target/aut.zip --packages "io.archivesunleashed:aut:0.18.2-SNAPSHOT" --repositories "https://jitpack.io"
+export PYSPARK_PYTHON=/path/to/python; export PYSPARK_DRIVER_PYTHON=/path/to/python; /path/to/spark/bin/pyspark --py-files /home/nruest/Projects/au/aut/target/aut.zip --packages "io.archivesunleashed:aut:0.70.1-SNAPSHOT"
 ```
 
 #### With an UberJar
@@ -164,31 +176,31 @@ $ export PYSPARK_PYTHON=/path/to/python; export PYSPARK_DRIVER_PYTHON=/path/to/p
 Release version:
 
 ```shell
-$ export PYSPARK_PYTHON=/path/to/python; export PYSPARK_DRIVER_PYTHON=/path/to/python; /path/to/spark/bin/pyspark --py-files aut-0.60.0.zip --jars /path/to/aut-0.60.0-fatjar.jar
+export PYSPARK_PYTHON=/path/to/python; export PYSPARK_DRIVER_PYTHON=/path/to/python; /path/to/spark/bin/pyspark --py-files aut-0.70.0.zip --jars /path/to/aut-0.70.0-fatjar.jar
 ```
 
 HEAD (built locally):
 
 ```shell
-$ export PYSPARK_PYTHON=/path/to/python; export PYSPARK_DRIVER_PYTHON=/path/to/python; /path/to/spark/bin/pyspark --py-files /home/nruest/Projects/au/aut/target/aut.zip --jars /path/to/aut-0.18.2-SNAPSHOT-fatjar.jar
+export PYSPARK_PYTHON=/path/to/python; export PYSPARK_DRIVER_PYTHON=/path/to/python; /path/to/spark/bin/pyspark --py-files /home/nruest/Projects/au/aut/target/aut.zip --jars /path/to/aut-0.70.1-SNAPSHOT-fatjar.jar
 ```
 
 ### Archives Unleashed Toolkit with Jupyter
 
-To run a [Jupyter Notebook](https://jupyter.org/install) with the Archives Unleashed Toolkit loaded, you will need to provide PySpark the Java/Scala package, and the Python bindings. The Java/Scala packages can be provided with `--packages` or `--jars` as described above. The Python bindings can be [downloaded](https://github.com/archivesunleashed/aut/releases/download/aut-0.60.0/aut-0.60.0.zip), or [built locally](#Introduction) (the zip file will be found in the `target` directory.
+To run a [Jupyter Notebook](https://jupyter.org/install) with the Archives Unleashed Toolkit loaded, you will need to provide PySpark the Java/Scala package, and the Python bindings. The Java/Scala packages can be provided with `--packages` or `--jars` as described above. The Python bindings can be [downloaded](https://github.com/archivesunleashed/aut/releases/download/aut-0.70.0/aut-0.70.0.zip), or [built locally](#Introduction) (the zip file will be found in the `target` directory.
 
 #### As a package
 
 Release version:
 
 ```shell
-$ export PYSPARK_DRIVER_PYTHON=jupyter; export PYSPARK_DRIVER_PYTHON_OPTS=notebook; /path/to/spark/bin/pyspark --py-files aut-0.60.0.zip --packages "io.archivesunleashed:aut:0.60.0" --repositories "https://jitpack.io"
+export PYSPARK_DRIVER_PYTHON=jupyter; export PYSPARK_DRIVER_PYTHON_OPTS=notebook; /path/to/spark/bin/pyspark --py-files aut-0.70.0.zip --packages "io.archivesunleashed:aut:0.70.0"
 ```
 
 HEAD (built locally):
 
 ```shell 
-$ export PYSPARK_DRIVER_PYTHON=jupyter; export PYSPARK_DRIVER_PYTHON_OPTS=notebook; /path/to/spark/bin/pyspark --py-files /home/nruest/Projects/au/aut/target/aut.zip --packages "io.archivesunleashed:aut:0.18.2-SNAPSHOT" --repositories "https://jitpack.io"
+export PYSPARK_DRIVER_PYTHON=jupyter; export PYSPARK_DRIVER_PYTHON_OPTS=notebook; /path/to/spark/bin/pyspark --py-files /home/nruest/Projects/au/aut/target/aut.zip --packages "io.archivesunleashed:aut:0.70.1-SNAPSHOT"
 ```
 
 #### With an UberJar
@@ -196,13 +208,13 @@ $ export PYSPARK_DRIVER_PYTHON=jupyter; export PYSPARK_DRIVER_PYTHON_OPTS=notebo
 Release version:
 
 ```shell
-$ export PYSPARK_DRIVER_PYTHON=jupyter; export PYSPARK_DRIVER_PYTHON_OPTS=notebook; /path/to/spark/bin/pyspark --py-files aut-0.60.0.zip --jars /path/to/aut-0.60.0-fatjar.jar
+export PYSPARK_DRIVER_PYTHON=jupyter; export PYSPARK_DRIVER_PYTHON_OPTS=notebook; /path/to/spark/bin/pyspark --py-files aut-0.70.0.zip --jars /path/to/aut-0.70.0-fatjar.jar
 ```
 
 HEAD (built locally):
 
 ```shell
-$ export PYSPARK_DRIVER_PYTHON=jupyter; export PYSPARK_DRIVER_PYTHON_OPTS=notebook; /path/to/spark/bin/pyspark --py-files /home/nruest/Projects/au/aut/target/aut.zip --jars /path/to/aut-0.18.2-SNAPSHOT-fatjar.jar
+export PYSPARK_DRIVER_PYTHON=jupyter; export PYSPARK_DRIVER_PYTHON_OPTS=notebook; /path/to/spark/bin/pyspark --py-files /home/nruest/Projects/au/aut/target/aut.zip --jars /path/to/aut-0.70.1-SNAPSHOT-fatjar.jar
 ```
 
 A Jupyter Notebook _should_ automatically load in your browser at <http://localhost:8888>. You may be asked for a token upon first launch, which just offers a bit of security. The token is available in the load screen and will look something like this:
@@ -241,10 +253,6 @@ Then hit <kbd>Shift</kbd>+<kbd>Enter</kbd>, or press the play button.
 If you receive no errors, and see the following, you are ready to begin working with your web archives!
 
 ![](https://user-images.githubusercontent.com/218561/63203995-42684080-c061-11e9-9361-f5e6177705ff.png)
-
-## Documentation! Or, what can I do?
-
-Once built or downloaded, you can follow the basic set of recipes and tutorials [here](https://github.com/archivesunleashed/aut-docs/tree/master/current#the-archives-unleashed-toolkit-latest-documentation).
 
 # License
 
