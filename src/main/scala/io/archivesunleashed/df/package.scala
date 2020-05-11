@@ -15,7 +15,11 @@
  */
 package io.archivesunleashed
 
-import io.archivesunleashed.matchbox.{ComputeMD5RDD}
+import io.archivesunleashed.matchbox.{ComputeImageSize, ComputeMD5RDD, ComputeSHA1RDD,
+                                      DetectLanguageRDD, DetectMimeTypeTika,
+                                      ExtractBoilerpipeTextRDD, ExtractDateRDD,
+                                      ExtractDomainRDD, ExtractImageLinksRDD, ExtractLinksRDD,
+                                      GetExtensionMimeRDD, RemoveHTMLRDD, RemoveHTTPHeaderRDD}
 import java.io.ByteArrayInputStream
 import java.io.FileOutputStream
 import java.util.Base64
@@ -29,31 +33,27 @@ import scala.util.matching.Regex
   */
 package object df {
 
-  val ComputeImageSizeDF = udf(io.archivesunleashed.matchbox.ComputeImageSize.apply(_: Array[Byte]))
+  val ComputeImageSizeDF = udf(ComputeImageSize.apply(_: Array[Byte]))
 
-  val ComputeMD5DF = udf(io.archivesunleashed.matchbox.ComputeMD5RDD.apply(_: Array[Byte]))
+  val ComputeMD5DF = udf(ComputeMD5RDD.apply(_: Array[Byte]))
 
-  val ComputeSHA1DF = udf(io.archivesunleashed.matchbox.ComputeSHA1RDD.apply(_: Array[Byte]))
+  val ComputeSHA1DF = udf(ComputeSHA1RDD.apply(_: Array[Byte]))
 
-  val DetectLanguageDF = udf(io.archivesunleashed.matchbox.DetectLanguageRDD.apply(_: String))
+  val DetectLanguageDF = udf(DetectLanguageRDD.apply(_: String))
 
-  val DetectMimeTypeTikaDF = udf((io.archivesunleashed.matchbox.DetectMimeTypeTika.apply(_: Array[Byte])))
+  val DetectMimeTypeTikaDF = udf((DetectMimeTypeTika.apply(_: Array[Byte])))
 
-  val ExtractBoilerpipeTextDF = udf(io.archivesunleashed.matchbox.ExtractBoilerpipeTextRDD.apply(_: String))
+  val ExtractBoilerpipeTextDF = udf(ExtractBoilerpipeTextRDD.apply(_: String))
 
-  val ExtractDateDF = udf((io.archivesunleashed.matchbox.ExtractDateRDD.apply(_: String, _: String)))
+  val ExtractDateDF = udf((ExtractDateRDD.apply(_: String, _: String)))
 
-  val ExtractDomainDF = udf(io.archivesunleashed.matchbox.ExtractDomainRDD.apply(_: String, ""))
+  val ExtractDomainDF = udf(ExtractDomainRDD.apply(_: String, ""))
 
-  val ExtractImageLinksDF = udf(io.archivesunleashed.matchbox.ExtractImageLinksRDD.apply(_: String, _: String))
+  val ExtractImageLinksDF = udf(ExtractImageLinksRDD.apply(_: String, _: String))
 
-  val ExtractLinksDF = udf(io.archivesunleashed.matchbox.ExtractLinksRDD.apply(_: String, _: String))
+  val ExtractLinksDF = udf(ExtractLinksRDD.apply(_: String, _: String))
 
-  val GetExtensionMimeDF = udf(io.archivesunleashed.matchbox.GetExtensionMimeRDD.apply(_: String, _: String))
-
-  val RemoveHTTPHeaderDF = udf(io.archivesunleashed.matchbox.RemoveHTTPHeaderRDD.apply(_: String))
-
-  val RemovePrefixWWWDF = udf[String, String](_.replaceAll("^\\s*www\\.", ""))
+  val GetExtensionMimeDF = udf(GetExtensionMimeRDD.apply(_: String, _: String))
 
   val hasContent = udf((c: String, contentREs: Seq[String]) => {
     contentREs.map(re =>
@@ -87,7 +87,11 @@ package object df {
 
   val hasUrls = udf((url: String, urls: Seq[String]) => urls.contains(url))
 
-  var RemoveHTMLDF = udf(io.archivesunleashed.matchbox.RemoveHTMLRDD.apply(_: String))
+  val RemoveHTTPHeaderDF = udf(RemoveHTTPHeaderRDD.apply(_: String))
+
+  val RemovePrefixWWWDF = udf[String, String](_.replaceAll("^\\s*www\\.", ""))
+
+  var RemoveHTMLDF = udf(RemoveHTMLRDD.apply(_: String))
 
   /**
    * Given a dataframe, serializes binary object and saves to disk
