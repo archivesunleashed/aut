@@ -16,8 +16,9 @@
 
 package io.archivesunleashed.app
 
-import io.archivesunleashed.df.{ExtractDomainDF, RemovePrefixWWWDF}
-import io.archivesunleashed.{ArchiveRecord, DataFrameLoader}
+import io.archivesunleashed.ArchiveRecord
+import io.archivesunleashed.df.DataFrameLoader
+import io.archivesunleashed.udfs.{extractDomain, removePrefixWWW}
 import org.apache.spark.sql.functions.desc
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
@@ -34,8 +35,8 @@ object DomainGraphExtractor {
     // scalastyle:on
     d.groupBy(
         $"crawl_date",
-        RemovePrefixWWWDF(ExtractDomainDF($"src")).as("src_domain"),
-        RemovePrefixWWWDF(ExtractDomainDF($"dest")).as("dest_domain"))
+        removePrefixWWW(extractDomain($"src")).as("src_domain"),
+        removePrefixWWW(extractDomain($"dest")).as("dest_domain"))
     .count()
     .filter(!($"dest_domain"===""))
     .filter(!($"src_domain"===""))

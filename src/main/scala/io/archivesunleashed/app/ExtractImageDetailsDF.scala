@@ -15,15 +15,15 @@
  */
 package io.archivesunleashed.app
 
-import io.archivesunleashed.{DataFrameLoader}
-import org.apache.commons.io.FilenameUtils
-import io.archivesunleashed.df.{ComputeImageSizeDF, ComputeMD5DF, ComputeSHA1DF,
-                                GetExtensionMimeDF}
-import org.apache.hadoop.fs.{Path}
-import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
-import org.apache.spark.sql.functions.udf
+import io.archivesunleashed.df.DataFrameLoader
+import io.archivesunleashed.udfs.{computeImageSize, computeMD5, computeSHA1,
+                                  getExtensionMime}
 import java.net.URL
 import java.util.Base64
+import org.apache.commons.io.FilenameUtils
+import org.apache.hadoop.fs.Path
+import org.apache.spark.sql.functions.udf
+import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
 /** Extracts image details given raw bytes. */
 object ExtractImageDetailsDF {
@@ -50,13 +50,13 @@ object ExtractImageDetailsDF {
     d.select($"crawl_date",
       $"url",
       filename($"url").as("filename"),
-      GetExtensionMimeDF(urlClass($"url") ,$"mime_type_tika").as("extension"),
+      getExtensionMime(urlClass($"url") ,$"mime_type_tika").as("extension"),
       $"mime_type_web_server",
       $"mime_type_tika",
-      width(ComputeImageSizeDF($"bytes")).as("width"),
-      height(ComputeImageSizeDF($"bytes")).as("height"),
-      ComputeMD5DF($"bytes").as("MD5"),
-      ComputeSHA1DF($"bytes").as("SHA1"),
+      width(computeImageSize($"bytes")).as("width"),
+      height(computeImageSize($"bytes")).as("height"),
+      computeMD5($"bytes").as("MD5"),
+      computeSHA1($"bytes").as("SHA1"),
       body($"bytes").as("body"))
   }
 }

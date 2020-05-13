@@ -17,7 +17,7 @@
 package io.archivesunleashed
 
 import com.google.common.io.Resources
-import io.archivesunleashed.df.{ExtractDomainDF, ExtractLinksDF, RemovePrefixWWWDF}
+import io.archivesunleashed.udfs.{extractDomain, extractLinks, removePrefixWWW}
 import org.apache.spark.sql.functions.{array, explode_outer, lower, udf}
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.{SparkConf, SparkContext}
@@ -51,10 +51,10 @@ class ExtractHyperlinksTest extends FunSuite with BeforeAndAfter {
     import spark.implicits._
     // scalastyle:on
 
-    val interResults = df.select(RemovePrefixWWWDF(ExtractDomainDF($"url")).as("Domain"),
+    val interResults = df.select(removePrefixWWW(extractDomain($"url")).as("Domain"),
                             $"url".as("url"),
                             $"crawl_date",
-                            explode_outer(ExtractLinksDF($"url",$"content")).as("link")
+                            explode_outer(extractLinks($"url",$"content")).as("link")
                         )
                        .filter(lower($"content").contains("keynote")) // filtered on keyword internet
 

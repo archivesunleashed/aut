@@ -15,83 +15,14 @@
  */
 package io.archivesunleashed
 
-import io.archivesunleashed.matchbox.{ComputeImageSize, ComputeMD5RDD, ComputeSHA1RDD,
-                                      DetectLanguageRDD, DetectMimeTypeTika,
-                                      ExtractBoilerpipeTextRDD, ExtractDateRDD,
-                                      ExtractDomainRDD, ExtractImageLinksRDD, ExtractLinksRDD,
-                                      GetExtensionMimeRDD, RemoveHTMLRDD, RemoveHTTPHeaderRDD}
+import io.archivesunleashed.matchbox.ComputeMD5RDD
 import java.io.ByteArrayInputStream
 import java.io.FileOutputStream
 import java.util.Base64
 import org.apache.commons.io.IOUtils
 import org.apache.spark.sql.DataFrame
-import org.apache.spark.sql.functions.udf
-import scala.util.matching.Regex
 
-/**
-  * UDFs for data frames.
-  */
 package object df {
-
-  val ExtractDomainDF = udf(ExtractDomainRDD.apply(_: String, ""))
-
-  val RemoveHTTPHeaderDF = udf(RemoveHTTPHeaderRDD.apply(_: String))
-
-  val RemovePrefixWWWDF = udf[String, String](_.replaceAll("^\\s*www\\.", ""))
-
-  var RemoveHTMLDF = udf(RemoveHTMLRDD.apply(_: String))
-
-  val ExtractLinksDF = udf(ExtractLinksRDD.apply(_: String, _: String))
-
-  val GetExtensionMimeDF = udf(GetExtensionMimeRDD.apply(_: String, _: String))
-
-  val ExtractImageLinksDF = udf(ExtractImageLinksRDD.apply(_: String, _: String))
-
-  val ComputeMD5DF = udf(ComputeMD5RDD.apply(_: Array[Byte]))
-
-  val ComputeSHA1DF = udf(ComputeSHA1RDD.apply(_: Array[Byte]))
-
-  val ComputeImageSizeDF = udf(ComputeImageSize.apply(_: Array[Byte]))
-
-  val DetectLanguageDF = udf(DetectLanguageRDD.apply(_: String))
-
-  val ExtractBoilerpipeTextDF = udf(ExtractBoilerpipeTextRDD.apply(_: String))
-
-  val ExtractDateDF = udf((ExtractDateRDD.apply(_: String, _: String)))
-
-  val DetectMimeTypeTikaDF = udf((DetectMimeTypeTika.apply(_: Array[Byte])))
-
-  val hasHTTPStatus = udf((statusCode: String, statusCodes: Seq[String]) => statusCodes.contains(statusCode))
-
-  val hasMIMETypes = udf((mimeType: String, mimeTypes: Seq[String]) => mimeTypes.contains(mimeType))
-
-  val hasMIMETypesTika = udf((mimeType: String, mimeTypesTika: Seq[String]) => mimeTypesTika.contains(mimeType))
-
-  val hasDate = udf((date_ : String, date: Seq[String]) => date.contains(date_))
-
-  val hasUrls = udf((url: String, urls: Seq[String]) => urls.contains(url))
-
-  val hasDomains = udf((domain: String, domains: Seq[String]) => domains.contains(domain))
-
-  val hasImages = udf((date: String, mimeType: String) => date != null && mimeType.startsWith("image/"))
-
-  val hasContent = udf((c: String, contentREs: Seq[String]) => {
-    contentREs.map(re =>
-        (re.r findFirstIn c) match {
-          case Some(v) => true
-          case None => false
-        }).exists(identity)
-  })
-
-  val hasUrlPatterns = udf((urlPattern: String, urlREs: Seq[String]) => {
-    urlREs.map(re =>
-        urlPattern match {
-          case re.r() => true
-          case _ => false
-        }).exists(identity)
-  })
-
-  val hasLanguages = udf((language: String, languages: Seq[String]) => languages.contains(language))
 
   /**
    * Given a dataframe, serializes binary object and saves to disk
