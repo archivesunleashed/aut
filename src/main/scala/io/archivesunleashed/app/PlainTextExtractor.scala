@@ -17,7 +17,7 @@
 package io.archivesunleashed.app
 
 import io.archivesunleashed.ArchiveRecord
-import io.archivesunleashed.df.{ExtractBoilerpipeTextDF}
+import io.archivesunleashed.udfs.{extractBoilerpipeText}
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
 object PlainTextExtractor {
@@ -31,6 +31,6 @@ object PlainTextExtractor {
     // scalastyle:off
     import spark.implicits._
     // scalastyle:on
-    d.select(ExtractBoilerpipeTextDF($"content").as("content"))
+    d.select(extractBoilerpipeText($"content").as("content"))
   }
 }

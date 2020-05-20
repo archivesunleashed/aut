@@ -17,7 +17,7 @@
 package io.archivesunleashed
 
 import com.google.common.io.Resources
-import io.archivesunleashed.df.{ExtractDateDF, ExtractDomainDF, ExtractLinksDF, RemovePrefixWWWDF}
+import io.archivesunleashed.udfs.{extractDate, extractDomain, extractLinks, removePrefixWWW}
 import org.apache.spark.sql.functions.{array, explode_outer, lower, udf}
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.{SparkConf, SparkContext}
@@ -52,10 +52,10 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
     import org.apache.spark.sql.functions._
     // scalastyle:on
 
-    val interResults = df.select(RemovePrefixWWWDF(ExtractDomainDF($"url")).as("Domain"),
+    val interResults = df.select(removePrefixWWW(extractDomain($"url")).as("Domain"),
                             $"url".as("url"),
-                            ExtractDateDF($"crawl_date",lit("YYYY")).as("crawl_date"),
-                            explode_outer(ExtractLinksDF($"url", $"content")).as("link")
+                            extractDate($"crawl_date",lit("YYYY")).as("crawl_date"),
+                            explode_outer(extractLinks($"url", $"content")).as("link")
                         )
                        .filter(lower($"content").contains("keynote")) // filtered on keyword internet
 
@@ -90,10 +90,10 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
     import org.apache.spark.sql.functions._
     // scalastyle:on
 
-    val interResults = df.select(RemovePrefixWWWDF(ExtractDomainDF($"url")).as("Domain"),
+    val interResults = df.select(removePrefixWWW(extractDomain($"url")).as("Domain"),
                             $"url".as("url"),
-                            ExtractDateDF($"crawl_date",lit("YYYYMM")).as("crawl_date"),
-                            explode_outer(ExtractLinksDF($"url", $"content")).as("link")
+                            extractDate($"crawl_date",lit("YYYYMM")).as("crawl_date"),
+                            explode_outer(extractLinks($"url", $"content")).as("link")
                         )
                        .filter(lower($"content").contains("keynote")) // filtered on keyword internet
 
@@ -128,10 +128,10 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
     import org.apache.spark.sql.functions._
     // scalastyle:on
 
-    val interResults = df.select(RemovePrefixWWWDF(ExtractDomainDF($"url")).as("Domain"),
+    val interResults = df.select(removePrefixWWW(extractDomain($"url")).as("Domain"),
                             $"url".as("url"),
-                            ExtractDateDF($"crawl_date",lit("MM")).as("crawl_date"),
-                            explode_outer(ExtractLinksDF($"url", $"content")).as("link")
+                            extractDate($"crawl_date",lit("MM")).as("crawl_date"),
+                            explode_outer(extractLinks($"url", $"content")).as("link")
                         )
                        .filter(lower($"content").contains("keynote")) // filtered on keyword internet
 
@@ -166,10 +166,10 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
     import org.apache.spark.sql.functions._
     // scalastyle:on
 
-    val interResults = df.select(RemovePrefixWWWDF(ExtractDomainDF($"url")).as("Domain"),
+    val interResults = df.select(removePrefixWWW(extractDomain($"url")).as("Domain"),
                             $"url".as("url"),
-                            ExtractDateDF($"crawl_date",lit("DD")).as("crawl_date"),
-                            explode_outer(ExtractLinksDF($"url", $"content")).as("link")
+                            extractDate($"crawl_date",lit("DD")).as("crawl_date"),
+                            explode_outer(extractLinks($"url", $"content")).as("link")
                         )
                        .filter(lower($"content").contains("keynote")) // filtered on keyword internet
 
@@ -204,10 +204,10 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
     import org.apache.spark.sql.functions._
     // scalastyle:on
 
-    val interResults = df.select(RemovePrefixWWWDF(ExtractDomainDF($"url")).as("Domain"),
+    val interResults = df.select(removePrefixWWW(extractDomain($"url")).as("Domain"),
                             $"url".as("url"),
-                            ExtractDateDF($"crawl_date",lit("YYYYMMDD")).as("crawl_date"),
-                            explode_outer(ExtractLinksDF($"url", $"content")).as("link")
+                            extractDate($"crawl_date",lit("YYYYMMDD")).as("crawl_date"),
+                            explode_outer(extractLinks($"url", $"content")).as("link")
                         )
                        .filter(lower($"content").contains("keynote")) // filtered on keyword internet
 
