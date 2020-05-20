@@ -16,11 +16,11 @@
 
 package io.archivesunleashed
 
-import io.archivesunleashed.df.{DetectLanguageDF, DetectMimeTypeTikaDF,
-                                ExtractDomainDF, RemoveHTMLDF,
-                                hasContent, hasDate, hasDomains, hasHTTPStatus,
-                                hasImages, hasLanguages, hasMIMETypes,
-                                hasMIMETypesTika, hasUrlPatterns, hasUrls}
+import io.archivesunleashed.udfs.{detectLanguage, detectMimeTypeTika,
+                                  extractDomain, removeHTML,
+                                  hasContent, hasDate, hasDomains, hasHTTPStatus,
+                                  hasImages, hasLanguages, hasMIMETypes,
+                                  hasMIMETypesTika, hasUrlPatterns, hasUrls}
 import com.google.common.io.Resources
 import org.apache.spark.sql.functions.lit
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
@@ -104,7 +104,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     val base1 = RecordLoader.loadArchives(arcPath, sc)
       .all()
       .select($"url")
-      .filter(hasDomains(ExtractDomainDF($"url"), lit(Array("www.archive.org"))))
+      .filter(hasDomains(extractDomain($"url"), lit(Array("www.archive.org"))))
       .take(1)(0)(0)
 
     assert (base1.toString == expected)
@@ -191,8 +191,8 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     val expected = "de"
     val base = RecordLoader.loadArchives(arcPath, sc)
       .all()
-      .select(DetectLanguageDF(RemoveHTMLDF($"content")).as("language"))
-      .filter(hasLanguages(DetectLanguageDF(RemoveHTMLDF($"content")), lit(Array("de","ht"))))
+      .select(detectLanguage(removeHTML($"content")).as("language"))
+      .filter(hasLanguages(detectLanguage(removeHTML($"content")), lit(Array("de","ht"))))
       .take(1)(0)(0)
 
     assert (base.toString == expected)
@@ -208,7 +208,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     val base = RecordLoader.loadArchives(arcPath, sc)
       .all()
       .select($"mime_type_tika")
-      .filter(hasImages($"crawl_date", DetectMimeTypeTikaDF($"bytes")))
+      .filter(hasImages($"crawl_date", detectMimeTypeTika($"bytes")))
       .take(1)(0)(0)
 
     assert (base.toString == expected)

@@ -17,7 +17,7 @@
 package io.archivesunleashed
 
 import com.google.common.io.Resources
-import io.archivesunleashed.df.ExtractDomainDF
+import io.archivesunleashed.udfs.extractDomain
 import org.apache.spark.sql.functions.desc
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.{SparkConf, SparkContext}
@@ -49,7 +49,7 @@ class SimpleDfTest extends FunSuite with BeforeAndAfter {
     import spark.implicits._
     // scalastyle:on
 
-    val results = df.select(ExtractDomainDF($"Url").as("Domain"))
+    val results = df.select(extractDomain($"Url").as("Domain"))
       .groupBy("Domain").count().orderBy(desc("count")).head(3)
 
     // Results should be:
