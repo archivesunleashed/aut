@@ -21,24 +21,24 @@ import java.nio.file.{Files, Paths}
 import org.apache.spark.sql.Row
 
 object WriteGraphML {
-  /** Writes graph nodes and edges to file (df).
+  /** Verifies graphmlPath is empty.
    *
-   * @param ds Array[Row] elements in format (CrawlDate, SrcDomain,
-   *        DestDomain, count)
+   * @param data Array[Row] elements in format (crawl_date, src_domain,
+   *        dest_domain, count)
    * @param graphmlPath output file
    */
-  def apply(ds: Array[Row], graphmlPath: String): Boolean = {
+  def apply(data: Array[Row], graphmlPath: String): Boolean = {
     if (graphmlPath.isEmpty()) {
       false
     } else {
-      makeFile (ds, graphmlPath)
+      makeFile (data, graphmlPath)
     }
   }
 
   /** Produces the GraphML output from an Array[Row] and outputs it to graphmlPath.
    *
-   * @param data a Dataset[Row] of elements in format (CrawlDate, SrcDomain,
-   *        DestDomain, count)
+   * @param data a Dataset[Row] of elements in format (crawl_date, src_domain,
+   *        dest_domain, count)
    * @param graphmlPath output file
    * @return true on success.
    */

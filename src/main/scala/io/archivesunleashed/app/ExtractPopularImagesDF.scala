@@ -16,16 +16,16 @@
 package io.archivesunleashed.app
 
 import io.archivesunleashed.ArchiveRecord
-import org.apache.spark.sql.functions.{desc,first}
+import org.apache.spark.sql.functions.{col, desc, first}
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 import org.apache.spark.{RangePartitioner, SparkContext}
 
-/** Extract most popular images from a Data Frame. */
+/** Extract the most popular images from a DataFrame. */
 object ExtractPopularImagesDF {
   val MIN_WIDTH: Int = 30
   val MIN_HEIGHT: Int = 30
 
-  /** Extracts the <i>n</i> most popular images from an Data Frame within a given size range.
+  /** Extracts the <i>n</i> most popular images from an DataFrame within a given size range.
    *
    * @param d DataFrame obtained from RecordLoader
    * @param limit number of most popular images in the output
@@ -35,21 +35,21 @@ object ExtractPopularImagesDF {
    */
   def apply(d: DataFrame, limit: Int, minWidth: Int = MIN_WIDTH, minHeight: Int = MIN_HEIGHT): Dataset[Row] = {
 
-      val spark = SparkSession.builder().master("local").getOrCreate()
-      // scalastyle:off
-      import spark.implicits._
-      // scalastyle:on
+    val spark = SparkSession.builder().master("local").getOrCreate()
+    // scalastyle:off
+    import spark.implicits._
+    // scalastyle:on
 
-      val df = d.select($"url",$"md5")
-                .filter(($"width") >= minWidth && ($"height") >= minHeight)
+    val df = d.select($"url", $"md5")
+              .filter(($"width") >= minWidth && ($"height") >= minHeight)
 
-      val count = df.groupBy("md5").count()
+    val count = df.groupBy("md5").count()
 
-      df.join(count,"md5")
-        .groupBy("md5")
-        .agg(first("url").as("url"), first("count").as("count"))
-        .select("url","count")
-        .orderBy(desc("count"))
-        .limit(limit)
+    df.join(count,"md5")
+      .groupBy("md5")
+      .agg(first("url").as("url"), first("count").as("count"))
+      .select("url", "count")
+      .orderBy(desc("count"))
+      .limit(limit)
   }
 }
