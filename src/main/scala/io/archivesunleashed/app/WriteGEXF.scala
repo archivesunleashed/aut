@@ -21,23 +21,24 @@ import java.nio.file.{Files, Paths}
 import org.apache.spark.sql.Row
 
 object WriteGEXF {
-  /** Writes graph nodes and edges to file.
+  /** Verifies gexfPath is empty.
    *
-   * @param rdd RDD of elements in format ((datestring, source, target), count)
+   * @param data Array[Row] of elements in format (crawl_date, src_domain,
+   *        dest_domain, count)
    * @param gexfPath output file
-   * @return Unit().
    */
-  def apply(ds: Array[Row], gexfPath: String): Boolean = {
+  def apply(data: Array[Row], gexfPath: String): Boolean = {
     if (gexfPath.isEmpty())  {
       false
     } else {
-      makeFile (ds, gexfPath)
+      makeFile (data, gexfPath)
     }
   }
 
   /** Produces the GEXF output from an Array[Row] and outputs it to gexfPath.
     *
-    * @param data a Dataset[Row] of elements in format (datestring, source, target, count)
+    * @param data a Array[Row] of elements in format (crawl_date, src_domain,
+    *        dest_domain, count)
     * @param gexfPath output file
     * @return true on success.
     */

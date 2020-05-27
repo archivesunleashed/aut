@@ -87,7 +87,9 @@ class Udf:
     def get_extension_mime(col, mime):
         sc = SparkContext.getOrCreate()
         udf = (
-            sc.getOrCreate()._jvm.io.archivesunleashed.udfs.package.getExtensionMime().apply
+            sc.getOrCreate()
+            ._jvm.io.archivesunleashed.udfs.package.getExtensionMime()
+            .apply
         )
         return Column(udf(_to_seq(sc, [col, mime], _to_java_column)))
 
