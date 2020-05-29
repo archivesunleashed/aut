@@ -19,7 +19,7 @@ def ExtractPopularImages(d, limit, min_width, min_height):
     )
 
 
-def WriteGexf(data, gexf_path):
+def WriteGEXF(data, gexf_path):
     output_file = open(gexf_path, "x")
     end_attribute = '" />\n'
     vertices = set()
@@ -75,7 +75,7 @@ def WriteGexf(data, gexf_path):
     return
 
 
-def WriteGraphml(data, graphml_path):
+def WriteGraphML(data, graphml_path):
     output_file = open(graphml_path, "x")
     nodes = set()
 

@@ -1,4 +1,4 @@
-from aut.app import ExtractPopularImages, WriteGexf, WriteGraphml
+from aut.app import ExtractPopularImages, WriteGEXF, WriteGraphML
 from aut.common import WebArchive
 from aut.udfs import (
     compute_image_size,
@@ -20,8 +20,8 @@ from aut.udfs import (
 __all__ = [
     "ExtractPopularImages",
     "WebArchive",
-    "WriteGexf",
-    "WriteGraphml",
+    "WriteGEXF",
+    "WriteGraphML",
     "compute_image_size",
     "compute_md5",
     "compute_sha1",
