@@ -5,7 +5,7 @@ from pyspark.sql import DataFrame
 from pyspark.sql.functions import desc, first
 
 
-def Extract_Popular_Images(d, limit, min_width, min_height):
+def ExtractPopularImages(d, limit, min_width, min_height):
     df = d.select("url", "md5")
     count = df.groupBy("md5").count()
 
@@ -19,7 +19,7 @@ def Extract_Popular_Images(d, limit, min_width, min_height):
     )
 
 
-def Write_Gexf(data, gexf_path):
+def WriteGEXF(data, gexf_path):
     output_file = open(gexf_path, "x")
     end_attribute = '" />\n'
     vertices = set()
@@ -75,7 +75,7 @@ def Write_Gexf(data, gexf_path):
     return
 
 
-def Write_Graphml(data, graphml_path):
+def WriteGraphML(data, graphml_path):
     output_file = open(graphml_path, "x")
     nodes = set()
 
