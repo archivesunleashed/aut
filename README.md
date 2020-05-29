@@ -4,7 +4,7 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.archivesunleashed/aut/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.archivesunleashed/aut)
 [![Javadoc](https://javadoc-badge.appspot.com/io.archivesunleashed/aut.svg?label=javadoc)](http://api.docs.archivesunleashed.io/0.70.0/apidocs/index.html)
 [![Scaladoc](https://javadoc-badge.appspot.com/io.archivesunleashed/aut.svg?label=scaladoc)](http://api.docs.archivesunleashed.io/0.70.0/scaladocs/index.html)
-[![UserDocs](https://img.shields.io/badge/UserDocs-0.70.0-green?style=flat)](https://github.com/archivesunleashed/aut-docs/tree/master/aut-0.70.0#the-archives-unleashed-toolkit-latest-documentation)
+[![UserDocs](https://img.shields.io/badge/UserDocs-0.70.0-brightgreen?style=flat)](https://github.com/archivesunleashed/aut-docs/tree/master/aut-0.70.0#the-archives-unleashed-toolkit-latest-documentation)
 [![LICENSE](https://img.shields.io/badge/license-Apache-blue.svg?style=flat)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Contribution Guidelines](http://img.shields.io/badge/CONTRIBUTING-Guidelines-blue.svg)](./CONTRIBUTING.md)
 
