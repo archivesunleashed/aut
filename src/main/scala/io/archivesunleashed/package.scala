@@ -27,7 +27,7 @@ import io.archivesunleashed.udfs.{detectLanguage, detectMimeTypeTika, extractDat
 
 import io.archivesunleashed.matchbox.{DetectLanguage, DetectMimeTypeTika, ExtractDate,
                                       ExtractDomain, ExtractImageDetails, ExtractImageLinks,
-                                      ExtractLinks, GetExtensionMime, RemoveHTML, RemoveHTTPHeader}
+                                      ExtractLinks, GetExtensionMIME, RemoveHTML, RemoveHTTPHeader}
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent.DateComponent
 import java.net.URI
@@ -222,7 +222,7 @@ package object archivesunleashed {
           val image = ExtractImageDetails(r.getUrl, mimeTypeTika, r.getBinaryBytes)
           val url = new URL(r.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
-          val extension = GetExtensionMime(url.getPath(), mimeTypeTika)
+          val extension = GetExtensionMIME(url.getPath(), mimeTypeTika)
           (r.getCrawlDate, r.getUrl, filename, extension, r.getMimeType, mimeTypeTika,
             image.width, image.height, image.md5Hash, image.sha1Hash, image.body)
         })
@@ -259,7 +259,7 @@ package object archivesunleashed {
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
-          val extension = GetExtensionMime(url.getPath(), r._2)
+          val extension = GetExtensionMIME(url.getPath(), r._2)
           (r._1.getCrawlDate, r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
@@ -294,7 +294,7 @@ package object archivesunleashed {
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
-          val extension = GetExtensionMime(url.getPath(), r._2)
+          val extension = GetExtensionMIME(url.getPath(), r._2)
           (r._1.getCrawlDate, r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
@@ -329,7 +329,7 @@ package object archivesunleashed {
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
-          val extension = GetExtensionMime(url.getPath(), r._2)
+          val extension = GetExtensionMIME(url.getPath(), r._2)
           (r._1.getCrawlDate, r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
@@ -397,7 +397,7 @@ package object archivesunleashed {
               mimeType = "text/tab-separated-values"
             }
           }
-          val extension = GetExtensionMime(url.getPath(), mimeType)
+          val extension = GetExtensionMIME(url.getPath(), mimeType)
           (r._1.getCrawlDate, r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
@@ -444,7 +444,7 @@ package object archivesunleashed {
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
-          val extension = GetExtensionMime(url.getPath(), r._2)
+          val extension = GetExtensionMIME(url.getPath(), r._2)
           (r._1.getCrawlDate, r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
@@ -496,7 +496,7 @@ package object archivesunleashed {
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
-          val extension = GetExtensionMime(url.getPath(), r._2)
+          val extension = GetExtensionMIME(url.getPath(), r._2)
           (r._1.getCrawlDate, r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })

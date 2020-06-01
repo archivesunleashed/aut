@@ -18,7 +18,7 @@ package io.archivesunleashed.matchbox
 import org.apache.commons.io.FilenameUtils
 
 /** Get file extension using MIME type, then URL extension. */
-object GetExtensionMime {
+object GetExtensionMIME {
 
   /** Returns the extension of a file specified by URL
     *

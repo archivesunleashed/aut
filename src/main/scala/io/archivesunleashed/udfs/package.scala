@@ -20,7 +20,7 @@ import io.archivesunleashed.matchbox.{ComputeImageSize, ComputeMD5, ComputeSHA1,
                                       DetectLanguage, DetectMimeTypeTika,
                                       ExtractBoilerpipeText, ExtractDate,
                                       ExtractDomain, ExtractImageLinks, ExtractLinks,
-                                      GetExtensionMime, RemoveHTML, RemoveHTTPHeader}
+                                      GetExtensionMIME, RemoveHTML, RemoveHTTPHeader}
 import org.apache.commons.lang3.StringUtils
 import org.apache.spark.sql.expressions.UserDefinedFunction
 import org.apache.spark.sql.functions.udf
@@ -41,7 +41,7 @@ package object udfs extends Serializable {
   def extractDomain: UserDefinedFunction = udf(ExtractDomain.apply(_: String, ""))
   def extractImageLinks: UserDefinedFunction = udf(ExtractImageLinks.apply(_: String, _: String))
   def extractLinks: UserDefinedFunction = udf(ExtractLinks.apply(_: String, _: String))
-  def getExtensionMime: UserDefinedFunction = udf(GetExtensionMime.apply(_: String, _: String))
+  def getExtensionMime: UserDefinedFunction = udf(GetExtensionMIME.apply(_: String, _: String))
   def removeHTML: UserDefinedFunction = udf(RemoveHTML.apply(_: String))
   def removeHTTPHeader: UserDefinedFunction = udf(RemoveHTTPHeader.apply(_: String))
   def removePrefixWWW: UserDefinedFunction = udf[String, String](_.replaceAll("^\\s*www\\.", ""))
