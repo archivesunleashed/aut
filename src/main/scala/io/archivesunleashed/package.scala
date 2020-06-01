@@ -419,7 +419,7 @@ package object archivesunleashed {
     }
 
     /* Extract presentation program bytes and presentation program metadata. */
-    def presentationProgram(): DataFrame = {
+    def presentationProgramFiles(): DataFrame = {
       val records = rdd
         .map(r =>
             (r, (DetectMimeTypeTika(r.getBinaryBytes)))
@@ -466,7 +466,7 @@ package object archivesunleashed {
     }
 
     /* Extract word processor bytes and word processor metadata. */
-    def wordProcessor(): DataFrame = {
+    def wordProcessorFiles(): DataFrame = {
       val records = rdd
         .map(r =>
             (r, (DetectMimeTypeTika(r.getBinaryBytes)))
@@ -499,47 +499,6 @@ package object archivesunleashed {
           val extension = GetExtensionMime(url.getPath(), r._2)
           (r._1.getCrawlDate, r._1.getUrl, filename, extension, r._1.getMimeType,
             DetectMimeTypeTika(r._1.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
-        })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
-
-      val schema = new StructType()
-        .add(StructField("crawl_date", StringType, true))
-        .add(StructField("url", StringType, true))
-        .add(StructField("filename", StringType, true))
-        .add(StructField("extension", StringType, true))
-        .add(StructField("mime_type_web_server", StringType, true))
-        .add(StructField("mime_type_tika", StringType, true))
-        .add(StructField("md5", StringType, true))
-        .add(StructField("sha1", StringType, true))
-        .add(StructField("bytes", StringType, true))
-
-      val sqlContext = SparkSession.builder();
-      sqlContext.getOrCreate().createDataFrame(records, schema)
-    }
-
-    /* Extract plain text bytes and plain text metadata. */
-    def textfiles(): DataFrame = {
-      val records = rdd
-        .keepMimeTypes(Set("text/plain"))
-        .filter(r => r.getMimeType == "text/plain"
-          && (!r.getUrl.toLowerCase.endsWith("robots.txt")
-            && !r.getUrl.toLowerCase.endsWith(".js")
-            && !r.getUrl.toLowerCase.endsWith(".css")
-            && !r.getUrl.toLowerCase.endsWith(".htm")
-            && !r.getUrl.toLowerCase.endsWith(".html")
-            && !r.getUrl.toLowerCase.startsWith("dns:")
-            && !r.getUrl.toLowerCase.startsWith("filedesc:"))
-        )
-        .map(r => {
-          val bytes = r.getBinaryBytes
-          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
-          val sha1Hash = new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
-          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
-          val url = new URL(r.getUrl)
-          val filename = FilenameUtils.getName(url.getPath())
-          val extension = FilenameUtils.getExtension(url.getPath())
-          (r.getCrawlDate, r.getUrl, filename, extension, r.getMimeType,
-            DetectMimeTypeTika(r.getBinaryBytes), md5Hash, sha1Hash, encodedBytes)
         })
         .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
 

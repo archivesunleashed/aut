@@ -40,7 +40,7 @@ class PresentationProgramFilesTest extends FunSuite with BeforeAndAfter {
 
   test("Presentation program files extraction DF") {
     val df = RecordLoader.loadArchives(warcPath, sc)
-      .presentationProgram()
+      .presentationProgramFiles()
 
     val extracted = df.select("url", "filename", "extension",
       "mime_type_web_server", "mime_type_tika", "md5")

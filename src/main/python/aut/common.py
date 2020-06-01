@@ -25,14 +25,11 @@ class WebArchive:
 
     def presentation_program(self):
         return DataFrame(
-            self.loader.presentationProgram(self.path), self.sqlContext
+            self.loader.presentationProgramFiles(self.path), self.sqlContext
         )
 
     def spreadsheets(self):
         return DataFrame(self.loader.spreadsheets(self.path), self.sqlContext)
-
-    def textfiles(self):
-        return DataFrame(self.loader.textfiles(self.path), self.sqlContext)
 
     def video(self):
         return DataFrame(self.loader.videos(self.path), self.sqlContext)
@@ -44,4 +41,4 @@ class WebArchive:
         return DataFrame(self.loader.webpages(self.path), self.sqlContext)
 
     def word_processor(self):
-        return DataFrame(self.loader.wordProcessor(self.path), self.sqlContext)
+        return DataFrame(self.loader.wordProcessorFiles(self.path), self.sqlContext)

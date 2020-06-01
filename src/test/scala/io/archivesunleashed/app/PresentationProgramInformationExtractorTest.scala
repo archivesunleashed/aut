@@ -39,7 +39,7 @@ class PresentationProgramInformationExtractorTest extends FunSuite with BeforeAn
   }
 
   test("Presentation program information extractor DF") {
-    val df = RecordLoader.loadArchives(arcPath, sc).presentationProgram()
+    val df = RecordLoader.loadArchives(arcPath, sc).presentationProgramFiles()
     val dfResults = PresentationProgramInformationExtractor(df).collect()
     val RESULTSLENGTH = 2
 
