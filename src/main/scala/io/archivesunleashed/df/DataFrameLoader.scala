@@ -66,12 +66,6 @@ class DataFrameLoader(sc: SparkContext) {
     .spreadsheets
   }
 
-  /** Create a DataFrame with text file url, filename, extension, mime_type_web_server, mime_type_tika, md5, sha1, and raw bytes. */
-  def textFiles(path: String): DataFrame = {
-    RecordLoader.loadArchives(path, sc)
-    .textFiles
-  }
-
   /** Create a DataFrame with video url, filename, extension, mime_type_web_server, mime_type_tika, md5, sha1, and raw bytes. */
   def videos(path: String): DataFrame = {
     RecordLoader.loadArchives(path, sc)

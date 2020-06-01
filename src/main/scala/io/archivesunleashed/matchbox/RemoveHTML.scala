@@ -15,18 +15,25 @@
  */
 package io.archivesunleashed.matchbox
 
-import java.security.MessageDigest
+import java.io.IOException
+import org.jsoup.Jsoup
 
-/** Compute MD5 checksum. */
-// scalastyle:off object.name
-object ComputeMD5RDD {
-// scalastyle:on object.name
-  /** Computes the MD5 checksum of a byte array (eg. an image).
-    *
-    * @param bytes
-    * @return MD5 checksum.
-    */
-  def apply(bytes: Array[Byte]): String = {
-    MessageDigest.getInstance("MD5").digest(bytes).map("%02x".format(_)).mkString
+/** Removes HTML markup with JSoup. */
+object RemoveHTML {
+
+  /** Removes HTML markup.
+   *
+   * @param content an html or text string
+   * @return content without html markup.
+   */
+  def apply(content: String): String = {
+    // First remove the HTTP header.
+    val maybeContent: Option[String] = Option(RemoveHTTPHeader(content))
+    maybeContent match {
+      case Some(content) =>
+        Jsoup.parse(content).text().replaceAll("[\\r\\n]+", " ")
+      case None =>
+        ""
+    }
   }
 }

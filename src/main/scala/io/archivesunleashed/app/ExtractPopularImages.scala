@@ -16,12 +16,12 @@
 package io.archivesunleashed.app
 
 import io.archivesunleashed.ArchiveRecord
-import io.archivesunleashed.matchbox.{ComputeImageSize, ComputeMD5RDD}
+import io.archivesunleashed.matchbox.{ComputeImageSize, ComputeMD5}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{RangePartitioner, SparkContext}
 
 /** Extract most popular images from an RDD. */
-object ExtractPopularImagesRDD {
+object ExtractPopularImages {
   val LIMIT_MAXIMUM: Int = 500
   val LIMIT_DENOMINATOR: Int = 250
   val MIN_WIDTH: Int = 30
@@ -39,7 +39,7 @@ object ExtractPopularImagesRDD {
     val res = records
       .keepImages()
       .map(r => ((r.getUrl, r.getBinaryBytes), 1))
-      .map(img => (ComputeMD5RDD(img._1._2), (ComputeImageSize(img._1._2), img._1._1, img._2)))
+      .map(img => (ComputeMD5(img._1._2), (ComputeImageSize(img._1._2), img._1._1, img._2)))
       .filter(img => img._2._1._1 >= minWidth && img._2._1._2 >= minHeight)
       .reduceByKey((image1, image2) => (image1._1, image1._2, image1._3 + image2._3))
       .map(x=> (x._2._3, x._2._2))

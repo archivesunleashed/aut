@@ -14,7 +14,7 @@ class WebArchive:
     def audio(self):
         return DataFrame(self.loader.audio(self.path), self.sqlContext)
 
-    def image_graph(self):
+    def imagegraph(self):
         return DataFrame(self.loader.imagegraph(self.path), self.sqlContext)
 
     def images(self):
@@ -30,9 +30,6 @@ class WebArchive:
 
     def spreadsheets(self):
         return DataFrame(self.loader.spreadsheets(self.path), self.sqlContext)
-
-    def text_files(self):
-        return DataFrame(self.loader.textFiles(self.path), self.sqlContext)
 
     def video(self):
         return DataFrame(self.loader.videos(self.path), self.sqlContext)

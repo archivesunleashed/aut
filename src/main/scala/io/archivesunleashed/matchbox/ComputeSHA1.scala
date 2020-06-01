@@ -19,7 +19,7 @@ import java.security.MessageDigest
 
 /** Compute SHA1 checksum. */
 // scalastyle:off object.name
-object ComputeSHA1RDD {
+object ComputeSHA1 {
 // scalastyle:on object.name
   /** Computes the MD5 checksum of a byte array (eg. an image).
     *

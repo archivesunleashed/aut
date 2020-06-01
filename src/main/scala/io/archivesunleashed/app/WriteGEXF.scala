@@ -15,7 +15,7 @@
  */
 package io.archivesunleashed.app
 
-import io.archivesunleashed.matchbox.{ComputeMD5RDD, WWWLink}
+import io.archivesunleashed.matchbox.{ComputeMD5, WWWLink}
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 import org.apache.spark.sql.Row
@@ -64,13 +64,13 @@ object WriteGEXF {
       "<nodes>\n")
     vertices foreach { v =>
       outFile.write("<node id=\"" +
-        ComputeMD5RDD(v.getBytes) + "\" label=\"" +
+        ComputeMD5(v.getBytes) + "\" label=\"" +
         v.escapeInvalidXML() + endAttribute)
     }
     outFile.write("</nodes>\n<edges>\n")
     data foreach { e =>
-      outFile.write("<edge source=\"" + ComputeMD5RDD(e.get(1).asInstanceOf[String].getBytes) + "\" target=\"" +
-        ComputeMD5RDD(e.get(2).asInstanceOf[String].getBytes) + "\" weight=\"" + e.get(3) +
+      outFile.write("<edge source=\"" + ComputeMD5(e.get(1).asInstanceOf[String].getBytes) + "\" target=\"" +
+        ComputeMD5(e.get(2).asInstanceOf[String].getBytes) + "\" weight=\"" + e.get(3) +
         "\" type=\"directed\">\n" +
         "<attvalues>\n" +
         "<attvalue for=\"0\" value=\"" + e.get(0) + endAttribute +

@@ -99,7 +99,6 @@ Available extraction jobs:
 - `PlainTextExtractor`
 - `PresentationProgramInformationExtractor`
 - `SpreadsheetInformationExtractor`
-- `TextFilesInformationExtractor`
 - `VideoInformationExtractor`
 - `WebGraphExtractor`
 - `WebPagesExtractor`

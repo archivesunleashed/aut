@@ -55,7 +55,6 @@ class DataFrameLoaderTest extends FunSuite with BeforeAndAfter {
     val spreadsheets = df.spreadsheets(docPath)
     val powerpoint = df.presentationProgramFiles(docPath)
     val word = df.wordProcessorFiles(docPath)
-    val text = df.textFiles(txtPath)
     val all = df.all(arcPath)
 
     val r_1 = validPages.select(url, mime_type).take(1)(0)
@@ -99,13 +98,9 @@ class DataFrameLoaderTest extends FunSuite with BeforeAndAfter {
     assert(r_10.getAs[String](url) == "https://ruebot.net/files/aut-test-fixtures/test-aut-fixtures.rtf")
     assert(r_10.getAs[String](md5) == "e483512b65ba44d71e843c57de2adeb7")
 
-    val r_11 = text.take(1)(0)
-    assert(r_11.getAs[String](url) == "https://ruebot.net/files/aut-test-fixtures/aut-text.txt")
-    assert(r_11.getAs[String](md5) == "32abd404fb560ecf14b75611f3cc5c2c")
-
-    val r_12 = all.select(url, mime_type).take(1)(0)
-    assert(r_12.getAs[String](url) == "http://www.archive.org/")
-    assert(r_12.getAs[String](mime_type) == "text/html")
+    val r_11 = all.select(url, mime_type).take(1)(0)
+    assert(r_11.getAs[String](url) == "http://www.archive.org/")
+    assert(r_11.getAs[String](mime_type) == "text/html")
   }
 
   after {
