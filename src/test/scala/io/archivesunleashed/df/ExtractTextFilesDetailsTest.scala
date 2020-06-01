@@ -42,7 +42,7 @@ class TextFilesTest extends FunSuite with BeforeAndAfter with Matchers {
 
   test("Text files extraction DF") {
     val df = RecordLoader.loadArchives(warcPath, sc)
-      .textFiles()
+      .textfiles()
 
     val extracted = df.select("url", "filename", "extension",
       "mime_type_web_server", "mime_type_tika", "md5")
@@ -58,7 +58,7 @@ class TextFilesTest extends FunSuite with BeforeAndAfter with Matchers {
 
   test("Text files robots.txt DF") {
     val df = RecordLoader.loadArchives(testPath, sc)
-      .textFiles()
+      .textfiles()
 
     val robots = df.select("url").orderBy(desc("md5")).head(50).toList
 
@@ -77,7 +77,7 @@ class TextFilesTest extends FunSuite with BeforeAndAfter with Matchers {
 
   test("Text files dns or filedesc DF") {
     val df = RecordLoader.loadArchives(filedescPath, sc)
-      .textFiles()
+      .textfiles()
 
     val issue362 = df.select("url").head(50).toList
 

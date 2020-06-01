@@ -203,9 +203,9 @@ class CommandLineApp(conf: CmdAppConf) {
       }),
     "PresentationProgramInformationExtractor" ->
       ((inputFiles: List[String]) => {
-        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).presentationProgramFiles()
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).presentationProgram()
         inputFiles.tail foreach { f =>
-          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).presentationProgramFiles())
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).presentationProgram())
         }
         if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "parquet") {
           saveParquet(PresentationProgramInformationExtractor(df))
@@ -227,9 +227,9 @@ class CommandLineApp(conf: CmdAppConf) {
       }),
     "TextFilesInformationExtractor" ->
       ((inputFiles: List[String]) => {
-        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).textFiles()
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).textfiles()
         inputFiles.tail foreach { f =>
-          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).textFiles())
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).textfiles())
         }
         if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "parquet") {
           saveParquet(TextFilesInformationExtractor(df))
@@ -275,9 +275,9 @@ class CommandLineApp(conf: CmdAppConf) {
       }),
     "WordProcessorInformationExtractor" ->
       ((inputFiles: List[String]) => {
-        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).wordProcessorFiles()
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).wordProcessor()
         inputFiles.tail foreach { f =>
-          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).wordProcessorFiles())
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).wordProcessor())
         }
         if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "parquet") {
           saveParquet(WordProcessorInformationExtractor(df))

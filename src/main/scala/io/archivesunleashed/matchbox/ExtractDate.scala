@@ -16,7 +16,7 @@
 package io.archivesunleashed.matchbox
 
 /** Gets different parts of a dateString. */
-object ExtractDateRDD {
+object ExtractDate {
   object DateComponent extends Enumeration {
     /** An enum specifying years, months, days or a combination. */
     type DateComponent = Value

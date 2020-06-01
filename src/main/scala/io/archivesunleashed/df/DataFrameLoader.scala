@@ -55,9 +55,9 @@ class DataFrameLoader(sc: SparkContext) {
   }
 
   /** Create a DataFrame with presentation program url, filename, extension, mime_type_web_server, mime_type_tika, md5, sha1, and raw bytes. */
-  def presentationProgramFiles(path: String): DataFrame = {
+  def presentationProgram(path: String): DataFrame = {
     RecordLoader.loadArchives(path, sc)
-    .presentationProgramFiles
+    .presentationProgram
   }
 
   /** Create a DataFrame with spreadsheet url, filename, extension, mime_type_web_server, mime_type_tika, md5, sha1, and raw bytes. */
@@ -67,9 +67,9 @@ class DataFrameLoader(sc: SparkContext) {
   }
 
   /** Create a DataFrame with text file url, filename, extension, mime_type_web_server, mime_type_tika, md5, sha1, and raw bytes. */
-  def textFiles(path: String): DataFrame = {
+  def textfiles(path: String): DataFrame = {
     RecordLoader.loadArchives(path, sc)
-    .textFiles
+    .textfiles
   }
 
   /** Create a DataFrame with video url, filename, extension, mime_type_web_server, mime_type_tika, md5, sha1, and raw bytes. */
@@ -91,8 +91,8 @@ class DataFrameLoader(sc: SparkContext) {
   }
 
   /** Create a DataFrame with word processor url, filename, extension, mime_type_web_server, mime_type_tika, md5, sha1, and raw bytes. */
-  def wordProcessorFiles(path: String): DataFrame = {
+  def wordProcessor(path: String): DataFrame = {
     RecordLoader.loadArchives(path, sc)
-    .wordProcessorFiles
+    .wordProcessor
   }
  }

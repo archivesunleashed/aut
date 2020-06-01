@@ -21,7 +21,7 @@ import java.security.MessageDigest
 import java.text.SimpleDateFormat
 
 import io.archivesunleashed.data.{ArcRecordUtils, WarcRecordUtils, ArchiveRecordWritable}
-import io.archivesunleashed.matchbox.{ComputeMD5RDD, ExtractDateRDD, ExtractDomainRDD, RemoveHTTPHeaderRDD}
+import io.archivesunleashed.matchbox.{ComputeMD5, ExtractDate, ExtractDomain, RemoveHTTPHeader}
 import org.apache.commons.httpclient.{Header, HttpParser, StatusLine}
 import org.apache.spark.SerializableWritable
 import org.archive.io.arc.ARCRecord
@@ -84,25 +84,25 @@ class ArchiveRecordImpl(r: SerializableWritable[ArchiveRecordWritable]) extends 
 
   val getCrawlDate: String = {
     if (recordFormat == ArchiveRecordWritable.ArchiveFormat.ARC){
-      ExtractDateRDD(r.t.getRecord.asInstanceOf[ARCRecord].getMetaData.getDate,
-        ExtractDateRDD.DateComponent.YYYYMMDD)
+      ExtractDate(r.t.getRecord.asInstanceOf[ARCRecord].getMetaData.getDate,
+        ExtractDate.DateComponent.YYYYMMDD)
     } else {
-      ExtractDateRDD(
+      ExtractDate(
         ArchiveUtils.get14DigitDate(
           ISO8601.parse(r.t.getRecord.asInstanceOf[WARCRecord].getHeader.getDate)),
-        ExtractDateRDD.DateComponent.YYYYMMDD)
+        ExtractDate.DateComponent.YYYYMMDD)
     }
   }
 
   val getCrawlMonth: String = {
     if (recordFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {
-      ExtractDateRDD(r.t.getRecord.asInstanceOf[ARCRecord].getMetaData.getDate,
-        ExtractDateRDD.DateComponent.YYYYMM)
+      ExtractDate(r.t.getRecord.asInstanceOf[ARCRecord].getMetaData.getDate,
+        ExtractDate.DateComponent.YYYYMM)
     } else {
-      ExtractDateRDD(
+      ExtractDate(
         ArchiveUtils.get14DigitDate(
           ISO8601.parse(r.t.getRecord.asInstanceOf[WARCRecord].getHeader.getDate)),
-        ExtractDateRDD.DateComponent.YYYYMM)
+        ExtractDate.DateComponent.YYYYMM)
     }
   }
 
@@ -149,14 +149,14 @@ class ArchiveRecordImpl(r: SerializableWritable[ArchiveRecordWritable]) extends 
   }
 
   val getDomain: String = {
-    ExtractDomainRDD(getUrl)
+    ExtractDomain(getUrl)
   }
 
   val getBinaryBytes: Array[Byte] = {
     if (getContentString.startsWith("HTTP/")) {
       getContentBytes.slice(
-        getContentString.indexOf(RemoveHTTPHeaderRDD.headerEnd)
-          + RemoveHTTPHeaderRDD.headerEnd.length, getContentBytes.length)
+        getContentString.indexOf(RemoveHTTPHeader.headerEnd)
+          + RemoveHTTPHeader.headerEnd.length, getContentBytes.length)
     } else {
       getContentBytes
     }

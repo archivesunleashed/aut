@@ -53,9 +53,9 @@ class DataFrameLoaderTest extends FunSuite with BeforeAndAfter {
     val audio = df.audio(mediaPath)
     val video = df.videos(mediaPath)
     val spreadsheets = df.spreadsheets(docPath)
-    val powerpoint = df.presentationProgramFiles(docPath)
-    val word = df.wordProcessorFiles(docPath)
-    val text = df.textFiles(txtPath)
+    val powerpoint = df.presentationProgram(docPath)
+    val word = df.wordProcessor(docPath)
+    val text = df.textfiles(txtPath)
     val all = df.all(arcPath)
 
     val r_1 = validPages.select(url, mime_type).take(1)(0)

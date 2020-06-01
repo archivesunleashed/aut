@@ -18,9 +18,7 @@ package io.archivesunleashed.matchbox
 import org.apache.commons.io.FilenameUtils
 
 /** Get file extension using MIME type, then URL extension. */
-// scalastyle:off object.name
-object GetExtensionMimeRDD {
-// scalastyle:on object.name
+object GetExtensionMime {
 
   /** Returns the extension of a file specified by URL
     *

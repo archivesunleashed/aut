@@ -39,7 +39,7 @@ class TextFilesInformationExtractorTest extends FunSuite with BeforeAndAfter {
   }
 
   test("Text files information extractor DF") {
-    val df = RecordLoader.loadArchives(arcPath, sc).textFiles()
+    val df = RecordLoader.loadArchives(arcPath, sc).textfiles()
     val dfResults = TextFilesInformationExtractor(df).collect()
     val RESULTSLENGTH = 1
 

@@ -15,25 +15,26 @@
  */
 package io.archivesunleashed.matchbox
 
-import org.apache.tika.langdetect.OptimaizeLangDetector;
-import org.apache.tika.language.detect.LanguageDetector;
-import org.apache.tika.language.detect.LanguageResult;
+/** Remove HTTP headers. */
+object RemoveHTTPHeader {
+  val headerEnd = "\r\n\r\n"
 
-/** Detects language using Apache Tika. */
-object DetectLanguageRDD {
-
-  /** Detects the language of a String input.
+  /** Remove HTTP headers.
    *
-   * @param input the string for which language can be detected
-   * @return ISO 639-2 language code (eg. "en", "fr" or "it").
+   * @param content string of WARC or ARC-based text content
+   * @return string with HTTP headers removed.
    */
-  def apply(input: String): String = {
-    if (input.isEmpty) {
-      ""
-    } else {
-      val detector: LanguageDetector = new OptimaizeLangDetector().loadModels()
-      val result : LanguageResult = detector.detect(input)
-      result.getLanguage()
+  def apply(content: String): String = {
+    val maybeContent: Option[String] = Option(content)
+    maybeContent match {
+      case Some(content) =>
+        if (content.startsWith("HTTP/")){
+          content.substring(content.indexOf(headerEnd) + headerEnd.length)
+        } else {
+          content
+        }
+      case None =>
+        ""
     }
   }
 }

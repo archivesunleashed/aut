@@ -17,8 +17,8 @@
 package io.archivesunleashed
 
 import com.google.common.io.Resources
-import io.archivesunleashed.matchbox.ExtractDateRDD.DateComponent
-import io.archivesunleashed.matchbox.{DetectLanguageRDD, DetectMimeTypeTika, ExtractLinksRDD, RemoveHTMLRDD, RemoveHTTPHeaderRDD}
+import io.archivesunleashed.matchbox.ExtractDate.DateComponent
+import io.archivesunleashed.matchbox.{DetectLanguage, DetectMimeTypeTika, ExtractLinks, RemoveHTML, RemoveHTTPHeader}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -73,7 +73,7 @@ class ArcTest extends FunSuite with BeforeAndAfter {
 
   test("Count links RDD") {
     val links = RecordLoader.loadArchives(arcPath, sc)
-      .map(r => ExtractLinksRDD(r.getUrl, r.getContentString))
+      .map(r => ExtractLinks(r.getUrl, r.getContentString))
       .reduce((a, b) => a ++ b)
     assert(links.size == 664)
   }
@@ -81,8 +81,8 @@ class ArcTest extends FunSuite with BeforeAndAfter {
   test("Detect language RDD") {
     val languageCounts = RecordLoader.loadArchives(arcPath, sc)
       .keepMimeTypes(Set("text/html"))
-      .map(r => RemoveHTMLRDD(r.getContentString))
-      .groupBy(content => DetectLanguageRDD(content))
+      .map(r => RemoveHTML(r.getContentString))
+      .groupBy(content => DetectLanguage(content))
       .map(f => {
         (f._1, f._2.size)
       })
@@ -101,7 +101,7 @@ class ArcTest extends FunSuite with BeforeAndAfter {
 
   test("Detect MIMEtype Tika RDD") {
     val mimeTypeCounts = RecordLoader.loadArchives(arcPath, sc)
-      .map(r => RemoveHTTPHeaderRDD(r.getContentString))
+      .map(r => RemoveHTTPHeader(r.getContentString))
       .groupBy(content => DetectMimeTypeTika(content.getBytes))
       .map(f => {
         (f._1, f._2.size)

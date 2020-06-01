@@ -40,7 +40,7 @@ class WordProcessorFilesTest extends FunSuite with BeforeAndAfter {
 
   test("Word processor files extraction DF") {
     val df = RecordLoader.loadArchives(warcPath, sc)
-      .wordProcessorFiles()
+      .wordProcessor()
 
     val extracted = df.select("url", "filename", "extension",
       "mime_type_web_server", "mime_type_tika", "md5")

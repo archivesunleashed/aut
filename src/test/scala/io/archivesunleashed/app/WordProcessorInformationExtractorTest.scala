@@ -39,7 +39,7 @@ class WordProcessorInformationExtractorTest extends FunSuite with BeforeAndAfter
   }
 
   test("Word processor information extractor DF") {
-    val df = RecordLoader.loadArchives(arcPath, sc).wordProcessorFiles()
+    val df = RecordLoader.loadArchives(arcPath, sc).wordProcessor()
     val dfResults = WordProcessorInformationExtractor(df).collect()
     val RESULTSLENGTH = 3
 

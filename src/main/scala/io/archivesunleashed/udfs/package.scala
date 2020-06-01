@@ -16,11 +16,11 @@
 
 package io.archivesunleashed
 
-import io.archivesunleashed.matchbox.{ComputeImageSize, ComputeMD5RDD, ComputeSHA1RDD,
-                                      DetectLanguageRDD, DetectMimeTypeTika,
-                                      ExtractBoilerpipeTextRDD, ExtractDateRDD,
-                                      ExtractDomainRDD, ExtractImageLinksRDD, ExtractLinksRDD,
-                                      GetExtensionMimeRDD, RemoveHTMLRDD, RemoveHTTPHeaderRDD}
+import io.archivesunleashed.matchbox.{ComputeImageSize, ComputeMD5, ComputeSHA1,
+                                      DetectLanguage, DetectMimeTypeTika,
+                                      ExtractBoilerpipeText, ExtractDate,
+                                      ExtractDomain, ExtractImageLinks, ExtractLinks,
+                                      GetExtensionMime, RemoveHTML, RemoveHTTPHeader}
 import org.apache.commons.lang3.StringUtils
 import org.apache.spark.sql.expressions.UserDefinedFunction
 import org.apache.spark.sql.functions.udf
@@ -32,18 +32,18 @@ package object udfs extends Serializable {
 
   // Matchbox
   def computeImageSize: UserDefinedFunction = udf(ComputeImageSize.apply(_: Array[Byte]))
-  def computeMD5: UserDefinedFunction = udf(ComputeMD5RDD.apply(_: Array[Byte]))
-  def computeSHA1: UserDefinedFunction = udf(ComputeSHA1RDD.apply(_: Array[Byte]))
-  def detectLanguage: UserDefinedFunction = udf(DetectLanguageRDD.apply(_: String))
+  def computeMD5: UserDefinedFunction = udf(ComputeMD5.apply(_: Array[Byte]))
+  def computeSHA1: UserDefinedFunction = udf(ComputeSHA1.apply(_: Array[Byte]))
+  def detectLanguage: UserDefinedFunction = udf(DetectLanguage.apply(_: String))
   def detectMimeTypeTika: UserDefinedFunction = udf(DetectMimeTypeTika.apply(_: Array[Byte]))
-  def extractBoilerpipeText: UserDefinedFunction = udf(ExtractBoilerpipeTextRDD.apply(_: String))
-  def extractDate: UserDefinedFunction = udf(ExtractDateRDD.apply(_: String, _: String))
-  def extractDomain: UserDefinedFunction = udf(ExtractDomainRDD.apply(_: String, ""))
-  def extractImageLinks: UserDefinedFunction = udf(ExtractImageLinksRDD.apply(_: String, _: String))
-  def extractLinks: UserDefinedFunction = udf(ExtractLinksRDD.apply(_: String, _: String))
-  def getExtensionMime: UserDefinedFunction = udf(GetExtensionMimeRDD.apply(_: String, _: String))
-  def removeHTML: UserDefinedFunction = udf(RemoveHTMLRDD.apply(_: String))
-  def removeHTTPHeader: UserDefinedFunction = udf(RemoveHTTPHeaderRDD.apply(_: String))
+  def extractBoilerpipeText: UserDefinedFunction = udf(ExtractBoilerpipeText.apply(_: String))
+  def extractDate: UserDefinedFunction = udf(ExtractDate.apply(_: String, _: String))
+  def extractDomain: UserDefinedFunction = udf(ExtractDomain.apply(_: String, ""))
+  def extractImageLinks: UserDefinedFunction = udf(ExtractImageLinks.apply(_: String, _: String))
+  def extractLinks: UserDefinedFunction = udf(ExtractLinks.apply(_: String, _: String))
+  def getExtensionMime: UserDefinedFunction = udf(GetExtensionMime.apply(_: String, _: String))
+  def removeHTML: UserDefinedFunction = udf(RemoveHTML.apply(_: String))
+  def removeHTTPHeader: UserDefinedFunction = udf(RemoveHTTPHeader.apply(_: String))
   def removePrefixWWW: UserDefinedFunction = udf[String, String](_.replaceAll("^\\s*www\\.", ""))
 
   // Filters

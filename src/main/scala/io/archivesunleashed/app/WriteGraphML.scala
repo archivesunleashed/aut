@@ -15,7 +15,7 @@
  */
 package io.archivesunleashed.app
 
-import io.archivesunleashed.matchbox.{ComputeMD5RDD, WWWLink}
+import io.archivesunleashed.matchbox.{ComputeMD5, WWWLink}
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 import org.apache.spark.sql.Row
@@ -64,13 +64,13 @@ object WriteGraphML {
       "<graph mode=\"static\" edgedefault=\"directed\">\n")
 
     nodes foreach { n =>
-      outFile.write("<node id=\"" + ComputeMD5RDD(n.asInstanceOf[String].getBytes) + "\">\n" +
+      outFile.write("<node id=\"" + ComputeMD5(n.asInstanceOf[String].getBytes) + "\">\n" +
         "<data key=\"label\">" + n.asInstanceOf[String].escapeInvalidXML() + "</data>\n</node>\n")
     }
 
     data foreach { e =>
-      outFile.write("<edge source=\"" + ComputeMD5RDD(e.get(1).asInstanceOf[String].getBytes) + "\" target=\"" +
-        ComputeMD5RDD(e.get(2).asInstanceOf[String].getBytes) + "\" type=\"directed\">\n" +
+      outFile.write("<edge source=\"" + ComputeMD5(e.get(1).asInstanceOf[String].getBytes) + "\" target=\"" +
+        ComputeMD5(e.get(2).asInstanceOf[String].getBytes) + "\" type=\"directed\">\n" +
         "<data key=\"weight\">" + e.get(3) + "</data>\n" +
         "<data key=\"crawlDate\">" + e.get(0) + "</data>\n" +
         "</edge>\n")

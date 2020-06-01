@@ -19,7 +19,7 @@ import de.l3s.boilerpipe.extractors.DefaultExtractor
 import java.io.IOException
 
 /** Extract raw text content from an HTML page, minus "boilerplate" content (using boilerpipe).  */
-object ExtractBoilerpipeTextRDD {
+object ExtractBoilerpipeText {
   /** Uses boilerpipe to extract raw text content from a page.
    *
    * ExtractBoilerpipeText removes boilerplate text (e.g. a copyright statement) from an HTML string.
@@ -29,7 +29,7 @@ object ExtractBoilerpipeTextRDD {
    */
 
   def apply(input: String): String = {
-    removeBoilerplate(RemoveHTTPHeaderRDD(input))
+    removeBoilerplate(RemoveHTTPHeader(input))
   }
 
   private def removeBoilerplate(input: String): String = {
