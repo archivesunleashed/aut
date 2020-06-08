@@ -8,51 +8,24 @@
 [![LICENSE](https://img.shields.io/badge/license-Apache-blue.svg?style=flat)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Contribution Guidelines](http://img.shields.io/badge/CONTRIBUTING-Guidelines-blue.svg)](./CONTRIBUTING.md)
 
-The Archives Unleashed Toolkit is an open-source platform for analyzing web archives built on [Apache Spark](http://spark.apache.org/), which provides powerful tools for analytics and data processing. This toolkit is part of the [Archives Unleashed Project](http://archivesunleashed.org/).
+The Archives Unleashed Toolkit is an open-source platform for analyzing web archives built on [Apache Spark](http://spark.apache.org/), which provides powerful tools for analytics and data processing. The Toolkit is part of the [Archives Unleashed Project](http://archivesunleashed.org/).
+
+Learn more about the Toolkit and how to use it by visiting our [comprehensive documentation](https://aut.docs.archivesunleashed.org/).
 
 The following two articles provide an overview of the project:
 
++ Nick Ruest, Jimmy Lin, Ian Milligan, and Samantha Fritz. [The Archives Unleashed Project: Technology, Process, and Community to Improve Scholarly Access to Web Archives](https://yorkspace.library.yorku.ca/xmlui/handle/10315/37506). Proceedings of the 2020 IEEE/ACM Joint Conference on Digital Libraries (JCDL 2020), Wuhan, China.
 + Jimmy Lin, Ian Milligan, Jeremy Wiebe, and Alice Zhou. [Warcbase: Scalable Analytics Infrastructure for Exploring Web Archives](https://dl.acm.org/authorize.cfm?key=N46731). _ACM Journal on Computing and Cultural Heritage_, 10(4), Article 22, 2017.
-+ Nick Ruest, Jimmy Lin, Ian Milligan, Samantha Fritz. [The Archives Unleashed Project: Technology, Process, and Community to Improve Scholarly Access to Web Archives](https://arxiv.org/abs/2001.05399). 2020.
 
 ## Dependencies
 
-### Java
+- Java 8
+- Python 3.6+ (PySpark)
+- Apache Spark 2.4+
 
-The Archives Unleashed Toolkit requires Java 8.
+ More information on setting up dependencies can be found [here](https://aut.docs.archivesunleashed.org/docs/dependencies).
 
-For macOS: You can find information on Java [here](https://java.com/en/download/help/mac_install.xml). We recommend [OpenJDK](https://adoptopenjdk.net/). The easiest way is to install with [homebrew](https://brew.sh) and then:
-
-```bash
-brew cask install adoptopenjdk/openjdk/adoptopenjdk8
-```
-
-If you run into difficulties with homebrew, installation instructions can be found [here](https://adoptopenjdk.net/).
-
-On Debian based system you can install Java using `apt`:
-
-```bash
-apt install openjdk-8-jdk
-```
-
-Before `spark-shell` can launch, `JAVA_HOME` must be set. If you receive an error that `JAVA_HOME` is not set, you need to point it to where Java is installed. On Linux, this might be `export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64` or on macOS it might be `export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_74.jdk/Contents/Home`.
-
-### Python
-
-If you would like to use the Archives Unleashed Toolkit with PySpark and Jupyter Notebooks, you'll need to have a modern version of Python installed. We recommend using the [Anaconda Distribution](https://www.anaconda.com/distribution). This _should_ install Jupyter Notebook, as well as the PySpark bindings. If it doesn't, you can install either with `conda install` or `pip install`.
-
-### Apache Spark
-
-Download and unzip [Apache Spark](https://spark.apache.org) to a location of your choice.
-
-```bash
-curl -L "https://archive.apache.org/dist/spark/spark-2.4.5/spark-2.4.5-bin-hadoop2.7.tgz" > spark-2.4.5-bin-hadoop2.7.tgz
-tar -xvf spark-2.4.5-bin-hadoop2.7.tgz
-```
-
-## Getting Started
-
-### Building Locally
+## Building
 
 Clone the repo:
 
@@ -66,198 +39,16 @@ You can then build The Archives Unleashed Toolkit.
 mvn clean install
 ```
 
-### Archives Unleashed Toolkit with Spark Submit
+##  Usage
 
-The Toolkit offers a variety of extraction jobs with
-[`spark-submit`](https://spark.apache.org/docs/latest/submitting-applications.html)
-. These extraction jobs have a few configuration options.
+The Toolkit can be used to submit a variety of extraction jobs with `spark-submit`, as well used as a library via `spark-submit`, `pyspark`, or in your own application. More information on using the Toolkit can be found [here](https://aut.docs.archivesunleashed.org/docs/usage).
 
-The extraction jobs have a basic outline of:
 
-```shell
-spark-submit --class io.archivesunleashed.app.CommandLineAppRunner PATH_TO_AUT_JAR --extractor EXTRACTOR --input INPUT DIRECTORY --output OUTPUT DIRECTORY
-```
-
-Additional flags include:
-
-* `--output-format FORMAT` (`csv` (default) or `parquet`. `DomainGraphExtractor` 
-  has two additional output options `graphml` or `gexf`.)
-* `--split` (The extractor will put results for each input file in its own
-  directory. Each directory name will be the name of the ARC/WARC file parsed.)
-* `--partition N` (The extractor will partition RDD or DataFrame according to N
-  before writing results. The is useful to combine all the results to a single
-  file.)
-
-Available extraction jobs:
-
-- `AudioInformationExtractor`
-- `DomainFrequencyExtractor`
-- `DomainGraphExtractor`
-- `ImageGraphExtractor`
-- `ImageInformationExtractor`
-- `PDFInformationExtractor`
-- `PlainTextExtractor`
-- `PresentationProgramInformationExtractor`
-- `SpreadsheetInformationExtractor`
-- `VideoInformationExtractor`
-- `WebGraphExtractor`
-- `WebPagesExtractor`
-- `WordProcessorInformationExtractor`
-
-More documentation on using the Toolkit with `spark-submit` can be found [here](https://github.com/archivesunleashed/aut-docs/blob/master/current/aut-spark-submit-app.md).
-
-### Archives Unleashed Toolkit with Spark Shell
-
-There are a two options for loading the Archives Unleashed Toolkit. The advantages and disadvantages of using either option are going to depend on your setup (single machine vs cluster):
-
-```shell
-spark-shell --help
-
-  --jars JARS                 Comma-separated list of jars to include on the driver
-                              and executor classpaths.
-  --packages                  Comma-separated list of maven coordinates of jars to include
-                              on the driver and executor classpaths. Will search the local
-                              maven repo, then maven central and any additional remote
-                              repositories given by --repositories. The format for the
-                              coordinates should be groupId:artifactId:version.
-```
-
-#### As a package
-
-Release version:
-
-```shell
-spark-shell --packages "io.archivesunleashed:aut:0.80.0"
-```
-
-HEAD (built locally):
-
-```shell
-spark-shell --packages "io.archivesunleashed:aut:0.80.1-SNAPSHOT"
-```
-
-#### With an UberJar
-
-Release version:
-
-```shell
-spark-shell --jars /path/to/aut-0.80.0-fatjar.jar
-```
-
-HEAD (built locally):
-
-```shell
-spark-shell --jars /path/to/aut/target/aut-0.80.1-SNAPSHOT-fatjar.jar
-```
-
-### Archives Unleashed Toolkit with PySpark
-
-To run PySpark with the Archives Unleashed Toolkit loaded, you will need to provide PySpark with the Java/Scala package, and the Python bindings. The Java/Scala packages can be provided with `--packages` or `--jars` as described above. The Python bindings can be [downloaded](https://github.com/archivesunleashed/aut/releases/download/aut-0.80.0/aut-0.80.0.zip), or [built locally](#building-locally) (the zip file will be found in the `target` directory.
-
-In each of the examples below, `/path/to/python` is listed. If you are unsure where your Python is, it can be found with `which python`.
-
-#### As a package
-
-Release version:
-
-```shell
-export PYSPARK_PYTHON=/path/to/python; export PYSPARK_DRIVER_PYTHON=/path/to/python; /path/to/spark/bin/pyspark --py-files aut-0.80.0.zip --packages "io.archivesunleashed:aut:0.80.0"
-```
-
-HEAD (built locally):
-
-```shell
-export PYSPARK_PYTHON=/path/to/python; export PYSPARK_DRIVER_PYTHON=/path/to/python; /path/to/spark/bin/pyspark --py-files /home/nruest/Projects/au/aut/target/aut.zip --packages "io.archivesunleashed:aut:0.80.1-SNAPSHOT"
-```
-
-#### With an UberJar
-
-Release version:
-
-```shell
-export PYSPARK_PYTHON=/path/to/python; export PYSPARK_DRIVER_PYTHON=/path/to/python; /path/to/spark/bin/pyspark --py-files aut-0.80.0.zip --jars /path/to/aut-0.80.0-fatjar.jar
-```
-
-HEAD (built locally):
-
-```shell
-export PYSPARK_PYTHON=/path/to/python; export PYSPARK_DRIVER_PYTHON=/path/to/python; /path/to/spark/bin/pyspark --py-files /home/nruest/Projects/au/aut/target/aut.zip --jars /path/to/aut-0.80.1-SNAPSHOT-fatjar.jar
-```
-
-### Archives Unleashed Toolkit with Jupyter
-
-To run a [Jupyter Notebook](https://jupyter.org/install) with the Archives Unleashed Toolkit loaded, you will need to provide PySpark the Java/Scala package, and the Python bindings. The Java/Scala packages can be provided with `--packages` or `--jars` as described above. The Python bindings can be [downloaded](https://github.com/archivesunleashed/aut/releases/download/aut-0.80.0/aut-0.80.0.zip), or [built locally](#Introduction) (the zip file will be found in the `target` directory.
-
-#### As a package
-
-Release version:
-
-```shell
-export PYSPARK_DRIVER_PYTHON=jupyter; export PYSPARK_DRIVER_PYTHON_OPTS=notebook; /path/to/spark/bin/pyspark --py-files aut-0.80.0.zip --packages "io.archivesunleashed:aut:0.80.0"
-```
-
-HEAD (built locally):
-
-```shell 
-export PYSPARK_DRIVER_PYTHON=jupyter; export PYSPARK_DRIVER_PYTHON_OPTS=notebook; /path/to/spark/bin/pyspark --py-files /home/nruest/Projects/au/aut/target/aut.zip --packages "io.archivesunleashed:aut:0.80.1-SNAPSHOT"
-```
-
-#### With an UberJar
-
-Release version:
-
-```shell
-export PYSPARK_DRIVER_PYTHON=jupyter; export PYSPARK_DRIVER_PYTHON_OPTS=notebook; /path/to/spark/bin/pyspark --py-files aut-0.80.0.zip --jars /path/to/aut-0.80.0-fatjar.jar
-```
-
-HEAD (built locally):
-
-```shell
-export PYSPARK_DRIVER_PYTHON=jupyter; export PYSPARK_DRIVER_PYTHON_OPTS=notebook; /path/to/spark/bin/pyspark --py-files /home/nruest/Projects/au/aut/target/aut.zip --jars /path/to/aut-0.80.1-SNAPSHOT-fatjar.jar
-```
-
-A Jupyter Notebook _should_ automatically load in your browser at <http://localhost:8888>. You may be asked for a token upon first launch, which just offers a bit of security. The token is available in the load screen and will look something like this:
-
-```
-[I 19:18:30.893 NotebookApp] Writing notebook server cookie secret to /run/user/1001/jupyter/notebook_cookie_secret
-[I 19:18:31.111 NotebookApp] JupyterLab extension loaded from /home/nruest/bin/anaconda3/lib/python3.7/site-packages/jupyterlab
-[I 19:18:31.111 NotebookApp] JupyterLab application directory is /home/nruest/bin/anaconda3/share/jupyter/lab
-[I 19:18:31.112 NotebookApp] Serving notebooks from local directory: /home/nruest/Projects/au/aut
-[I 19:18:31.112 NotebookApp] The Jupyter Notebook is running at:
-[I 19:18:31.112 NotebookApp] http://localhost:8888/?token=87e7a47c5a015cb2b846c368722ec05c1100988fd9dcfe04
-[I 19:18:31.112 NotebookApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
-[C 19:18:31.140 NotebookApp]
-
-    To access the notebook, open this file in a browser:
-        file:///run/user/1001/jupyter/nbserver-9702-open.html
-    Or copy and paste one of these URLs:
-        http://localhost:8888/?token=87e7a47c5a015cb2b846c368722ec05c1100988fd9dcfe04
-```
-
-Create a new notebook by clicking “New” (near the top right of the Jupyter homepage) and select “Python 3” from the drop down list.
-
-The notebook will open in a new window. In the first cell enter:
-
-```python
-from aut import *
-
-archive = WebArchive(sc, sqlContext, "src/test/resources/warc/")
-
-webpages = archive.webpages()
-webpages.printSchema()
-```
-
-Then hit <kbd>Shift</kbd>+<kbd>Enter</kbd>, or press the play button.
-
-If you receive no errors, and see the following, you are ready to begin working with your web archives!
-
-![](https://user-images.githubusercontent.com/218561/63203995-42684080-c061-11e9-9361-f5e6177705ff.png)
-
-# License
+## License
 
 Licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
-# Acknowledgments
+## Acknowledgments
 
 This work is primarily supported by the [Andrew W. Mellon Foundation](https://mellon.org/). Other financial and in-kind support comes from the [Social Sciences and Humanities Research Council](http://www.sshrc-crsh.gc.ca/), [Compute Canada](https://www.computecanada.ca/), the [Ontario Ministry of Research, Innovation, and Science](https://www.ontario.ca/page/ministry-research-innovation-and-science), [York University Libraries](https://www.library.yorku.ca/web/), [Start Smart Labs](http://www.startsmartlabs.com/), and the [Faculty of Arts](https://uwaterloo.ca/arts/) and [David R. Cheriton School of Computer Science](https://cs.uwaterloo.ca/) at the [University of Waterloo](https://uwaterloo.ca/).
 
