@@ -1,4 +1,6 @@
+import base64
 import hashlib
+import os
 from xml.sax.saxutils import escape
 
 from pyspark.sql import DataFrame
@@ -17,6 +19,21 @@ def ExtractPopularImages(d, limit, min_width, min_height):
         .orderBy(desc("count"))
         .limit(limit)
     )
+
+
+def SaveBytes(data, bytes_path):
+    os.makedirs(bytes_path, exist_ok=True)
+
+    for row in data:
+        with open(
+            bytes_path
+            + "/"
+            + hashlib.md5(base64.b64decode(row[1])).hexdigest()
+            + "."
+            + row[0],
+            "wb",
+        ) as f:
+            f.write(base64.b64decode(row[1]))
 
 
 def WriteGEXF(data, gexf_path):
