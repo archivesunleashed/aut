@@ -23,7 +23,7 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class RemoveHTMLRDDTest extends FunSuite {
+class RemoveHTMLTest extends FunSuite {
   test("Remove HTML RDD") {
     val html =
       """
@@ -34,9 +34,9 @@ class RemoveHTMLRDDTest extends FunSuite {
       </body>
       </html>
       """
-    val removed = RemoveHTMLRDD(html)
+    val removed = RemoveHTML(html)
     assert(removed == "Here is some... HTML")
-    val nothing = RemoveHTMLRDD("")
+    val nothing = RemoveHTML("")
     assert(nothing == "")
   }
 }
