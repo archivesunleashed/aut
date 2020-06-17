@@ -41,9 +41,8 @@ import org.rogach.scallop.ScallopConf
  * AudioInformationExtractor, DomainFrequencyExtractor, DomainGraphExtractor,
  * ImageGraphExtractor, ImageInformationExtractor, PDFInformationExtractor,
  * PlainTextExtractor, PresentationProgramInformationExtractor,
- * SpreadsheetInformationExtractor, TextFilesInformationExtractor,
- * VideoInformationExtractor, WebGraphExtractor, WebPagesExtractor,
- * or WordProcessorInformationExtractor.
+ * SpreadsheetInformationExtractor, VideoInformationExtractor,
+ * WebGraphExtractor, WebPagesExtractor, or WordProcessorInformationExtractor.
  *
  * INPUT_FILE is a list of input files separated by space (or path containing wildcard)
  * OUTPUT_DIRECTORY is the directory to put result in
@@ -223,18 +222,6 @@ class CommandLineApp(conf: CmdAppConf) {
           saveParquet(SpreadsheetInformationExtractor(df))
         } else {
           saveCsv(SpreadsheetInformationExtractor(df))
-        }
-      }),
-    "TextFilesInformationExtractor" ->
-      ((inputFiles: List[String]) => {
-        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).textFiles()
-        inputFiles.tail foreach { f =>
-          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).textFiles())
-        }
-        if (!configuration.outputFormat.isEmpty && configuration.outputFormat() == "parquet") {
-          saveParquet(TextFilesInformationExtractor(df))
-        } else {
-          saveCsv(TextFilesInformationExtractor(df))
         }
       }),
     "VideoInformationExtractor" ->

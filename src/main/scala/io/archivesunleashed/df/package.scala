@@ -15,7 +15,7 @@
  */
 package io.archivesunleashed
 
-import io.archivesunleashed.matchbox.ComputeMD5RDD
+import io.archivesunleashed.matchbox.ComputeMD5
 import java.io.ByteArrayInputStream
 import java.io.FileOutputStream
 import java.util.Base64
@@ -45,7 +45,7 @@ package object df {
           val in = new ByteArrayInputStream(bytes);
 
           val extension: String = row.getAs(extensionColumnName);
-          val suffix = ComputeMD5RDD(bytes)
+          val suffix = ComputeMD5(bytes)
           val file = new FileOutputStream(fileName + "-" + suffix + "." + extension.toLowerCase)
           IOUtils.copy(in, file)
           file.close()

@@ -26,7 +26,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
-class GetExtensionMimeTest extends FunSuite with BeforeAndAfter {
+class GetExtensionMIMETest extends FunSuite with BeforeAndAfter {
   private val warcPath = Resources.getResource("warc/example.media.warc.gz").getPath
   private val master = "local[4]"
   private val appName = "example-df"

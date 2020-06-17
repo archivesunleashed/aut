@@ -16,13 +16,13 @@
 
 package io.archivesunleashed.matchbox
 
-import io.archivesunleashed.matchbox.ExtractDateRDD.DateComponent.{DD, MM, YYYY, YYYYMM, YYYYMMDD}
+import io.archivesunleashed.matchbox.ExtractDate.DateComponent.{DD, MM, YYYY, YYYYMM, YYYYMMDD}
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class ExtractDateRDDTest extends FunSuite {
+class ExtractDateTest extends FunSuite {
 
   test("Date extraction RDD") {
     val date = "20151204"
@@ -30,13 +30,13 @@ class ExtractDateRDDTest extends FunSuite {
     val yearSS = 4
     val monthSS = 6
     val daySS = 8
-    assert(ExtractDateRDD(date, YYYY) == date.substring(startSS, yearSS))
-    assert(ExtractDateRDD(date, MM) == date.substring(yearSS, monthSS))
-    assert(ExtractDateRDD(date, DD) == date.substring(monthSS, daySS))
-    assert(ExtractDateRDD(date, YYYYMM) == date.substring(startSS, monthSS))
-    assert(ExtractDateRDD(date, YYYYMMDD) == date.substring(startSS, daySS))
+    assert(ExtractDate(date, YYYY) == date.substring(startSS, yearSS))
+    assert(ExtractDate(date, MM) == date.substring(yearSS, monthSS))
+    assert(ExtractDate(date, DD) == date.substring(monthSS, daySS))
+    assert(ExtractDate(date, YYYYMM) == date.substring(startSS, monthSS))
+    assert(ExtractDate(date, YYYYMMDD) == date.substring(startSS, daySS))
     // scalastyle:off null
-    assert(ExtractDateRDD(null, YYYYMMDD) == "")
+    assert(ExtractDate(null, YYYYMMDD) == "")
     // scalastyle:on null
   }
 }

@@ -15,30 +15,30 @@
  */
 package io.archivesunleashed.app
 
-import io.archivesunleashed.matchbox.{ComputeMD5RDD, WWWLink}
+import io.archivesunleashed.matchbox.{ComputeMD5, WWWLink}
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 import org.apache.spark.sql.Row
 
 object WriteGraphML {
-  /** Writes graph nodes and edges to file (df).
+  /** Verifies graphmlPath is empty.
    *
-   * @param ds Array[Row] elements in format (CrawlDate, SrcDomain,
-   *        DestDomain, count)
+   * @param data Array[Row] elements in format (crawl_date, src_domain,
+   *        dest_domain, count)
    * @param graphmlPath output file
    */
-  def apply(ds: Array[Row], graphmlPath: String): Boolean = {
+  def apply(data: Array[Row], graphmlPath: String): Boolean = {
     if (graphmlPath.isEmpty()) {
       false
     } else {
-      makeFile (ds, graphmlPath)
+      makeFile (data, graphmlPath)
     }
   }
 
   /** Produces the GraphML output from an Array[Row] and outputs it to graphmlPath.
    *
-   * @param data a Dataset[Row] of elements in format (CrawlDate, SrcDomain,
-   *        DestDomain, count)
+   * @param data a Dataset[Row] of elements in format (crawl_date, src_domain,
+   *        dest_domain, count)
    * @param graphmlPath output file
    * @return true on success.
    */
@@ -64,13 +64,13 @@ object WriteGraphML {
       "<graph mode=\"static\" edgedefault=\"directed\">\n")
 
     nodes foreach { n =>
-      outFile.write("<node id=\"" + ComputeMD5RDD(n.asInstanceOf[String].getBytes) + "\">\n" +
+      outFile.write("<node id=\"" + ComputeMD5(n.asInstanceOf[String].getBytes) + "\">\n" +
         "<data key=\"label\">" + n.asInstanceOf[String].escapeInvalidXML() + "</data>\n</node>\n")
     }
 
     data foreach { e =>
-      outFile.write("<edge source=\"" + ComputeMD5RDD(e.get(1).asInstanceOf[String].getBytes) + "\" target=\"" +
-        ComputeMD5RDD(e.get(2).asInstanceOf[String].getBytes) + "\" type=\"directed\">\n" +
+      outFile.write("<edge source=\"" + ComputeMD5(e.get(1).asInstanceOf[String].getBytes) + "\" target=\"" +
+        ComputeMD5(e.get(2).asInstanceOf[String].getBytes) + "\" type=\"directed\">\n" +
         "<data key=\"weight\">" + e.get(3) + "</data>\n" +
         "<data key=\"crawlDate\">" + e.get(0) + "</data>\n" +
         "</edge>\n")

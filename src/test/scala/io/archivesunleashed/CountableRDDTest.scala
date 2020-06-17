@@ -17,7 +17,7 @@
 package io.archivesunleashed
 
 import com.google.common.io.Resources
-import io.archivesunleashed.matchbox.ExtractDomainRDD
+import io.archivesunleashed.matchbox.ExtractDomain
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -41,7 +41,7 @@ class CountableRDDTest extends FunSuite with BeforeAndAfter {
   test("Count records; Extract Domain RDD ") {
     val base = RecordLoader.loadArchives(arcPath, sc)
       .keepValidPages()
-      .map(r => ExtractDomainRDD(r.getUrl))
+      .map(r => ExtractDomain(r.getUrl))
     val r = base
       .map(r => (r, 1))
       .reduceByKey(_ + _)

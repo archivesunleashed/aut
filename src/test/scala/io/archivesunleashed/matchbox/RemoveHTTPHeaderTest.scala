@@ -21,13 +21,13 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class RemoveHTTPHeaderRDDTest extends FunSuite {
+class RemoveHTTPHeaderTest extends FunSuite {
   test("Remove HTTP header RDD") {
     val header = "HTTP/1.1 200 OK\r\n\r\nHello content"
     val nohttp = "This has no Http"
-    val removed = RemoveHTTPHeaderRDD(header)
-    val unchanged = RemoveHTTPHeaderRDD(nohttp)
-    val nothing = RemoveHTTPHeaderRDD("")
+    val removed = RemoveHTTPHeader(header)
+    val unchanged = RemoveHTTPHeader(nohttp)
+    val nothing = RemoveHTTPHeader("")
     assert(removed == "Hello content")
     assert(unchanged == nohttp)
     assert(nothing == "")

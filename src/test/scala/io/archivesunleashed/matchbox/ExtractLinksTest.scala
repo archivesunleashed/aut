@@ -26,7 +26,7 @@ import scala.Byte
 import scala.collection.mutable
 
 @RunWith(classOf[JUnitRunner])
-class ExtractLinksRDDTest extends FunSuite {
+class ExtractLinksTest extends FunSuite {
 
   val fragment: String = "Here is <a href=\"http://www.google.com\">a search engine</a>.\n" +
     "Here is <a href=\"http://www.twitter.com/\">Twitter</a>.\n"
@@ -36,7 +36,7 @@ class ExtractLinksRDDTest extends FunSuite {
   val head = "a search engine"
 
   test("Extract simple links RDD") {
-    val extracted: Seq[(String, String, String)] = ExtractLinksRDD("", fragment)
+    val extracted: Seq[(String, String, String)] = ExtractLinks("", fragment)
     assert(extracted.size == 2)
     assert(url == extracted.head._2)
     assert(head == extracted.head._3)
@@ -48,7 +48,7 @@ class ExtractLinksRDDTest extends FunSuite {
     val fragmentLocal: String = "Here is <a href=\"http://www.google.com\">" +
     "a search engine</a>.\nHere is a <a href=\"page.html\">a relative URL</a>.\n"
     val fooFragmentLocal = "http://www.foobar.org/page.html"
-    val extracted: Seq[(String, String, String)] = ExtractLinksRDD("", fragmentLocal, fooFragment)
+    val extracted: Seq[(String, String, String)] = ExtractLinks("", fragmentLocal, fooFragment)
     assert(extracted.size == 2)
     assert(url == extracted.head._2)
     assert(head == extracted.head._3)
@@ -60,8 +60,8 @@ class ExtractLinksRDDTest extends FunSuite {
     val bytes: Array[Byte] = "wronglyTyped".getBytes()
     val invalid: String = "Here is a fake url <a href=\"http://www.google.com\"> bogus search engine</a>."
     // scalastyle:off null
-    assert(ExtractLinksRDD(null, fragment, fooFragment) == mutable.MutableList[(String, String, String)]())
+    assert(ExtractLinks(null, fragment, fooFragment) == mutable.MutableList[(String, String, String)]())
     // scalastyle:on null
-    assert(ExtractLinksRDD("", "", fooFragment) == mutable.MutableList[(String, String, String)]())
+    assert(ExtractLinks("", "", fooFragment) == mutable.MutableList[(String, String, String)]())
   }
 }

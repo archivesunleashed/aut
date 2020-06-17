@@ -18,7 +18,7 @@ package io.archivesunleashed
 
 import com.google.common.io.Resources
 import io.archivesunleashed.df.SaveBytes
-import io.archivesunleashed.matchbox.ComputeMD5RDD
+import io.archivesunleashed.matchbox.ComputeMD5
 import org.apache.spark.sql.functions.desc
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.{SparkConf, SparkContext}
@@ -60,7 +60,7 @@ class SaveMediaBytesTest extends FunSuite with BeforeAndAfter {
     val encodedBytes: String = extracted.take(1)(0).getAs(testString)
     val bytes = Base64.getDecoder.decode(encodedBytes);
 
-    val suffix = ComputeMD5RDD(bytes)
+    val suffix = ComputeMD5(bytes)
     val fileName = "/tmp/audio-" + suffix + ".mp3"
     assert(Files.exists(Paths.get(fileName)))
 
@@ -70,7 +70,7 @@ class SaveMediaBytesTest extends FunSuite with BeforeAndAfter {
   test("Attempt to save invalid audio DF") {
     val dummyEncBytes = Base64.getEncoder.encodeToString(Array.range(0, 127)
       .map(_.toByte))
-    val dummyMD5 = ComputeMD5RDD(dummyEncBytes.getBytes)
+    val dummyMD5 = ComputeMD5(dummyEncBytes.getBytes)
     val dummyAudio = TestMediaDetails("http://example.com/fake.mp3", "mp3",
       "audio/mpeg", dummyMD5, dummyEncBytes)
 

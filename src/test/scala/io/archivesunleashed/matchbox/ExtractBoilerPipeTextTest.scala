@@ -32,12 +32,12 @@ class ExtractBoilerPipeTextTest extends FunSuite {
   var boiler = """Copyright 2017"""
 
   test("Collects boilerpipe RDD") {
-    assert(ExtractBoilerpipeTextRDD(text) == boiler)
-    assert(ExtractBoilerpipeTextRDD("") == "")
-    assert(ExtractBoilerpipeTextRDD("All Rights Reserved.") == "")
+    assert(ExtractBoilerpipeText(text) == boiler)
+    assert(ExtractBoilerpipeText("") == "")
+    assert(ExtractBoilerpipeText("All Rights Reserved.") == "")
   }
 
   test("Removes HTTP header information RDD") {
-    assert(ExtractBoilerpipeTextRDD(header + text) == boiler)
+    assert(ExtractBoilerpipeText(header + text) == boiler)
   }
 }

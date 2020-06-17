@@ -15,29 +15,30 @@
  */
 package io.archivesunleashed.app
 
-import io.archivesunleashed.matchbox.{ComputeMD5RDD, WWWLink}
+import io.archivesunleashed.matchbox.{ComputeMD5, WWWLink}
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 import org.apache.spark.sql.Row
 
 object WriteGEXF {
-  /** Writes graph nodes and edges to file.
+  /** Verifies gexfPath is empty.
    *
-   * @param rdd RDD of elements in format ((datestring, source, target), count)
+   * @param data Array[Row] of elements in format (crawl_date, src_domain,
+   *        dest_domain, count)
    * @param gexfPath output file
-   * @return Unit().
    */
-  def apply(ds: Array[Row], gexfPath: String): Boolean = {
+  def apply(data: Array[Row], gexfPath: String): Boolean = {
     if (gexfPath.isEmpty())  {
       false
     } else {
-      makeFile (ds, gexfPath)
+      makeFile (data, gexfPath)
     }
   }
 
   /** Produces the GEXF output from an Array[Row] and outputs it to gexfPath.
     *
-    * @param data a Dataset[Row] of elements in format (datestring, source, target, count)
+    * @param data a Array[Row] of elements in format (crawl_date, src_domain,
+    *        dest_domain, count)
     * @param gexfPath output file
     * @return true on success.
     */
@@ -63,13 +64,13 @@ object WriteGEXF {
       "<nodes>\n")
     vertices foreach { v =>
       outFile.write("<node id=\"" +
-        ComputeMD5RDD(v.getBytes) + "\" label=\"" +
+        ComputeMD5(v.getBytes) + "\" label=\"" +
         v.escapeInvalidXML() + endAttribute)
     }
     outFile.write("</nodes>\n<edges>\n")
     data foreach { e =>
-      outFile.write("<edge source=\"" + ComputeMD5RDD(e.get(1).asInstanceOf[String].getBytes) + "\" target=\"" +
-        ComputeMD5RDD(e.get(2).asInstanceOf[String].getBytes) + "\" weight=\"" + e.get(3) +
+      outFile.write("<edge source=\"" + ComputeMD5(e.get(1).asInstanceOf[String].getBytes) + "\" target=\"" +
+        ComputeMD5(e.get(2).asInstanceOf[String].getBytes) + "\" weight=\"" + e.get(3) +
         "\" type=\"directed\">\n" +
         "<attvalues>\n" +
         "<attvalue for=\"0\" value=\"" + e.get(0) + endAttribute +

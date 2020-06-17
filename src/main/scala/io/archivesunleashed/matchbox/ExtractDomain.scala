@@ -18,7 +18,7 @@ package io.archivesunleashed.matchbox
 import java.net.URL
 
 /** Extracts the host domain name from a full url string. */
-object ExtractDomainRDD {
+object ExtractDomain {
   /** Extract source domains from a full url string.
    *
    * @param url a url as a string
