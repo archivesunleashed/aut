@@ -23,7 +23,7 @@ The following two articles provide an overview of the project:
 - Python 3.7.3+ (PySpark)
 - Apache Spark 3.0.0+
 
- More information on setting up dependencies can be found [here](https://aut.docs.archivesunleashed.org/docs/dependencies).
+ More information on setting up dependencies can be found [here](https://aut.docs.archivesunleashed.org/docs/next/dependencies).
 
 ## Building
 
