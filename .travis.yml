@@ -6,12 +6,7 @@ branches:
     - master
 
 jdk:
-  - openjdk8
   - openjdk11
-
-matrix:
-  allow_failures:
-    - jdk: openjdk11
 
 before_install:
  - "echo $JAVA_OPTS"
@@ -22,7 +17,6 @@ script:
  - mvn install -B -V
  - mvn javadoc:jar
  - mvn javadoc:test-aggregate
- - mvn cobertura:cobertura
  - mvn site
 
 after_success:
