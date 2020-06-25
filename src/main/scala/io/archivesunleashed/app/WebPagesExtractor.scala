@@ -17,11 +17,16 @@
 package io.archivesunleashed.app
 
 import io.archivesunleashed.ArchiveRecord
-import io.archivesunleashed.udfs.{extractDomain, removeHTML,
-                                  removeHTTPHeader, removePrefixWWW}
+import io.archivesunleashed.udfs.{
+  extractDomain,
+  removeHTML,
+  removeHTTPHeader,
+  removePrefixWWW
+}
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
 object WebPagesExtractor {
+
   /** Extract web pages from web archive using DataFrame and Spark SQL.
     *
     * @param d DataFrame obtained from RecordLoader
@@ -33,12 +38,14 @@ object WebPagesExtractor {
     // scalastyle:off
     import spark.implicits._
     // scalastyle:on
-    d.select($"crawl_date",
-             removePrefixWWW(extractDomain($"url")).as("domain"),
-             $"url",
-             $"mime_type_web_server",
-             $"mime_type_tika",
-             $"language",
-             removeHTML(removeHTTPHeader(($"content"))).alias("content"))
+    d.select(
+      $"crawl_date",
+      removePrefixWWW(extractDomain($"url")).as("domain"),
+      $"url",
+      $"mime_type_web_server",
+      $"mime_type_tika",
+      $"language",
+      removeHTML(removeHTTPHeader(($"content"))).alias("content")
+    )
   }
 }

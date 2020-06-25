@@ -23,6 +23,7 @@ import org.apache.spark.sql.functions.desc
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
 object DomainGraphExtractor {
+
   /** Extract domain graph from web archive using DataFrame and Spark SQL.
     *
     * @param d DataFrame obtained from RecordLoader
@@ -34,13 +35,13 @@ object DomainGraphExtractor {
     import spark.implicits._
     // scalastyle:on
     d.groupBy(
-        $"crawl_date",
-        removePrefixWWW(extractDomain($"src")).as("src_domain"),
-        removePrefixWWW(extractDomain($"dest")).as("dest_domain"))
-    .count()
-    .filter(!($"dest_domain"===""))
-    .filter(!($"src_domain"===""))
-    .filter($"count" > 5)
-    .orderBy(desc("count"))
+      $"crawl_date",
+      removePrefixWWW(extractDomain($"src")).as("src_domain"),
+      removePrefixWWW(extractDomain($"dest")).as("dest_domain")
+    ).count()
+      .filter(!($"dest_domain" === ""))
+      .filter(!($"src_domain" === ""))
+      .filter($"count" > 5)
+      .orderBy(desc("count"))
   }
 }

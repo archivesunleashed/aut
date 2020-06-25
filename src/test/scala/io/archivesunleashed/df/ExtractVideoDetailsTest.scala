@@ -26,7 +26,8 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
 class VideoTest extends FunSuite with BeforeAndAfter {
-  private val warcPath = Resources.getResource("warc/example.media.warc.gz").getPath
+  private val warcPath =
+    Resources.getResource("warc/example.media.warc.gz").getPath
   private val master = "local[4]"
   private val appName = "example-df"
   private var sc: SparkContext = _
@@ -39,12 +40,22 @@ class VideoTest extends FunSuite with BeforeAndAfter {
   }
 
   test("Video files extraction DF") {
-    val df = RecordLoader.loadArchives(warcPath, sc)
+    val df = RecordLoader
+      .loadArchives(warcPath, sc)
       .videos()
 
-    val extracted = df.select("url", "filename", "extension",
-      "mime_type_web_server", "mime_type_tika", "md5")
-      .orderBy(desc("md5")).head(1).toList
+    val extracted = df
+      .select(
+        "url",
+        "filename",
+        "extension",
+        "mime_type_web_server",
+        "mime_type_tika",
+        "md5"
+      )
+      .orderBy(desc("md5"))
+      .head(1)
+      .toList
     assert(extracted.size == 1)
     assert("https://ruebot.net/2018-11-12%2016.14.11.mp4" == extracted(0)(0))
     assert("2018-11-12%2016.14.11.mp4" == extracted(0)(1))

@@ -19,12 +19,17 @@ import java.security.MessageDigest
 
 /** Compute MD5 checksum. */
 object ComputeMD5 {
+
   /** Computes the MD5 checksum of a byte array (eg. an image).
     *
     * @param bytes
     * @return MD5 checksum.
     */
   def apply(bytes: Array[Byte]): String = {
-    MessageDigest.getInstance("MD5").digest(bytes).map("%02x".format(_)).mkString
+    MessageDigest
+      .getInstance("MD5")
+      .digest(bytes)
+      .map("%02x".format(_))
+      .mkString
   }
 }

@@ -39,14 +39,27 @@ class ExtractImageDetailsTest extends FunSuite with BeforeAndAfter {
   }
 
   test("Image files extraction DF") {
-    val df = RecordLoader.loadArchives(arcPath, sc)
+    val df = RecordLoader
+      .loadArchives(arcPath, sc)
       .images()
 
-    val extracted = df.select("url", "mime_type_web_server", "mime_type_tika",
-      "width", "height", "md5", "sha1")
-      .orderBy(desc("md5")).head(2).toList
+    val extracted = df
+      .select(
+        "url",
+        "mime_type_web_server",
+        "mime_type_tika",
+        "width",
+        "height",
+        "md5",
+        "sha1"
+      )
+      .orderBy(desc("md5"))
+      .head(2)
+      .toList
     assert(extracted.size == 2)
-    assert("http://www.archive.org/images/mediatype_movies.gif" == extracted(0)(0))
+    assert(
+      "http://www.archive.org/images/mediatype_movies.gif" == extracted(0)(0)
+    )
     assert("image/gif" == extracted(0)(1))
     assert("image/gif" == extracted(0)(2))
     assert(21 == extracted(0)(3))
