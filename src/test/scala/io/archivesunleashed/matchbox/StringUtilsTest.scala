@@ -39,17 +39,19 @@ class StringUtilsTest extends FunSuite {
     val except: String = null;
     // scalastyle:on null
     assert(invalid.escapeInvalidXML() == "A&lt;B&gt;C&amp;D&quot;");
-    val caught = intercept[IOException] {except.escapeInvalidXML()}
-    assert (caught.getMessage == "Caught exception processing input row ");
+    val caught = intercept[IOException] { except.escapeInvalidXML() }
+    assert(caught.getMessage == "Caught exception processing input row ");
   }
 
-  test ("MD5 hash") {
+  test("MD5 hash") {
     val s: String = "unesco.org";
     assert(ComputeMD5(s.getBytes) == "8e8decc8e8107bcf9d3896f3222b77d8");
   }
-  test ("SHA1 hash") {
+  test("SHA1 hash") {
     val s: String = "unesco.org";
-    assert(ComputeSHA1(s.getBytes) == "2d0e5377157172045d87befe46e157cda42c4f6e");
+    assert(
+      ComputeSHA1(s.getBytes) == "2d0e5377157172045d87befe46e157cda42c4f6e"
+    );
   }
 
 }

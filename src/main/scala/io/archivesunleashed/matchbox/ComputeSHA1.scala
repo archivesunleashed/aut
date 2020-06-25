@@ -27,6 +27,10 @@ object ComputeSHA1 {
     * @return SHA1 checksum.
     */
   def apply(bytes: Array[Byte]): String = {
-    MessageDigest.getInstance("SHA1").digest(bytes).map("%02x".format(_)).mkString
+    MessageDigest
+      .getInstance("SHA1")
+      .digest(bytes)
+      .map("%02x".format(_))
+      .mkString
   }
 }

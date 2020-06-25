@@ -20,7 +20,6 @@ import java.io.IOException
 import java.security.MessageDigest
 import scala.xml.Utility.escape
 
-
 /** Package object which supplies implicits providing common UDF-related functionalities. */
 package object matchbox {
   implicit class WWWLink(s: String) {
@@ -28,16 +27,16 @@ package object matchbox {
       val maybeString: Option[String] = Option(s)
       maybeString match {
         case Some(s) => s.replaceAll("^\\s*www\\.", "")
-        case None => ""
+        case None    => ""
       }
     }
 
     def escapeInvalidXML(): String = {
       try {
         escape(s)
-      }
-      catch {
-        case e: Exception => throw new IOException("Caught exception processing input row ", e)
+      } catch {
+        case e: Exception =>
+          throw new IOException("Caught exception processing input row ", e)
       }
     }
   }

@@ -22,10 +22,10 @@ import org.jsoup.Jsoup
 object RemoveHTML {
 
   /** Removes HTML markup.
-   *
-   * @param content an html or text string
-   * @return content without html markup.
-   */
+    *
+    * @param content an html or text string
+    * @return content without html markup.
+    */
   def apply(content: String): String = {
     // First remove the HTTP header.
     val maybeContent: Option[String] = Option(RemoveHTTPHeader(content))

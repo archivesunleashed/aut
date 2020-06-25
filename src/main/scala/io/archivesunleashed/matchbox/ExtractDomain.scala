@@ -19,12 +19,13 @@ import java.net.URL
 
 /** Extracts the host domain name from a full url string. */
 object ExtractDomain {
+
   /** Extract source domains from a full url string.
-   *
-   * @param url a url as a string
-   * @param source an optional default url for urls with no valid domain host
-   * @return domain host, source or null if url is null.
-   */
+    *
+    * @param url a url as a string
+    * @param source an optional default url for urls with no valid domain host
+    * @return domain host, source or null if url is null.
+    */
   def apply(url: String, source: String = ""): String = {
     val maybeHost: Option[URL] = checkUrl(url)
     val maybeSource: Option[URL] = checkUrl(source)
@@ -38,7 +39,7 @@ object ExtractDomain {
             source.getHost
           case None =>
             ""
-      }
+        }
     }
   }
 

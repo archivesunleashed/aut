@@ -17,7 +17,13 @@
 package io.archivesunleashed
 
 import com.google.common.io.Resources
-import io.archivesunleashed.udfs.{computeImageSize, computeMD5, computeSHA1, extractImageLinks, getExtensionMime}
+import io.archivesunleashed.udfs.{
+  computeImageSize,
+  computeMD5,
+  computeSHA1,
+  extractImageLinks,
+  getExtensionMime
+}
 import org.apache.spark.sql.functions.{desc, explode, unbase64}
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.{SparkConf, SparkContext}
@@ -39,8 +45,11 @@ class UdfsTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("DF Udf tests; computeSHA1, computeMD5, extractImageLinks, getExtensionMime") {
-    val df = RecordLoader.loadArchives(arcPath, sc)
+  test(
+    "DF Udf tests; computeSHA1, computeMD5, extractImageLinks, getExtensionMime"
+  ) {
+    val df = RecordLoader
+      .loadArchives(arcPath, sc)
       .webpages()
 
     // We need this in order to use the $-notation
@@ -49,33 +58,57 @@ class UdfsTest extends FunSuite with BeforeAndAfter {
     import spark.implicits._
     // scalastyle:on
 
-    val extracted = df.select($"url", $"mime_type_web_server", $"mime_type_tika",
-                              computeSHA1($"content").as("sha1_test"),
-                              computeMD5($"content").as("md5_test"),
-                              explode(extractImageLinks($"url", $"content")).as("image_link"),
-                              getExtensionMime($"url", $"mime_type_tika").as("extension"))
-                          .orderBy(desc("md5_test")).head(4).toList
+    val extracted = df
+      .select(
+        $"url",
+        $"mime_type_web_server",
+        $"mime_type_tika",
+        computeSHA1($"content").as("sha1_test"),
+        computeMD5($"content").as("md5_test"),
+        explode(extractImageLinks($"url", $"content")).as("image_link"),
+        getExtensionMime($"url", $"mime_type_tika").as("extension")
+      )
+      .orderBy(desc("md5_test"))
+      .head(4)
+      .toList
 
     assert(extracted.size == 4)
-    assert(extracted(0).get(0) == "http://www.archive.org/iathreads/post-view.php?id=186011")
+    assert(
+      extracted(0).get(
+        0
+      ) == "http://www.archive.org/iathreads/post-view.php?id=186011"
+    )
     assert(extracted(0).get(1) == "text/html")
     assert(extracted(0).get(2) == "text/html")
     assert(extracted(0).get(3) == "9b9cd08e300f49ae59b1f2ced1bcd43fa8b5418c")
     assert(extracted(0).get(4) == "ff14be99e72943e85fe2368c1e65127a")
-    assert(extracted(0).get(5).toString == "[http://www.archive.org/iathreads/post-view.php?id=186011,http://www.archive.org/images/logo.jpg,(logo)]")
+    assert(
+      extracted(0)
+        .get(5)
+        .toString == "[http://www.archive.org/iathreads/post-view.php?id=186011,http://www.archive.org/images/logo.jpg,(logo)]"
+    )
     assert(extracted(0).get(6) == "html")
 
-    assert(extracted(3).get(0) == "http://www.archive.org/iathreads/forum-display.php?poster=RipJarvis")
+    assert(
+      extracted(3).get(
+        0
+      ) == "http://www.archive.org/iathreads/forum-display.php?poster=RipJarvis"
+    )
     assert(extracted(3).get(1) == "text/html")
     assert(extracted(3).get(2) == "text/html")
     assert(extracted(3).get(3) == "284a847892deaeb7790fe1b4123a9ccb47a246ed")
     assert(extracted(3).get(4) == "fe0c87b4db0ae846924c56f389083f39")
-    assert(extracted(3).get(5).toString == "[http://www.archive.org/iathreads/forum-display.php?poster=RipJarvis,http://www.archive.org/images/logo.jpg,(logo)]")
+    assert(
+      extracted(3)
+        .get(5)
+        .toString == "[http://www.archive.org/iathreads/forum-display.php?poster=RipJarvis,http://www.archive.org/images/logo.jpg,(logo)]"
+    )
     assert(extracted(3).get(6) == "html")
   }
 
   test("DF Udf tests; computeImageSize, computeSHA1, computeMD5") {
-    val df = RecordLoader.loadArchives(arcPath, sc)
+    val df = RecordLoader
+      .loadArchives(arcPath, sc)
       .images()
 
     // We need this in order to use the $-notation
@@ -84,13 +117,21 @@ class UdfsTest extends FunSuite with BeforeAndAfter {
     import spark.implicits._
     // scalastyle:on
 
-    val extracted = df.select($"md5", $"sha1", $"height", $"width",
-                              computeImageSize(unbase64($"bytes")).as("image_size"),
-                              computeSHA1(unbase64($"bytes")).as("sha1_test"),
-                              computeMD5(unbase64($"bytes")).as("md5_test"))
-                      .withColumn("img_width", $"image_size._1")
-                      .withColumn("img_height", $"image_size._2")
-                      .orderBy(desc("md5")).head(2).toList
+    val extracted = df
+      .select(
+        $"md5",
+        $"sha1",
+        $"height",
+        $"width",
+        computeImageSize(unbase64($"bytes")).as("image_size"),
+        computeSHA1(unbase64($"bytes")).as("sha1_test"),
+        computeMD5(unbase64($"bytes")).as("md5_test")
+      )
+      .withColumn("img_width", $"image_size._1")
+      .withColumn("img_height", $"image_size._2")
+      .orderBy(desc("md5"))
+      .head(2)
+      .toList
 
     assert(extracted.size == 2)
     assert(extracted(0).get(0) == "ff05f9b408519079c992202e8c8a14ee")

@@ -26,26 +26,32 @@ object ExtractPopularImagesDF {
   val MIN_HEIGHT: Int = 30
 
   /** Extracts the <i>n</i> most popular images from an DataFrame within a given size range.
-   *
-   * @param d DataFrame obtained from RecordLoader
-   * @param limit number of most popular images in the output
-   * @param minWidth of image
-   * @param minHeight of image
-   * @return Dataset[Row], where the schema is (url, count)
-   */
-  def apply(d: DataFrame, limit: Int, minWidth: Int = MIN_WIDTH, minHeight: Int = MIN_HEIGHT): Dataset[Row] = {
+    *
+    * @param d DataFrame obtained from RecordLoader
+    * @param limit number of most popular images in the output
+    * @param minWidth of image
+    * @param minHeight of image
+    * @return Dataset[Row], where the schema is (url, count)
+    */
+  def apply(
+      d: DataFrame,
+      limit: Int,
+      minWidth: Int = MIN_WIDTH,
+      minHeight: Int = MIN_HEIGHT
+  ): Dataset[Row] = {
 
     val spark = SparkSession.builder().master("local").getOrCreate()
     // scalastyle:off
     import spark.implicits._
     // scalastyle:on
 
-    val df = d.select($"url", $"md5")
-              .filter(($"width") >= minWidth && ($"height") >= minHeight)
+    val df = d
+      .select($"url", $"md5")
+      .filter(($"width") >= minWidth && ($"height") >= minHeight)
 
     val count = df.groupBy("md5").count()
 
-    df.join(count,"md5")
+    df.join(count, "md5")
       .groupBy("md5")
       .agg(first("url").as("url"), first("count").as("count"))
       .select("url", "count")

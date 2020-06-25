@@ -31,14 +31,18 @@ object ExtractLinks {
     * @param base an optional base URI
     * @return a sequence of (source, target, anchortext).
     */
-  def apply(src: String, html: String, base: String = ""): Seq[(String, String, String)] = {
+  def apply(
+      src: String,
+      html: String,
+      base: String = ""
+  ): Seq[(String, String, String)] = {
     val srcMaybe: Option[String] = Option(src)
     val htmlMaybe: Option[String] = Option(html)
     val output = mutable.MutableList[(String, String, String)]()
     srcMaybe match {
       case Some(valid_src) =>
         htmlMaybe match {
-          case Some (valid_html) =>
+          case Some(valid_html) =>
             val doc = Jsoup.parse(valid_html)
             val links: Elements = doc.select("a[href]")
             val it = links.iterator()
@@ -51,11 +55,11 @@ object ExtractLinks {
               }
             }
           case None =>
-            // do nothing
-          }
+          // do nothing
+        }
       case None =>
-        // do nothing
-      }
+      // do nothing
+    }
     output
   }
 }

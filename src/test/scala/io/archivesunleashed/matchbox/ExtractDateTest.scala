@@ -16,7 +16,13 @@
 
 package io.archivesunleashed.matchbox
 
-import io.archivesunleashed.matchbox.ExtractDate.DateComponent.{DD, MM, YYYY, YYYYMM, YYYYMMDD}
+import io.archivesunleashed.matchbox.ExtractDate.DateComponent.{
+  DD,
+  MM,
+  YYYY,
+  YYYYMM,
+  YYYYMMDD
+}
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner

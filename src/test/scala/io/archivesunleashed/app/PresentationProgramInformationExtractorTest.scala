@@ -24,8 +24,11 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
-class PresentationProgramInformationExtractorTest extends FunSuite with BeforeAndAfter {
-  private val arcPath = Resources.getResource("warc/example.docs.warc.gz").getPath
+class PresentationProgramInformationExtractorTest
+    extends FunSuite
+    with BeforeAndAfter {
+  private val arcPath =
+    Resources.getResource("warc/example.docs.warc.gz").getPath
   private var sc: SparkContext = _
   private val master = "local[4]"
   private val appName = "example-spark"
@@ -44,11 +47,23 @@ class PresentationProgramInformationExtractorTest extends FunSuite with BeforeAn
     val RESULTSLENGTH = 2
 
     assert(dfResults.length == RESULTSLENGTH)
-    assert(dfResults(0).get(0) == "https://ruebot.net/files/aut-test-fixtures/aut-test-fixtures.pptx")
+    assert(
+      dfResults(0).get(
+        0
+      ) == "https://ruebot.net/files/aut-test-fixtures/aut-test-fixtures.pptx"
+    )
     assert(dfResults(0).get(1) == "aut-test-fixtures.pptx")
     assert(dfResults(0).get(2) == "pptx")
-    assert(dfResults(0).get(3) == "application/vnd.openxmlformats-officedocument.presentationml.presentation")
-    assert(dfResults(0).get(4) == "application/vnd.openxmlformats-officedocument.presentationml.presentation")
+    assert(
+      dfResults(0).get(
+        3
+      ) == "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+    )
+    assert(
+      dfResults(0).get(
+        4
+      ) == "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+    )
     assert(dfResults(0).get(5) == "7a7b1fe4b6d311376eaced9de3b682ee")
     assert(dfResults(0).get(6) == "86fadca47b134b68247ccde62da4ce3f62b4d2ec")
   }

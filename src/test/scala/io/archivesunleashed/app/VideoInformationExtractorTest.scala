@@ -25,7 +25,8 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
 class VideoInformationExtractorTest extends FunSuite with BeforeAndAfter {
-  private val arcPath = Resources.getResource("warc/example.media.warc.gz").getPath
+  private val arcPath =
+    Resources.getResource("warc/example.media.warc.gz").getPath
   private var sc: SparkContext = _
   private val master = "local[4]"
   private val appName = "example-spark"
@@ -44,7 +45,9 @@ class VideoInformationExtractorTest extends FunSuite with BeforeAndAfter {
     val RESULTSLENGTH = 1
 
     assert(dfResults.length == RESULTSLENGTH)
-    assert(dfResults(0).get(0) == "https://ruebot.net/2018-11-12%2016.14.11.mp4")
+    assert(
+      dfResults(0).get(0) == "https://ruebot.net/2018-11-12%2016.14.11.mp4"
+    )
     assert(dfResults(0).get(1) == "2018-11-12%2016.14.11.mp4")
     assert(dfResults(0).get(2) == "mp4")
     assert(dfResults(0).get(3) == "video/mp4")

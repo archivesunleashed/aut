@@ -58,7 +58,8 @@ class WarcTest extends FunSuite with BeforeAndAfter {
   }
 
   test("WARC get content RDD") {
-    val a = RecordLoader.loadArchives(warcPath, sc)
+    val a = RecordLoader
+      .loadArchives(warcPath, sc)
       .map(r => r.getContentString)
       .take(1)
     assert(a.head.nonEmpty)

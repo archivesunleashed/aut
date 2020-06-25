@@ -26,7 +26,8 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
 class ExtractPDFDetailsTest extends FunSuite with BeforeAndAfter {
-  private val warcPath = Resources.getResource("warc/example.pdf.warc.gz").getPath
+  private val warcPath =
+    Resources.getResource("warc/example.pdf.warc.gz").getPath
   private val master = "local[4]"
   private val appName = "example-df"
   private var sc: SparkContext = _
@@ -39,21 +40,41 @@ class ExtractPDFDetailsTest extends FunSuite with BeforeAndAfter {
   }
 
   test("PDF files extraction DF") {
-    val df = RecordLoader.loadArchives(warcPath, sc)
+    val df = RecordLoader
+      .loadArchives(warcPath, sc)
       .pdfs()
 
-    val extracted = df.select("url", "filename", "extension",
-      "mime_type_web_server", "mime_type_tika", "md5")
-      .orderBy(desc("md5")).head(2).toList
+    val extracted = df
+      .select(
+        "url",
+        "filename",
+        "extension",
+        "mime_type_web_server",
+        "mime_type_tika",
+        "md5"
+      )
+      .orderBy(desc("md5"))
+      .head(2)
+      .toList
     assert(extracted.size == 2)
-    assert("https://yorkspace.library.yorku.ca/xmlui/bitstream/handle/10315/36158/cost-analysis.pdf?sequence=1&isAllowed=y" == extracted(0)(0))
+    assert(
+      "https://yorkspace.library.yorku.ca/xmlui/bitstream/handle/10315/36158/cost-analysis.pdf?sequence=1&isAllowed=y" == extracted(
+        0
+      )(0)
+    )
     assert("cost-analysis.pdf" == extracted(0)(1))
     assert("pdf" == extracted(0)(2))
     assert("application/pdf" == extracted(0)(3))
     assert("application/pdf" == extracted(0)(4))
     assert("aaba59d2287afd40c996488a39bbc0dd" == extracted(0)(5))
-    assert("https://yorkspace.library.yorku.ca/xmlui/bitstream/handle/10315/36158/JCDL%20-%20Cost%20of%20a%20WARC%20Presentation-4.pdf?sequence=3&isAllowed=y" == extracted(1)(0))
-    assert("JCDL%20-%20Cost%20of%20a%20WARC%20Presentation-4.pdf" == extracted(1)(1))
+    assert(
+      "https://yorkspace.library.yorku.ca/xmlui/bitstream/handle/10315/36158/JCDL%20-%20Cost%20of%20a%20WARC%20Presentation-4.pdf?sequence=3&isAllowed=y" == extracted(
+        1
+      )(0)
+    )
+    assert(
+      "JCDL%20-%20Cost%20of%20a%20WARC%20Presentation-4.pdf" == extracted(1)(1)
+    )
     assert("pdf" == extracted(1)(2))
     assert("application/pdf" == extracted(1)(3))
     assert("application/pdf" == extracted(1)(4))

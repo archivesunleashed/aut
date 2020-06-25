@@ -28,25 +28,44 @@ object ExtractPopularImages {
   val MIN_HEIGHT: Int = 30
 
   /** Extracts the <i>n</i> most popular images from an RDD within a given size range.
-   *
-   * @param records
-   * @param limit number of most popular images in the output
-   * @param sc SparkContext
-   * @param minWidth of image
-   * @param minHeight of image
-   */
-  def apply(records: RDD[ArchiveRecord], limit: Int, sc:SparkContext, minWidth: Int = MIN_WIDTH, minHeight: Int = MIN_HEIGHT): RDD[String] = {
+    *
+    * @param records
+    * @param limit number of most popular images in the output
+    * @param sc SparkContext
+    * @param minWidth of image
+    * @param minHeight of image
+    */
+  def apply(
+      records: RDD[ArchiveRecord],
+      limit: Int,
+      sc: SparkContext,
+      minWidth: Int = MIN_WIDTH,
+      minHeight: Int = MIN_HEIGHT
+  ): RDD[String] = {
     val res = records
       .keepImages()
       .map(r => ((r.getUrl, r.getBinaryBytes), 1))
-      .map(img => (ComputeMD5(img._1._2), (ComputeImageSize(img._1._2), img._1._1, img._2)))
+      .map(img =>
+        (
+          ComputeMD5(img._1._2),
+          (ComputeImageSize(img._1._2), img._1._1, img._2)
+        )
+      )
       .filter(img => img._2._1._1 >= minWidth && img._2._1._2 >= minHeight)
-      .reduceByKey((image1, image2) => (image1._1, image1._2, image1._3 + image2._3))
-      .map(x=> (x._2._3, x._2._2))
+      .reduceByKey((image1, image2) =>
+        (image1._1, image1._2, image1._3 + image2._3)
+      )
+      .map(x => (x._2._3, x._2._2))
       .takeOrdered(limit)(Ordering[Int].on(x => -x._1))
-    val numPartitions = if (limit <= LIMIT_MAXIMUM) 1 else Math.ceil(limit / LIMIT_DENOMINATOR).toInt
+    val numPartitions =
+      if (limit <= LIMIT_MAXIMUM) 1
+      else Math.ceil(limit / LIMIT_DENOMINATOR).toInt
     val rdd = sc.parallelize(res)
-    rdd.repartitionAndSortWithinPartitions(
-      new RangePartitioner(numPartitions, rdd, false)).sortByKey(false).map(x=>x._1 + "\t" + x._2)
+    rdd
+      .repartitionAndSortWithinPartitions(
+        new RangePartitioner(numPartitions, rdd, false)
+      )
+      .sortByKey(false)
+      .map(x => x._1 + "\t" + x._2)
   }
 }

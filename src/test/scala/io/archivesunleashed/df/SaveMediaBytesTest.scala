@@ -30,12 +30,18 @@ import java.io.File
 import java.nio.file.{Paths, Files}
 import java.util.Base64
 
-case class TestMediaDetails(url: String, extension: String, mime_type: String,
-                            md5: String, bytes: String)
+case class TestMediaDetails(
+    url: String,
+    extension: String,
+    mime_type: String,
+    md5: String,
+    bytes: String
+)
 
 @RunWith(classOf[JUnitRunner])
 class SaveMediaBytesTest extends FunSuite with BeforeAndAfter {
-  private val warcPath = Resources.getResource("warc/example.media.warc.gz").getPath
+  private val warcPath =
+    Resources.getResource("warc/example.media.warc.gz").getPath
   private val master = "local[4]"
   private val appName = "example-df"
   private var sc: SparkContext = _
@@ -50,11 +56,14 @@ class SaveMediaBytesTest extends FunSuite with BeforeAndAfter {
   }
 
   test("Save audio bytes to disk DF") {
-    val df = RecordLoader.loadArchives(warcPath, sc)
+    val df = RecordLoader
+      .loadArchives(warcPath, sc)
       .audio()
 
-    val extracted = df.select(testString, testExtension)
-      .orderBy(desc(testString)).limit(1)
+    val extracted = df
+      .select(testString, testExtension)
+      .orderBy(desc(testString))
+      .limit(1)
     extracted.saveToDisk(testString, "/tmp/audio", testExtension)
 
     val encodedBytes: String = extracted.take(1)(0).getAs(testString)
@@ -68,11 +77,19 @@ class SaveMediaBytesTest extends FunSuite with BeforeAndAfter {
   }
 
   test("Attempt to save invalid audio DF") {
-    val dummyEncBytes = Base64.getEncoder.encodeToString(Array.range(0, 127)
-      .map(_.toByte))
+    val dummyEncBytes = Base64.getEncoder.encodeToString(
+      Array
+        .range(0, 127)
+        .map(_.toByte)
+    )
     val dummyMD5 = ComputeMD5(dummyEncBytes.getBytes)
-    val dummyAudio = TestMediaDetails("http://example.com/fake.mp3", "mp3",
-      "audio/mpeg", dummyMD5, dummyEncBytes)
+    val dummyAudio = TestMediaDetails(
+      "http://example.com/fake.mp3",
+      "mp3",
+      "audio/mpeg",
+      dummyMD5,
+      dummyEncBytes
+    )
 
     // For toDF().
     val spark = SparkSession.builder().master("local").getOrCreate()
@@ -84,8 +101,12 @@ class SaveMediaBytesTest extends FunSuite with BeforeAndAfter {
     df.saveToDisk(testString, "/tmp/bar", "extension")
 
     // Check that no file was written.
-    assert(new File("/tmp").listFiles.filter(_.isFile).toList
-      .count(_.getName.startsWith("bar-" + dummyMD5)) == 0)
+    assert(
+      new File("/tmp").listFiles
+        .filter(_.isFile)
+        .toList
+        .count(_.getName.startsWith("bar-" + dummyMD5)) == 0
+    )
   }
 
   after {

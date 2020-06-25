@@ -25,33 +25,38 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 import scala.io.Source
 
 @RunWith(classOf[JUnitRunner])
-class WriteGraphMLTest extends FunSuite with BeforeAndAfter{
+class WriteGraphMLTest extends FunSuite with BeforeAndAfter {
   private var sc: SparkContext = _
   private val master = "local[4]"
   private val appName = "example-spark"
   private val linkCountOne = 3
   private val linkCountTwo = 4
   private val linkCountThree = 100
-  private val network = Seq(("Date1", "Source1", "Destination1", linkCountOne),
-                         ("Date2", "Source2", "Destination2", linkCountTwo),
-                         ("Date3", "Source3", "Destination3", linkCountThree))
+  private val network = Seq(
+    ("Date1", "Source1", "Destination1", linkCountOne),
+    ("Date2", "Source2", "Destination2", linkCountTwo),
+    ("Date3", "Source3", "Destination3", linkCountThree)
+  )
   private val testFile = "temporaryTestFile.graphml"
 
   before {
     val conf = new SparkConf()
       .setMaster(master)
       .setAppName(appName)
-      conf.set("spark.driver.allowMultipleContexts", "true");
-      sc = new SparkContext(conf)
-    }
+    conf.set("spark.driver.allowMultipleContexts", "true");
+    sc = new SparkContext(conf)
+  }
 
   test("Create WriteGraphML file from Array[Row]") {
     val lineCheck = (0, 15, 22, 30)
     if (Files.exists(Paths.get(testFile))) {
       new File(testFile).delete()
     }
-    val networkarray = Array(Row.fromTuple(network(0)),
-      Row.fromTuple(network(1)), Row.fromTuple(network(2)))
+    val networkarray = Array(
+      Row.fromTuple(network(0)),
+      Row.fromTuple(network(1)),
+      Row.fromTuple(network(2))
+    )
     val ret = WriteGraphML(networkarray, testFile)
     assert(ret)
     assert(Files.exists(Paths.get(testFile)))
@@ -62,9 +67,12 @@ class WriteGraphMLTest extends FunSuite with BeforeAndAfter{
     assert(lines(lineCheck._4) == """<data key="weight">3</data>""")
   }
 
-  test ("Test if GraphML path is empty") {
-    val networkarray = Array(Row.fromTuple(network(0)),
-      Row.fromTuple(network(1)), Row.fromTuple(network(2)))
+  test("Test if GraphML path is empty") {
+    val networkarray = Array(
+      Row.fromTuple(network(0)),
+      Row.fromTuple(network(1)),
+      Row.fromTuple(network(2))
+    )
     val graphml = WriteGraphML(networkarray, testFile)
     assert(graphml)
     assert(!WriteGraphML(networkarray, ""))

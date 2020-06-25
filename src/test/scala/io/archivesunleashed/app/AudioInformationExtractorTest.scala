@@ -25,7 +25,8 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
 class AudioInformationExtractorTest extends FunSuite with BeforeAndAfter {
-  private val arcPath = Resources.getResource("warc/example.media.warc.gz").getPath
+  private val arcPath =
+    Resources.getResource("warc/example.media.warc.gz").getPath
   private var sc: SparkContext = _
   private val master = "local[4]"
   private val appName = "example-spark"
