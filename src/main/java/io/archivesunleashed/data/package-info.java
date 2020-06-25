@@ -13,7 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
-* This package provides various data utilities for analyzing WARCs.
-*/
+/** This package provides various data utilities for analyzing WARCs. */
 package io.archivesunleashed.data;

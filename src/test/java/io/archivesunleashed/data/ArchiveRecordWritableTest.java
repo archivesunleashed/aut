@@ -15,8 +15,16 @@
  */
 package io.archivesunleashed.data;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import com.google.common.io.Resources;
 import io.archivesunleashed.data.ArchiveRecordWritable.ArchiveFormat;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
@@ -30,122 +38,106 @@ import org.apache.hadoop.util.ReflectionUtils;
 import org.archive.io.arc.ARCRecord;
 import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 public class ArchiveRecordWritableTest {
-    @Test
-    public final void testArcInputFormat() throws Exception {
-        String arcFile = Resources.getResource("arc/example.arc.gz").getPath();
+  @Test
+  public final void testArcInputFormat() throws Exception {
+    String arcFile = Resources.getResource("arc/example.arc.gz").getPath();
 
-        Configuration conf = new Configuration(false);
-        conf.set("fs.defaultFS", "file:///");
+    Configuration conf = new Configuration(false);
+    conf.set("fs.defaultFS", "file:///");
 
-        File testFile = new File(arcFile);
-        Path path = new Path(testFile.getAbsoluteFile().toURI());
-        FileSplit split = new FileSplit(path, 0, testFile.length(), null);
+    File testFile = new File(arcFile);
+    Path path = new Path(testFile.getAbsoluteFile().toURI());
+    FileSplit split = new FileSplit(path, 0, testFile.length(), null);
 
-        InputFormat<LongWritable, ArchiveRecordWritable> inputFormat =
-            ReflectionUtils.newInstance(
-                ArchiveRecordInputFormat.class, conf);
-        TaskAttemptContext context = new TaskAttemptContextImpl(conf,
-                new TaskAttemptID());
-        RecordReader<LongWritable, ArchiveRecordWritable> reader =
-            inputFormat.createRecordReader(split, context);
+    InputFormat<LongWritable, ArchiveRecordWritable> inputFormat =
+        ReflectionUtils.newInstance(ArchiveRecordInputFormat.class, conf);
+    TaskAttemptContext context = new TaskAttemptContextImpl(conf, new TaskAttemptID());
+    RecordReader<LongWritable, ArchiveRecordWritable> reader =
+        inputFormat.createRecordReader(split, context);
 
-        reader.initialize(split, context);
+    reader.initialize(split, context);
 
-        int cnt = 0;
-        final int cntTest = 300;
+    int cnt = 0;
+    final int cntTest = 300;
 
-        while (reader.nextKeyValue()) {
-            ArchiveRecordWritable record = reader.getCurrentValue();
-            cnt++;
+    while (reader.nextKeyValue()) {
+      ArchiveRecordWritable record = reader.getCurrentValue();
+      cnt++;
 
-            ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
-            DataOutputStream dataOut = new DataOutputStream(bytesOut);
+      ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
+      DataOutputStream dataOut = new DataOutputStream(bytesOut);
 
-            record.write(dataOut);
+      record.write(dataOut);
 
-            ArchiveRecordWritable reconstructed =
-                new ArchiveRecordWritable();
+      ArchiveRecordWritable reconstructed = new ArchiveRecordWritable();
 
-            reconstructed.setFormat(ArchiveFormat.ARC);
-            reconstructed.readFields(new DataInputStream(
-                        new ByteArrayInputStream(bytesOut.toByteArray())));
+      reconstructed.setFormat(ArchiveFormat.ARC);
+      reconstructed.readFields(
+          new DataInputStream(new ByteArrayInputStream(bytesOut.toByteArray())));
 
-            boolean isArc = (record.getFormat() == ArchiveFormat.ARC);
-            assertEquals(isArc, true);
-            if (isArc) {
-                assertEquals(((ARCRecord) record.getRecord()).getMetaData()
-                        .getUrl(),
-                        ((ARCRecord) reconstructed.getRecord()).getMetaData()
-                        .getUrl());
-            }
-        }
-
-        assertEquals(cntTest, cnt);
+      boolean isArc = (record.getFormat() == ArchiveFormat.ARC);
+      assertEquals(isArc, true);
+      if (isArc) {
+        assertEquals(
+            ((ARCRecord) record.getRecord()).getMetaData().getUrl(),
+            ((ARCRecord) reconstructed.getRecord()).getMetaData().getUrl());
+      }
     }
 
-    @Test
-    public final void testWarcInputFormat() throws Exception {
-        String warcFile = Resources.getResource("warc/example.warc.gz")
-            .getPath();
+    assertEquals(cntTest, cnt);
+  }
 
-        Configuration conf = new Configuration(false);
-        conf.set("fs.defaultFS", "file:///");
+  @Test
+  public final void testWarcInputFormat() throws Exception {
+    String warcFile = Resources.getResource("warc/example.warc.gz").getPath();
 
-        File testFile = new File(warcFile);
-        Path path = new Path(testFile.getAbsoluteFile().toURI());
-        FileSplit split = new FileSplit(path, 0, testFile.length(), null);
+    Configuration conf = new Configuration(false);
+    conf.set("fs.defaultFS", "file:///");
 
-        InputFormat<LongWritable, ArchiveRecordWritable> inputFormat =
-            ReflectionUtils.newInstance(
-                ArchiveRecordInputFormat.class, conf);
-        TaskAttemptContext context = new TaskAttemptContextImpl(conf,
-                new TaskAttemptID());
-        RecordReader<LongWritable, ArchiveRecordWritable> reader =
-            inputFormat.createRecordReader(split, context);
+    File testFile = new File(warcFile);
+    Path path = new Path(testFile.getAbsoluteFile().toURI());
+    FileSplit split = new FileSplit(path, 0, testFile.length(), null);
 
-        reader.initialize(split, context);
+    InputFormat<LongWritable, ArchiveRecordWritable> inputFormat =
+        ReflectionUtils.newInstance(ArchiveRecordInputFormat.class, conf);
+    TaskAttemptContext context = new TaskAttemptContextImpl(conf, new TaskAttemptID());
+    RecordReader<LongWritable, ArchiveRecordWritable> reader =
+        inputFormat.createRecordReader(split, context);
 
-        int cnt = 0;
-        final int cntTest = 822;
+    reader.initialize(split, context);
 
-        while (reader.nextKeyValue()) {
-            ArchiveRecordWritable record = reader.getCurrentValue();
+    int cnt = 0;
+    final int cntTest = 822;
 
-            cnt++;
+    while (reader.nextKeyValue()) {
+      ArchiveRecordWritable record = reader.getCurrentValue();
 
-            ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
-            DataOutputStream dataOut = new DataOutputStream(bytesOut);
+      cnt++;
 
-            record.write(dataOut);
+      ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
+      DataOutputStream dataOut = new DataOutputStream(bytesOut);
 
-            ArchiveRecordWritable reconstructed =
-                new ArchiveRecordWritable();
+      record.write(dataOut);
 
-            reconstructed.setFormat(ArchiveFormat.WARC);
-            reconstructed.readFields(new DataInputStream(
-                        new ByteArrayInputStream(bytesOut.toByteArray())));
+      ArchiveRecordWritable reconstructed = new ArchiveRecordWritable();
 
-            boolean isWarc = (record.getFormat() == ArchiveFormat.WARC);
-            assertTrue(isWarc);
-            if (isWarc) {
-                assertEquals(record.getRecord().getHeader().getUrl(),
-                        reconstructed.getRecord().getHeader().getUrl());
-                assertEquals(record.getRecord().getHeader().getContentLength(),
-                        reconstructed.getRecord().getHeader()
-                        .getContentLength());
-            }
-        }
+      reconstructed.setFormat(ArchiveFormat.WARC);
+      reconstructed.readFields(
+          new DataInputStream(new ByteArrayInputStream(bytesOut.toByteArray())));
 
-        assertEquals(cntTest, cnt);
+      boolean isWarc = (record.getFormat() == ArchiveFormat.WARC);
+      assertTrue(isWarc);
+      if (isWarc) {
+        assertEquals(
+            record.getRecord().getHeader().getUrl(),
+            reconstructed.getRecord().getHeader().getUrl());
+        assertEquals(
+            record.getRecord().getHeader().getContentLength(),
+            reconstructed.getRecord().getHeader().getContentLength());
+      }
     }
+
+    assertEquals(cntTest, cnt);
+  }
 }

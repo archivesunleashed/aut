@@ -14,3 +14,5 @@ jobs:
           fetch-depth: 1
       - name: Running scalafmt
         uses: openlawteam/scalafmt-ci@v2
+        with:
+          args: ''

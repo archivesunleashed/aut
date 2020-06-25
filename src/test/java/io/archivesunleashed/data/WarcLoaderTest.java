@@ -15,8 +15,9 @@
  */
 package io.archivesunleashed.data;
 
-import com.google.common.io.Resources;
+import static org.junit.Assert.assertEquals;
 
+import com.google.common.io.Resources;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -33,7 +34,6 @@ import org.archive.io.warc.WARCReaderFactory;
 import org.archive.io.warc.WARCRecord;
 import org.archive.util.ArchiveUtils;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
 import tl.lin.data.fd.Object2IntFrequencyDistribution;
 import tl.lin.data.fd.Object2IntFrequencyDistributionEntry;
 
@@ -72,7 +72,7 @@ public class WarcLoaderTest {
     final int mimeTypeHtmlTest = 140;
     final int responseSumOfCountsTest = 260;
 
-    for (Iterator<ArchiveRecord> ii = reader.iterator(); ii.hasNext();) {
+    for (Iterator<ArchiveRecord> ii = reader.iterator(); ii.hasNext(); ) {
       WARCRecord r = (WARCRecord) ii.next();
       ArchiveRecordHeader header = r.getHeader();
 
@@ -84,13 +84,11 @@ public class WarcLoaderTest {
 
       // This is how you extract the date
       @SuppressWarnings("unused")
-      String digit14Date = ArchiveUtils.get14DigitDate(DATE_WARC.parse(header
-                  .getDate()));
+      String digit14Date = ArchiveUtils.get14DigitDate(DATE_WARC.parse(header.getDate()));
 
       if (header.getHeaderValue("WARC-Type").equals("response")
-              && header.getUrl().startsWith("http://")) {
-        responseTypes.increment(WarcRecordUtils.getWarcResponseMimeType(
-                    contents));
+          && header.getUrl().startsWith("http://")) {
+        responseTypes.increment(WarcRecordUtils.getWarcResponseMimeType(contents));
       }
 
       cnt++;
@@ -107,11 +105,9 @@ public class WarcLoaderTest {
     assertEquals(numberOfEventsTest, types.getNumberOfEvents());
     assertEquals(typesSumOfCountsTest, types.getSumOfCounts());
 
-    assertEquals(mimeTypeJavascriptTest,
-            responseTypes.get("application/x-javascript"));
+    assertEquals(mimeTypeJavascriptTest, responseTypes.get("application/x-javascript"));
     assertEquals(mimeTypeCssTest, responseTypes.get("text/css"));
-    assertEquals(mimeTypeFlashTest,
-            responseTypes.get("application/x-shockwave-flash"));
+    assertEquals(mimeTypeFlashTest, responseTypes.get("application/x-shockwave-flash"));
     assertEquals(mimeTypeXmlTest, responseTypes.get("text/xml"));
     assertEquals(mimeTypePngTest, responseTypes.get("image/png"));
     assertEquals(mimeTypeJpegTest, responseTypes.get("image/jpeg"));
@@ -129,13 +125,11 @@ public class WarcLoaderTest {
     int cnt = 0;
     final int cntTest = 822;
 
-    for (Iterator<ArchiveRecord> ii = reader.iterator(); ii.hasNext();) {
+    for (Iterator<ArchiveRecord> ii = reader.iterator(); ii.hasNext(); ) {
       WARCRecord r = (WARCRecord) ii.next();
-      InputStream in = new DataInputStream(
-          new ByteArrayInputStream(WarcRecordUtils.toBytes(r)));
+      InputStream in = new DataInputStream(new ByteArrayInputStream(WarcRecordUtils.toBytes(r)));
 
-      WARCReader nr = (WARCReader) WARCReaderFactory.get("",
-          new BufferedInputStream(in), false);
+      WARCReader nr = (WARCReader) WARCReaderFactory.get("", new BufferedInputStream(in), false);
       WARCRecord r2 = (WARCRecord) nr.get();
 
       assertEquals(r.getHeader().getUrl(), r2.getHeader().getUrl());
