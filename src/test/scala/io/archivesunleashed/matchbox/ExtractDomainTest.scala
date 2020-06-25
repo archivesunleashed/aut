@@ -28,19 +28,34 @@ class ExtractDomainTest extends FunSuite {
   private val lintool = "https://github.com/lintool"
   private val github = "github.com"
 
-  private val data1: Seq[(String, String)] = Seq.newBuilder.+=(
-    (jimmylin, umiacs),
-    (lintool, github),
-    ("http://ianmilligan.ca/2015/05/04/iipc-2015-slides-for-warcs-wats-and-wgets-presentation/", "ianmilligan.ca"),
-    (index, "")).result()
+  private val data1: Seq[(String, String)] = Seq.newBuilder
+    .+=(
+      (jimmylin, umiacs),
+      (lintool, github),
+      (
+        "http://ianmilligan.ca/2015/05/04/iipc-2015-slides-for-warcs-wats-and-wgets-presentation/",
+        "ianmilligan.ca"
+      ),
+      (index, "")
+    )
+    .result()
 
-  private val data2 = Seq.newBuilder.+=(
-    (index, jimmylin, umiacs),
-    (lintool, jimmylin, github),
-    (index, lintool, github)).result()
+  private val data2 = Seq.newBuilder
+    .+=(
+      (index, jimmylin, umiacs),
+      (lintool, jimmylin, github),
+      (index, lintool, github)
+    )
+    .result()
 
-  private val data3 = Seq.newBuilder.+=(
-    ("http://www.seetorontonow.canada-booknow.com\\booking_results.php", "www.seetorontonow.canada-booknow.com")).result()
+  private val data3 = Seq.newBuilder
+    .+=(
+      (
+        "http://www.seetorontonow.canada-booknow.com\\booking_results.php",
+        "www.seetorontonow.canada-booknow.com"
+      )
+    )
+    .result()
 
   test("Extract simple domain extraction RDD") {
     data1.foreach {

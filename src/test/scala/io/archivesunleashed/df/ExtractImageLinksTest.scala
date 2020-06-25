@@ -39,7 +39,8 @@ class ImageLinksTest extends FunSuite with BeforeAndAfter {
   }
 
   test("Image links extraction DF") {
-    val df = RecordLoader.loadArchives(arcPath, sc)
+    val df = RecordLoader
+      .loadArchives(arcPath, sc)
       .imagegraph()
 
     // We need this in order to use the $-notation
@@ -47,13 +48,24 @@ class ImageLinksTest extends FunSuite with BeforeAndAfter {
     // scalastyle:off
     import spark.implicits._
     // scalastyle:on
-    val extracted = df.select($"src".as("Domain"), $"image_url".as("Image"))
-      .orderBy(desc("Image")).head(2).toList
+    val extracted = df
+      .select($"src".as("Domain"), $"image_url".as("Image"))
+      .orderBy(desc("Image"))
+      .head(2)
+      .toList
     assert(extracted.size == 2)
     assert("http://www.archive.org/index.php" == extracted(0)(0))
-    assert("http://www.archive.org/services/get-item-image.php?identifier=zh27814&collection=zh27&mediatype=audio" == extracted(0)(1))
+    assert(
+      "http://www.archive.org/services/get-item-image.php?identifier=zh27814&collection=zh27&mediatype=audio" == extracted(
+        0
+      )(1)
+    )
     assert("http://www.archive.org/index.php" == extracted(1)(0))
-    assert("http://www.archive.org/services/get-item-image.php?identifier=secretarmiesb00spivrich&collection=americana&mediatype=texts" == extracted(1)(1))
+    assert(
+      "http://www.archive.org/services/get-item-image.php?identifier=secretarmiesb00spivrich&collection=americana&mediatype=texts" == extracted(
+        1
+      )(1)
+    )
   }
 
   after {

@@ -27,7 +27,8 @@ class ExtractImageLinksTest extends FunSuite {
   test("Extract simple image links RDD") {
     val fragment: String =
       """Image here: <img src="http://foo.bar.com/pic.png" alt="picture"> and another <img src="http://baz.org/a/b/banner.jpg" alt="baz banner"/>"""
-    val extracted: Seq[(String, String, String)] = ExtractImageLinks("", fragment)
+    val extracted: Seq[(String, String, String)] =
+      ExtractImageLinks("", fragment)
     assert(extracted.size == 2)
     assert("http://foo.bar.com/pic.png" == extracted(0)._2)
     assert("picture" == extracted(0)._3)
@@ -38,7 +39,8 @@ class ExtractImageLinksTest extends FunSuite {
   test("Extract relative image links RDD") {
     val fragment: String =
       """Image here: <img src="pic.png" alt="picture"> and another <img src="http://baz.org/a/b/banner.jpg" alt="baz banner" /> and <img src="../logo.gif" alt="LOGO" />"""
-    val extracted: Seq[(String, String, String)] = ExtractImageLinks("http://foo.bar.com/a/page.html", fragment)
+    val extracted: Seq[(String, String, String)] =
+      ExtractImageLinks("http://foo.bar.com/a/page.html", fragment)
     assert(extracted.size == 3)
     assert("http://foo.bar.com/a/pic.png" == extracted(0)._2)
     assert("picture" == extracted(0)._3)

@@ -40,7 +40,8 @@ class SimpleDfTest extends FunSuite with BeforeAndAfter {
   }
 
   test("Count records DF") {
-    val df = RecordLoader.loadArchives(arcPath, sc)
+    val df = RecordLoader
+      .loadArchives(arcPath, sc)
       .webpages()
 
     // We need this in order to use the $-notation
@@ -49,8 +50,12 @@ class SimpleDfTest extends FunSuite with BeforeAndAfter {
     import spark.implicits._
     // scalastyle:on
 
-    val results = df.select(extractDomain($"Url").as("Domain"))
-      .groupBy("Domain").count().orderBy(desc("count")).head(3)
+    val results = df
+      .select(extractDomain($"Url").as("Domain"))
+      .groupBy("Domain")
+      .count()
+      .orderBy(desc("count"))
+      .head(3)
 
     // Results should be:
     // +------------------+-----+

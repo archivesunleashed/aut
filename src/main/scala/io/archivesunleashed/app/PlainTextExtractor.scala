@@ -21,6 +21,7 @@ import io.archivesunleashed.udfs.{extractBoilerpipeText}
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
 object PlainTextExtractor {
+
   /** Extract plain text from web archive using DataFrame and Spark SQL.
     *
     * @param d DataFrame obtained from RecordLoader

@@ -33,8 +33,8 @@ class ExtractPopularImagesDFTest extends FunSuite with BeforeAndAfter {
 
   before {
     val conf = new SparkConf()
-    .setMaster(master)
-    .setAppName(appName)
+      .setMaster(master)
+      .setAppName(appName)
     conf.set("spark.driver.allowMultipleContexts", "true");
     sc = new SparkContext(conf)
   }
@@ -45,8 +45,8 @@ class ExtractPopularImagesDFTest extends FunSuite with BeforeAndAfter {
     val imagesLowLimit = ExtractPopularImagesDF(exampledf, 3)
     val imagesHighLimit = ExtractPopularImagesDF(exampledf, highTest)
     val response = "1"
-    assert (imagesLowLimit.take(1)(0)(1).toString == response)
-    assert (imagesHighLimit.take(1)(0)(1).toString == response)
+    assert(imagesLowLimit.take(1)(0)(1).toString == response)
+    assert(imagesHighLimit.take(1)(0)(1).toString == response)
   }
   after {
     if (sc != null) {

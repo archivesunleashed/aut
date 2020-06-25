@@ -26,7 +26,8 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
 class ExtractSpreadsheetDetailsTest extends FunSuite with BeforeAndAfter {
-  private val warcPath = Resources.getResource("warc/example.docs.warc.gz").getPath
+  private val warcPath =
+    Resources.getResource("warc/example.docs.warc.gz").getPath
   private val master = "local[4]"
   private val appName = "example-df"
   private var sc: SparkContext = _
@@ -39,32 +40,66 @@ class ExtractSpreadsheetDetailsTest extends FunSuite with BeforeAndAfter {
   }
 
   test("Spreadsheet files extraction DF") {
-    val df = RecordLoader.loadArchives(warcPath, sc)
+    val df = RecordLoader
+      .loadArchives(warcPath, sc)
       .spreadsheets()
 
-    val extracted = df.select("url", "filename", "extension",
-      "mime_type_web_server", "mime_type_tika", "md5")
-      .orderBy(desc("md5")).head(4).toList
+    val extracted = df
+      .select(
+        "url",
+        "filename",
+        "extension",
+        "mime_type_web_server",
+        "mime_type_tika",
+        "md5"
+      )
+      .orderBy(desc("md5"))
+      .head(4)
+      .toList
     assert(extracted.size == 4)
-    assert("https://ruebot.net/files/aut-test-fixtures/test-aut-fixture.xlsx" == extracted(0)(0))
+    assert(
+      "https://ruebot.net/files/aut-test-fixtures/test-aut-fixture.xlsx" == extracted(
+        0
+      )(0)
+    )
     assert("test-aut-fixture.xlsx" == extracted(0)(1))
     assert("xlsx" == extracted(0)(2))
-    assert("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" == extracted(0)(3))
-    assert("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" == extracted(0)(4))
+    assert(
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" == extracted(
+        0
+      )(3)
+    )
+    assert(
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" == extracted(
+        0
+      )(4)
+    )
     assert("befb3304cb592e0761509bf626171071" == extracted(0)(5))
-    assert("https://ruebot.net/files/aut-test-fixtures/test-aut-fixture%20-%20Sheet1.tsv" == extracted(1)(0))
+    assert(
+      "https://ruebot.net/files/aut-test-fixtures/test-aut-fixture%20-%20Sheet1.tsv" == extracted(
+        1
+      )(0)
+    )
     assert("test-aut-fixture%20-%20Sheet1.tsv" == extracted(1)(1))
     assert("tsv" == extracted(1)(2))
     assert("text/tab-separated-values" == extracted(1)(3))
     assert("text/plain" == extracted(1)(4))
     assert("8ce6e9489c1c1129cca0e3f1eb8206ce" == extracted(1)(5))
-    assert("https://ruebot.net/files/aut-test-fixtures/test-aut-fixture.ods" == extracted(2)(0))
+    assert(
+      "https://ruebot.net/files/aut-test-fixtures/test-aut-fixture.ods" == extracted(
+        2
+      )(0)
+    )
     assert("test-aut-fixture.ods" == extracted(2)(1))
     assert("ods" == extracted(2)(2))
     assert("application/vnd.oasis.opendocument.spreadsheet" == extracted(2)(3))
     assert("application/vnd.oasis.opendocument.spreadsheet" == extracted(2)(4))
     assert("7f70280757d8beb2d1bfd6fb1b6ae6e9" == extracted(2)(5))
-    assert("https://ruebot.net/files/aut-test-fixtures/test-aut-fixture%20-%20Sheet1.csv" == extracted(3)(0))
+    assert(
+      "https://ruebot.net/files/aut-test-fixtures/test-aut-fixture%20-%20Sheet1.csv" == extracted(
+        3
+      )(0)
+    )
     assert("test-aut-fixture%20-%20Sheet1.csv" == extracted(3)(1))
     assert("csv" == extracted(3)(2))
     assert("text/csv" == extracted(3)(3))

@@ -28,8 +28,9 @@ import scala.collection.mutable
 @RunWith(classOf[JUnitRunner])
 class ExtractLinksTest extends FunSuite {
 
-  val fragment: String = "Here is <a href=\"http://www.google.com\">a search engine</a>.\n" +
-    "Here is <a href=\"http://www.twitter.com/\">Twitter</a>.\n"
+  val fragment: String =
+    "Here is <a href=\"http://www.google.com\">a search engine</a>.\n" +
+      "Here is <a href=\"http://www.twitter.com/\">Twitter</a>.\n"
   val fooFragment: String = "http://www.foobar.org/index.html"
   val url = "http://www.google.com"
   val twitter = "http://www.twitter.com/"
@@ -46,9 +47,10 @@ class ExtractLinksTest extends FunSuite {
 
   test("Extract relative links RDD") {
     val fragmentLocal: String = "Here is <a href=\"http://www.google.com\">" +
-    "a search engine</a>.\nHere is a <a href=\"page.html\">a relative URL</a>.\n"
+      "a search engine</a>.\nHere is a <a href=\"page.html\">a relative URL</a>.\n"
     val fooFragmentLocal = "http://www.foobar.org/page.html"
-    val extracted: Seq[(String, String, String)] = ExtractLinks("", fragmentLocal, fooFragment)
+    val extracted: Seq[(String, String, String)] =
+      ExtractLinks("", fragmentLocal, fooFragment)
     assert(extracted.size == 2)
     assert(url == extracted.head._2)
     assert(head == extracted.head._3)
@@ -58,10 +60,17 @@ class ExtractLinksTest extends FunSuite {
 
   test("Test link errors RDD") {
     val bytes: Array[Byte] = "wronglyTyped".getBytes()
-    val invalid: String = "Here is a fake url <a href=\"http://www.google.com\"> bogus search engine</a>."
+    val invalid: String =
+      "Here is a fake url <a href=\"http://www.google.com\"> bogus search engine</a>."
     // scalastyle:off null
-    assert(ExtractLinks(null, fragment, fooFragment) == mutable.MutableList[(String, String, String)]())
+    assert(
+      ExtractLinks(null, fragment, fooFragment) == mutable
+        .MutableList[(String, String, String)]()
+    )
     // scalastyle:on null
-    assert(ExtractLinks("", "", fooFragment) == mutable.MutableList[(String, String, String)]())
+    assert(
+      ExtractLinks("", "", fooFragment) == mutable
+        .MutableList[(String, String, String)]()
+    )
   }
 }

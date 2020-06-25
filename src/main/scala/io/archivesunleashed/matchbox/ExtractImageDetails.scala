@@ -26,8 +26,12 @@ class ImageDetails(imageUrl: String, imageType: String, bytes: Array[Byte]) {
   val height = dimensions._2
   val url: String = imageUrl
   val mimeType: String = imageType
-  val md5Hash: String = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
-  val sha1Hash: String = new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
+  val md5Hash: String = new String(
+    Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes))
+  )
+  val sha1Hash: String = new String(
+    Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes))
+  )
   val body: String = Base64.getEncoder.encodeToString(bytes)
 }
 
@@ -35,9 +39,9 @@ class ImageDetails(imageUrl: String, imageType: String, bytes: Array[Byte]) {
 object ExtractImageDetails {
 
   /**
-   * @param bytes the raw bytes of the image
-   * @return A tuple containing the width and height of the image
-   */
+    * @param bytes the raw bytes of the image
+    * @return A tuple containing the width and height of the image
+    */
   def apply(url: String, mimeType: String, bytes: Array[Byte]): ImageDetails = {
     new ImageDetails(url, mimeType, bytes)
   }

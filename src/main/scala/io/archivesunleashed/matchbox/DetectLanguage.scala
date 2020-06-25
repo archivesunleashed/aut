@@ -23,16 +23,16 @@ import org.apache.tika.language.detect.LanguageResult;
 object DetectLanguage {
 
   /** Detects the language of a String input.
-   *
-   * @param input the string for which language can be detected
-   * @return ISO 639-2 language code (eg. "en", "fr" or "it").
-   */
+    *
+    * @param input the string for which language can be detected
+    * @return ISO 639-2 language code (eg. "en", "fr" or "it").
+    */
   def apply(input: String): String = {
     if (input.isEmpty) {
       ""
     } else {
       val detector: LanguageDetector = new OptimaizeLangDetector().loadModels()
-      val result : LanguageResult = detector.detect(input)
+      val result: LanguageResult = detector.detect(input)
       result.getLanguage()
     }
   }

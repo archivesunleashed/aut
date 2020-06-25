@@ -38,7 +38,8 @@ class RecordLoaderTest extends FunSuite with BeforeAndAfter {
   }
 
   test("Load WARC") {
-    val base = RecordLoader.loadArchives(warcPath, sc)
+    val base = RecordLoader
+      .loadArchives(warcPath, sc)
       .keepValidPages()
       .map(x => x.getUrl)
       .take(1)

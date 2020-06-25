@@ -27,7 +27,8 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
 class GetExtensionMIMETest extends FunSuite with BeforeAndAfter {
-  private val warcPath = Resources.getResource("warc/example.media.warc.gz").getPath
+  private val warcPath =
+    Resources.getResource("warc/example.media.warc.gz").getPath
   private val master = "local[4]"
   private val appName = "example-df"
   private var sc: SparkContext = _
@@ -42,14 +43,28 @@ class GetExtensionMIMETest extends FunSuite with BeforeAndAfter {
   }
 
   test("Get extension of file from URL with no extension") {
-    df = RecordLoader.loadArchives(warcPath, sc)
+    df = RecordLoader
+      .loadArchives(warcPath, sc)
       .images()
 
-    extracted = df.select("url", "filename", "extension",
-      "mime_type_web_server", "mime_type_tika", "md5")
-      .orderBy(desc("md5")).head(3).toList
+    extracted = df
+      .select(
+        "url",
+        "filename",
+        "extension",
+        "mime_type_web_server",
+        "mime_type_tika",
+        "md5"
+      )
+      .orderBy(desc("md5"))
+      .head(3)
+      .toList
     assert(extracted.size == 3)
-    assert("https://ruebot.net/files/aut-test-fixtures/this_is_a_gif" == extracted(0)(0))
+    assert(
+      "https://ruebot.net/files/aut-test-fixtures/this_is_a_gif" == extracted(
+        0
+      )(0)
+    )
     assert("this_is_a_gif" == extracted(0)(1))
     assert("gif" == extracted(0)(2))
     assert("unknown" == extracted(0)(3))
@@ -58,7 +73,11 @@ class GetExtensionMIMETest extends FunSuite with BeforeAndAfter {
   }
 
   test("Get extension of file from URL with correct extension") {
-    assert("https://ruebot.net/files/aut-test-fixtures/real_png.png" == extracted(1)(0))
+    assert(
+      "https://ruebot.net/files/aut-test-fixtures/real_png.png" == extracted(1)(
+        0
+      )
+    )
     assert("real_png.png" == extracted(1)(1))
     assert("png" == extracted(1)(2))
     assert("image/png" == extracted(1)(3))
@@ -67,7 +86,11 @@ class GetExtensionMIMETest extends FunSuite with BeforeAndAfter {
   }
 
   test("Get extension of file from URL with incorrect extension") {
-    assert("https://ruebot.net/files/aut-test-fixtures/this_is_a_jpeg.mp3" == extracted(2)(0))
+    assert(
+      "https://ruebot.net/files/aut-test-fixtures/this_is_a_jpeg.mp3" == extracted(
+        2
+      )(0)
+    )
     assert("this_is_a_jpeg.mp3" == extracted(2)(1))
     assert("jpg" == extracted(2)(2))
     assert("audio/mpeg" == extracted(2)(3))

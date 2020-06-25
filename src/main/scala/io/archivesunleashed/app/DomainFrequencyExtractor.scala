@@ -23,6 +23,7 @@ import org.apache.spark.sql.functions.desc
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
 object DomainFrequencyExtractor {
+
   /** Extract domain frequency from web archive using DataFrame and Spark SQL.
     *
     * @param d DataFrame obtained from RecordLoader
