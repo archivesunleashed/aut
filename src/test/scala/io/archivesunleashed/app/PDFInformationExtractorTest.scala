@@ -25,7 +25,8 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
 class PDFInformationExtractorTest extends FunSuite with BeforeAndAfter {
-  private val arcPath = Resources.getResource("warc/example.pdf.warc.gz").getPath
+  private val arcPath =
+    Resources.getResource("warc/example.pdf.warc.gz").getPath
   private var sc: SparkContext = _
   private val master = "local[4]"
   private val appName = "example-spark"
@@ -44,7 +45,11 @@ class PDFInformationExtractorTest extends FunSuite with BeforeAndAfter {
     val RESULTSLENGTH = 2
 
     assert(dfResults.length == RESULTSLENGTH)
-    assert(dfResults(0).get(0) == "https://yorkspace.library.yorku.ca/xmlui/bitstream/handle/10315/36158/cost-analysis.pdf?sequence=1&isAllowed=y")
+    assert(
+      dfResults(0).get(
+        0
+      ) == "https://yorkspace.library.yorku.ca/xmlui/bitstream/handle/10315/36158/cost-analysis.pdf?sequence=1&isAllowed=y"
+    )
     assert(dfResults(0).get(1) == "cost-analysis.pdf")
     assert(dfResults(0).get(2) == "pdf")
     assert(dfResults(0).get(3) == "application/pdf")

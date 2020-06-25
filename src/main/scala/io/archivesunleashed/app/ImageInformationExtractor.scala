@@ -20,6 +20,7 @@ import io.archivesunleashed.ArchiveRecord
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
 object ImageInformationExtractor {
+
   /** Extract information about images from web archive using DataFrame
     * and Spark SQL.
     *
@@ -32,14 +33,16 @@ object ImageInformationExtractor {
     // scalastyle:off
     import spark.implicits._
     // scalastyle:on
-    d.select($"url",
-             $"filename",
-             $"extension",
-             $"mime_type_web_server",
-             $"mime_type_tika",
-             $"width",
-             $"height",
-             $"md5",
-             $"sha1")
+    d.select(
+      $"url",
+      $"filename",
+      $"extension",
+      $"mime_type_web_server",
+      $"mime_type_tika",
+      $"width",
+      $"height",
+      $"md5",
+      $"sha1"
+    )
   }
 }

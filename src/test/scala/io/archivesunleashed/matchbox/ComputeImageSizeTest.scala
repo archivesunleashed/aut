@@ -30,17 +30,18 @@ import org.scalatest.junit.JUnitRunner
 class ComputeImageSizeTest extends FunSuite {
   val testImageSize = 10
   var ios: ByteArrayOutputStream = new ByteArrayOutputStream();
-  val img = new BufferedImage(testImageSize, testImageSize, BufferedImage.TYPE_INT_RGB)
+  val img =
+    new BufferedImage(testImageSize, testImageSize, BufferedImage.TYPE_INT_RGB)
   ImageIO.write(img, "png", ios)
   ios.flush()
   var image: Array[Byte] = ios.toByteArray();
   ios.close()
 
-  test ("Check images and provide size RDD") {
+  test("Check images and provide size RDD") {
     val imageSize = (10, 10)
     val emptyImageSize = (0, 0)
     assert(ComputeImageSize(image) == imageSize)
-    assert(ComputeImageSize(Array[Byte](0,0,0)) == emptyImageSize)
+    assert(ComputeImageSize(Array[Byte](0, 0, 0)) == emptyImageSize)
     // scalastyle:off null
     assert(ComputeImageSize(null) == emptyImageSize)
     // scalastyle:on null

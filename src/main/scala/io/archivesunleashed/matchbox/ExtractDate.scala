@@ -18,6 +18,7 @@ package io.archivesunleashed.matchbox
 /** Gets different parts of a dateString. */
 object ExtractDate {
   object DateComponent extends Enumeration {
+
     /** An enum specifying years, months, days or a combination. */
     type DateComponent = Value
     val YYYY, MM, DD, YYYYMM, YYYYMMDD = Value
@@ -39,11 +40,11 @@ object ExtractDate {
     maybeFullDate match {
       case Some(fulldate) =>
         dateFormat match {
-          case YYYY => fullDate.substring(startSS, yearSS)
-          case MM => fullDate.substring(yearSS, monthSS)
-          case DD => fullDate.substring(monthSS, daySS)
+          case YYYY   => fullDate.substring(startSS, yearSS)
+          case MM     => fullDate.substring(yearSS, monthSS)
+          case DD     => fullDate.substring(monthSS, daySS)
           case YYYYMM => fullDate.substring(startSS, monthSS)
-          case _ => fullDate.substring(startSS, daySS)
+          case _      => fullDate.substring(startSS, daySS)
         }
       case None =>
         ""
@@ -64,11 +65,11 @@ object ExtractDate {
     maybeFullDate match {
       case Some(fulldate) =>
         dateFormat match {
-          case "YYYY" => fullDate.substring(startSS, yearSS)
-          case "MM" => fullDate.substring(yearSS, monthSS)
-          case "DD" => fullDate.substring(monthSS, daySS)
+          case "YYYY"   => fullDate.substring(startSS, yearSS)
+          case "MM"     => fullDate.substring(yearSS, monthSS)
+          case "DD"     => fullDate.substring(monthSS, daySS)
           case "YYYYMM" => fullDate.substring(startSS, monthSS)
-          case _ => fullDate.substring(startSS, daySS)
+          case _        => fullDate.substring(startSS, daySS)
         }
       case None =>
         ""

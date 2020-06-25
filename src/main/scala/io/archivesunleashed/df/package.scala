@@ -25,9 +25,9 @@ import org.apache.spark.sql.DataFrame
 package object df {
 
   /**
-   * Given a dataframe, serializes binary object and saves to disk
-   * @param df the input dataframe
-   */
+    * Given a dataframe, serializes binary object and saves to disk
+    * @param df the input dataframe
+    */
   implicit class SaveBytes(df: DataFrame) {
 
     /**
@@ -36,24 +36,30 @@ package object df {
       * @param extensionColumnName the name of the column containin the extension
       * e.g. fileName = "foo" => files are saved as "foo-[MD5 hash].pdf"
       */
-    def saveToDisk(bytesColumnName: String, fileName: String, extensionColumnName: String): Unit = {
-      df.select(bytesColumnName, extensionColumnName).foreach(row => {
-        try {
-          // Assumes the bytes are base64 encoded.
-          val encodedBytes: String = row.getAs(bytesColumnName);
-          val bytes = Base64.getDecoder.decode(encodedBytes);
-          val in = new ByteArrayInputStream(bytes);
+    def saveToDisk(
+        bytesColumnName: String,
+        fileName: String,
+        extensionColumnName: String
+    ): Unit = {
+      df.select(bytesColumnName, extensionColumnName)
+        .foreach(row => {
+          try {
+            // Assumes the bytes are base64 encoded.
+            val encodedBytes: String = row.getAs(bytesColumnName);
+            val bytes = Base64.getDecoder.decode(encodedBytes);
+            val in = new ByteArrayInputStream(bytes);
 
-          val extension: String = row.getAs(extensionColumnName);
-          val suffix = ComputeMD5(bytes)
-          val file = new FileOutputStream(fileName + "-" + suffix + "." + extension.toLowerCase)
-          IOUtils.copy(in, file)
-          file.close()
-        } catch {
-          case e: Throwable => {
+            val extension: String = row.getAs(extensionColumnName);
+            val suffix = ComputeMD5(bytes)
+            val file = new FileOutputStream(
+              fileName + "-" + suffix + "." + extension.toLowerCase
+            )
+            IOUtils.copy(in, file)
+            file.close()
+          } catch {
+            case e: Throwable => {}
           }
-        }
-      })
+        })
     }
   }
 }

@@ -20,15 +20,15 @@ object RemoveHTTPHeader {
   val headerEnd = "\r\n\r\n"
 
   /** Remove HTTP headers.
-   *
-   * @param content string of WARC or ARC-based text content
-   * @return string with HTTP headers removed.
-   */
+    *
+    * @param content string of WARC or ARC-based text content
+    * @return string with HTTP headers removed.
+    */
   def apply(content: String): String = {
     val maybeContent: Option[String] = Option(content)
     maybeContent match {
       case Some(content) =>
-        if (content.startsWith("HTTP/")){
+        if (content.startsWith("HTTP/")) {
           content.substring(content.indexOf(headerEnd) + headerEnd.length)
         } else {
           content
