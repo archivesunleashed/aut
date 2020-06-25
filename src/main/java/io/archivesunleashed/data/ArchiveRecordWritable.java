@@ -16,58 +16,37 @@
 
 package io.archivesunleashed.data;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import org.apache.hadoop.io.Writable;
 import org.archive.io.ArchiveRecord;
 import org.archive.io.arc.ARCRecord;
 import org.archive.io.warc.WARCRecord;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-
-/**
- * Implements Hadoop Writable for Archive Records.
- */
+/** Implements Hadoop Writable for Archive Records. */
 public class ArchiveRecordWritable implements Writable {
 
-  /**
-   * Archive Formats that can be used.
-   * {@link #UNKNOWN}
-   * {@link #ARC}
-   * {@link #WARC}
-   */
+  /** Archive Formats that can be used. {@link #UNKNOWN} {@link #ARC} {@link #WARC} */
   public enum ArchiveFormat {
-      /**
-       * UNKNOWN format.
-       */
-      UNKNOWN,
+    /** UNKNOWN format. */
+    UNKNOWN,
 
-      /**
-       * ARC format.
-       */
-      ARC,
+    /** ARC format. */
+    ARC,
 
-      /**
-       * WARC format.
-       */
-      WARC
+    /** WARC format. */
+    WARC
   }
 
-  /**
-   * Set default Record format to UNKNOWN.
-   */
+  /** Set default Record format to UNKNOWN. */
   private ArchiveFormat format = ArchiveFormat.UNKNOWN;
 
-  /**
-   * Initialize Archive Record to null.
-   */
+  /** Initialize Archive Record to null. */
   private ArchiveRecord record = null;
 
-  /**
-   * Utility function.
-   */
-  public ArchiveRecordWritable() {
-  }
+  /** Utility function. */
+  public ArchiveRecordWritable() {}
 
   /**
    * Initialize Archive Record.
@@ -98,13 +77,11 @@ public class ArchiveRecordWritable implements Writable {
     return record;
   }
 
-  /**
-   * Detect format of Archive Record.
-   */
+  /** Detect format of Archive Record. */
   public final void detectFormat() {
     if (record instanceof ARCRecord) {
       format = ArchiveFormat.ARC;
-    } else if (record instanceof WARCRecord)  {
+    } else if (record instanceof WARCRecord) {
       format = ArchiveFormat.WARC;
     } else {
       format = ArchiveFormat.UNKNOWN;
