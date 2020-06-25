@@ -15,7 +15,11 @@
  */
 package io.archivesunleashed.data;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import com.google.common.io.Resources;
+import java.io.File;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
@@ -32,20 +36,17 @@ import org.archive.io.arc.ARCRecordMetaData;
 import org.archive.io.warc.WARCRecord;
 import org.junit.Test;
 
-import java.io.File;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 public class ArchiveRecordInputFormatTest {
   @Test
   public final void testArcInputFormat() throws Exception {
-    String[] urls = new String[]{
-            "filedesc://IAH-20080430204825-00000-blackbook.arc",
-            "dns:www.archive.org",
-            "http://www.archive.org/robots.txt",
-            "http://www.archive.org/",
-            "http://www.archive.org/index.php"};
+    String[] urls =
+        new String[] {
+          "filedesc://IAH-20080430204825-00000-blackbook.arc",
+          "dns:www.archive.org",
+          "http://www.archive.org/robots.txt",
+          "http://www.archive.org/",
+          "http://www.archive.org/index.php"
+        };
 
     String arcFile = Resources.getResource("arc/example.arc.gz").getPath();
 
@@ -57,11 +58,10 @@ public class ArchiveRecordInputFormatTest {
     FileSplit split = new FileSplit(path, 0, testFile.length(), null);
 
     InputFormat<LongWritable, ArchiveRecordWritable> inputFormat =
-            ReflectionUtils.newInstance(ArchiveRecordInputFormat.class, conf);
-    TaskAttemptContext context = new TaskAttemptContextImpl(conf,
-            new TaskAttemptID());
+        ReflectionUtils.newInstance(ArchiveRecordInputFormat.class, conf);
+    TaskAttemptContext context = new TaskAttemptContextImpl(conf, new TaskAttemptID());
     RecordReader<LongWritable, ArchiveRecordWritable> reader =
-            inputFormat.createRecordReader(split, context);
+        inputFormat.createRecordReader(split, context);
 
     reader.initialize(split, context);
 
@@ -89,29 +89,33 @@ public class ArchiveRecordInputFormatTest {
 
   @Test
   public final void testWarcInputFormat() throws Exception {
-    String[] urls = new String[]{
-        null,
-        "dns:www.archive.org",
-        "http://www.archive.org/robots.txt",
-        "http://www.archive.org/robots.txt",
-        "http://www.archive.org/robots.txt",
-        "http://www.archive.org/",
-        "http://www.archive.org/",
-        "http://www.archive.org/",
-        "http://www.archive.org/index.php",
-        "http://www.archive.org/index.php"};
+    String[] urls =
+        new String[] {
+          null,
+          "dns:www.archive.org",
+          "http://www.archive.org/robots.txt",
+          "http://www.archive.org/robots.txt",
+          "http://www.archive.org/robots.txt",
+          "http://www.archive.org/",
+          "http://www.archive.org/",
+          "http://www.archive.org/",
+          "http://www.archive.org/index.php",
+          "http://www.archive.org/index.php"
+        };
 
-    String[] types = new String[]{
-        "warcinfo",
-        "response",
-        "response",
-        "request",
-        "metadata",
-        "response",
-        "request",
-        "metadata",
-        "response",
-        "request"};
+    String[] types =
+        new String[] {
+          "warcinfo",
+          "response",
+          "response",
+          "request",
+          "metadata",
+          "response",
+          "request",
+          "metadata",
+          "response",
+          "request"
+        };
 
     String arcFile = Resources.getResource("warc/example.warc.gz").getPath();
 
@@ -123,11 +127,10 @@ public class ArchiveRecordInputFormatTest {
     FileSplit split = new FileSplit(path, 0, testFile.length(), null);
 
     InputFormat<LongWritable, ArchiveRecordWritable> inputFormat =
-            ReflectionUtils.newInstance(ArchiveRecordInputFormat.class, conf);
-    TaskAttemptContext context = new TaskAttemptContextImpl(conf,
-            new TaskAttemptID());
+        ReflectionUtils.newInstance(ArchiveRecordInputFormat.class, conf);
+    TaskAttemptContext context = new TaskAttemptContextImpl(conf, new TaskAttemptID());
     RecordReader<LongWritable, ArchiveRecordWritable> reader =
-            inputFormat.createRecordReader(split, context);
+        inputFormat.createRecordReader(split, context);
 
     reader.initialize(split, context);
 
@@ -147,12 +150,10 @@ public class ArchiveRecordInputFormatTest {
         WARCRecord warcRecord = (WARCRecord) record;
         if (cnt < urls.length) {
           assertEquals(urls[cnt], warcRecord.getHeader().getUrl());
-          assertEquals(types[cnt], warcRecord.getHeader()
-                  .getHeaderValue("WARC-Type"));
+          assertEquals(types[cnt], warcRecord.getHeader().getHeaderValue("WARC-Type"));
         }
 
-        if (warcRecord.getHeader().getHeaderValue("WARC-Type")
-                .equals("response")) {
+        if (warcRecord.getHeader().getHeaderValue("WARC-Type").equals("response")) {
           responseCnt++;
         }
       }

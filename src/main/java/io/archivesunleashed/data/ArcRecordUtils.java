@@ -29,20 +29,13 @@ import org.archive.io.arc.ARCReaderFactory;
 import org.archive.io.arc.ARCRecord;
 import org.archive.io.arc.ARCRecordMetaData;
 
-/**
- * Utilities for working with {@code ARCRecord}s (from archive.org APIs).
- */
+/** Utilities for working with {@code ARCRecord}s (from archive.org APIs). */
 public final class ArcRecordUtils {
 
-  /**
-   * Utility classes should not have a public or default constructor.
-   */
-  private ArcRecordUtils() {
-  }
+  /** Utility classes should not have a public or default constructor. */
+  private ArcRecordUtils() {}
 
-  /**
-   * Setup logger.
-   */
+  /** Setup logger. */
   private static final Logger LOG = Logger.getLogger(ArcRecordUtils.class);
 
   /**
@@ -53,8 +46,10 @@ public final class ArcRecordUtils {
    * @throws IOException if there is an issue
    */
   public static ARCRecord fromBytes(final byte[] bytes) throws IOException {
-    ARCReader reader = (ARCReader) ARCReaderFactory.get("",
-        new BufferedInputStream(new ByteArrayInputStream(bytes)), false);
+    ARCReader reader =
+        (ARCReader)
+            ARCReaderFactory.get(
+                "", new BufferedInputStream(new ByteArrayInputStream(bytes)), false);
     return (ARCRecord) reader.get();
   }
 
@@ -68,15 +63,25 @@ public final class ArcRecordUtils {
   public static byte[] toBytes(final ARCRecord record) throws IOException {
     ARCRecordMetaData meta = record.getMetaData();
 
-    String metaline = meta.getUrl() + " " + meta.getIp()
-            + " " + meta.getDate() + " " + meta.getMimetype()
-            + " " + (int) meta.getLength();
+    String metaline =
+        meta.getUrl()
+            + " "
+            + meta.getIp()
+            + " "
+            + meta.getDate()
+            + " "
+            + meta.getMimetype()
+            + " "
+            + (int) meta.getLength();
     String versionEtc = "";
 
-
     if (meta.getOffset() == 0) {
-      versionEtc = "\n" + meta.getVersion().replace(".", " ")
-              + " " + meta.getOrigin() + "\n"
+      versionEtc =
+          "\n"
+              + meta.getVersion().replace(".", " ")
+              + " "
+              + meta.getOrigin()
+              + "\n"
               + "URL IP-address Archive-date Content-type Archive-length";
       metaline += versionEtc;
     }
@@ -87,11 +92,9 @@ public final class ArcRecordUtils {
     dout.write("\n".getBytes());
 
     long recordLength = meta.getLength() - versionEtc.length();
-    long len = IOUtils.copyLarge(new BoundedInputStream(record, recordLength),
-            dout);
+    long len = IOUtils.copyLarge(new BoundedInputStream(record, recordLength), dout);
     if (len != recordLength) {
-      LOG.error("Read " + len + " bytes but expected " + recordLength
-              + " bytes. Continuing...");
+      LOG.error("Read " + len + " bytes but expected " + recordLength + " bytes. Continuing...");
     }
     return baos.toByteArray();
   }
@@ -108,14 +111,17 @@ public final class ArcRecordUtils {
     String versionEtc = "";
 
     if (meta.getOffset() == 0) {
-      versionEtc = "\n" + meta.getVersion().replace(".", " ")
-              + " " + meta.getOrigin() + "\n"
+      versionEtc =
+          "\n"
+              + meta.getVersion().replace(".", " ")
+              + " "
+              + meta.getOrigin()
+              + "\n"
               + "URL IP-address Archive-date Content-type Archive-length";
     }
 
     try {
-      return copyToByteArray(record, (int) meta.getLength()
-              - versionEtc.length(), true);
+      return copyToByteArray(record, (int) meta.getLength() - versionEtc.length(), true);
     } catch (Exception e) {
       // Catch exceptions related to any corrupt archive files.
       return new byte[0];
@@ -123,15 +129,13 @@ public final class ArcRecordUtils {
   }
 
   /**
-   * Extracts contents of the body from an {@code ARCRecord}.
-   * Excludes HTTP headers.
+   * Extracts contents of the body from an {@code ARCRecord}. Excludes HTTP headers.
    *
    * @param record the {@code ARCRecord}
    * @return contents of the body
    * @throws IOException if there is an issue
    */
-  public static byte[] getBodyContent(final ARCRecord record)
-      throws IOException {
+  public static byte[] getBodyContent(final ARCRecord record) throws IOException {
     byte[] raw = getContent(record);
     int bodyOffset = record.getBodyOffset();
 
@@ -157,15 +161,19 @@ public final class ArcRecordUtils {
    * @return rawContents of body
    * @throws IOException if there is an issue
    */
-  private static byte[] copyToByteArray(final InputStream is,
-          final int recordLength, final boolean enforceLength)
+  private static byte[] copyToByteArray(
+      final InputStream is, final int recordLength, final boolean enforceLength)
       throws IOException {
 
     BoundedInputStream bis = new BoundedInputStream(is, recordLength);
     byte[] rawContents = IOUtils.toByteArray(bis);
     if (enforceLength && rawContents.length != recordLength) {
-      LOG.error("Read " + rawContents.length + " bytes but expected "
-              + recordLength + " bytes. Continuing...");
+      LOG.error(
+          "Read "
+              + rawContents.length
+              + " bytes but expected "
+              + recordLength
+              + " bytes. Continuing...");
     }
     return rawContents;
   }
