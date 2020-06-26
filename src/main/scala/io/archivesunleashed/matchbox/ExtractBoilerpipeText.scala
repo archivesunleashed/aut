@@ -28,7 +28,6 @@ object ExtractBoilerpipeText {
     * @param input an html string possibly containing boilerpipe text
     * @return text with boilerplate removed or Nil if the text is empty.
     */
-
   def apply(input: String): String = {
     removeBoilerplate(RemoveHTTPHeader(input))
   }

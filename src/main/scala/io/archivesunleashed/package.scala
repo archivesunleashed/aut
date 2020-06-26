@@ -102,16 +102,18 @@ package object archivesunleashed {
       val fs = FileSystem.get(uri, sc.hadoopConfiguration)
       val p = new Path(path)
       sc.newAPIHadoopFile(
-        getFiles(p, fs),
-        classOf[ArchiveRecordInputFormat],
-        classOf[LongWritable],
-        classOf[ArchiveRecordWritable]
-      ).filter(r =>
-        (r._2.getFormat == ArchiveFormat.ARC) ||
-          ((r._2.getFormat == ArchiveFormat.WARC) && r._2.getRecord.getHeader
-            .getHeaderValue("WARC-Type")
-            .equals("response"))
-      ).map(r => new ArchiveRecordImpl(new SerializableWritable(r._2)))
+          getFiles(p, fs),
+          classOf[ArchiveRecordInputFormat],
+          classOf[LongWritable],
+          classOf[ArchiveRecordWritable]
+        )
+        .filter(r =>
+          (r._2.getFormat == ArchiveFormat.ARC) ||
+            ((r._2.getFormat == ArchiveFormat.WARC) && r._2.getRecord.getHeader
+              .getHeaderValue("WARC-Type")
+              .equals("response"))
+        )
+        .map(r => new ArchiveRecordImpl(new SerializableWritable(r._2)))
     }
   }
 
