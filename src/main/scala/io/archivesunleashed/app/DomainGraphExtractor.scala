@@ -35,10 +35,11 @@ object DomainGraphExtractor {
     import spark.implicits._
     // scalastyle:on
     d.groupBy(
-      $"crawl_date",
-      removePrefixWWW(extractDomain($"src")).as("src_domain"),
-      removePrefixWWW(extractDomain($"dest")).as("dest_domain")
-    ).count()
+        $"crawl_date",
+        removePrefixWWW(extractDomain($"src")).as("src_domain"),
+        removePrefixWWW(extractDomain($"dest")).as("dest_domain")
+      )
+      .count()
       .filter(!($"dest_domain" === ""))
       .filter(!($"src_domain" === ""))
       .filter($"count" > 5)
