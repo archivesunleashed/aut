@@ -14,13 +14,4 @@ jobs:
       - name: Run scalafmt
         uses: openlawteam/scalafmt-ci@v2
         with:
-          args: ''
-      - name: Commit changes
-        run: |
-          git config --local user.email "ruestn@gmail.com"
-          git config --local user.name "ruebot"
-          git add -A && git diff-index --cached --quiet HEAD || git commit -m 'Apply scalafmt.'
-      - name: Push changes
-        uses: ad-m/github-push-action@v0.5.0
-        with:
-          github_token: ${{ secrets.RUEBOT_TOKEN }}
+          args: '--list'
