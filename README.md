@@ -1,6 +1,6 @@
 # The Archives Unleashed Toolkit
-[![Build Status](https://travis-ci.org/archivesunleashed/aut.svg?branch=master)](https://travis-ci.org/archivesunleashed/aut)
-[![codecov](https://codecov.io/gh/archivesunleashed/aut/branch/master/graph/badge.svg)](https://codecov.io/gh/archivesunleashed/aut)
+[![Build Status](https://travis-ci.org/archivesunleashed/aut.svg?branch=main)](https://travis-ci.org/archivesunleashed/aut)
+[![codecov](https://codecov.io/gh/archivesunleashed/aut/branch/main/graph/badge.svg)](https://codecov.io/gh/archivesunleashed/aut)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.archivesunleashed/aut/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.archivesunleashed/aut)
 [![Javadoc](https://javadoc-badge.appspot.com/io.archivesunleashed/aut.svg?label=javadoc)](http://api.docs.archivesunleashed.io/0.80.0/apidocs/index.html)
 [![Scaladoc](https://javadoc-badge.appspot.com/io.archivesunleashed/aut.svg?label=scaladoc)](http://api.docs.archivesunleashed.io/0.80.0/scaladocs/index.html)
