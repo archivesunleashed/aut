@@ -109,7 +109,7 @@ public final class WarcRecordUtils implements WARCConstants {
    * @throws IOException if there is an issue
    */
   public static byte[] getContent(final WARCRecord record) throws IOException {
-    int len = (int) record.getHeader().getContentLength();
+    int len = Math.toIntExact(record.getHeader().getContentLength());
 
     // If we have a corrupt record, quit and move on.
     if (len < 0) {

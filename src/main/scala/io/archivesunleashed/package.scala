@@ -77,6 +77,15 @@ package object archivesunleashed {
   /** Loads records from either WARCs or ARCs. */
   object RecordLoader {
 
+    /**
+     * Used to skip warc records with content length longer than 1073741823 bytes (~1.07 GB).
+     * This is done such that when the content of the record is massaged into a String, it would not
+     * overflow the String's internal byte array, which is double the length of the content byte array.
+     *
+     * @see ArchiveRecord#getContentString
+     */
+    private val MAX_ALLOWABLE_WARC_CONTENT_LENGTH = (Int.MaxValue >> 1).toLong
+
     /** Gets all non-empty archive files.
       *
       * @param dir the path to the directory containing archive files
@@ -107,12 +116,15 @@ package object archivesunleashed {
           classOf[LongWritable],
           classOf[ArchiveRecordWritable]
         )
-        .filter(r =>
-          (r._2.getFormat == ArchiveFormat.ARC) ||
-            ((r._2.getFormat == ArchiveFormat.WARC) && r._2.getRecord.getHeader
-              .getHeaderValue("WARC-Type")
-              .equals("response"))
-        )
+        .filter { case (_, arw) =>
+          arw.getFormat match {
+            case ArchiveFormat.ARC => true
+            case ArchiveFormat.WARC =>
+              arw.getRecord.getHeader.getHeaderValue("WARC-Type").equals("response") &&
+                arw.getRecord.getHeader.getContentLength <= MAX_ALLOWABLE_WARC_CONTENT_LENGTH
+            case _ => false
+          }
+        }
         .map(r => new ArchiveRecordImpl(new SerializableWritable(r._2)))
     }
   }
