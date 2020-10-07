@@ -44,6 +44,14 @@ mvn clean install
 The Toolkit can be used to submit a variety of extraction jobs with `spark-submit`, as well used as a library via `spark-submit`, `pyspark`, or in your own application. More information on using the Toolkit can be found [here](https://aut.docs.archivesunleashed.org/docs/usage).
 
 
+## Citing Archives Unleashed
+
+How to cite the Archives Unleashed Toolkit or Cloud in your research:
+
+> Nick Ruest, Jimmy Lin, Ian Milligan, and Samantha Fritz. 2020. The Archives Unleashed Project: Technology, Process, and Community to Improve Scholarly Access to Web Archives. In _Proceedings of the ACM/IEEE Joint Conference on Digital Libraries in 2020 (JCDL '20)_. Association for Computing Machinery, New York, NY, USA, 157–166. DOI:https://doi.org/10.1145/3383583.3398513
+
+Your citations help to further the recognition of using open-source tools for scientific inquiry, assists in growing the web archiving community, and acknowledges the efforts of contributors to this project.
+
 ## License
 
 Licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
