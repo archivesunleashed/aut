@@ -2,7 +2,7 @@ name: Run Scala Formatter (scalafmt)
 
 on:
   pull_request:
-    branches: [master]
+    branches: [main]
 
 jobs:
   scalafmt-lint:

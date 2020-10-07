@@ -27,7 +27,6 @@ class DataFrameLoader(sc: SparkContext) {
   def all(path: String): DataFrame = {
     RecordLoader
       .loadArchives(path, sc)
-      .keepValidPages()
       .all()
   }
 
