@@ -41,7 +41,7 @@ class WebGraphExtractorTest extends FunSuite with BeforeAndAfter {
   test("Web graph extractor DF") {
     val df = RecordLoader.loadArchives(arcPath, sc).webgraph()
     val dfResults = WebGraphExtractor(df).collect()
-    val RESULTSLENGTH = 622
+    val RESULTSLENGTH = 37825
 
     assert(dfResults.length == RESULTSLENGTH)
     assert(dfResults(0).get(0) == "20080430")
