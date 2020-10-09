@@ -72,15 +72,6 @@ class ExtractHyperlinksTest extends FunSuite with BeforeAndAfter {
       )
       .head(3)
 
-    // Results should be:
-    // +--------------------------------+-----------+----------+----------------------------------------------------+
-    // |url                             |Domain     |crawl_date|destination_page                                    |
-    // +--------------------------------+-----------+----------+----------------------------------------------------+
-    // |http://www.archive.org/index.php|archive.org|20080430  |http://www.archive.org/                      |
-    // |http://www.archive.org/index.php|archive.org|20080430  |http://www.archive.org/web/web.php|
-    // |http://www.archive.org/index.php|archive.org|20080430  |http://www.archive.org/details/movies                       |
-    // +--------------------------------+-----------+----------+----------------------------------------------------+
-
     assert(results(0).get(0) == "http://www.archive.org/index.php")
     assert(results(0).get(1) == "archive.org")
     assert(results(0).get(2) == "20080430")
