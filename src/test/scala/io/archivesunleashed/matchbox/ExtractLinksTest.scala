@@ -45,12 +45,23 @@ class ExtractLinksTest extends FunSuite {
     assert("Twitter" == extracted.last._3)
   }
 
-  test("Extract relative links RDD") {
+  test("Extract relative links with no src RDD") {
     val fragmentLocal: String = "Here is <a href=\"http://www.google.com\">" +
       "a search engine</a>.\nHere is a <a href=\"page.html\">a relative URL</a>.\n"
     val fooFragmentLocal = "http://www.foobar.org/page.html"
     val extracted: Seq[(String, String, String)] =
-      ExtractLinks("", fragmentLocal, fooFragment)
+      ExtractLinks("", fragmentLocal)
+    assert(extracted.size == 1)
+    assert(url == extracted.head._2)
+    assert(head == extracted.head._3)
+  }
+
+  test("Extract relative links with src RDD") {
+    val fragmentLocal: String = "Here is <a href=\"http://www.google.com\">" +
+      "a search engine</a>.\nHere is a <a href=\"page.html\">a relative URL</a>.\n"
+    val fooFragmentLocal = "http://www.foobar.org/page.html"
+    val extracted: Seq[(String, String, String)] =
+      ExtractLinks(fooFragment, fragmentLocal)
     assert(extracted.size == 2)
     assert(url == extracted.head._2)
     assert(head == extracted.head._3)
@@ -64,12 +75,12 @@ class ExtractLinksTest extends FunSuite {
       "Here is a fake url <a href=\"http://www.google.com\"> bogus search engine</a>."
     // scalastyle:off null
     assert(
-      ExtractLinks(null, fragment, fooFragment) == mutable
+      ExtractLinks(null, fragment) == mutable
         .MutableList[(String, String, String)]()
     )
     // scalastyle:on null
     assert(
-      ExtractLinks("", "", fooFragment) == mutable
+      ExtractLinks("", "") == mutable
         .MutableList[(String, String, String)]()
     )
   }

@@ -66,8 +66,8 @@ class DataFrameLoaderTest extends FunSuite with BeforeAndAfter {
     assert(r_1.getAs[String](mime_type) == "text/html")
 
     val r_2 = hyperlinks.select("Dest", "Anchor").take(3)(2)
-    assert(r_2(0) == "http://web.archive.org/collections/web/advanced.html")
-    assert(r_2(1) == "Advanced Search")
+    assert(r_2(0) == "http://www.archive.org/web/web.php")
+    assert(r_2(1) == "Web")
 
     val r_3 = imagegraph.take(100)(99)
     assert(r_3.get(0) == "20080430")
