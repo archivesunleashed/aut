@@ -87,8 +87,7 @@ class ArcTest extends FunSuite with BeforeAndAfter {
     val links = RecordLoader
       .loadArchives(arcPath, sc)
       .map(r => ExtractLinks(r.getUrl, r.getContentString))
-      .reduce((a, b) => a ++ b)
-    assert(links.size == 664)
+    assert(links.count == 300L)
   }
 
   test("Detect language RDD") {

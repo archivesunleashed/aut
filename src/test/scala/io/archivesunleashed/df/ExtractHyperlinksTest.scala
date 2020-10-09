@@ -72,19 +72,10 @@ class ExtractHyperlinksTest extends FunSuite with BeforeAndAfter {
       )
       .head(3)
 
-    // Results should be:
-    // +--------------------------------+-----------+----------+----------------------------------------------------+
-    // |url                             |Domain     |crawl_date|destination_page                                    |
-    // +--------------------------------+-----------+----------+----------------------------------------------------+
-    // |http://www.archive.org/index.php|archive.org|20080430  |http://www.archive.org/create/                      |
-    // |http://www.archive.org/index.php|archive.org|20080430  |http://web.archive.org/collections/web/advanced.html|
-    // |http://www.archive.org/index.php|archive.org|20080430  |http://www.sloan.org                                |
-    // +--------------------------------+-----------+----------+----------------------------------------------------+
-
     assert(results(0).get(0) == "http://www.archive.org/index.php")
     assert(results(0).get(1) == "archive.org")
     assert(results(0).get(2) == "20080430")
-    assert(results(0).get(3) == "http://www.archive.org/create/")
+    assert(results(0).get(3) == "http://www.archive.org/")
 
     assert(results(1).get(0) == "http://www.archive.org/index.php")
     assert(results(1).get(1) == "archive.org")
@@ -92,13 +83,13 @@ class ExtractHyperlinksTest extends FunSuite with BeforeAndAfter {
     assert(
       results(1).get(
         3
-      ) == "http://web.archive.org/collections/web/advanced.html"
+      ) == "http://www.archive.org/web/web.php"
     )
 
     assert(results(2).get(0) == "http://www.archive.org/index.php")
     assert(results(2).get(1) == "archive.org")
     assert(results(2).get(2) == "20080430")
-    assert(results(2).get(3) == "http://www.sloan.org")
+    assert(results(2).get(3) == "http://www.archive.org/details/movies")
   }
 
   after {

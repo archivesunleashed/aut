@@ -28,13 +28,11 @@ object ExtractLinks {
     *
     * @param src the src link
     * @param html the content from which links are to be extracted
-    * @param base an optional base URI
     * @return a sequence of (source, target, anchortext).
     */
   def apply(
       src: String,
-      html: String,
-      base: String = ""
+      html: String
   ): Seq[(String, String, String)] = {
     val srcMaybe: Option[String] = Option(src)
     val htmlMaybe: Option[String] = Option(html)
@@ -48,7 +46,7 @@ object ExtractLinks {
             val it = links.iterator()
             while (it.hasNext) {
               val link = it.next()
-              if (base.nonEmpty) link.setBaseUri(base)
+              link.setBaseUri(src)
               val target = link.attr("abs:href")
               if (target.nonEmpty) {
                 output += ((valid_src, target, link.text))
