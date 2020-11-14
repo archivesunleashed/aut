@@ -1,0 +1,23 @@
+name: Maven build
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: '11'
+      - name: Build artifacts, javadocs, and site
+        run: |
+          mvn install -B -V
+          mvn javadoc:jar
+          mvn javadoc:test-aggregate
+          mvn site
+      - name: Upload coverage report to Codecov
+        run: bash <(curl -s https://codecov.io/bash)
