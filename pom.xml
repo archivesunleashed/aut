@@ -23,7 +23,7 @@
     <scala.version>2.12.10</scala.version>
     <scala.binary.version>2.12</scala.binary.version>
     <hadoop.version>2.7.4</hadoop.version>
-    <spark.version>3.0.0</spark.version>
+    <spark.version>3.0.1</spark.version>
     <github.global.server>github</github.global.server>
     <license.plugin.version>3.0</license.plugin.version>
     <release.plugin.version>2.5.2</release.plugin.version>
