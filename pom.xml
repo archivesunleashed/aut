@@ -20,7 +20,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <project.name>${project.artifactId}</project.name>
-    <scala.version>2.11.12</scala.version>
+    <scala.version>2.12.8</scala.version>
     <hadoop.version>2.7.4</hadoop.version>
     <spark.version>2.4.5</spark.version>
     <github.global.server>github</github.global.server>
@@ -463,7 +463,7 @@
     </dependency>
     <dependency>
       <groupId>org.scalatest</groupId>
-      <artifactId>scalatest_2.11</artifactId>
+      <artifactId>scalatest_2.12</artifactId>
       <version>3.0.8</version>
       <scope>test</scope>
     </dependency>
@@ -479,7 +479,7 @@
     </dependency>
     <dependency>
       <groupId>org.scala-lang.modules</groupId>
-      <artifactId>scala-parser-combinators_2.11</artifactId>
+      <artifactId>scala-parser-combinators_2.12</artifactId>
       <version>1.1.1</version>
     </dependency>
     <dependency>
@@ -546,7 +546,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.spark</groupId>
-      <artifactId>spark-core_2.11</artifactId>
+      <artifactId>spark-core_2.12</artifactId>
       <version>${spark.version}</version>
       <exclusions>
         <exclusion>
@@ -581,7 +581,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.spark</groupId>
-      <artifactId>spark-sql_2.11</artifactId>
+      <artifactId>spark-sql_2.12</artifactId>
       <version>${spark.version}</version>
     </dependency>
     <dependency>
@@ -681,7 +681,7 @@
     </dependency>
     <dependency>
       <groupId>org.rogach</groupId>
-      <artifactId>scallop_2.11</artifactId>
+      <artifactId>scallop_2.12</artifactId>
       <version>3.1.2</version>
     </dependency>
     <dependency>  <!-- needed for running boilerpipe, but will compile without -->
@@ -741,6 +741,11 @@
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
       <version>4.4.10</version>
+    </dependency>
+    <dependency>
+      <groupId>com.thoughtworks.paranamer</groupId>
+      <artifactId>paranamer</artifactId>
+      <version>2.8</version>
     </dependency>
     <!--END issue #113-->
     <!-- for codecov.io -->
