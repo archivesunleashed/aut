@@ -18,3 +18,5 @@ src/main/python/tf/model.zip
 src/main/python/tf/util/spark.conf
 src/main/python/tf/model/graph/
 src/main/python/tf/model/category/
+.bloop/
+.metals/
