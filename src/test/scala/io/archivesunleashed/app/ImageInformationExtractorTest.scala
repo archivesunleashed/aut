@@ -44,15 +44,16 @@ class ImageInformationExtractorTest extends FunSuite with BeforeAndAfter {
     val RESULTSLENGTH = 55
 
     assert(dfResults.length == RESULTSLENGTH)
-    assert(dfResults(0).get(0) == "http://www.archive.org/images/logoc.jpg")
-    assert(dfResults(0).get(1) == "logoc.jpg")
-    assert(dfResults(0).get(2) == "jpg")
-    assert(dfResults(0).get(3) == "image/jpeg")
+    assert(dfResults(0).get(0) == "20080430")
+    assert(dfResults(0).get(1) == "http://www.archive.org/images/logoc.jpg")
+    assert(dfResults(0).get(2) == "logoc.jpg")
+    assert(dfResults(0).get(3) == "jpg")
     assert(dfResults(0).get(4) == "image/jpeg")
-    assert(dfResults(0).get(5) == 70)
-    assert(dfResults(0).get(6) == 56)
-    assert(dfResults(0).get(7) == "8211d1fbb9b03d8522a1ae378f9d1b24")
-    assert(dfResults(0).get(8) == "a671e68fc211ee4996a91e99297f246b2c5faa1a")
+    assert(dfResults(0).get(5) == "image/jpeg")
+    assert(dfResults(0).get(6) == 70)
+    assert(dfResults(0).get(7) == 56)
+    assert(dfResults(0).get(8) == "8211d1fbb9b03d8522a1ae378f9d1b24")
+    assert(dfResults(0).get(9) == "a671e68fc211ee4996a91e99297f246b2c5faa1a")
   }
 
   after {

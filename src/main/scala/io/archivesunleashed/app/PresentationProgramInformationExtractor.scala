@@ -34,6 +34,7 @@ object PresentationProgramInformationExtractor {
     import spark.implicits._
     // scalastyle:on
     d.select(
+      $"crawl_date",
       $"url",
       $"filename",
       $"extension",
