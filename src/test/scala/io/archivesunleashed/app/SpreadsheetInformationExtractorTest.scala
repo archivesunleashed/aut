@@ -45,21 +45,22 @@ class SpreadsheetInformationExtractorTest extends FunSuite with BeforeAndAfter {
     val RESULTSLENGTH = 4
 
     assert(dfResults.length == RESULTSLENGTH)
+    assert(dfResults(0).get(0) == "20190815")
     assert(
       dfResults(0).get(
-        0
+        1
       ) == "https://ruebot.net/files/aut-test-fixtures/test-aut-fixture.ods"
     )
-    assert(dfResults(0).get(1) == "test-aut-fixture.ods")
-    assert(dfResults(0).get(2) == "ods")
-    assert(
-      dfResults(0).get(3) == "application/vnd.oasis.opendocument.spreadsheet"
-    )
+    assert(dfResults(0).get(2) == "test-aut-fixture.ods")
+    assert(dfResults(0).get(3) == "ods")
     assert(
       dfResults(0).get(4) == "application/vnd.oasis.opendocument.spreadsheet"
     )
-    assert(dfResults(0).get(5) == "7f70280757d8beb2d1bfd6fb1b6ae6e9")
-    assert(dfResults(0).get(6) == "448c357e78317877a98a399448031a89f1dda6fb")
+    assert(
+      dfResults(0).get(5) == "application/vnd.oasis.opendocument.spreadsheet"
+    )
+    assert(dfResults(0).get(6) == "7f70280757d8beb2d1bfd6fb1b6ae6e9")
+    assert(dfResults(0).get(7) == "448c357e78317877a98a399448031a89f1dda6fb")
   }
 
   after {

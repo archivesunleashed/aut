@@ -47,17 +47,18 @@ class WordProcessorInformationExtractorTest
     val RESULTSLENGTH = 3
 
     assert(dfResults.length == RESULTSLENGTH)
+    assert(dfResults(0).get(0) == "20190815")
     assert(
       dfResults(0).get(
-        0
+        1
       ) == "https://ruebot.net/files/aut-test-fixtures/test-aut-fixtures.rtf"
     )
-    assert(dfResults(0).get(1) == "test-aut-fixtures.rtf")
-    assert(dfResults(0).get(2) == "rtf")
-    assert(dfResults(0).get(3) == "application/rtf")
+    assert(dfResults(0).get(2) == "test-aut-fixtures.rtf")
+    assert(dfResults(0).get(3) == "rtf")
     assert(dfResults(0).get(4) == "application/rtf")
-    assert(dfResults(0).get(5) == "e483512b65ba44d71e843c57de2adeb7")
-    assert(dfResults(0).get(6) == "8cf3066421f0a07fcd6e7a3e86ebd447edf7cfcb")
+    assert(dfResults(0).get(5) == "application/rtf")
+    assert(dfResults(0).get(6) == "e483512b65ba44d71e843c57de2adeb7")
+    assert(dfResults(0).get(7) == "8cf3066421f0a07fcd6e7a3e86ebd447edf7cfcb")
   }
 
   after {
