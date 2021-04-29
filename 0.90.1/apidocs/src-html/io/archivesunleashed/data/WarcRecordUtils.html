@@ -1,0 +1,246 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<main role="main">
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span><a id="line.1">/*</a>
+<span class="sourceLineNo">002</span><a id="line.2"> * Copyright © 2017 The Archives Unleashed Project</a>
+<span class="sourceLineNo">003</span><a id="line.3"> *</a>
+<span class="sourceLineNo">004</span><a id="line.4"> * Licensed under the Apache License, Version 2.0 (the "License");</a>
+<span class="sourceLineNo">005</span><a id="line.5"> * you may not use this file except in compliance with the License.</a>
+<span class="sourceLineNo">006</span><a id="line.6"> * You may obtain a copy of the License at</a>
+<span class="sourceLineNo">007</span><a id="line.7"> *</a>
+<span class="sourceLineNo">008</span><a id="line.8"> *     http://www.apache.org/licenses/LICENSE-2.0</a>
+<span class="sourceLineNo">009</span><a id="line.9"> *</a>
+<span class="sourceLineNo">010</span><a id="line.10"> * Unless required by applicable law or agreed to in writing, software</a>
+<span class="sourceLineNo">011</span><a id="line.11"> * distributed under the License is distributed on an "AS IS" BASIS,</a>
+<span class="sourceLineNo">012</span><a id="line.12"> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</a>
+<span class="sourceLineNo">013</span><a id="line.13"> * See the License for the specific language governing permissions and</a>
+<span class="sourceLineNo">014</span><a id="line.14"> * limitations under the License.</a>
+<span class="sourceLineNo">015</span><a id="line.15"> */</a>
+<span class="sourceLineNo">016</span><a id="line.16">package io.archivesunleashed.data;</a>
+<span class="sourceLineNo">017</span><a id="line.17"></a>
+<span class="sourceLineNo">018</span><a id="line.18">import java.io.BufferedInputStream;</a>
+<span class="sourceLineNo">019</span><a id="line.19">import java.io.ByteArrayInputStream;</a>
+<span class="sourceLineNo">020</span><a id="line.20">import java.io.ByteArrayOutputStream;</a>
+<span class="sourceLineNo">021</span><a id="line.21">import java.io.DataOutputStream;</a>
+<span class="sourceLineNo">022</span><a id="line.22">import java.io.IOException;</a>
+<span class="sourceLineNo">023</span><a id="line.23">import java.io.InputStream;</a>
+<span class="sourceLineNo">024</span><a id="line.24">import java.util.Map;</a>
+<span class="sourceLineNo">025</span><a id="line.25">import java.util.regex.Matcher;</a>
+<span class="sourceLineNo">026</span><a id="line.26">import java.util.regex.Pattern;</a>
+<span class="sourceLineNo">027</span><a id="line.27">import org.apache.commons.httpclient.HttpParser;</a>
+<span class="sourceLineNo">028</span><a id="line.28">import org.apache.commons.io.IOUtils;</a>
+<span class="sourceLineNo">029</span><a id="line.29">import org.apache.commons.io.input.BoundedInputStream;</a>
+<span class="sourceLineNo">030</span><a id="line.30">import org.apache.log4j.Logger;</a>
+<span class="sourceLineNo">031</span><a id="line.31">import org.archive.format.warc.WARCConstants;</a>
+<span class="sourceLineNo">032</span><a id="line.32">import org.archive.io.warc.WARCReader;</a>
+<span class="sourceLineNo">033</span><a id="line.33">import org.archive.io.warc.WARCReaderFactory;</a>
+<span class="sourceLineNo">034</span><a id="line.34">import org.archive.io.warc.WARCRecord;</a>
+<span class="sourceLineNo">035</span><a id="line.35"></a>
+<span class="sourceLineNo">036</span><a id="line.36">/** Utilities for working with {@code WARCRecord}s (from archive.org APIs). */</a>
+<span class="sourceLineNo">037</span><a id="line.37">public final class WarcRecordUtils implements WARCConstants {</a>
+<span class="sourceLineNo">038</span><a id="line.38"></a>
+<span class="sourceLineNo">039</span><a id="line.39">  /** Utility classes should not have a public or default constructor. */</a>
+<span class="sourceLineNo">040</span><a id="line.40">  private WarcRecordUtils() {}</a>
+<span class="sourceLineNo">041</span><a id="line.41"></a>
+<span class="sourceLineNo">042</span><a id="line.42">  /** Setup logger. */</a>
+<span class="sourceLineNo">043</span><a id="line.43">  private static final Logger LOG = Logger.getLogger(WarcRecordUtils.class);</a>
+<span class="sourceLineNo">044</span><a id="line.44"></a>
+<span class="sourceLineNo">045</span><a id="line.45">  /**</a>
+<span class="sourceLineNo">046</span><a id="line.46">   * Converts raw bytes into an {@code WARCRecord}.</a>
+<span class="sourceLineNo">047</span><a id="line.47">   *</a>
+<span class="sourceLineNo">048</span><a id="line.48">   * @param bytes raw bytes</a>
+<span class="sourceLineNo">049</span><a id="line.49">   * @return parsed {@code WARCRecord}</a>
+<span class="sourceLineNo">050</span><a id="line.50">   * @throws IOException if there is an issue</a>
+<span class="sourceLineNo">051</span><a id="line.51">   */</a>
+<span class="sourceLineNo">052</span><a id="line.52">  public static WARCRecord fromBytes(final byte[] bytes) throws IOException {</a>
+<span class="sourceLineNo">053</span><a id="line.53">    WARCReader reader =</a>
+<span class="sourceLineNo">054</span><a id="line.54">        (WARCReader)</a>
+<span class="sourceLineNo">055</span><a id="line.55">            WARCReaderFactory.get(</a>
+<span class="sourceLineNo">056</span><a id="line.56">                "", new BufferedInputStream(new ByteArrayInputStream(bytes)), false);</a>
+<span class="sourceLineNo">057</span><a id="line.57">    return (WARCRecord) reader.get();</a>
+<span class="sourceLineNo">058</span><a id="line.58">  }</a>
+<span class="sourceLineNo">059</span><a id="line.59"></a>
+<span class="sourceLineNo">060</span><a id="line.60">  /**</a>
+<span class="sourceLineNo">061</span><a id="line.61">   * Converts WARC record into raw bytes.</a>
+<span class="sourceLineNo">062</span><a id="line.62">   *</a>
+<span class="sourceLineNo">063</span><a id="line.63">   * @param record conents of WARC response record</a>
+<span class="sourceLineNo">064</span><a id="line.64">   * @return raw contents</a>
+<span class="sourceLineNo">065</span><a id="line.65">   * @throws IOException if there is an issue</a>
+<span class="sourceLineNo">066</span><a id="line.66">   */</a>
+<span class="sourceLineNo">067</span><a id="line.67">  public static byte[] toBytes(final WARCRecord record) throws IOException {</a>
+<span class="sourceLineNo">068</span><a id="line.68">    ByteArrayOutputStream baos = new ByteArrayOutputStream();</a>
+<span class="sourceLineNo">069</span><a id="line.69">    DataOutputStream dout = new DataOutputStream(baos);</a>
+<span class="sourceLineNo">070</span><a id="line.70"></a>
+<span class="sourceLineNo">071</span><a id="line.71">    dout.write("WARC/0.17\n".getBytes());</a>
+<span class="sourceLineNo">072</span><a id="line.72">    for (Map.Entry&lt;String, Object&gt; entry : record.getHeader().getHeaderFields().entrySet()) {</a>
+<span class="sourceLineNo">073</span><a id="line.73">      dout.write((entry.getKey() + ": " + entry.getValue().toString() + "\n").getBytes());</a>
+<span class="sourceLineNo">074</span><a id="line.74">    }</a>
+<span class="sourceLineNo">075</span><a id="line.75">    dout.write("\n".getBytes());</a>
+<span class="sourceLineNo">076</span><a id="line.76">    record.dump(dout);</a>
+<span class="sourceLineNo">077</span><a id="line.77"></a>
+<span class="sourceLineNo">078</span><a id="line.78">    return baos.toByteArray();</a>
+<span class="sourceLineNo">079</span><a id="line.79">  }</a>
+<span class="sourceLineNo">080</span><a id="line.80"></a>
+<span class="sourceLineNo">081</span><a id="line.81">  /**</a>
+<span class="sourceLineNo">082</span><a id="line.82">   * Extracts the MIME type of WARC response records. "WARC-Type" is "response". Note that this is</a>
+<span class="sourceLineNo">083</span><a id="line.83">   * different from the "Content-Type" in the WARC header.</a>
+<span class="sourceLineNo">084</span><a id="line.84">   *</a>
+<span class="sourceLineNo">085</span><a id="line.85">   * @param contents raw contents of the WARC response record</a>
+<span class="sourceLineNo">086</span><a id="line.86">   * @return MIME type</a>
+<span class="sourceLineNo">087</span><a id="line.87">   */</a>
+<span class="sourceLineNo">088</span><a id="line.88">  public static String getWarcResponseMimeType(final byte[] contents) {</a>
+<span class="sourceLineNo">089</span><a id="line.89">    // This is a somewhat janky way to get the MIME type of the response.</a>
+<span class="sourceLineNo">090</span><a id="line.90">    // Moreover, this simple regex is not compliant with the specification.</a>
+<span class="sourceLineNo">091</span><a id="line.91">    // See: https://www.w3.org/Protocols/rfc1341/4_Content-Type.html</a>
+<span class="sourceLineNo">092</span><a id="line.92">    // It would be much better to parse all headers using an external library:</a>
+<span class="sourceLineNo">093</span><a id="line.93">    //   org.apache.commons.httpclient.HeaderElement</a>
+<span class="sourceLineNo">094</span><a id="line.94">    // Note that this is different from the "Content-Type" in the WARC header.</a>
+<span class="sourceLineNo">095</span><a id="line.95">    Pattern pattern = Pattern.compile("Content-Type: ([^\\s;]+) *(;.*)?", Pattern.CASE_INSENSITIVE);</a>
+<span class="sourceLineNo">096</span><a id="line.96">    Matcher matcher = pattern.matcher(new String(contents));</a>
+<span class="sourceLineNo">097</span><a id="line.97">    if (matcher.find()) {</a>
+<span class="sourceLineNo">098</span><a id="line.98">      return matcher.group(1).replaceAll(";$", "");</a>
+<span class="sourceLineNo">099</span><a id="line.99">    }</a>
+<span class="sourceLineNo">100</span><a id="line.100"></a>
+<span class="sourceLineNo">101</span><a id="line.101">    return null;</a>
+<span class="sourceLineNo">102</span><a id="line.102">  }</a>
+<span class="sourceLineNo">103</span><a id="line.103"></a>
+<span class="sourceLineNo">104</span><a id="line.104">  /**</a>
+<span class="sourceLineNo">105</span><a id="line.105">   * Extracts raw contents from a {@code WARCRecord} (including HTTP headers).</a>
+<span class="sourceLineNo">106</span><a id="line.106">   *</a>
+<span class="sourceLineNo">107</span><a id="line.107">   * @param record the {@code WARCRecord}</a>
+<span class="sourceLineNo">108</span><a id="line.108">   * @return raw contents</a>
+<span class="sourceLineNo">109</span><a id="line.109">   * @throws IOException if there is an issue</a>
+<span class="sourceLineNo">110</span><a id="line.110">   */</a>
+<span class="sourceLineNo">111</span><a id="line.111">  public static byte[] getContent(final WARCRecord record) throws IOException {</a>
+<span class="sourceLineNo">112</span><a id="line.112">    int len = (int) record.getHeader().getContentLength();</a>
+<span class="sourceLineNo">113</span><a id="line.113"></a>
+<span class="sourceLineNo">114</span><a id="line.114">    // If we have a corrupt record, quit and move on.</a>
+<span class="sourceLineNo">115</span><a id="line.115">    if (len &lt; 0) {</a>
+<span class="sourceLineNo">116</span><a id="line.116">      return new byte[0];</a>
+<span class="sourceLineNo">117</span><a id="line.117">    }</a>
+<span class="sourceLineNo">118</span><a id="line.118"></a>
+<span class="sourceLineNo">119</span><a id="line.119">    try {</a>
+<span class="sourceLineNo">120</span><a id="line.120">      return copyToByteArray(record, len, true);</a>
+<span class="sourceLineNo">121</span><a id="line.121">    } catch (Exception e) {</a>
+<span class="sourceLineNo">122</span><a id="line.122">      // Catch exceptions related to any corrupt archive files.</a>
+<span class="sourceLineNo">123</span><a id="line.123">      return new byte[0];</a>
+<span class="sourceLineNo">124</span><a id="line.124">    }</a>
+<span class="sourceLineNo">125</span><a id="line.125">  }</a>
+<span class="sourceLineNo">126</span><a id="line.126"></a>
+<span class="sourceLineNo">127</span><a id="line.127">  /**</a>
+<span class="sourceLineNo">128</span><a id="line.128">   * Extracts contents of the body from a {@code WARCRecord}. Excludes HTTP headers.</a>
+<span class="sourceLineNo">129</span><a id="line.129">   *</a>
+<span class="sourceLineNo">130</span><a id="line.130">   * @param record the {@code WARCRecord}</a>
+<span class="sourceLineNo">131</span><a id="line.131">   * @return contents of the body</a>
+<span class="sourceLineNo">132</span><a id="line.132">   * @throws IOException if there is an issue</a>
+<span class="sourceLineNo">133</span><a id="line.133">   */</a>
+<span class="sourceLineNo">134</span><a id="line.134">  public static byte[] getBodyContent(final WARCRecord record) throws IOException {</a>
+<span class="sourceLineNo">135</span><a id="line.135">    ByteArrayOutputStream baos = new ByteArrayOutputStream();</a>
+<span class="sourceLineNo">136</span><a id="line.136">    String line = HttpParser.readLine(record, WARC_HEADER_ENCODING);</a>
+<span class="sourceLineNo">137</span><a id="line.137">    if (line == null) {</a>
+<span class="sourceLineNo">138</span><a id="line.138">      return null;</a>
+<span class="sourceLineNo">139</span><a id="line.139">    }</a>
+<span class="sourceLineNo">140</span><a id="line.140"></a>
+<span class="sourceLineNo">141</span><a id="line.141">    // Just using parseHeaders to move down input stream to body.</a>
+<span class="sourceLineNo">142</span><a id="line.142">    HttpParser.parseHeaders(record, WARC_HEADER_ENCODING);</a>
+<span class="sourceLineNo">143</span><a id="line.143">    record.dump(baos);</a>
+<span class="sourceLineNo">144</span><a id="line.144">    return baos.toByteArray();</a>
+<span class="sourceLineNo">145</span><a id="line.145">  }</a>
+<span class="sourceLineNo">146</span><a id="line.146"></a>
+<span class="sourceLineNo">147</span><a id="line.147">  /**</a>
+<span class="sourceLineNo">148</span><a id="line.148">   * Copies contents to a byte array.</a>
+<span class="sourceLineNo">149</span><a id="line.149">   *</a>
+<span class="sourceLineNo">150</span><a id="line.150">   * @param is raw input stream</a>
+<span class="sourceLineNo">151</span><a id="line.151">   * @param recordLength length of a record</a>
+<span class="sourceLineNo">152</span><a id="line.152">   * @param enforceLength enforce the length</a>
+<span class="sourceLineNo">153</span><a id="line.153">   * @return rawContents of body</a>
+<span class="sourceLineNo">154</span><a id="line.154">   * @throws IOException if there is an issue</a>
+<span class="sourceLineNo">155</span><a id="line.155">   */</a>
+<span class="sourceLineNo">156</span><a id="line.156">  private static byte[] copyToByteArray(</a>
+<span class="sourceLineNo">157</span><a id="line.157">      final InputStream is, final int recordLength, final boolean enforceLength)</a>
+<span class="sourceLineNo">158</span><a id="line.158">      throws IOException {</a>
+<span class="sourceLineNo">159</span><a id="line.159"></a>
+<span class="sourceLineNo">160</span><a id="line.160">    BoundedInputStream bis = new BoundedInputStream(is, recordLength);</a>
+<span class="sourceLineNo">161</span><a id="line.161">    byte[] rawContents = IOUtils.toByteArray(bis);</a>
+<span class="sourceLineNo">162</span><a id="line.162">    if (enforceLength &amp;&amp; rawContents.length != recordLength) {</a>
+<span class="sourceLineNo">163</span><a id="line.163">      LOG.error(</a>
+<span class="sourceLineNo">164</span><a id="line.164">          "Read "</a>
+<span class="sourceLineNo">165</span><a id="line.165">              + rawContents.length</a>
+<span class="sourceLineNo">166</span><a id="line.166">              + " bytes but expected "</a>
+<span class="sourceLineNo">167</span><a id="line.167">              + recordLength</a>
+<span class="sourceLineNo">168</span><a id="line.168">              + " bytes. Continuing...");</a>
+<span class="sourceLineNo">169</span><a id="line.169">    }</a>
+<span class="sourceLineNo">170</span><a id="line.170">    return rawContents;</a>
+<span class="sourceLineNo">171</span><a id="line.171">  }</a>
+<span class="sourceLineNo">172</span><a id="line.172">}</a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</main>
+</body>
+</html>
