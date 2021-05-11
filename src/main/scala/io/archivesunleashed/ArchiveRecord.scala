@@ -155,7 +155,11 @@ class ArchiveRecordImpl(r: SerializableWritable[ArchiveRecordWritable])
     if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {
       r.t.getRecord.asInstanceOf[ARCRecord].getMetaData.getUrl
     } else {
-      r.t.getRecord.asInstanceOf[WARCRecord].getHeader.getUrl
+      r.t.getRecord
+        .asInstanceOf[WARCRecord]
+        .getHeader
+        .getUrl
+        .replaceAll("<|>", "")
     }
   }
 

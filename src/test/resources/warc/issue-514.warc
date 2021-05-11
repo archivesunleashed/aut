@@ -1,0 +1,564 @@
+WARC/1.0
+WARC-Type: warcinfo
+Content-Type: application/warc-fields
+WARC-Date: 2021-05-11T18:14:00Z
+WARC-Record-ID: <urn:uuid:5646ca11-4ad1-4390-a1ad-6e08587f5465>
+WARC-Filename: issue-514.warc
+WARC-Block-Digest: sha1:47SWQYEXK3H7YUR3TYVCEAOK75F7OHER
+Content-Length: 235
+
+software: Wget/1.19.4 (linux-gnu)
+format: WARC File Format 1.0
+conformsTo: http://bibnum.bnf.fr/WARC/WARC_ISO_28500_version1_latestdraft.pdf
+robots: classic
+wget-arguments: "http://www.archiveteam.org/" "--warc-file=issue-514" 
+
+
+
+WARC/1.0
+WARC-Type: request
+WARC-Target-URI: <http://www.archiveteam.org/>
+Content-Type: application/http;msgtype=request
+WARC-Date: 2021-05-11T18:14:00Z
+WARC-Record-ID: <urn:uuid:6d67aa58-22fc-4250-83ee-f7ec0b86bfca>
+WARC-IP-Address: 162.223.15.199
+WARC-Warcinfo-ID: <urn:uuid:5646ca11-4ad1-4390-a1ad-6e08587f5465>
+WARC-Block-Digest: sha1:HVCDD57GXSBUJJUVGTHNS2L4P5JF6D2D
+Content-Length: 146
+
+GET / HTTP/1.1
+User-Agent: Wget/1.19.4 (linux-gnu)
+Accept: */*
+Accept-Encoding: identity
+Host: www.archiveteam.org
+Connection: Keep-Alive
+
+
+
+WARC/1.0
+WARC-Type: response
+WARC-Record-ID: <urn:uuid:ba86c55d-7c9d-4296-b863-9867ffae2d90>
+WARC-Warcinfo-ID: <urn:uuid:5646ca11-4ad1-4390-a1ad-6e08587f5465>
+WARC-Concurrent-To: <urn:uuid:6d67aa58-22fc-4250-83ee-f7ec0b86bfca>
+WARC-Target-URI: <http://www.archiveteam.org/>
+WARC-Date: 2021-05-11T18:14:00Z
+WARC-IP-Address: 162.223.15.199
+WARC-Block-Digest: sha1:TK625R2VHCKZQEGA2EZXXFJEO5PVAFL2
+WARC-Payload-Digest: sha1:JPGAVO7YLLIND6PLRVKEMBHK7EXAJLMW
+Content-Type: application/http;msgtype=response
+Content-Length: 490
+
+HTTP/1.1 307 Temporary Redirect
+Date: Tue, 11 May 2021 18:14:00 GMT
+Server: Apache
+Location: https://wiki.archiveteam.org/
+Content-Length: 239
+Keep-Alive: timeout=5, max=100
+Connection: Keep-Alive
+Content-Type: text/html; charset=iso-8859-1
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>307 Temporary Redirect</title>
+</head><body>
+<h1>Temporary Redirect</h1>
+<p>The document has moved <a href="https://wiki.archiveteam.org/">here</a>.</p>
+</body></html>
+
+
+WARC/1.0
+WARC-Type: request
+WARC-Target-URI: <https://wiki.archiveteam.org/>
+Content-Type: application/http;msgtype=request
+WARC-Date: 2021-05-11T18:14:01Z
+WARC-Record-ID: <urn:uuid:88dedb21-f348-4fbe-b6de-2454601f04b6>
+WARC-IP-Address: 213.184.85.58
+WARC-Warcinfo-ID: <urn:uuid:5646ca11-4ad1-4390-a1ad-6e08587f5465>
+WARC-Block-Digest: sha1:XIK4HVDGBDNQ2IAX6JT7KMQK63KUVB73
+Content-Length: 147
+
+GET / HTTP/1.1
+User-Agent: Wget/1.19.4 (linux-gnu)
+Accept: */*
+Accept-Encoding: identity
+Host: wiki.archiveteam.org
+Connection: Keep-Alive
+
+
+
+WARC/1.0
+WARC-Type: response
+WARC-Record-ID: <urn:uuid:c3de830a-1d9a-49cc-8e58-c6467ffc5b02>
+WARC-Warcinfo-ID: <urn:uuid:5646ca11-4ad1-4390-a1ad-6e08587f5465>
+WARC-Concurrent-To: <urn:uuid:88dedb21-f348-4fbe-b6de-2454601f04b6>
+WARC-Target-URI: <https://wiki.archiveteam.org/>
+WARC-Date: 2021-05-11T18:14:01Z
+WARC-IP-Address: 213.184.85.58
+WARC-Block-Digest: sha1:BGPOG7VM3HHHU3JLXOYNE3TQPE7L3VTA
+WARC-Payload-Digest: sha1:D7JL5VBGAWPV2C7H65426J5RNBH5VI7U
+Content-Type: application/http;msgtype=response
+Content-Length: 41427
+
+HTTP/1.1 200 OK
+Connection: Keep-Alive
+Keep-Alive: timeout=5, max=100
+x-content-type-options: nosniff
+strict-transport-security: max-age=63072000
+vary: Accept-Encoding, Cookie
+expires: Tue, 11 May 2021 18:13:59 GMT
+cache-control: private, must-revalidate, max-age=0
+last-modified: Thu, 06 May 2021 01:35:08 GMT
+content-type: text/html; charset=UTF-8
+content-language: en
+x-request-id: b598e25e4717dd443dbb2823
+transfer-encoding: chunked
+date: Tue, 11 May 2021 18:13:59 GMT
+server: LiteSpeed
+alt-svc: h3-34=":443"; ma=2592000, h3-29=":443"; ma=2592000, h3-27=":443"; ma=2592000, h3-Q050=":443"; ma=2592000, h3-Q046=":443"; ma=2592000, h3-Q043=":443"; ma=2592000, quic=":443"; ma=2592000; v="43,46"
+
+9efb
+
+<!DOCTYPE html>
+<html class="client-nojs" lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8"/>
+<title>Archiveteam</title>
+<script>document.documentElement.className="client-js";RLCONF={"wgBreakFrames":!1,"wgSeparatorTransformTable":["",""],"wgDigitTransformTable":["",""],"wgDefaultDateFormat":"dmy","wgMonthNames":["","January","February","March","April","May","June","July","August","September","October","November","December"],"wgRequestId":"0ffeb00711dcaffab4a4c0f0","wgCSPNonce":!1,"wgCanonicalNamespace":"","wgCanonicalSpecialPageName":!1,"wgNamespaceNumber":0,"wgPageName":"Main_Page","wgTitle":"Main Page","wgCurRevisionId":45842,"wgRevisionId":45842,"wgArticleId":1,"wgIsArticle":!0,"wgIsRedirect":!1,"wgAction":"view","wgUserName":null,"wgUserGroups":["*"],"wgCategories":[],"wgPageContentLanguage":"en","wgPageContentModel":"wikitext","wgRelevantPageName":"Main_Page","wgRelevantArticleId":1,"wgIsProbablyEditable":!1,"wgRelevantPageIsProbablyEditable":!1,"wgRestrictionEdit":["sysop"],"wgRestrictionMove":["sysop"],"wgIsMainPage":!0};RLSTATE={"site.styles":"ready","noscript":"ready",
+"user.styles":"ready","user":"ready","user.options":"loading","skins.vector.styles.legacy":"ready"};RLPAGEMODULES=["site","mediawiki.page.startup","mediawiki.page.ready","skins.vector.legacy.js","ext.moderation.notify","ext.moderation.notify.desktop"];</script>
+<script>(RLQ=window.RLQ||[]).push(function(){mw.loader.implement("user.options@1hzgi",function($,jQuery,require,module){/*@nomin*/mw.user.tokens.set({"patrolToken":"+\\","watchToken":"+\\","csrfToken":"+\\"});
+});});</script>
+<link rel="stylesheet" href="/load.php?lang=en&amp;modules=skins.vector.styles.legacy&amp;only=styles&amp;skin=vector"/>
+<script async="" src="/load.php?lang=en&amp;modules=startup&amp;only=scripts&amp;raw=1&amp;skin=vector"></script>
+<meta name="ResourceLoaderDynamicStyles" content=""/>
+<link rel="stylesheet" href="/load.php?lang=en&amp;modules=site.styles&amp;only=styles&amp;skin=vector"/>
+<meta name="generator" content="MediaWiki 1.35.1"/>
+<link rel="shortcut icon" href="/favicon.ico"/>
+<link rel="search" type="application/opensearchdescription+xml" href="/opensearch_desc.php" title="Archiveteam (en)"/>
+<link rel="EditURI" type="application/rsd+xml" href="https://wiki.archiveteam.org/api.php?action=rsd"/>
+<link rel="alternate" type="application/atom+xml" title="Archiveteam Atom feed" href="/index.php?title=Special:RecentChanges&amp;feed=atom"/>
+<link rel="canonical" href="https://wiki.archiveteam.org/index.php/Main_Page"/>
+<!--[if lt IE 9]><script src="/resources/lib/html5shiv/html5shiv.js"></script><![endif]-->
+</head>
+<body class="mediawiki ltr sitedir-ltr mw-hide-empty-elt ns-0 ns-subject page-Main_Page rootpage-Main_Page skin-vector action-view skin-vector-legacy">
+<div id="mw-page-base" class="noprint"></div>
+<div id="mw-head-base" class="noprint"></div>
+<div id="content" class="mw-body" role="main">
+	<a id="top"></a>
+	<div id="siteNotice" class="mw-body-content"></div>
+	<div class="mw-indicators mw-body-content">
+	</div>
+	<h1 id="firstHeading" class="firstHeading" lang="en">Main Page</h1>
+	<div id="bodyContent" class="mw-body-content">
+		<div id="siteSub" class="noprint">From Archiveteam</div>
+		<div id="contentSub"></div>
+		<div id="contentSub2"></div>
+		
+		<div id="jump-to-nav"></div>
+		<a class="mw-jump-link" href="#mw-head">Jump to navigation</a>
+		<a class="mw-jump-link" href="#searchInput">Jump to search</a>
+		<div id="mw-content-text" lang="en" dir="ltr" class="mw-content-ltr"><div class="mw-parser-output"><center>
+<table style="width:100%;border-spacing:8px;margin:12px 0px 0px 0px">
+<tbody><tr><td style="width:60%;border:1px solid #FFB9B9;background-color:#FFFFF0;vertical-align:top;color:#000">
+<table class="thumb" width="100%" cellpadding="2" cellspacing="5" style="vertical-align:top;background-color:#FFFFF0;">
+<tbody><tr><td>
+</td><td style="color:#000;text-align:left;vertical-align:top">
+<h3><span class="mw-headline" id="HISTORY_IS_OUR_FUTURE">HISTORY IS OUR FUTURE</span></h3>
+<div class="floatright"><a href="/index.php/File:Archiveteam.jpg" class="image"><img alt="Archiveteam.jpg" src="/images/thumb/e/e6/Archiveteam.jpg/200px-Archiveteam.jpg" decoding="async" width="200" height="200" srcset="/images/thumb/e/e6/Archiveteam.jpg/300px-Archiveteam.jpg 1.5x, /images/thumb/e/e6/Archiveteam.jpg/400px-Archiveteam.jpg 2x" /></a></div>
+<p><i>And we've been trashing our history</i>
+</p><p>Archive Team is a loose collective of rogue archivists, programmers, writers and loudmouths dedicated to saving our digital heritage. Since 2009 this variant force of nature has caught wind of shutdowns, shutoffs, mergers, and plain old deletions - and done our best to save the history before it's lost forever. Along the way, we've gotten attention, resistance, <a href="/index.php/In_The_Media" title="In The Media">press and discussion</a>, but most importantly, we've gotten the message out: <b>IT DOESN'T HAVE TO BE THIS WAY</b>.
+</p><p>This website is intended to be an offloading point and information depot for a number of archiving projects, all related to saving websites or data that is in danger of being lost. Besides serving as a hub for team-based pulling down and mirroring of data, this site will provide advice on managing your own data and rescuing it from the brink of destruction.
+</p>
+<h3><span id="Currently_Active_Projects_(Get_Involved_Here!)"></span><span class="mw-headline" id="Currently_Active_Projects_.28Get_Involved_Here.21.29">Currently Active Projects (Get Involved Here!)</span></h3>
+<h2><span class="mw-headline" id="Archive_Team_recruiting">Archive Team recruiting</span></h2>
+<ul><li><a href="/index.php/Dev" title="Dev">Want to code for Archive Team? Here's a starting point.</a></li>
+<li>Help us: <b><a href="/index.php/ArchiveTeam_Warrior" title="ArchiveTeam Warrior">☞ Download and run your warrior ☜</a></b>.<br /></li>
+<li>What's on: <a rel="nofollow" class="external text" href="https://tracker.archiveteam.org/">online tracker</a>.<br /></li></ul>
+<h2><span class="mw-headline" id="Warrior-based_projects">Warrior-based projects</span></h2>
+<div class="noprint" style="float:none; border:1px solid blue;width:450px;background-color:#F5F5F5;padding:2px;">
+<table cellspacing="0">
+<tbody><tr>
+<td style="padding-left:5px;"><b>Current Running Warrior Project: <a href="/index.php/Reddit" title="Reddit">Reddit</a></b>
+</td></tr></tbody></table></div>
+<ul><li><a href="/index.php/Bintray" title="Bintray">Bintray</a>: JFrog is dismantling the software distribution platform used by numerous projects in May. <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="https://webirc.hackint.org/#irc://irc.hackint.org/#binnedtray">#binnedtray</a></span> (on hackint)</b>.</li>
+<li><a href="/index.php/LiveLeak" title="LiveLeak">LiveLeak</a>: Suddenly disappearing as of 2021-05-05. <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="https://webirc.hackint.org/#irc://irc.hackint.org/#deadleak">#deadleak</a></span> (on hackint)</b>.</li>
+<li><a href="/index.php/Webs" title="Webs">Webs</a>: Vistaprint is killing off the Freewebs you knew from the 2000s on <s>March 31</s> June 30, 2021, unless you pay up. <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="https://webirc.hackint.org/#irc://irc.hackint.org/#webbed">#webbed</a></span> (on hackint)</b>.</li>
+<li><a href="/index.php/Periscope" title="Periscope">Periscope</a>: Another Twitter acquisition, another shutdown. This time, its live-streamer gets to join Vine in the bin at the end of March. <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="https://webirc.hackint.org/#irc://irc.hackint.org/#microscope">#microscope</a></span> (on hackint)</b>.</li>
+<li><a href="/index.php/URLTeam" title="URLTeam">URLTeam</a>: URL shorteners were a fucking awful idea. <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="https://webirc.hackint.org/#irc://irc.hackint.org/#urlteam">#urlteam</a></span> (on hackint)</b>.</li></ul>
+<p><i>An updated Warrior virtual appliance (v3.2) is now available with better support for newer projects that utilize wget-at. Please download it using the link above.</i>
+</p>
+<h3><span class="mw-headline" id="Scripts_only">Scripts only</span></h3>
+<ul><li><a href="/index.php/MediaFire" title="MediaFire">MediaFire</a>: <a rel="nofollow" class="external text" href="https://twitter.com/textfiles/status/1349516443654758401">Not 'at-risk' but grabbing speculatively to save historic files</a> <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="https://webirc.hackint.org/#irc://irc.hackint.org/#mediaonfire">#mediaonfire</a></span> (on hackint)</b>.</li>
+<li>Classic <a href="/index.php/Google_Sites" title="Google Sites">Google Sites</a>: Making more sites inaccessible to the public starting September 1, 2021. <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="https://webirc.hackint.org/#irc://irc.hackint.org/#nearlylostmygoogles">#nearlylostmygoogles</a></span> (on hackint)</b>.</li>
+<li><a href="/index.php/Reddit" title="Reddit">Reddit</a>: Banning communities that generate bad PR for Reddit Inc. Currently grabbing <i>new</i> material. <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="https://webirc.hackint.org/#irc://irc.hackint.org/#shreddit">#shreddit</a></span> (on hackint)</b>.</li>
+<li><a href="/index.php/GitHub" title="GitHub">GitHub</a>: Embraced-uh, I mean, bought by Microsoft. <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="https://webirc.hackint.org/#irc://irc.hackint.org/#gitgud">#gitgud</a></span> (on hackint)</b>.</li>
+<li><a href="/index.php/URLs" title="URLs">URLs</a>: A random collection of stuff. <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="https://webirc.hackint.org/#irc://irc.hackint.org/#//">#//</a></span> (on hackint)</b>.</li></ul>
+<h2><span class="mw-headline" id="Manual_projects">Manual projects</span></h2>
+<ul><li><a href="/index.php/Coronavirus" title="Coronavirus">2019-2020 coronavirus outbreak</a>: Documenting and preserving data, events, and impacts of the virus on society. <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="https://webirc.hackint.org/#irc://irc.hackint.org/#coronarchive">#coronarchive</a></span> (on hackint)</b></li>
+<li><a href="/index.php/ArchiveBot" title="ArchiveBot">ArchiveBot</a>: For those with lots of disk space, bandwidth and long-term commitment. <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="https://webirc.hackint.org/#irc://irc.hackint.org/#archivebot">#archivebot</a></span> (on hackint)</b>.</li>
+<li><a href="/index.php/WikiTeam" title="WikiTeam">WikiTeam</a>: Saving wikis dumps (XML). And their external links for the Wayback Machine (WARC) as well as exporting MediaWiki databases. Permanent effort, <a rel="nofollow" class="external text" href="https://github.com/WikiTeam/wikiteam/wiki/Tutorial#I_have_no_shell_access_to_server">everyone can help</a> (you choose the size of your downloads). <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="https://webirc.hackint.org/#irc://irc.hackint.org/#wikiteam">#wikiteam</a></span> (on hackint)</b>.</li></ul>
+<h2><span id="Upcoming_&amp;_proposed_projects"></span><span class="mw-headline" id="Upcoming_.26_proposed_projects">Upcoming &amp; proposed projects</span></h2>
+<ul><li><a href="/index.php/Google_Poly" title="Google Poly">Google Poly</a>: A 3D art repository that Google will send to the trash compactors on June 30, 2021. New uploads cease April 30. <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="https://webirc.hackint.org/#irc://irc.hackint.org/#polygone">#polygone</a></span> (on hackint)</b>.</li>
+<li><a href="/index.php/Chrome_Web_Store" title="Chrome Web Store">Chrome Web Store</a>: Google has announced a timeline of policy changes that will lead to content being removed between December 1, 2020 and June 2022. <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="https://webirc.hackint.org/#irc://irc.hackint.org/#chromeweblore">#chromeweblore</a></span> (on hackint)</b>.</li>
+<li><a href="/index.php?title=Kinja&amp;action=edit&amp;redlink=1" class="new" title="Kinja (page does not exist)">Kinja</a>: Deleting all user pages, maybe? <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="https://webirc.hackint.org/#irc://irc.hackint.org/#gokinjagokinjago">#gokinjagokinjago</a></span> (on hackint)</b>.</li>
+<li><a href="/index.php/Twitter" title="Twitter">Twitter</a>: Deleting inactive accounts <s>2019-12-11</s> sometime. <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="http://chat.efnet.org:9090/?channels=%23twitterdead">#twitterdead</a></span> (on EFnet)</b>.</li>
+<li><a href="/index.php/Imgur" title="Imgur">Imgur</a>: Image hoster decided that using it for hosting images is not permitted. <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="http://chat.efnet.org:9090/?channels=%23imgone">#imgone</a></span> (on EFnet)</b>.</li>
+<li><a href="/index.php/JamiiForums" title="JamiiForums">JamiiForums</a>: the Tanzanian government would like this gone. <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="http://chat.efnet.org:9090/?channels=%23jammedforums">#jammedforums</a></span> (on EFnet)</b>.</li>
+<li><a href="/index.php/LiveJournal" title="LiveJournal">LiveJournal</a>: Very old, widely regarded as in decline, and has a lot of important stuff buried in it. <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="http://chat.efnet.org:9090/?channels=%23recordedjournal">#recordedjournal</a></span> (on EFnet)</b>.</li>
+<li><a href="/index.php/Ownlog" class="mw-redirect" title="Ownlog">Ownlog</a>: Ownlog is losing popularity and support from its owners. <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="http://chat.efnet.org:9090/?channels=%23pwnlog">#pwnlog</a></span> (on EFnet)</b>.</li>
+<li><a href="/index.php/The_Pirate_Bay" title="The Pirate Bay">The Pirate Bay</a>: Recently came back up, grabbing an archive for sanity's sake. <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="http://chat.efnet.org:9090/?channels=%23yarharfiddlededee">#yarharfiddlededee</a></span> (on EFnet)</b>.</li>
+<li><a href="/index.php/Valhalla" title="Valhalla">Valhalla</a>: Where to store what even the <a href="/index.php/Internet_Archive" title="Internet Archive">Internet Archive</a> doesn't have space for? <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="http://chat.efnet.org:9090/?channels=%23huntinggrounds">#huntinggrounds</a></span> (on EFnet)</b>.</li>
+<li><a href="/index.php/Giphy" title="Giphy">Giphy</a>: Bought by Facebook, to be "integrated" (assimilated) into Instagram <a rel="nofollow" class="external free" href="https://news.knowyourmeme.com/news/facebook-to-buy-giphy">https://news.knowyourmeme.com/news/facebook-to-buy-giphy</a></li></ul>
+<h2><span class="mw-headline" id="Recently_finished_projects">Recently finished projects</span></h2>
+<ul><li><a href="/index.php/Super_Mario_Maker_Bookmark" title="Super Mario Maker Bookmark">Super Mario Maker Bookmark</a>: Nintendo making discovery of courses far more difficult. Now focused on manually archiving course data. <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="https://webirc.hackint.org/#irc://irc.hackint.org/#nintendone">#nintendone</a></span> (on hackint)</b>.</li>
+<li><a href="/index.php/Yahoo!_Answers" title="Yahoo! Answers">Yahoo! Answers</a>: This website, bought by Verizon, is the largest Q&amp;A repository on the internet, but its answers to users' questions will be discarded on May 4, 2021. "What is Yahoo! Answers?" <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="https://webirc.hackint.org/#irc://irc.hackint.org/#noanswers">#noanswers</a></span> (on hackint)</b>.</li></ul>
+<h2><span id="Hiatus_/_Missed_the_Mark"></span><span class="mw-headline" id="Hiatus_.2F_Missed_the_Mark">Hiatus / Missed the Mark</span></h2>
+<ul><li><a href="/index.php/Angelfire" title="Angelfire">Angelfire</a>: Angelfire is a web hosting service that contains big chunks of early WWW history and has no proper backup. <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="http://chat.efnet.org:9090/?channels=%23angelonfire">#angelonfire</a></span> (on EFnet)</b>.</li>
+<li><a href="/index.php/Audit2014" title="Audit2014">Audit 2014</a>: It's time to verify our shit. <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="http://chat.efnet.org:9090/?channels=%23auditteam">#auditteam</a></span> (on EFnet)</b>. THIS PROJECT IS ON HIATUS AND WILL BE RETURNED TO AS AUDIT2018.</li>
+<li><a href="/index.php/Flickr" title="Flickr">Flickr</a>: <s><a href="/index.php/Yahoo!" title="Yahoo!">Yahoo!</a></s> SmugMug decided to kill it after finding Yahoo!'s plans to do so before they were bought by Verizon. <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="https://webirc.hackint.org/#irc://irc.hackint.org/#flickrfckr">#flickrfckr</a></span> (on hackint)</b>.</li>
+<li><a href="/index.php/FTP" title="FTP">FTP</a>: Help us find and download all FTP sites! <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="https://webirc.hackint.org/#irc://irc.hackint.org/#effteepee">#effteepee</a></span> (on hackint)</b>.</li>
+<li><a href="/index.php?title=Google_Groups&amp;action=edit&amp;redlink=1" class="new" title="Google Groups (page does not exist)">Google Groups</a>: "Gone within a year" (<a href="/index.php/User:Jscott" title="User:Jscott">SketchCow</a>, 2016-06-07).</li>
+<li><a href="/index.php/Google_News_Archive" title="Google News Archive">Google News Archive</a>: Let's store all newspapers at Google, WCGW? <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="http://chat.efnet.org:9090/?channels=%23papersplease">#papersplease</a></span> (on EFnet)</b>.</li>
+<li><a href="/index.php?title=DevPort&amp;action=edit&amp;redlink=1" class="new" title="DevPort (page does not exist)">DevPort</a>: This <a rel="nofollow" class="external text" href="http://developerportfolio.com/">portfolio SaaS provider</a> has <a rel="nofollow" class="external text" href="http://www.lowendtalk.com/discussion/65135/need-some-help-saas-provider-is-dead-but-my-site-is-still-up-how-should-i-grab-it">reportedly</a> been having infrastructure issues, and removed their social media accounts. Possible impending shutdown.</li>
+<li><a href="/index.php/INTERNETARCHIVE.BAK" title="INTERNETARCHIVE.BAK">INTERNETARCHIVE.BAK</a>: Grab a slice of the big cake of <a href="/index.php/Internet_Archive" title="Internet Archive">The Archive</a>! <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="http://chat.efnet.org:9090/?channels=%23internetarchive.bak">#internetarchive.bak</a></span> (on EFnet)</b>.</li>
+<li><a href="/index.php/ISP_Hosting" title="ISP Hosting">ISP Hosting</a>: Finding ISP web hosting services before the Grim Reaper finds them. <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="https://webirc.hackint.org/#irc://irc.hackint.org/#webroasting">#webroasting</a></span> (on hackint)</b>.</li>
+<li><a href="/index.php/NewsGrabber" title="NewsGrabber">NewsGrabber</a>: Saving all news articles. Currently paused. <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="https://webirc.hackint.org/#irc://irc.hackint.org/#newsgrabber">#newsgrabber</a></span> (on hackint)</b>.</li>
+<li><a href="/index.php/Project_Newsletter" title="Project Newsletter">Project Newsletter</a>: Archiving e-newsletters, currently in development. <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="http://chat.efnet.org:9090/?channels=%23projectnewsletter">#projectnewsletter</a></span> (on EFnet)</b>.</li>
+<li><a href="/index.php/Quizlet" title="Quizlet">Quizlet</a>: Flashcards and other learning tools <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="http://chat.efnet.org:9090/?channels=%23quizletusin">#quizletusin</a></span> (on EFnet)</b>.</li>
+<li><a href="/index.php/Tumblr" title="Tumblr">Tumblr</a>: <a href="/index.php/Yahoo!" title="Yahoo!">Yahoo!</a> considered killing it, now Yahoo has been acquired and Verizon declared war on NSFW blogs. <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="https://webirc.hackint.org/#irc://irc.hackint.org/#tumbledown">#tumbledown</a></span> (on hackint)</b>.</li>
+<li><a href="/index.php/Yuku" class="mw-redirect" title="Yuku">yuku</a>: Lately yuku is very unstable and hosting thousands of forums. Project currently paused. <b>IRC Channel <span class="plainlinks"><a rel="nofollow" class="external text" href="https://webirc.hackint.org/#irc://irc.hackint.org/#archiveteam">#archiveteam</a></span> (on hackint)</b>.</li></ul>
+<p><small>ArchiveTeam primarily uses the hackint IRC network – <a rel="nofollow" class="external free" href="ircs://irc.hackint.org:6697">ircs://irc.hackint.org:6697</a> (TLS required) – webchat: <a rel="nofollow" class="external free" href="https://webirc.hackint.org/">https://webirc.hackint.org/</a> – <a href="/index.php/Archiveteam:IRC" title="Archiveteam:IRC">More info</a>
+<small>ArchiveTeam also has some channels left on the EFnet IRC network – <a rel="nofollow" class="external free" href="irc://irc.efnet.org">irc://irc.efnet.org</a> – webchat: <a rel="nofollow" class="external free" href="http://chat.efnet.org:9090">http://chat.efnet.org:9090</a> – <a href="/index.php/Archiveteam:IRC" title="Archiveteam:IRC">More info</a></small><br />
+</small></p><small>
+</small></td></tr>
+</tbody></table>
+</td><td style="width:40%;border:1px solid #cedff2;background-color:#f5faff;vertical-align:top">
+<table width="100%" cellpadding="2" cellspacing="5" style="vertical-align:top;background-color:#f5faff">
+<tbody><tr><td>
+<p><a href="/index.php/File:Archivetime.png" class="image"><img alt="Archivetime.png" src="/images/8/8a/Archivetime.png" decoding="async" width="435" height="211" /></a>
+</p>
+</td></tr><tr><th>
+<h2 style="margin:0;background:#cedff2;font-size:120%;font-weight:bold;border:1px solid #a3b0bf;text-align:left;color:#000;padding:0.2em 0.4em;"><span class="mw-headline" id="What_is_What">What is What</span></h2>
+</th></tr>
+<tr><td style="color:#000">
+<ul><li><a href="/index.php/Who_We_Are" title="Who We Are">Who We Are</a> and how you can join our cause!</li></ul>
+<ul><li><a href="/index.php/Deathwatch" title="Deathwatch">Deathwatch</a> is where we keep track of sites that are sickly, dying or dead.</li></ul>
+<ul><li><a href="/index.php/Fire_Drill" class="mw-redirect" title="Fire Drill">Fire Drill</a> is where we keep track of sites that seem fine but a lot depends on them.</li></ul>
+<ul><li><a href="/index.php/Projects" title="Projects">Projects</a> is a comprehensive list of AT endeavors.</li></ul>
+<ul><li><a href="/index.php/Philosophy" title="Philosophy">Philosophy</a> describes the ideas underpinning our work.</li></ul>
+</td></tr>
+<tr><th>
+<h2 style="margin:0;background:#cedff2;font-size:120%;font-weight:bold;border:1px solid #a3b0bf;text-align:left;color:#000;padding:0.2em 0.4em;"><span class="mw-headline" id="Some_Starting_Points">Some Starting Points</span></h2>
+</th></tr>
+<tr><td style="color:#000">
+<ul><li><a href="/index.php/Introduction" title="Introduction">The Introduction</a> is an overview of basic archiving methods.</li></ul>
+<ul><li><a href="/index.php/Why_Back_Up%3F" title="Why Back Up?">Why Back Up?</a> Because they don't care about you.</li></ul>
+<ul><li><a href="/index.php/Facebook" title="Facebook">Back Up your Facebook Data</a> Learn how to liberate your personal data from Facebook.</li></ul>
+<ul><li><a href="/index.php/Software" title="Software">Software</a> will assist you in regaining control of your data by providing tools for information backup, archiving and distribution.</li></ul>
+<ul><li><a href="/index.php/Formats" title="Formats">Formats</a> will familiarize you with the various data formats, and how to ensure your files will be readable in the future.</li></ul>
+<ul><li><a href="/index.php/Storage_Media" title="Storage Media">Storage Media</a> is about where to get it, what to get, and how to use it.</li></ul>
+<ul><li><a href="/index.php/Recommended_Reading" title="Recommended Reading">Recommended Reading</a> links to others sites for further information.</li></ul>
+<ul><li><a href="/index.php/Frequently_Asked_Questions" title="Frequently Asked Questions">Frequently Asked Questions</a> is where we answer common questions.</li></ul>
+</td></tr>
+<tr><th>
+<h2 style="margin:0;background:#cedff2;font-size:120%;font-weight:bold;border:1px solid #a3b0bf;text-align:left;color:#000;padding:0.2em 0.4em;"><span class="mw-headline" id="Quote_of_the_Moment">Quote of the Moment</span></h2>
+</th></tr>
+<tr><td style="color:#000">
+</td></tr><tr><td style="margin:20;background-color:#000000;font-size:200%;font-weight:bold;border:1px solid #a3b0bf;text-align:center;color:#fff;">
+<p>"[Yahoo!] found the way to destroy 
+the most massive amount of history
+in the shortest amount of time 
+with absolutely no recourse"
+</p>
+</td></tr>
+<tr><td style="text-align:right">
+<p><a rel="nofollow" class="external text" href="http://www.time.com/time/business/article/0,8599,1936645,00.html">Internet Atrocity! GeoCities' Demise Erases Web History</a> 
+<br />By Dan Fletcher, TIME Magazine, Monday, Nov. 09, 2009
+</p>
+</td></tr>
+<tr><td>
+<h3><span class="mw-headline" id="In_The_Media">In The Media</span></h3>
+<dl><dt><ul><li><a rel="nofollow" class="external text" href="https://www.theatlantic.com/technology/archive/2021/04/how-yahoo-became-internet-villain/618681/"><i>Yahoo, the Destroyer</i></a></li></ul></dt>
+<dd>Kaitlyn Tiffany, <i>The Atlantic</i>, 2021-04-25</dd></dl>
+<dl><dt><ul><li><a rel="nofollow" class="external text" href="https://www.independent.co.uk/life-style/gadgets-and-tech/yahoo-answers-shut-down-b1827328.html"><i>How Yahoo Answers went from Q&amp;A site to total collapse</i></a></li></ul></dt>
+<dd>Adam Smith, <i>The Independent</i>, 2021-04-13</dd></dl>
+<dl><dt><ul><li><a rel="nofollow" class="external text" href="https://gizmodo.com/were-archiving-yahoo-answers-so-youll-always-know-how-b-1846643969"><i>We're Archiving Yahoo Answers So You'll Always Know How Babby Is Formed</i></a></li></ul></dt>
+<dd>Dhruv Mehrotra and Shoshana Wodinsky, <i>Gizmodo</i>, 2021-04-09</dd></dl>
+<dl><dt><ul><li><a rel="nofollow" class="external text" href="https://www.buzzfeednews.com/article/katienotopoulos/rip-yahoo-answers"><i>RIP Yahoo Answers: It Died As It Lived, Needlessly And Stupidly</i></a></li></ul></dt>
+<dd>Katie Notopoulos, <i>BuzzFeed News</i>, 2021-04-05</dd></dl>
+<dl><dt><ul><li><a rel="nofollow" class="external text" href="https://www.vice.com/en/article/n7vqew/the-hacker-who-archived-parler-explains-how-she-did-it-and-what-comes-next"><i>The Hacker Who Archived Parler Explains How She Did It (and What Comes Next)</i></a></li></ul></dt>
+<dd>Leland Nally, <i>VICE</i>, 2021-01-12</dd></dl>
+<dl><dt><ul><li><a rel="nofollow" class="external text" href="https://hyperallergic.com/609682/rip-adobe-flash-five-takeaways-about-the-plug-ins-legacy-in-net-art/"><i>RIP Adobe Flash: Five Takeaways About the Plug-in’s Legacy in Net Art</i></a></li></ul></dt>
+<dd>Rea McNamara, <i>Hyperallergic</i>, 2020-12-18</dd></dl>
+<dl><dt><ul><li><a rel="nofollow" class="external text" href="https://www.vice.com/en/article/5dzg8n/archiving-the-internet-archive-sued-by-publishers"><i>It’s Time to Archive the Internet Archive</i></a></li></ul></dt>
+<dd>Samantha Cole and Jason Koebler, <i>VICE</i>, 2020-06-09</dd></dl>
+<dl><dt><ul><li><a rel="nofollow" class="external text" href="https://www.buzzfeednews.com/article/katienotopoulos/how-we-killed-the-old-internet"><i>The Old Internet Died And We Watched And Did Nothing</i></a></li></ul></dt>
+<dd>Katie Notopoulos, <i>Buzzfeed News</i>, 2019-12-28</dd></dl>
+<dl><dt><ul><li><a rel="nofollow" class="external text" href="https://www.washingtonpost.com/technology/2019/12/11/these-crusaders-want-preserve-human-culture-online-their-latest-target-yahoo-groups/"><i>These crusaders want to preserve ‘human culture’ online. Their latest target: Yahoo Groups.</i></a></li></ul></dt>
+<dd>Hannah Knowles, Washington Post, 2019-12-11</dd></dl>
+<dl><dt><ul><li><a rel="nofollow" class="external text" href="https://www.heise.de/newsticker/meldung/Verizon-verhindert-in-letzter-Minute-Archivierung-der-Yahoo-Groups-4609371.html"><i>Verizon verhindert Archivierung der Yahoo Groups</i></a></li></ul></dt>
+<dd>Daniel AJ Sokolov, heise online, 2019-12-11</dd></dl>
+<dl><dt><a href="/index.php/In_The_Media" title="In The Media">More...</a></dt></dl>
+</td><td></td></tr>
+</tbody></table>
+</td></tr>
+</tbody></table>
+<p><b>Archive Team is in no way affiliated with the fine folks at <a rel="nofollow" class="external text" href="http://www.archive.org">ARCHIVE.ORG</a></b>
+<b>Archive Team can always be reached by e-mail at <a rel="nofollow" class="external text" href="mailto:archiveteam@archiveteam.org">archiveteam@archiveteam.org</a> or by <a href="/index.php/IRC" title="IRC">IRC</a> at the <span class="plainlinks"><a rel="nofollow" class="external text" href="https://webirc.hackint.org/#irc://irc.hackint.org/#archiveteam">#archiveteam</a></span> (on hackint) channel on Hackint.</b>
+</p></center>
+<!-- 
+NewPP limit report
+Cached time: 20210506013508
+Cache expiry: 86400
+Dynamic content: false
+Complications: []
+CPU time usage: 0.052 seconds
+Real time usage: 0.056 seconds
+Preprocessor visited node count: 706/1000000
+Post‐expand include size: 20276/2097152 bytes
+Template argument size: 1180/2097152 bytes
+Highest expansion depth: 6/40
+Expensive parser function count: 1/100
+Unstrip recursion depth: 0/20
+Unstrip post‐expand size: 0/5000000 bytes
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%   17.596      1 -total
+ 87.68%   15.428      1 Current_Projects
+ 42.33%    7.449     38 Template:IRC
+ 21.36%    3.758      1 CurrentWarriorProject
+ 12.01%    2.114      1 Template:CurrentWarrior
+ 10.80%    1.901      1 Main_Page/In_The_Media
+-->
+
+<!-- Saved in parser cache with key archivet_archiveteamwiki-wiki_:pcache:idhash:1-0!canonical and timestamp 20210506013508 and revision id 45842
+ -->
+</div></div><div class="printfooter">Retrieved from "<a dir="ltr" href="https://wiki.archiveteam.org/index.php?title=Main_Page&amp;oldid=45842">https://wiki.archiveteam.org/index.php?title=Main_Page&amp;oldid=45842</a>"</div>
+		<div id="catlinks" class="catlinks catlinks-allhidden" data-mw="interface"></div>
+	</div>
+</div>
+
+<div id="mw-navigation">
+	<h2>Navigation menu</h2>
+	<div id="mw-head">
+		<!-- Please do not use role attribute as CSS selector, it is deprecated. -->
+<nav id="p-personal" class="vector-menu" aria-labelledby="p-personal-label" role="navigation" 
+	 >
+	<h3 id="p-personal-label">
+		<span>Personal tools</span>
+	</h3>
+	<!-- Please do not use the .body class, it is deprecated. -->
+	<div class="body vector-menu-content">
+		<!-- Please do not use the .menu class, it is deprecated. -->
+		<ul class="vector-menu-content-list"><li id="pt-createaccount"><a href="/index.php?title=Special:CreateAccount&amp;returnto=Main+Page" title="You are encouraged to create an account and log in; however, it is not mandatory">Create account</a></li><li id="pt-login"><a href="/index.php?title=Special:UserLogin&amp;returnto=Main+Page" title="You are encouraged to log in; however, it is not mandatory [o]" accesskey="o">Log in</a></li></ul>
+		
+	</div>
+</nav>
+
+
+		<div id="left-navigation">
+			<!-- Please do not use role attribute as CSS selector, it is deprecated. -->
+<nav id="p-namespaces" class="vector-menu vector-menu-tabs vectorTabs" aria-labelledby="p-namespaces-label" role="navigation" 
+	 >
+	<h3 id="p-namespaces-label">
+		<span>Namespaces</span>
+	</h3>
+	<!-- Please do not use the .body class, it is deprecated. -->
+	<div class="body vector-menu-content">
+		<!-- Please do not use the .menu class, it is deprecated. -->
+		<ul class="vector-menu-content-list"><li id="ca-nstab-main" class="selected"><a href="/index.php/Main_Page" title="View the content page [c]" accesskey="c">Main page</a></li><li id="ca-talk"><a href="/index.php/Talk:Main_Page" rel="discussion" title="Discussion about the content page [t]" accesskey="t">Discussion</a></li></ul>
+		
+	</div>
+</nav>
+
+
+			<!-- Please do not use role attribute as CSS selector, it is deprecated. -->
+<nav id="p-variants" class="vector-menu-empty emptyPortlet vector-menu vector-menu-dropdown vectorMenu" aria-labelledby="p-variants-label" role="navigation" 
+	 >
+	<input type="checkbox" class="vector-menu-checkbox vectorMenuCheckbox" aria-labelledby="p-variants-label" />
+	<h3 id="p-variants-label">
+		<span>Variants</span>
+	</h3>
+	<!-- Please do not use the .body class, it is deprecated. -->
+	<div class="body vector-menu-content">
+		<!-- Please do not use the .menu class, it is deprecated. -->
+		<ul class="menu vector-menu-content-list"></ul>
+		
+	</div>
+</nav>
+
+
+		</div>
+		<div id="right-navigation">
+			<!-- Please do not use role attribute as CSS selector, it is deprecated. -->
+<nav id="p-views" class="vector-menu vector-menu-tabs vectorTabs" aria-labelledby="p-views-label" role="navigation" 
+	 >
+	<h3 id="p-views-label">
+		<span>Views</span>
+	</h3>
+	<!-- Please do not use the .body class, it is deprecated. -->
+	<div class="body vector-menu-content">
+		<!-- Please do not use the .menu class, it is deprecated. -->
+		<ul class="vector-menu-content-list"><li id="ca-view" class="collapsible selected"><a href="/index.php/Main_Page">Read</a></li><li id="ca-viewsource" class="collapsible"><a href="/index.php?title=Main_Page&amp;action=edit" title="This page is protected.&#10;You can view its source [e]" accesskey="e">View source</a></li><li id="ca-history" class="collapsible"><a href="/index.php?title=Main_Page&amp;action=history" title="Past revisions of this page [h]" accesskey="h">View history</a></li></ul>
+		
+	</div>
+</nav>
+
+
+			<!-- Please do not use role attribute as CSS selector, it is deprecated. -->
+<nav id="p-cactions" class="vector-menu-empty emptyPortlet vector-menu vector-menu-dropdown vectorMenu" aria-labelledby="p-cactions-label" role="navigation" 
+	 >
+	<input type="checkbox" class="vector-menu-checkbox vectorMenuCheckbox" aria-labelledby="p-cactions-label" />
+	<h3 id="p-cactions-label">
+		<span>More</span>
+	</h3>
+	<!-- Please do not use the .body class, it is deprecated. -->
+	<div class="body vector-menu-content">
+		<!-- Please do not use the .menu class, it is deprecated. -->
+		<ul class="menu vector-menu-content-list"></ul>
+		
+	</div>
+</nav>
+
+
+			<div id="p-search" role="search">
+	<h3 >
+		<label for="searchInput">Search</label>
+	</h3>
+	<form action="/index.php" id="searchform">
+		<div id="simpleSearch">
+			<input type="search" name="search" placeholder="Search Archiveteam" title="Search Archiveteam [f]" accesskey="f" id="searchInput"/>
+			<input type="hidden" name="title" value="Special:Search">
+			<input type="submit" name="fulltext" value="Search" title="Search the pages for this text" id="mw-searchButton" class="searchButton mw-fallbackSearchButton"/>
+			<input type="submit" name="go" value="Go" title="Go to a page with this exact name if it exists" id="searchButton" class="searchButton"/>
+		</div>
+	</form>
+</div>
+
+		</div>
+	</div>
+	
+<div id="mw-panel">
+	<div id="p-logo" role="banner">
+		<a  title="Visit the main page" class="mw-wiki-logo" href="/index.php/Main_Page"></a>
+	</div>
+	<!-- Please do not use role attribute as CSS selector, it is deprecated. -->
+<nav id="p-navigation" class="vector-menu vector-menu-portal portal portal-first" aria-labelledby="p-navigation-label" role="navigation" 
+	 >
+	<h3 id="p-navigation-label">
+		<span>Navigation</span>
+	</h3>
+	<!-- Please do not use the .body class, it is deprecated. -->
+	<div class="body vector-menu-content">
+		<!-- Please do not use the .menu class, it is deprecated. -->
+		<ul class="vector-menu-content-list"><li id="n-mainpage-description"><a href="/index.php/Main_Page" title="Visit the main page [z]" accesskey="z">Main page</a></li><li id="n-recentchanges"><a href="/index.php/Special:RecentChanges" title="A list of recent changes in the wiki [r]" accesskey="r">Recent changes</a></li><li id="n-randompage"><a href="/index.php/Special:Random" title="Load a random page [x]" accesskey="x">Random page</a></li><li id="n-help-mediawiki"><a href="https://www.mediawiki.org/wiki/Special:MyLanguage/Help:Contents">Help about MediaWiki</a></li></ul>
+		
+	</div>
+</nav>
+
+
+	<!-- Please do not use role attribute as CSS selector, it is deprecated. -->
+<nav id="p-tb" class="vector-menu vector-menu-portal portal" aria-labelledby="p-tb-label" role="navigation" 
+	 >
+	<h3 id="p-tb-label">
+		<span>Tools</span>
+	</h3>
+	<!-- Please do not use the .body class, it is deprecated. -->
+	<div class="body vector-menu-content">
+		<!-- Please do not use the .menu class, it is deprecated. -->
+		<ul class="vector-menu-content-list"><li id="t-whatlinkshere"><a href="/index.php/Special:WhatLinksHere/Main_Page" title="A list of all wiki pages that link here [j]" accesskey="j">What links here</a></li><li id="t-recentchangeslinked"><a href="/index.php/Special:RecentChangesLinked/Main_Page" rel="nofollow" title="Recent changes in pages linked from this page [k]" accesskey="k">Related changes</a></li><li id="t-specialpages"><a href="/index.php/Special:SpecialPages" title="A list of all special pages [q]" accesskey="q">Special pages</a></li><li id="t-print"><a href="javascript:print();" rel="alternate" title="Printable version of this page [p]" accesskey="p">Printable version</a></li><li id="t-permalink"><a href="/index.php?title=Main_Page&amp;oldid=45842" title="Permanent link to this revision of the page">Permanent link</a></li><li id="t-info"><a href="/index.php?title=Main_Page&amp;action=info" title="More information about this page">Page information</a></li></ul>
+		
+	</div>
+</nav>
+
+
+	
+</div>
+
+</div>
+
+<footer id="footer" class="mw-footer" role="contentinfo" >
+	<ul id="footer-info" >
+		<li id="footer-info-lastmod"> This page was last edited on 3 December 2020, at 16:40.</li>
+	</ul>
+	<ul id="footer-places" >
+		<li id="footer-places-privacy"><a href="/index.php/Archiveteam:Privacy_policy" title="Archiveteam:Privacy policy">Privacy policy</a></li>
+		<li id="footer-places-about"><a href="/index.php/Archiveteam:About" class="mw-redirect" title="Archiveteam:About">About Archiveteam</a></li>
+		<li id="footer-places-disclaimer"><a href="/index.php/Archiveteam:General_disclaimer" title="Archiveteam:General disclaimer">Disclaimers</a></li>
+	</ul>
+	<ul id="footer-icons" class="noprint">
+		<li id="footer-poweredbyico"><a href="https://www.mediawiki.org/"><img src="/resources/assets/poweredby_mediawiki_88x31.png" alt="Powered by MediaWiki" srcset="/resources/assets/poweredby_mediawiki_132x47.png 1.5x, /resources/assets/poweredby_mediawiki_176x62.png 2x" width="88" height="31" loading="lazy"/></a></li>
+	</ul>
+	<div style="clear: both;"></div>
+</footer>
+
+
+
+<script>(RLQ=window.RLQ||[]).push(function(){mw.config.set({"wgPageParseReport":{"limitreport":{"cputime":"0.052","walltime":"0.056","ppvisitednodes":{"value":706,"limit":1000000},"postexpandincludesize":{"value":20276,"limit":2097152},"templateargumentsize":{"value":1180,"limit":2097152},"expansiondepth":{"value":6,"limit":40},"expensivefunctioncount":{"value":1,"limit":100},"unstrip-depth":{"value":0,"limit":20},"unstrip-size":{"value":0,"limit":5000000},"timingprofile":["100.00%   17.596      1 -total"," 87.68%   15.428      1 Current_Projects"," 42.33%    7.449     38 Template:IRC"," 21.36%    3.758      1 CurrentWarriorProject"," 12.01%    2.114      1 Template:CurrentWarrior"," 10.80%    1.901      1 Main_Page/In_The_Media"]},"cachereport":{"timestamp":"20210506013508","ttl":86400,"transientcontent":false}}});mw.config.set({"wgBackendResponseTime":109});});</script></body><!-- Cached 20210506013508 -->
+</html>
+
+0
+
+
+
+WARC/1.0
+WARC-Type: metadata
+WARC-Record-ID: <urn:uuid:20e48205-4a0b-43b6-a800-4498435e12a1>
+WARC-Warcinfo-ID: <urn:uuid:5646ca11-4ad1-4390-a1ad-6e08587f5465>
+WARC-Target-URI: <metadata://gnu.org/software/wget/warc/MANIFEST.txt>
+WARC-Date: 2021-05-11T18:14:01Z
+WARC-Block-Digest: sha1:IOR6N75JODICKO7VYU3JJ523UCEM43NJ
+Content-Type: text/plain
+Content-Length: 48
+
+<urn:uuid:5646ca11-4ad1-4390-a1ad-6e08587f5465>
+
+
+WARC/1.0
+WARC-Type: resource
+WARC-Record-ID: <urn:uuid:2c44813f-5f14-4503-a8df-2b6fe5b788e0>
+WARC-Warcinfo-ID: <urn:uuid:5646ca11-4ad1-4390-a1ad-6e08587f5465>
+WARC-Concurrent-To: <urn:uuid:20e48205-4a0b-43b6-a800-4498435e12a1>
+WARC-Target-URI: <metadata://gnu.org/software/wget/warc/wget_arguments.txt>
+WARC-Date: 2021-05-11T18:14:01Z
+WARC-Block-Digest: sha1:3PGBP457GZITLG4QLHEUZV6T5ZITNGMH
+Content-Type: text/plain
+Content-Length: 55
+
+"http://www.archiveteam.org/" "--warc-file=issue-514" 
+
+
+WARC/1.0
+WARC-Type: resource
+WARC-Record-ID: <urn:uuid:df2717cb-5200-4cbc-8288-657bafc0850f>
+WARC-Warcinfo-ID: <urn:uuid:5646ca11-4ad1-4390-a1ad-6e08587f5465>
+WARC-Concurrent-To: <urn:uuid:20e48205-4a0b-43b6-a800-4498435e12a1>
+WARC-Target-URI: <metadata://gnu.org/software/wget/warc/wget.log>
+WARC-Date: 2021-05-11T18:14:01Z
+WARC-Block-Digest: sha1:3ZHEXPURKMWGYZXV7HPPWPP3PPPSSP2Z
+Content-Type: text/plain
+Content-Length: 911
+
+Opening WARC file ‘issue-514.warc’.
+
+--2021-05-11 14:14:00--  http://www.archiveteam.org/
+Resolving www.archiveteam.org (www.archiveteam.org)... 162.223.15.199
+Connecting to www.archiveteam.org (www.archiveteam.org)|162.223.15.199|:80... connected.
+HTTP request sent, awaiting response... 307 Temporary Redirect
+Location: https://wiki.archiveteam.org/ [following]
+
+     0K                                                       100% 14.2M=0s
+
+--2021-05-11 14:14:00--  https://wiki.archiveteam.org/
+Resolving wiki.archiveteam.org (wiki.archiveteam.org)... 213.184.85.58
+Connecting to wiki.archiveteam.org (wiki.archiveteam.org)|213.184.85.58|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: unspecified [text/html]
+Saving to: ‘index.html’
+
+     0K .......... .......... .......... .........              384K=0.1s
+
+2021-05-11 14:14:01 (384 KB/s) - ‘index.html’ saved [40699]
+
+
+
