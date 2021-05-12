@@ -72,7 +72,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     import spark.implicits._
     // scalastyle:on
 
-    val expected = "000"
+    val expected = "200"
     val base = RecordLoader
       .loadArchives(arcPath, sc)
       .all()

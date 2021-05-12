@@ -124,7 +124,7 @@ class DataFrameLoaderTest extends FunSuite with BeforeAndAfter {
 
     val r_11 = all.select(url, mime_type).take(1)(0)
     assert(
-      r_11.getAs[String](url) == "filedesc://IAH-20080430204825-00000-blackbook.arc"
+      r_11.getAs[String](url) == "http://www.archive.org/robots.txt"
     )
     assert(r_11.getAs[String](mime_type) == "text/plain")
   }

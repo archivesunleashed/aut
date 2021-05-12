@@ -165,18 +165,20 @@ package object archivesunleashed {
     /* Creates a column for Bytes as well in Dataframe.
        Call KeepImages OR KeepValidPages on RDD depending upon the requirement before calling this method */
     def all(): DataFrame = {
-      val records = rdd.map(r =>
-        Row(
-          r.getCrawlDate,
-          r.getUrl,
-          r.getMimeType,
-          DetectMimeTypeTika(r.getBinaryBytes),
-          r.getContentString,
-          r.getBinaryBytes,
-          r.getHttpStatus,
-          r.getArchiveFilename
+      val records = rdd
+        .removeFiledesc()
+        .map(r =>
+          Row(
+            r.getCrawlDate,
+            r.getUrl,
+            r.getMimeType,
+            DetectMimeTypeTika(r.getBinaryBytes),
+            r.getContentString,
+            r.getBinaryBytes,
+            r.getHttpStatus,
+            r.getArchiveFilename
+          )
         )
-      )
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -190,6 +192,14 @@ package object archivesunleashed {
 
       val sqlContext = SparkSession.builder()
       sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
+    /** Filters out filedesc:// and dns: records. */
+    def removeFiledesc(): RDD[ArchiveRecord] = {
+      rdd.filter(r =>
+        !r.getUrl.toLowerCase.startsWith("filedesc:")
+          && !r.getUrl.toLowerCase.startsWith("dns:")
+      )
     }
 
     /** Removes all non-html-based data (images, executables, etc.) from html text. */
@@ -208,6 +218,7 @@ package object archivesunleashed {
     /** Extracts webpages with columns for crawl data, url, MIME type, and content. */
     def webpages(): DataFrame = {
       val records = rdd
+        .removeFiledesc()
         .keepValidPages()
         .map(r =>
           Row(
@@ -235,6 +246,7 @@ package object archivesunleashed {
     /** Extracts a webgraph with columns for crawl date, source url, destination url, and anchor text. */
     def webgraph(): DataFrame = {
       val records = rdd
+        .removeFiledesc()
         .keepValidPages()
         .flatMap(r =>
           ExtractLinks(r.getUrl, r.getContentString)
@@ -256,6 +268,7 @@ package object archivesunleashed {
     /* Extracts all the images links from a source page. */
     def imagegraph(): DataFrame = {
       val records = rdd
+        .removeFiledesc()
         .keepValidPages()
         .flatMap(r =>
           ExtractImageLinks(r.getUrl, r.getContentString)
