@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>package.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Archives Unleashed Toolkit</a> &gt; <a href="index.source.html" class="el_package">io.archivesunleashed.udfs</a> &gt; <span class="el_source">package.scala</span></div><h1>package.scala</h1><pre class="source lang-java linenums">/*
+ * Copyright © 2017 The Archives Unleashed Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package io.archivesunleashed
+
+import io.archivesunleashed.matchbox.{
+  ComputeImageSize,
+  ComputeMD5,
+  ComputeSHA1,
+  DetectLanguage,
+  DetectMimeTypeTika,
+  ExtractBoilerpipeText,
+  ExtractDate,
+  ExtractDomain,
+  ExtractImageLinks,
+  ExtractLinks,
+  GetExtensionMIME,
+  RemoveHTML,
+  RemoveHTTPHeader
+}
+import org.apache.commons.lang3.StringUtils
+import org.apache.spark.sql.expressions.UserDefinedFunction
+import org.apache.spark.sql.functions.udf
+import org.apache.spark.sql.SparkSession
+import scala.util.matching.Regex
+
+/** Package object providing UDFs for DataFrames in Scala and PySpark. * */
+<span class="pc" id="L41">package object udfs extends Serializable {</span>
+
+  // Matchbox
+  def computeImageSize: UserDefinedFunction =
+<span class="fc" id="L45">    udf(ComputeImageSize.apply(_: Array[Byte]))</span>
+<span class="fc" id="L46">  def computeMD5: UserDefinedFunction = udf(ComputeMD5.apply(_: Array[Byte]))</span>
+<span class="fc" id="L47">  def computeSHA1: UserDefinedFunction = udf(ComputeSHA1.apply(_: Array[Byte]))</span>
+<span class="fc" id="L48">  def detectLanguage: UserDefinedFunction = udf(DetectLanguage.apply(_: String))</span>
+  def detectMimeTypeTika: UserDefinedFunction =
+<span class="fc" id="L50">    udf(DetectMimeTypeTika.apply(_: Array[Byte]))</span>
+  def extractBoilerpipeText: UserDefinedFunction =
+<span class="fc" id="L52">    udf(ExtractBoilerpipeText.apply(_: String))</span>
+  def extractDate: UserDefinedFunction =
+<span class="fc" id="L54">    udf(ExtractDate.apply(_: String, _: String))</span>
+  def extractDomain: UserDefinedFunction =
+<span class="fc" id="L56">    udf(ExtractDomain.apply(_: String, &quot;&quot;))</span>
+  def extractImageLinks: UserDefinedFunction =
+<span class="fc" id="L58">    udf(ExtractImageLinks.apply(_: String, _: String))</span>
+  def extractLinks: UserDefinedFunction =
+<span class="fc" id="L60">    udf(ExtractLinks.apply(_: String, _: String))</span>
+  def getExtensionMime: UserDefinedFunction =
+<span class="fc" id="L62">    udf(GetExtensionMIME.apply(_: String, _: String))</span>
+<span class="fc" id="L63">  def removeHTML: UserDefinedFunction = udf(RemoveHTML.apply(_: String))</span>
+  def removeHTTPHeader: UserDefinedFunction =
+<span class="fc" id="L65">    udf(RemoveHTTPHeader.apply(_: String))</span>
+  def removePrefixWWW: UserDefinedFunction =
+<span class="fc" id="L67">    udf[String, String](_.replaceAll(&quot;^\\s*www\\.&quot;, &quot;&quot;))</span>
+
+  // Filters
+  def hasContent: UserDefinedFunction =
+<span class="fc" id="L71">    udf((c: String, contentREs: Seq[String]) =&gt; {</span>
+      contentREs
+        .map(re =&gt;
+          (re.r findFirstIn c) match {
+            case Some(v) =&gt; true
+            case None    =&gt; false
+          }
+        )
+        .exists(identity)
+    })
+  def hasDate: UserDefinedFunction =
+<span class="fc" id="L82">    udf((date_ : String, date: Seq[String]) =&gt; date.contains(date_))</span>
+  def hasDomains: UserDefinedFunction =
+<span class="fc" id="L84">    udf((domain: String, domains: Seq[String]) =&gt; domains.contains(domain))</span>
+  def hasHTTPStatus: UserDefinedFunction =
+<span class="fc" id="L86">    udf((statusCode: String, statusCodes: Seq[String]) =&gt;</span>
+      statusCodes.contains(statusCode)
+    )
+  def hasImages: UserDefinedFunction =
+<span class="fc" id="L90">    udf((date: String, mimeType: String) =&gt;</span>
+      date != null &amp;&amp; mimeType.startsWith(&quot;image/&quot;)
+    )
+  def hasLanguages: UserDefinedFunction =
+<span class="fc" id="L94">    udf((language: String, languages: Seq[String]) =&gt;</span>
+      languages.contains(language)
+    )
+  def hasMIMETypes: UserDefinedFunction =
+<span class="fc" id="L98">    udf((mimeType: String, mimeTypes: Seq[String]) =&gt;</span>
+      mimeTypes.contains(mimeType)
+    )
+  def hasMIMETypesTika: UserDefinedFunction =
+<span class="fc" id="L102">    udf((mimeType: String, mimeTypesTika: Seq[String]) =&gt;</span>
+      mimeTypesTika.contains(mimeType)
+    )
+  def hasUrlPatterns: UserDefinedFunction =
+<span class="fc" id="L106">    udf((urlPattern: String, urlREs: Seq[String]) =&gt; {</span>
+      urlREs
+        .map(re =&gt;
+          urlPattern match {
+            case re.r() =&gt; true
+            case _      =&gt; false
+          }
+        )
+        .exists(identity)
+    })
+  def hasUrls: UserDefinedFunction =
+<span class="fc" id="L117">    udf((url: String, urls: Seq[String]) =&gt; urls.contains(url))</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

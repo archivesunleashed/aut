@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ArcRecordUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Archives Unleashed Toolkit</a> &gt; <a href="index.source.html" class="el_package">io.archivesunleashed.data</a> &gt; <span class="el_source">ArcRecordUtils.java</span></div><h1>ArcRecordUtils.java</h1><pre class="source lang-java linenums">/*
+ * Copyright © 2017 The Archives Unleashed Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.archivesunleashed.data;
+
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BoundedInputStream;
+import org.apache.log4j.Logger;
+import org.archive.io.arc.ARCReader;
+import org.archive.io.arc.ARCReaderFactory;
+import org.archive.io.arc.ARCRecord;
+import org.archive.io.arc.ARCRecordMetaData;
+
+/** Utilities for working with {@code ARCRecord}s (from archive.org APIs). */
+public final class ArcRecordUtils {
+
+  /** Utility classes should not have a public or default constructor. */
+  private ArcRecordUtils() {}
+
+  /** Setup logger. */
+<span class="fc" id="L39">  private static final Logger LOG = Logger.getLogger(ArcRecordUtils.class);</span>
+
+  /**
+   * Converts raw bytes into an {@code ARCRecord}.
+   *
+   * @param bytes raw bytes
+   * @return parsed {@code ARCRecord}
+   * @throws IOException if there is an issue
+   */
+  public static ARCRecord fromBytes(final byte[] bytes) throws IOException {
+<span class="fc" id="L49">    ARCReader reader =</span>
+        (ARCReader)
+<span class="fc" id="L51">            ARCReaderFactory.get(</span>
+                &quot;&quot;, new BufferedInputStream(new ByteArrayInputStream(bytes)), false);
+<span class="fc" id="L53">    return (ARCRecord) reader.get();</span>
+  }
+
+  /**
+   * Converts ARC record into raw bytes.
+   *
+   * @param record conents of WARC response record
+   * @return raw contents
+   * @throws IOException if there is an issue
+   */
+  public static byte[] toBytes(final ARCRecord record) throws IOException {
+<span class="fc" id="L64">    ARCRecordMetaData meta = record.getMetaData();</span>
+
+<span class="fc" id="L66">    String metaline =</span>
+<span class="fc" id="L67">        meta.getUrl()</span>
+            + &quot; &quot;
+<span class="fc" id="L69">            + meta.getIp()</span>
+            + &quot; &quot;
+<span class="fc" id="L71">            + meta.getDate()</span>
+            + &quot; &quot;
+<span class="fc" id="L73">            + meta.getMimetype()</span>
+            + &quot; &quot;
+<span class="fc" id="L75">            + (int) meta.getLength();</span>
+<span class="fc" id="L76">    String versionEtc = &quot;&quot;;</span>
+
+<span class="fc bfc" id="L78" title="All 2 branches covered.">    if (meta.getOffset() == 0) {</span>
+<span class="fc" id="L79">      versionEtc =</span>
+          &quot;\n&quot;
+<span class="fc" id="L81">              + meta.getVersion().replace(&quot;.&quot;, &quot; &quot;)</span>
+              + &quot; &quot;
+<span class="fc" id="L83">              + meta.getOrigin()</span>
+              + &quot;\n&quot;
+              + &quot;URL IP-address Archive-date Content-type Archive-length&quot;;
+<span class="fc" id="L86">      metaline += versionEtc;</span>
+    }
+
+<span class="fc" id="L89">    ByteArrayOutputStream baos = new ByteArrayOutputStream();</span>
+<span class="fc" id="L90">    DataOutputStream dout = new DataOutputStream(baos);</span>
+<span class="fc" id="L91">    dout.write(metaline.getBytes());</span>
+<span class="fc" id="L92">    dout.write(&quot;\n&quot;.getBytes());</span>
+
+<span class="fc" id="L94">    long recordLength = meta.getLength() - versionEtc.length();</span>
+<span class="fc" id="L95">    long len = IOUtils.copyLarge(new BoundedInputStream(record, recordLength), dout);</span>
+<span class="pc bpc" id="L96" title="1 of 2 branches missed.">    if (len != recordLength) {</span>
+<span class="nc" id="L97">      LOG.error(&quot;Read &quot; + len + &quot; bytes but expected &quot; + recordLength + &quot; bytes. Continuing...&quot;);</span>
+    }
+<span class="fc" id="L99">    return baos.toByteArray();</span>
+  }
+
+  /**
+   * Extracts raw contents from an {@code ARCRecord} (including HTTP headers).
+   *
+   * @param record the {@code ARCRecord}
+   * @return raw contents
+   * @throws IOException if there is an issue
+   */
+  public static byte[] getContent(final ARCRecord record) throws IOException {
+<span class="fc" id="L110">    ARCRecordMetaData meta = record.getMetaData();</span>
+<span class="fc" id="L111">    String versionEtc = &quot;&quot;;</span>
+
+<span class="fc bfc" id="L113" title="All 2 branches covered.">    if (meta.getOffset() == 0) {</span>
+<span class="fc" id="L114">      versionEtc =</span>
+          &quot;\n&quot;
+<span class="fc" id="L116">              + meta.getVersion().replace(&quot;.&quot;, &quot; &quot;)</span>
+              + &quot; &quot;
+<span class="fc" id="L118">              + meta.getOrigin()</span>
+              + &quot;\n&quot;
+              + &quot;URL IP-address Archive-date Content-type Archive-length&quot;;
+    }
+
+    try {
+<span class="fc" id="L124">      return copyToByteArray(record, (int) meta.getLength() - versionEtc.length(), true);</span>
+<span class="nc" id="L125">    } catch (Exception e) {</span>
+      // Catch exceptions related to any corrupt archive files.
+<span class="nc" id="L127">      return new byte[0];</span>
+    }
+  }
+
+  /**
+   * Extracts contents of the body from an {@code ARCRecord}. Excludes HTTP headers.
+   *
+   * @param record the {@code ARCRecord}
+   * @return contents of the body
+   * @throws IOException if there is an issue
+   */
+  public static byte[] getBodyContent(final ARCRecord record) throws IOException {
+<span class="nc" id="L139">    byte[] raw = getContent(record);</span>
+<span class="nc" id="L140">    int bodyOffset = record.getBodyOffset();</span>
+
+<span class="nc" id="L142">    byte[] content = null;</span>
+    try {
+<span class="nc" id="L144">      content = new byte[raw.length - bodyOffset];</span>
+<span class="nc" id="L145">      System.arraycopy(raw, bodyOffset, content, 0, content.length);</span>
+<span class="nc" id="L146">    } catch (java.lang.NegativeArraySizeException e) {</span>
+      // To find out what URL causing the error: record.getMetaData().getUrl()
+      // For some records, we're missing the actual content data, likely due
+      // to a crawler gitch. Nothing much we can do, just swallow and move on.
+<span class="nc" id="L150">      content = new byte[0];</span>
+<span class="nc" id="L151">    }</span>
+<span class="nc" id="L152">    return content;</span>
+  }
+
+  /**
+   * Copies contents to a byte array.
+   *
+   * @param is raw input stream
+   * @param recordLength is length of a record
+   * @param enforceLength enforce the length
+   * @return rawContents of body
+   * @throws IOException if there is an issue
+   */
+  private static byte[] copyToByteArray(
+      final InputStream is, final int recordLength, final boolean enforceLength)
+      throws IOException {
+
+<span class="fc" id="L168">    BoundedInputStream bis = new BoundedInputStream(is, recordLength);</span>
+<span class="fc" id="L169">    byte[] rawContents = IOUtils.toByteArray(bis);</span>
+<span class="pc bpc" id="L170" title="2 of 4 branches missed.">    if (enforceLength &amp;&amp; rawContents.length != recordLength) {</span>
+<span class="nc" id="L171">      LOG.error(</span>
+          &quot;Read &quot;
+              + rawContents.length
+              + &quot; bytes but expected &quot;
+              + recordLength
+              + &quot; bytes. Continuing...&quot;);
+    }
+<span class="fc" id="L178">    return rawContents;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>
