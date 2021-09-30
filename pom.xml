@@ -30,7 +30,6 @@
     <scm-provider-gitexe.plugin.version>1.9.5</scm-provider-gitexe.plugin.version>
     <changelog.plugin.version>2.3</changelog.plugin.version>
     <github-site.plugin.version>0.12</github-site.plugin.version>
-    <javadoc.plugin.version>3.1.1</javadoc.plugin.version>
     <gpg.plugin.version>1.6</gpg.plugin.version>
     <build-helper.plugin.version>3.0.0</build-helper.plugin.version>
     <deploy.plugin.version>2.8.2</deploy.plugin.version>
@@ -178,12 +177,9 @@
         <configuration>
           <header>config/LICENSE_HEADER.txt</header>
           <mapping>
-            <java>SLASHSTAR_STYLE</java>
             <scala>SLASHSTAR_STYLE</scala>
           </mapping>
           <includes>
-            <include>src/main/java/**</include>
-            <include>src/test/java/**</include>
             <include>src/main/scala/**</include>
             <include>src/test/scala/**</include>
           </includes>
@@ -268,34 +264,6 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>${javadoc.plugin.version}</version>
-        <configuration>
-          <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
-          <linksource>true</linksource>
-          <quiet>true</quiet>
-          <source>11</source>
-        </configuration>
-        <executions>
-          <execution>
-            <id>verify-javadocs</id>
-            <goals>
-              <goal>jar</goal>
-              <goal>test-jar</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>attach-javadocs</id>
-            <goals>
-              <goal>jar</goal>
-              <goal>javadoc</goal>
-            </goals>
-            <phase>site</phase>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <artifactId>maven-changelog-plugin</artifactId>
         <version>${changelog.plugin.version}</version>
       </plugin>
@@ -355,13 +323,6 @@
         <version>${failsafe.plugin.version}</version>
         <configuration>
           <argLine>--illegal-access=permit</argLine>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>${javadoc.plugin.version}</version>
-        <configuration>
-          <linksource>true</linksource>
         </configuration>
       </plugin>
       <plugin>
@@ -597,11 +558,6 @@
       <build>
         <pluginManagement>
           <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-javadoc-plugin</artifactId>
-              <version>${javadoc.plugin.version}</version>
-            </plugin>
             <plugin>
               <artifactId>maven-gpg-plugin</artifactId>
               <version>${gpg.plugin.version}</version>
