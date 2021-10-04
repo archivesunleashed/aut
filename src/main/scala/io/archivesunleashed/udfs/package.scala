@@ -53,7 +53,7 @@ package object udfs extends Serializable {
   def extractDate: UserDefinedFunction =
     udf(ExtractDate.apply(_: String, _: String))
   def extractDomain: UserDefinedFunction =
-    udf(ExtractDomain.apply(_: String, ""))
+    udf(ExtractDomain.apply(_: String))
   def extractImageLinks: UserDefinedFunction =
     udf(ExtractImageLinks.apply(_: String, _: String))
   def extractLinks: UserDefinedFunction =

@@ -551,6 +551,11 @@
       <artifactId>hadoop-aws</artifactId>
       <version>${hadoop.version}</version>
     </dependency>
+    <dependency>
+      <groupId>io.lemonlabs</groupId>
+      <artifactId>scala-uri_${scala.binary.version}</artifactId>
+      <version>3.5.0</version>
+    </dependency>
   </dependencies>
 
   <developers>

@@ -23,7 +23,7 @@ import org.scalatest.junit.JUnitRunner
 @RunWith(classOf[JUnitRunner])
 class ExtractDomainTest extends FunSuite {
   private val index = "index.html"
-  private val umiacs = "www.umiacs.umd.edu"
+  private val umiacs = "umd.edu"
   private val jimmylin = "http://www.umiacs.umd.edu/~jimmylin/"
   private val lintool = "https://github.com/lintool"
   private val github = "github.com"
@@ -52,7 +52,7 @@ class ExtractDomainTest extends FunSuite {
     .+=(
       (
         "http://www.seetorontonow.canada-booknow.com\\booking_results.php",
-        "www.seetorontonow.canada-booknow.com"
+        "canada-booknow.com"
       )
     )
     .result()
@@ -63,16 +63,10 @@ class ExtractDomainTest extends FunSuite {
     }
   }
 
-  test("Extract domains with base RDD") {
-    data2.foreach {
-      case (link, base, domain) => assert(ExtractDomain(link, base) == domain)
-    }
-  }
-
   test("Test for domain errors RDD") {
     // scalastyle:off null
     assert(ExtractDomain(null) == "")
-    assert(ExtractDomain(index, null) == "")
+    assert(ExtractDomain("") == "")
     // scalastyle:on null
   }
 

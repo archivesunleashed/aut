@@ -111,7 +111,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     val base2 = RecordLoader
       .loadArchives(arcPath, sc)
       .keepValidPages()
-    val urls: Set[String] = Set("www.archive.org", "www.sloan.org")
+    val urls: Set[String] = Set("archive.org", "sloan.org")
     val x2 = base2.keepDomains(urls).count()
     assert(x2 == expected)
   }
@@ -259,7 +259,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     val base = RecordLoader
       .loadArchives(arcPath, sc)
       .keepValidPages()
-    val urls: Set[String] = Set("www.sloan.org")
+    val urls: Set[String] = Set("sloan.org")
     val r2 = base.discardDomains(urls).count()
     assert(r2 == expected)
   }
