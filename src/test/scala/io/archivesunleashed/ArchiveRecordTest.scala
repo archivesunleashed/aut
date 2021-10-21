@@ -33,7 +33,7 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
   private val exampleArc = "example.arc.gz"
   private val exampleWarc = "example.warc.gz"
   private val exampleDate = "20080430"
-  private val exampleUrl = "www.archive.org"
+  private val exampleUrl = "archive.org"
   private val exampleStatusCode1 = "000"
   private val exampleStatusCode2 = "200"
   private val exampleMimeType = "text/plain"

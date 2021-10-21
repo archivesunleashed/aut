@@ -130,7 +130,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
       .loadArchives(arcPath, sc)
       .all()
       .select($"url")
-      .filter(hasDomains(extractDomain($"url"), lit(Array("www.archive.org"))))
+      .filter(hasDomains(extractDomain($"url"), lit(Array("archive.org"))))
       .take(1)(0)(0)
 
     assert(base1.toString == expected)

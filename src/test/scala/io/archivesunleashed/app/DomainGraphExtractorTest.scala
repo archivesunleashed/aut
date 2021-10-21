@@ -48,12 +48,12 @@ class DomainGraphExtractorDfTest extends FunSuite with BeforeAndAfter {
     assert(dfResult(0).get(0) == "20080430")
     assert(dfResult(0).get(1) == "archive.org")
     assert(dfResult(0).get(2) == "archive.org")
-    assert(dfResult(0).get(3) == 37477)
+    assert(dfResult(0).get(3) == 37511)
 
     assert(dfResult(1).get(0) == "20080430")
     assert(dfResult(1).get(1) == "archive.org")
-    assert(dfResult(1).get(2) == "wiki.etree.org")
-    assert(dfResult(1).get(3) == 21)
+    assert(dfResult(1).get(2) == "etree.org")
+    assert(dfResult(1).get(3) == 31)
   }
 
   after {

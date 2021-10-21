@@ -61,18 +61,18 @@ class SimpleDfTest extends FunSuite with BeforeAndAfter {
     // +------------------+-----+
     // |            Domain|count|
     // +------------------+-----+
-    // |   www.archive.org|   91|
+    // |       archive.org|   91|
     // |     deadlists.com|    2|
-    // |www.hideout.com.br|    1|
+    // |    hideout.com.br|    1|
     // +------------------+-----+
 
-    assert(results(0).get(0) == "www.archive.org")
+    assert(results(0).get(0) == "archive.org")
     assert(results(0).get(1) == 91)
 
     assert(results(1).get(0) == "deadlists.com")
     assert(results(1).get(1) == 2)
 
-    assert(results(2).get(0) == "www.hideout.com.br")
+    assert(results(2).get(0) == "hideout.com.br")
     assert(results(2).get(1) == 1)
   }
 

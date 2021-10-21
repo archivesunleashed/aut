@@ -15,31 +15,35 @@
  */
 package io.archivesunleashed.matchbox
 
+import io.lemonlabs.uri.Url
+import io.lemonlabs.uri.config.UriConfig
+import io.lemonlabs.uri.decoding.PercentDecoder
 import java.net.URL
 
 /** Extracts the host domain name from a full url string. */
 object ExtractDomain {
 
+  implicit val c: UriConfig = UriConfig(
+    decoder = PercentDecoder(ignoreInvalidPercentEncoding = true)
+  )
+
   /** Extract source domains from a full url string.
     *
     * @param url a url as a string
-    * @param source an optional default url for urls with no valid domain host
     * @return domain host, source or null if url is null.
     */
-  def apply(url: String, source: String = ""): String = {
-    val maybeHost: Option[URL] = checkUrl(url)
-    val maybeSource: Option[URL] = checkUrl(source)
-    maybeHost match {
-      case Some(host) =>
-        host.getHost
-
-      case None =>
-        maybeSource match {
-          case Some(source) =>
-            source.getHost
-          case None =>
+  def apply(url: String): String = {
+    val maybeUri: Option[URL] = checkUrl(url)
+    maybeUri match {
+      case Some(uri) =>
+        try {
+          Url.parse(uri.toString).apexDomain.mkString
+        } catch {
+          case e: Exception =>
             ""
         }
+      case None =>
+        ""
     }
   }
 
