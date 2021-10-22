@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ArchiveRecordInputFormat.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Archives Unleashed Toolkit</a> &gt; <a href="index.source.html" class="el_package">io.archivesunleashed.data</a> &gt; <span class="el_source">ArchiveRecordInputFormat.java</span></div><h1>ArchiveRecordInputFormat.java</h1><pre class="source lang-java linenums">/*
+ * Copyright © 2017 The Archives Unleashed Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package io.archivesunleashed.data;
+
+import io.archivesunleashed.data.ArchiveRecordWritable.ArchiveFormat;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.util.Iterator;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataInputStream;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.Seekable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.mapreduce.InputSplit;
+import org.apache.hadoop.mapreduce.JobContext;
+import org.apache.hadoop.mapreduce.RecordReader;
+import org.apache.hadoop.mapreduce.TaskAttemptContext;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+import org.apache.log4j.Logger;
+import org.archive.io.ArchiveReader;
+import org.archive.io.ArchiveReaderFactory;
+import org.archive.io.ArchiveRecord;
+import org.archive.io.arc.ARCReader;
+import org.archive.io.arc.ARCReaderFactory.CompressedARCReader;
+import org.archive.io.warc.WARCReader;
+import org.archive.io.warc.WARCReaderFactory.CompressedWARCReader;
+
+/** Extends FileInputFormat for Web Archive Commons InputFormat. */
+<span class="fc" id="L45">public class ArchiveRecordInputFormat extends FileInputFormat&lt;LongWritable, ArchiveRecordWritable&gt; {</span>
+  /** Setup logger. */
+<span class="fc" id="L47">  private static final Logger LOG = Logger.getLogger(ArchiveRecordInputFormat.class);</span>
+
+  @Override
+  public final RecordReader&lt;LongWritable, ArchiveRecordWritable&gt; createRecordReader(
+      final InputSplit split, final TaskAttemptContext context)
+      throws IOException, InterruptedException {
+<span class="fc" id="L53">    return new ArchiveRecordReader();</span>
+  }
+
+  @Override
+  protected final boolean isSplitable(final JobContext context, final Path filename) {
+<span class="fc" id="L58">    return false;</span>
+  }
+
+  /** Extends RecordReader for Record Reader. */
+<span class="fc" id="L62">  public class ArchiveRecordReader extends RecordReader&lt;LongWritable, ArchiveRecordWritable&gt; {</span>
+
+    /** Archive reader. */
+    private ArchiveReader reader;
+
+    /** Archive format. */
+    private ArchiveFormat format;
+
+    /** Start position of archive being read. */
+    private long start;
+
+    /** A given position of an archive being read. */
+    private long pos;
+
+    /** End position of an archive being read. */
+    private long end;
+
+    /** LongWritable key. */
+<span class="fc" id="L80">    private LongWritable key = null;</span>
+
+    /** ArchiveRecordWritable value. */
+<span class="fc" id="L83">    private ArchiveRecordWritable value = null;</span>
+
+    /** Archive file name. */
+    private String fileName;
+
+    /** Seekable file position. */
+    private Seekable filePosition;
+
+    /** Iterator for an archive record. */
+    private Iterator&lt;ArchiveRecord&gt; iter;
+
+    @Override
+    public final void initialize(
+        final InputSplit archiveRecordSplit, final TaskAttemptContext context) throws IOException {
+<span class="fc" id="L97">      FileSplit split = (FileSplit) archiveRecordSplit;</span>
+<span class="fc" id="L98">      Configuration job = context.getConfiguration();</span>
+<span class="fc" id="L99">      start = split.getStart();</span>
+<span class="fc" id="L100">      end = start + split.getLength();</span>
+<span class="fc" id="L101">      final Path file = split.getPath();</span>
+
+<span class="fc" id="L103">      FileSystem fs = file.getFileSystem(job);</span>
+<span class="fc" id="L104">      FSDataInputStream fileIn = fs.open(split.getPath());</span>
+<span class="fc" id="L105">      fileName = split.getPath().toString();</span>
+
+<span class="fc" id="L107">      reader = ArchiveReaderFactory.get(fileName, new BufferedInputStream(fileIn), true);</span>
+
+<span class="fc bfc" id="L109" title="All 2 branches covered.">      if (reader instanceof ARCReader) {</span>
+<span class="fc" id="L110">        format = ArchiveFormat.ARC;</span>
+<span class="fc" id="L111">        iter = reader.iterator();</span>
+      }
+
+<span class="fc bfc" id="L114" title="All 2 branches covered.">      if (reader instanceof WARCReader) {</span>
+<span class="fc" id="L115">        format = ArchiveFormat.WARC;</span>
+<span class="fc" id="L116">        iter = reader.iterator();</span>
+      }
+
+<span class="fc" id="L119">      this.pos = start;</span>
+<span class="fc" id="L120">    }</span>
+
+    /**
+     * Determines if archive is compressed.
+     *
+     * @return instanceof if ARC/WARC
+     */
+    private boolean isCompressedInput() {
+<span class="nc bnc" id="L128" title="All 2 branches missed.">      if (format == ArchiveFormat.ARC) {</span>
+<span class="nc" id="L129">        return reader instanceof CompressedARCReader;</span>
+      } else {
+<span class="nc" id="L131">        return reader instanceof CompressedWARCReader;</span>
+      }
+    }
+
+    /**
+     * Get file position of archive.
+     *
+     * @return retVal position of archive
+     * @throws IOException if there is an issue
+     */
+    private long getFilePosition() throws IOException {
+      long retVal;
+<span class="nc bnc" id="L143" title="All 4 branches missed.">      if (isCompressedInput() &amp;&amp; null != filePosition) {</span>
+<span class="nc" id="L144">        retVal = filePosition.getPos();</span>
+      } else {
+<span class="nc" id="L146">        retVal = pos;</span>
+      }
+<span class="nc" id="L148">      return retVal;</span>
+    }
+
+    @Override
+    public final boolean nextKeyValue() throws IOException {
+<span class="fc bfc" id="L153" title="All 2 branches covered.">      if (!iter.hasNext()) {</span>
+<span class="fc" id="L154">        return false;</span>
+      }
+
+<span class="fc bfc" id="L157" title="All 2 branches covered.">      if (key == null) {</span>
+<span class="fc" id="L158">        key = new LongWritable();</span>
+      }
+<span class="fc" id="L160">      key.set(pos);</span>
+
+<span class="fc" id="L162">      ArchiveRecord record = null;</span>
+      try {
+<span class="fc" id="L164">        record = iter.next();</span>
+<span class="nc" id="L165">      } catch (Exception e) {</span>
+<span class="nc" id="L166">        return false;</span>
+<span class="fc" id="L167">      }</span>
+
+<span class="pc bpc" id="L169" title="1 of 2 branches missed.">      if (record == null) {</span>
+<span class="nc" id="L170">        return false;</span>
+      }
+
+<span class="fc bfc" id="L173" title="All 2 branches covered.">      if (value == null) {</span>
+<span class="fc" id="L174">        value = new ArchiveRecordWritable();</span>
+      }
+<span class="fc" id="L176">      value.setRecord(record);</span>
+
+<span class="fc" id="L178">      return true;</span>
+    }
+
+    @Override
+    public final LongWritable getCurrentKey() {
+<span class="fc" id="L183">      return key;</span>
+    }
+
+    @Override
+    public final ArchiveRecordWritable getCurrentValue() {
+<span class="fc" id="L188">      return value;</span>
+    }
+
+    @Override
+    public final float getProgress() throws IOException {
+<span class="nc bnc" id="L193" title="All 2 branches missed.">      if (start == end) {</span>
+<span class="nc" id="L194">        return 0.0f;</span>
+      } else {
+<span class="nc" id="L196">        return Math.min(1.0f, (getFilePosition() - start) / (float) (end - start));</span>
+      }
+    }
+
+    @Override
+    public final synchronized void close() throws IOException {
+<span class="fc" id="L202">      reader.close();</span>
+<span class="fc" id="L203">      LOG.info(&quot;Closed archive file &quot; + fileName);</span>
+<span class="fc" id="L204">    }</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

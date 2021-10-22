@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WriteGraphML.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Archives Unleashed Toolkit</a> &gt; <a href="index.source.html" class="el_package">io.archivesunleashed.app</a> &gt; <span class="el_source">WriteGraphML.scala</span></div><h1>WriteGraphML.scala</h1><pre class="source lang-java linenums">/*
+ * Copyright © 2017 The Archives Unleashed Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.archivesunleashed.app
+
+import io.archivesunleashed.matchbox.{ComputeMD5, WWWLink}
+import java.nio.charset.StandardCharsets
+import java.nio.file.{Files, Paths}
+import org.apache.spark.sql.Row
+
+<span class="fc" id="L23">object WriteGraphML {</span>
+
+  /** Verifies graphmlPath is empty.
+    *
+    * @param data Array[Row] elements in format (crawl_date, src_domain,
+    *        dest_domain, count)
+    * @param graphmlPath output file
+    */
+  def apply(data: Array[Row], graphmlPath: String): Boolean = {
+<span class="fc bfc" id="L32" title="All 2 branches covered.">    if (graphmlPath.isEmpty()) {</span>
+<span class="fc" id="L33">      false</span>
+    } else {
+<span class="fc" id="L35">      makeFile(data, graphmlPath)</span>
+    }
+  }
+
+  /** Produces the GraphML output from an Array[Row] and outputs it to graphmlPath.
+    *
+    * @param data a Dataset[Row] of elements in format (crawl_date, src_domain,
+    *        dest_domain, count)
+    * @param graphmlPath output file
+    * @return true on success.
+    */
+  def makeFile(data: Array[Row], graphmlPath: String): Boolean = {
+    val outFile =
+<span class="fc" id="L48">      Files.newBufferedWriter(Paths.get(graphmlPath), StandardCharsets.UTF_8)</span>
+<span class="fc" id="L49">    val nodes = scala.collection.mutable.Set[String]()</span>
+
+<span class="fc" id="L51">    data foreach { d =&gt;</span>
+      nodes.add(d.get(1).asInstanceOf[String])
+      nodes.add(d.get(2).asInstanceOf[String])
+    }
+
+<span class="fc" id="L56">    outFile.write(</span>
+      &quot;&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot;?&gt;\n&quot; +
+        &quot;&lt;graphml xmlns=\&quot;http://graphml.graphdrawing.org/xmlns\&quot;\n&quot; +
+        &quot;  xmlns:xsi=\&quot;http://www.w3.org/2001/XMLSchema-instance\&quot;\n&quot; +
+        &quot;  xsi:schemaLocation=\&quot;http://graphml.graphdrawing.org/xmlns\n&quot; +
+        &quot;  http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\&quot;\n&gt;&quot; +
+        &quot;&lt;key id=\&quot;label\&quot; for=\&quot;node\&quot; attr.name=\&quot;label\&quot; attr.type=\&quot;string\&quot; /&gt;\n&quot; +
+        &quot;&lt;key id=\&quot;weight\&quot; for=\&quot;edge\&quot; attr.name=\&quot;weight\&quot; attr.type=\&quot;double\&quot;&gt;\n&quot; +
+        &quot;&lt;default&gt;0.0&lt;/default&gt;\n&quot; +
+        &quot;&lt;/key&gt;\n&quot; +
+<span class="fc" id="L66">        &quot;&lt;key id=\&quot;crawlDate\&quot; for=\&quot;edge\&quot; attr.name=\&quot;crawlDate\&quot; attr.type=\&quot;string\&quot; /&gt;\n&quot; +</span>
+        &quot;&lt;graph mode=\&quot;static\&quot; edgedefault=\&quot;directed\&quot;&gt;\n&quot;
+    )
+
+<span class="fc" id="L70">    nodes foreach { n =&gt;</span>
+      outFile.write(
+        &quot;&lt;node id=\&quot;&quot; + ComputeMD5(n.asInstanceOf[String].getBytes) + &quot;\&quot;&gt;\n&quot; +
+          &quot;&lt;data key=\&quot;label\&quot;&gt;&quot; + n
+          .asInstanceOf[String]
+          .escapeInvalidXML() + &quot;&lt;/data&gt;\n&lt;/node&gt;\n&quot;
+      )
+    }
+
+<span class="fc" id="L79">    data foreach { e =&gt;</span>
+      outFile.write(
+        &quot;&lt;edge source=\&quot;&quot; + ComputeMD5(
+          e.get(1).asInstanceOf[String].getBytes
+        ) + &quot;\&quot; target=\&quot;&quot; +
+          ComputeMD5(
+            e.get(2).asInstanceOf[String].getBytes
+          ) + &quot;\&quot; type=\&quot;directed\&quot;&gt;\n&quot; +
+          &quot;&lt;data key=\&quot;weight\&quot;&gt;&quot; + e.get(3) + &quot;&lt;/data&gt;\n&quot; +
+          &quot;&lt;data key=\&quot;crawlDate\&quot;&gt;&quot; + e.get(0) + &quot;&lt;/data&gt;\n&quot; +
+          &quot;&lt;/edge&gt;\n&quot;
+      )
+    }
+<span class="fc" id="L92">    outFile.write(</span>
+<span class="fc" id="L93">      &quot;&lt;/graph&gt;\n&quot; +</span>
+        &quot;&lt;/graphml&gt;&quot;
+    )
+<span class="fc" id="L96">    outFile.close()</span>
+<span class="fc" id="L97">    true</span>
+  }
+<span class="fc" id="L99">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

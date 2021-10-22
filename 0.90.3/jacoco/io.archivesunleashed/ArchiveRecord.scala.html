@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ArchiveRecord.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Archives Unleashed Toolkit</a> &gt; <a href="index.source.html" class="el_package">io.archivesunleashed</a> &gt; <span class="el_source">ArchiveRecord.scala</span></div><h1>ArchiveRecord.scala</h1><pre class="source lang-java linenums">/*
+ * Copyright © 2017 The Archives Unleashed Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package io.archivesunleashed
+
+import java.io.ByteArrayInputStream
+import java.security.MessageDigest
+import java.text.SimpleDateFormat
+
+import io.archivesunleashed.data.{
+  ArcRecordUtils,
+  WarcRecordUtils,
+  ArchiveRecordWritable
+}
+import io.archivesunleashed.matchbox.{
+  ComputeMD5,
+  ExtractDate,
+  ExtractDomain,
+  RemoveHTTPHeader
+}
+import org.apache.commons.httpclient.{Header, HttpParser, StatusLine}
+import org.apache.spark.SerializableWritable
+import org.archive.io.arc.ARCRecord
+import org.archive.io.warc.WARCRecord
+import org.archive.util.ArchiveUtils
+import scala.util.Try
+
+/** Trait for a record in a web archive. */
+trait ArchiveRecord extends Serializable {
+
+  /** Returns the full path or url containing the Archive Records. */
+  def getArchiveFilename: String
+
+  /** Returns the crawl date. */
+  def getCrawlDate: String
+
+  /** Returns the crawl month. */
+  def getCrawlMonth: String
+
+  /** Returns the content of the record as an array of bytes. */
+  def getContentBytes: Array[Byte]
+
+  /** Returns the content of the record as a String. */
+  def getContentString: String
+
+  /** Returns the MIME type. */
+  def getMimeType: String
+
+  /** Returns the URL. */
+  def getUrl: String
+
+  /** Returns the domain. */
+  def getDomain: String
+
+  /** Returns a raw array of bytes for an image. */
+  def getBinaryBytes: Array[Byte]
+
+  /** Returns the http status of the crawl. */
+  def getHttpStatus: String
+
+  /** Returns payload digest (SHA1). */
+  def getPayloadDigest: String
+}
+
+/** Default implementation of a record in a web archive.
+  *
+  *  @constructor an archive record.
+  *  @param r the serialized record
+  */
+<span class="fc" id="L83">class ArchiveRecordImpl(r: SerializableWritable[ArchiveRecordWritable])</span>
+<span class="fc" id="L84">    extends ArchiveRecord {</span>
+<span class="fc" id="L85">  val recordFormat = r.t.getFormat</span>
+<span class="fc" id="L86">  val ISO8601 = new SimpleDateFormat(&quot;yyyy-MM-dd'T'HH:mm:ssX&quot;)</span>
+
+<span class="fc" id="L88">  val getArchiveFilename: String = {</span>
+<span class="pc bpc" id="L89" title="3 of 6 branches missed.">    if (recordFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {</span>
+<span class="fc" id="L90">      r.t.getRecord.asInstanceOf[ARCRecord].getMetaData.getReaderIdentifier()</span>
+    } else {
+<span class="fc" id="L92">      r.t.getRecord.asInstanceOf[WARCRecord].getHeader.getReaderIdentifier()</span>
+    }
+  }
+
+<span class="fc" id="L96">  val getCrawlDate: String = {</span>
+<span class="pc bpc" id="L97" title="3 of 6 branches missed.">    if (recordFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {</span>
+<span class="fc" id="L98">      ExtractDate(</span>
+<span class="fc" id="L99">        r.t.getRecord.asInstanceOf[ARCRecord].getMetaData.getDate,</span>
+<span class="fc" id="L100">        ExtractDate.DateComponent.YYYYMMDD</span>
+      )
+    } else {
+<span class="fc" id="L103">      ExtractDate(</span>
+        ArchiveUtils.get14DigitDate(
+<span class="fc" id="L105">          ISO8601.parse(</span>
+<span class="fc" id="L106">            r.t.getRecord.asInstanceOf[WARCRecord].getHeader.getDate</span>
+          )
+        ),
+<span class="fc" id="L109">        ExtractDate.DateComponent.YYYYMMDD</span>
+      )
+    }
+  }
+
+<span class="pc" id="L114">  val getCrawlMonth: String = {</span>
+<span class="pc bpc" id="L115" title="3 of 6 branches missed.">    if (recordFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {</span>
+<span class="fc" id="L116">      ExtractDate(</span>
+<span class="fc" id="L117">        r.t.getRecord.asInstanceOf[ARCRecord].getMetaData.getDate,</span>
+<span class="fc" id="L118">        ExtractDate.DateComponent.YYYYMM</span>
+      )
+    } else {
+<span class="fc" id="L121">      ExtractDate(</span>
+        ArchiveUtils.get14DigitDate(
+<span class="fc" id="L123">          ISO8601.parse(</span>
+<span class="fc" id="L124">            r.t.getRecord.asInstanceOf[WARCRecord].getHeader.getDate</span>
+          )
+        ),
+<span class="fc" id="L127">        ExtractDate.DateComponent.YYYYMM</span>
+      )
+    }
+  }
+
+<span class="fc" id="L132">  val getContentBytes: Array[Byte] = {</span>
+<span class="pc bpc" id="L133" title="3 of 6 branches missed.">    if (recordFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {</span>
+<span class="fc" id="L134">      ArcRecordUtils.getContent(r.t.getRecord.asInstanceOf[ARCRecord])</span>
+    } else {
+<span class="fc" id="L136">      WarcRecordUtils.getContent(r.t.getRecord.asInstanceOf[WARCRecord])</span>
+    }
+  }
+
+<span class="fc" id="L140">  val getContentString: String = {</span>
+<span class="fc" id="L141">    new String(getContentBytes)</span>
+  }
+
+<span class="fc" id="L144">  val getMimeType: String = {</span>
+<span class="pc bpc" id="L145" title="3 of 6 branches missed.">    if (recordFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {</span>
+<span class="fc" id="L146">      Option(r.t.getRecord.asInstanceOf[ARCRecord].getMetaData.getMimetype)</span>
+<span class="fc" id="L147">        .getOrElse(&quot;unknown&quot;)</span>
+    } else {
+<span class="fc" id="L149">      Option(WarcRecordUtils.getWarcResponseMimeType(getContentBytes))</span>
+<span class="fc" id="L150">        .getOrElse(&quot;unknown&quot;)</span>
+    }
+  }
+
+<span class="fc" id="L154">  val getUrl: String = {</span>
+<span class="pc bpc" id="L155" title="3 of 6 branches missed.">    if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {</span>
+<span class="fc" id="L156">      r.t.getRecord.asInstanceOf[ARCRecord].getMetaData.getUrl</span>
+    } else {
+<span class="fc" id="L158">      r.t.getRecord</span>
+        .asInstanceOf[WARCRecord]
+        .getHeader
+        .getUrl
+<span class="fc" id="L162">        .replaceAll(&quot;&lt;|&gt;&quot;, &quot;&quot;)</span>
+    }
+  }
+
+<span class="fc" id="L166">  val getHttpStatus: String = {</span>
+<span class="pc bpc" id="L167" title="3 of 6 branches missed.">    if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {</span>
+<span class="fc" id="L168">      Option(r.t.getRecord.asInstanceOf[ARCRecord].getMetaData.getStatusCode)</span>
+<span class="fc" id="L169">        .getOrElse(&quot;000&quot;)</span>
+    } else {
+<span class="fc" id="L171">      Try(</span>
+        new StatusLine(
+          new String(
+            HttpParser.readRawLine(new ByteArrayInputStream(getContentBytes))
+          )
+<span class="fc" id="L176">        ).getStatusCode</span>
+<span class="pc" id="L177">      ).toOption match {</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">        case Some(x) =&gt; x.toString</span>
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">        case None    =&gt; &quot;000&quot;</span>
+      }
+    }
+  }
+
+<span class="fc" id="L184">  val getDomain: String = {</span>
+<span class="fc" id="L185">    ExtractDomain(getUrl)</span>
+  }
+
+<span class="fc" id="L188">  val getBinaryBytes: Array[Byte] = {</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">    if (getContentString.startsWith(&quot;HTTP/&quot;)) {</span>
+<span class="fc" id="L190">      getContentBytes.slice(</span>
+<span class="fc" id="L191">        getContentString.indexOf(RemoveHTTPHeader.headerEnd)</span>
+<span class="fc" id="L192">          + RemoveHTTPHeader.headerEnd.length,</span>
+<span class="fc" id="L193">        getContentBytes.length</span>
+      )
+    } else {
+<span class="fc" id="L196">      getContentBytes</span>
+    }
+  }
+
+<span class="fc" id="L200">  val getPayloadDigest: String = {</span>
+<span class="pc bpc" id="L201" title="3 of 6 branches missed.">    if (recordFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {</span>
+<span class="fc" id="L202">      &quot;sha1:&quot; + MessageDigest</span>
+<span class="fc" id="L203">        .getInstance(&quot;SHA1&quot;)</span>
+<span class="fc" id="L204">        .digest(getContentBytes)</span>
+<span class="fc" id="L205">        .map(&quot;%02x&quot;.format(_))</span>
+        .mkString
+    } else {
+<span class="fc" id="L208">      r.t.getRecord</span>
+        .asInstanceOf[WARCRecord]
+        .getHeader
+<span class="fc" id="L211">        .getHeaderValue(&quot;WARC-Payload-Digest&quot;)</span>
+        .asInstanceOf[String]
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

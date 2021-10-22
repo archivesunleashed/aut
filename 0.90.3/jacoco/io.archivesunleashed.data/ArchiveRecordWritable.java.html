@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ArchiveRecordWritable.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Archives Unleashed Toolkit</a> &gt; <a href="index.source.html" class="el_package">io.archivesunleashed.data</a> &gt; <span class="el_source">ArchiveRecordWritable.java</span></div><h1>ArchiveRecordWritable.java</h1><pre class="source lang-java linenums">/*
+ * Copyright © 2017 The Archives Unleashed Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package io.archivesunleashed.data;
+
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import org.apache.hadoop.io.Writable;
+import org.archive.io.ArchiveRecord;
+import org.archive.io.arc.ARCRecord;
+import org.archive.io.warc.WARCRecord;
+
+/** Implements Hadoop Writable for Archive Records. */
+public class ArchiveRecordWritable implements Writable {
+
+  /** Archive Formats that can be used. {@link #UNKNOWN} {@link #ARC} {@link #WARC} */
+<span class="fc" id="L31">  public enum ArchiveFormat {</span>
+    /** UNKNOWN format. */
+<span class="fc" id="L33">    UNKNOWN,</span>
+
+    /** ARC format. */
+<span class="fc" id="L36">    ARC,</span>
+
+    /** WARC format. */
+<span class="fc" id="L39">    WARC</span>
+  }
+
+  /** Set default Record format to UNKNOWN. */
+<span class="pc" id="L43">  private ArchiveFormat format = ArchiveFormat.UNKNOWN;</span>
+
+  /** Initialize Archive Record to null. */
+<span class="pc" id="L46">  private ArchiveRecord record = null;</span>
+
+  /** Utility function. */
+<span class="fc" id="L49">  public ArchiveRecordWritable() {}</span>
+
+  /**
+   * Initialize Archive Record.
+   *
+   * @param r Archive Record
+   */
+<span class="nc" id="L56">  public ArchiveRecordWritable(final ArchiveRecord r) {</span>
+<span class="nc" id="L57">    this.record = r;</span>
+<span class="nc" id="L58">    detectFormat();</span>
+<span class="nc" id="L59">  }</span>
+
+  /**
+   * Set Archive Record.
+   *
+   * @param r Archive Record
+   */
+  public final void setRecord(final ArchiveRecord r) {
+<span class="fc" id="L67">    this.record = r;</span>
+<span class="fc" id="L68">    detectFormat();</span>
+<span class="fc" id="L69">  }</span>
+
+  /**
+   * Get Archive Record.
+   *
+   * @return record Archive Record
+   */
+  public final ArchiveRecord getRecord() {
+<span class="fc" id="L77">    return record;</span>
+  }
+
+  /** Detect format of Archive Record. */
+  public final void detectFormat() {
+<span class="fc bfc" id="L82" title="All 2 branches covered.">    if (record instanceof ARCRecord) {</span>
+<span class="fc" id="L83">      format = ArchiveFormat.ARC;</span>
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">    } else if (record instanceof WARCRecord) {</span>
+<span class="fc" id="L85">      format = ArchiveFormat.WARC;</span>
+    } else {
+<span class="nc" id="L87">      format = ArchiveFormat.UNKNOWN;</span>
+    }
+<span class="fc" id="L89">  }</span>
+
+  /**
+   * Get format of Archive Record.
+   *
+   * @return format of Archive Record
+   */
+  public final ArchiveFormat getFormat() {
+<span class="fc" id="L97">    return format;</span>
+  }
+
+  /**
+   * Set format of Archive Record.
+   *
+   * @param f format of Archive Record
+   */
+  public final void setFormat(final ArchiveFormat f) {
+<span class="fc" id="L106">    this.format = f;</span>
+<span class="fc" id="L107">  }</span>
+
+  @Override
+  public final void readFields(final DataInput in) throws IOException {
+<span class="fc" id="L111">    int len = in.readInt();</span>
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">    if (len == 0) {</span>
+<span class="nc" id="L113">      this.record = null;</span>
+<span class="nc" id="L114">      return;</span>
+    }
+
+<span class="fc" id="L117">    byte[] bytes = new byte[len];</span>
+<span class="fc" id="L118">    in.readFully(bytes);</span>
+
+<span class="fc bfc" id="L120" title="All 2 branches covered.">    if (getFormat() == ArchiveFormat.ARC) {</span>
+<span class="fc" id="L121">      this.record = ArcRecordUtils.fromBytes(bytes);</span>
+<span class="pc bpc" id="L122" title="1 of 2 branches missed.">    } else if (getFormat() == ArchiveFormat.WARC) {</span>
+<span class="fc" id="L123">      this.record = WarcRecordUtils.fromBytes(bytes);</span>
+    } else {
+<span class="nc" id="L125">      this.record = null;</span>
+    }
+<span class="fc" id="L127">  }</span>
+
+  @Override
+  public final void write(final DataOutput out) throws IOException {
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">    if (record == null) {</span>
+<span class="nc" id="L132">      out.writeInt(0);</span>
+    }
+    byte[] bytes;
+
+<span class="fc bfc" id="L136" title="All 2 branches covered.">    if (getFormat() == ArchiveFormat.ARC) {</span>
+<span class="fc" id="L137">      bytes = ArcRecordUtils.toBytes((ARCRecord) record);</span>
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">    } else if (getFormat() == ArchiveFormat.WARC) {</span>
+<span class="fc" id="L139">      bytes = WarcRecordUtils.toBytes((WARCRecord) record);</span>
+    } else {
+<span class="nc" id="L141">      bytes = null;</span>
+    }
+
+<span class="fc" id="L144">    out.writeInt(bytes.length);</span>
+<span class="fc" id="L145">    out.write(bytes);</span>
+<span class="fc" id="L146">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

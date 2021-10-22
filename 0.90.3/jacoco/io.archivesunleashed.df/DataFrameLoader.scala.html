@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DataFrameLoader.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Archives Unleashed Toolkit</a> &gt; <a href="index.source.html" class="el_package">io.archivesunleashed.df</a> &gt; <span class="el_source">DataFrameLoader.scala</span></div><h1>DataFrameLoader.scala</h1><pre class="source lang-java linenums">/*
+ * Copyright © 2017 The Archives Unleashed Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package io.archivesunleashed.df
+
+import io.archivesunleashed.RecordLoader
+import org.apache.spark.SparkContext
+import org.apache.spark.sql.DataFrame
+
+/** DataFrame wrapper for PySpark implementation. * */
+<span class="fc" id="L24">class DataFrameLoader(sc: SparkContext) {</span>
+
+  /** Create a DataFrame with crawl_date, url, mime_type_web_server, mime_type_tika, content, bytes, http_status_code, and archive_filename. */
+  def all(path: String): DataFrame = {
+<span class="fc" id="L28">    RecordLoader</span>
+<span class="fc" id="L29">      .loadArchives(path, sc)</span>
+      .all()
+  }
+
+  /** Create a DataFrame with audio url, filename, extension, mime_type_web_server, mime_type_tika, md5, sha1, and raw bytes. */
+  def audio(path: String): DataFrame = {
+<span class="fc" id="L35">    RecordLoader.loadArchives(path, sc).audio</span>
+  }
+
+  /* Create a DataFrame with crawl date, source page, image url, and alt text. */
+  def imagegraph(path: String): DataFrame = {
+<span class="fc" id="L40">    RecordLoader</span>
+<span class="fc" id="L41">      .loadArchives(path, sc)</span>
+      .imagegraph()
+  }
+
+  /** Create a DataFrame with image url, filename, extension, mime_type_web_server, mime_type_tika, width, height, md5, sha1, and raw bytes. */
+  def images(path: String): DataFrame = {
+<span class="fc" id="L47">    RecordLoader</span>
+<span class="fc" id="L48">      .loadArchives(path, sc)</span>
+      .images()
+  }
+
+  /** Create a DataFrame with PDF url, filename, extension, mime_type_web_server, mime_type_tika, md5, sha1, and raw bytes. */
+  def pdfs(path: String): DataFrame = {
+<span class="fc" id="L54">    RecordLoader.loadArchives(path, sc).pdfs</span>
+  }
+
+  /** Create a DataFrame with presentation program file url, filename, extension, mime_type_web_server, mime_type_tika, md5, sha1, and raw bytes. */
+  def presentationProgramFiles(path: String): DataFrame = {
+<span class="fc" id="L59">    RecordLoader.loadArchives(path, sc).presentationProgramFiles</span>
+  }
+
+  /** Create a DataFrame with spreadsheet url, filename, extension, mime_type_web_server, mime_type_tika, md5, sha1, and raw bytes. */
+  def spreadsheets(path: String): DataFrame = {
+<span class="fc" id="L64">    RecordLoader.loadArchives(path, sc).spreadsheets</span>
+  }
+
+  /** Create a DataFrame with video url, filename, extension, mime_type_web_server, mime_type_tika, md5, sha1, and raw bytes. */
+  def videos(path: String): DataFrame = {
+<span class="fc" id="L69">    RecordLoader.loadArchives(path, sc).videos</span>
+  }
+
+  /** Create a DataFrame with crawl_date, source, destination, and anchor. */
+  def webgraph(path: String): DataFrame = {
+<span class="fc" id="L74">    RecordLoader</span>
+<span class="fc" id="L75">      .loadArchives(path, sc)</span>
+      .webgraph()
+  }
+
+  /** Create a DataFrame with crawl_date, url, mime_type_web_server, language, and content. */
+  def webpages(path: String): DataFrame = {
+<span class="fc" id="L81">    RecordLoader</span>
+<span class="fc" id="L82">      .loadArchives(path, sc)</span>
+      .webpages()
+  }
+
+  /** Create a DataFrame with word processor file url, filename, extension, mime_type_web_server, mime_type_tika, md5, sha1, and raw bytes. */
+  def wordProcessorFiles(path: String): DataFrame = {
+<span class="fc" id="L88">    RecordLoader.loadArchives(path, sc).wordProcessorFiles</span>
+  }
+<span class="fc" id="L90">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>
