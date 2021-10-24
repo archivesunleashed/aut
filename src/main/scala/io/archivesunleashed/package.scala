@@ -65,6 +65,7 @@ import org.apache.spark.sql.types.{
 }
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 import org.apache.spark.{RangePartitioner, SerializableWritable, SparkContext}
+import scala.language.postfixOps
 import scala.reflect.ClassTag
 import scala.util.matching.Regex
 import scala.util.Try
