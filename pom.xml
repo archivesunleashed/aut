@@ -44,6 +44,7 @@
     <versions.plugin.version>2.1</versions.plugin.version>
     <tika.version>1.22</tika.version>
     <jackson.version>2.10.0</jackson.version>
+    <scala.maven.plugin.version>4.5.4</scala.maven.plugin.version>
   </properties>
 
   <licenses>
@@ -147,7 +148,7 @@
       <plugin>
         <groupId>net.alchim31.maven</groupId>
         <artifactId>scala-maven-plugin</artifactId>
-        <version>4.2.0</version>
+        <version>${scala.maven.plugin.version}</version>
         <executions>
           <execution>
             <phase>process-resources</phase>
@@ -163,6 +164,19 @@
               <goal>testCompile</goal>
             </goals>
           </execution>
+          <execution>
+            <id>attach-scaladocs</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>doc-jar</goal>
+            </goals>
+            <configuration>
+              <args>
+                <arg>-no-java-comments</arg>
+                <arg>-no-link-warnings</arg>
+              </args>
+            </configuration>
+          </execution>
         </executions>
         <configuration>
           <scalaVersion>${scala.version}</scalaVersion>
@@ -170,11 +184,11 @@
           <failOnMultipleScalaVersions>true</failOnMultipleScalaVersions>
           <sendJavaToScalac>true</sendJavaToScalac>
           <args>
-            <arg>-target:jvm-1.8</arg>
-            <arg>-g:vars</arg>
+            <arg>-unchecked</arg>
             <arg>-deprecation</arg>
-            <arg>-dependencyfile</arg>
-            <arg>${project.build.directory}/.scala_dependencies</arg>
+            <arg>-feature</arg>
+            <arg>-explaintypes</arg>
+            <arg>-target:jvm-1.8</arg>
           </args>
         </configuration>
       </plugin>
@@ -411,6 +425,17 @@
             </reports>
           </reportSet>
         </reportSets>
+      </plugin>
+      <plugin>
+        <groupId>net.alchim31.maven</groupId>
+        <artifactId>scala-maven-plugin</artifactId>
+        <version>${scala.maven.plugin.version}</version>
+        <configuration>
+          <args>
+            <arg>-no-java-comments</arg>
+            <arg>-no-link-warnings</arg>
+          </args>
+        </configuration>
       </plugin>
     </plugins>
   </reporting>
