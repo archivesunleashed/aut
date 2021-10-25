@@ -170,6 +170,12 @@
             <goals>
               <goal>doc-jar</goal>
             </goals>
+            <configuration>
+              <args>
+                <arg>-no-java-comments</arg>
+                <arg>-no-link-warnings</arg>
+              </args>
+            </configuration>
           </execution>
         </executions>
         <configuration>
