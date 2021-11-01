@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WarcRecordUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Archives Unleashed Toolkit</a> &gt; <a href="index.source.html" class="el_package">io.archivesunleashed.data</a> &gt; <span class="el_source">WarcRecordUtils.java</span></div><h1>WarcRecordUtils.java</h1><pre class="source lang-java linenums">/*
+ * Copyright © 2017 The Archives Unleashed Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.archivesunleashed.data;
+
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.apache.commons.httpclient.HttpParser;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BoundedInputStream;
+import org.apache.log4j.Logger;
+import org.archive.format.warc.WARCConstants;
+import org.archive.io.warc.WARCReader;
+import org.archive.io.warc.WARCReaderFactory;
+import org.archive.io.warc.WARCRecord;
+
+/** Utilities for working with {@code WARCRecord}s (from archive.org APIs). */
+public final class WarcRecordUtils implements WARCConstants {
+
+  /** Utility classes should not have a public or default constructor. */
+  private WarcRecordUtils() {}
+
+  /** Setup logger. */
+<span class="fc" id="L43">  private static final Logger LOG = Logger.getLogger(WarcRecordUtils.class);</span>
+
+  /**
+   * Converts raw bytes into an {@code WARCRecord}.
+   *
+   * @param bytes raw bytes
+   * @return parsed {@code WARCRecord}
+   * @throws IOException if there is an issue
+   */
+  public static WARCRecord fromBytes(final byte[] bytes) throws IOException {
+<span class="fc" id="L53">    WARCReader reader =</span>
+        (WARCReader)
+<span class="fc" id="L55">            WARCReaderFactory.get(</span>
+                &quot;&quot;, new BufferedInputStream(new ByteArrayInputStream(bytes)), false);
+<span class="fc" id="L57">    return (WARCRecord) reader.get();</span>
+  }
+
+  /**
+   * Converts WARC record into raw bytes.
+   *
+   * @param record conents of WARC response record
+   * @return raw contents
+   * @throws IOException if there is an issue
+   */
+  public static byte[] toBytes(final WARCRecord record) throws IOException {
+<span class="fc" id="L68">    ByteArrayOutputStream baos = new ByteArrayOutputStream();</span>
+<span class="fc" id="L69">    DataOutputStream dout = new DataOutputStream(baos);</span>
+
+<span class="fc" id="L71">    dout.write(&quot;WARC/0.17\n&quot;.getBytes());</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">    for (Map.Entry&lt;String, Object&gt; entry : record.getHeader().getHeaderFields().entrySet()) {</span>
+<span class="fc" id="L73">      dout.write((entry.getKey() + &quot;: &quot; + entry.getValue().toString() + &quot;\n&quot;).getBytes());</span>
+<span class="fc" id="L74">    }</span>
+<span class="fc" id="L75">    dout.write(&quot;\n&quot;.getBytes());</span>
+<span class="fc" id="L76">    record.dump(dout);</span>
+
+<span class="fc" id="L78">    return baos.toByteArray();</span>
+  }
+
+  /**
+   * Extracts the MIME type of WARC response records. &quot;WARC-Type&quot; is &quot;response&quot;. Note that this is
+   * different from the &quot;Content-Type&quot; in the WARC header.
+   *
+   * @param contents raw contents of the WARC response record
+   * @return MIME type
+   */
+  public static String getWarcResponseMimeType(final byte[] contents) {
+    // This is a somewhat janky way to get the MIME type of the response.
+    // Moreover, this simple regex is not compliant with the specification.
+    // See: https://www.w3.org/Protocols/rfc1341/4_Content-Type.html
+    // It would be much better to parse all headers using an external library:
+    //   org.apache.commons.httpclient.HeaderElement
+    // Note that this is different from the &quot;Content-Type&quot; in the WARC header.
+<span class="fc" id="L95">    Pattern pattern = Pattern.compile(&quot;Content-Type: ([^\\s;]+) *(;.*)?&quot;, Pattern.CASE_INSENSITIVE);</span>
+<span class="fc" id="L96">    Matcher matcher = pattern.matcher(new String(contents));</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">    if (matcher.find()) {</span>
+<span class="fc" id="L98">      return matcher.group(1).replaceAll(&quot;;$&quot;, &quot;&quot;);</span>
+    }
+
+<span class="fc" id="L101">    return null;</span>
+  }
+
+  /**
+   * Extracts raw contents from a {@code WARCRecord} (including HTTP headers).
+   *
+   * @param record the {@code WARCRecord}
+   * @return raw contents
+   * @throws IOException if there is an issue
+   */
+  public static byte[] getContent(final WARCRecord record) throws IOException {
+<span class="fc" id="L112">    int len = (int) record.getHeader().getContentLength();</span>
+
+    // If we have a corrupt record, quit and move on.
+<span class="pc bpc" id="L115" title="1 of 2 branches missed.">    if (len &lt; 0) {</span>
+<span class="nc" id="L116">      return new byte[0];</span>
+    }
+
+    try {
+<span class="fc" id="L120">      return copyToByteArray(record, len, true);</span>
+<span class="nc" id="L121">    } catch (Exception e) {</span>
+      // Catch exceptions related to any corrupt archive files.
+<span class="nc" id="L123">      return new byte[0];</span>
+    }
+  }
+
+  /**
+   * Extracts contents of the body from a {@code WARCRecord}. Excludes HTTP headers.
+   *
+   * @param record the {@code WARCRecord}
+   * @return contents of the body
+   * @throws IOException if there is an issue
+   */
+  public static byte[] getBodyContent(final WARCRecord record) throws IOException {
+<span class="nc" id="L135">    ByteArrayOutputStream baos = new ByteArrayOutputStream();</span>
+<span class="nc" id="L136">    String line = HttpParser.readLine(record, WARC_HEADER_ENCODING);</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">    if (line == null) {</span>
+<span class="nc" id="L138">      return null;</span>
+    }
+
+    // Just using parseHeaders to move down input stream to body.
+<span class="nc" id="L142">    HttpParser.parseHeaders(record, WARC_HEADER_ENCODING);</span>
+<span class="nc" id="L143">    record.dump(baos);</span>
+<span class="nc" id="L144">    return baos.toByteArray();</span>
+  }
+
+  /**
+   * Copies contents to a byte array.
+   *
+   * @param is raw input stream
+   * @param recordLength length of a record
+   * @param enforceLength enforce the length
+   * @return rawContents of body
+   * @throws IOException if there is an issue
+   */
+  private static byte[] copyToByteArray(
+      final InputStream is, final int recordLength, final boolean enforceLength)
+      throws IOException {
+
+<span class="fc" id="L160">    BoundedInputStream bis = new BoundedInputStream(is, recordLength);</span>
+<span class="fc" id="L161">    byte[] rawContents = IOUtils.toByteArray(bis);</span>
+<span class="pc bpc" id="L162" title="2 of 4 branches missed.">    if (enforceLength &amp;&amp; rawContents.length != recordLength) {</span>
+<span class="nc" id="L163">      LOG.error(</span>
+          &quot;Read &quot;
+              + rawContents.length
+              + &quot; bytes but expected &quot;
+              + recordLength
+              + &quot; bytes. Continuing...&quot;);
+    }
+<span class="fc" id="L170">    return rawContents;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>
