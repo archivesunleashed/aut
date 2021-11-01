@@ -15,17 +15,29 @@
  */
 package io.archivesunleashed.matchbox
 
-import io.lemonlabs.uri.Url
-import io.lemonlabs.uri.config.UriConfig
-import io.lemonlabs.uri.decoding.PercentDecoder
 import java.net.URL
 
 /** Extracts the host domain name from a full url string. */
 object ExtractDomain {
-
-  implicit val c: UriConfig = UriConfig(
-    decoder = PercentDecoder(ignoreInvalidPercentEncoding = true)
-  )
+  lazy val Suffixes: Set[String] = {
+    val source = scala.io.Source
+      .fromURL(
+        "https://publicsuffix.org/list/public_suffix_list.dat",
+        "utf-8"
+      )
+    try {
+      source.getLines
+        .map(_.trim)
+        .filter(_.nonEmpty)
+        .filter(!_.startsWith("//"))
+        .toSet
+    } catch {
+      case _: Exception =>
+        Set.empty
+    } finally {
+      source.close()
+    }
+  }
 
   /** Extract source domains from a full url string.
     *
@@ -33,18 +45,33 @@ object ExtractDomain {
     * @return domain host, source or null if url is null.
     */
   def apply(url: String): String = {
-    val maybeUri: Option[URL] = checkUrl(url)
-    maybeUri match {
-      case Some(uri) =>
-        try {
-          Url.parse(uri.toString).apexDomain.mkString
-        } catch {
-          case e: Exception =>
-            ""
-        }
+
+    val maybeUrl: Option[URL] = checkUrl(url)
+
+    maybeUrl match {
+
+      case Some(url) =>
+        val host = url.getHost.mkString
+        resolve(host)
       case None =>
         ""
     }
+  }
+
+  def resolve(host: String): String = resolve(host, Suffixes)
+
+  def resolve(host: String, suffixes: Set[String]): String = {
+    val hostSplit = host.split('.')
+    hostSplit.tails
+      .filter(_.length > 1)
+      .find { domain =>
+        val suffix = domain.tail
+        suffixes.contains(suffix.mkString(".")) || (suffix.length > 1 && {
+          suffixes.contains("*." + suffix.tail.mkString("."))
+        })
+      }
+      .getOrElse(hostSplit)
+      .mkString(".")
   }
 
   def checkUrl(url: String): Option[URL] = {
