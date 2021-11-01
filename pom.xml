@@ -108,14 +108,6 @@
                 </transformer>
               </transformers>
 
-              <!-- Shade cats per: https://github.com/lemonlabsuk/scala-uri/issues/341#issuecomment-918529726-->
-              <relocations>
-                <relocation>
-                  <pattern>cats.</pattern>
-                  <shadedPattern>cats.shaded.</shadedPattern>
-                </relocation>
-              </relocations>
-
               <!-- This fixes the issue "Invalid signature file digest for Manifest main attributes"
                    cf. http://zhentao-li.blogspot.com/2012/06/maven-shade-plugin-invalid-signature.html -->
               <filters>
@@ -583,11 +575,6 @@
       <groupId>org.apache.hadoop</groupId>
       <artifactId>hadoop-aws</artifactId>
       <version>${hadoop.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.lemonlabs</groupId>
-      <artifactId>scala-uri_${scala.binary.version}</artifactId>
-      <version>3.5.0</version>
     </dependency>
   </dependencies>
 
