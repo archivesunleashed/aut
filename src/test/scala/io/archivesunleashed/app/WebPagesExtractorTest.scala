@@ -44,7 +44,7 @@ class WebPagesExtractorTest extends FunSuite with BeforeAndAfter {
     val RESULTSLENGTH = 94
 
     assert(dfResults.length == RESULTSLENGTH)
-    assert(dfResults(0).get(0) == "20080430")
+    assert(dfResults(0).get(0) == "20080430204826")
     assert(dfResults(0).get(1) == "archive.org")
     assert(dfResults(0).get(2) == "http://www.archive.org/")
     assert(dfResults(0).get(3) == "text/html")

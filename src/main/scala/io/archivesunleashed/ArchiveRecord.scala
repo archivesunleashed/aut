@@ -97,7 +97,7 @@ class ArchiveRecordImpl(r: SerializableWritable[ArchiveRecordWritable])
     if (recordFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {
       ExtractDate(
         r.t.getRecord.asInstanceOf[ARCRecord].getMetaData.getDate,
-        ExtractDate.DateComponent.YYYYMMDD
+        ExtractDate.DateComponent.YYYYMMDDHHMMSS
       )
     } else {
       ExtractDate(
@@ -106,7 +106,7 @@ class ArchiveRecordImpl(r: SerializableWritable[ArchiveRecordWritable])
             r.t.getRecord.asInstanceOf[WARCRecord].getHeader.getDate
           )
         ),
-        ExtractDate.DateComponent.YYYYMMDD
+        ExtractDate.DateComponent.YYYYMMDDHHMMSS
       )
     }
   }
