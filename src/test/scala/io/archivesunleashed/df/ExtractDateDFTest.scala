@@ -278,7 +278,7 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
       .select(
         removePrefixWWW(extractDomain($"url")).as("Domain"),
         $"url".as("url"),
-        extractDate($"crawl_date", lit("YYYYMMDD")).as("crawl_date"),
+        extractDate($"crawl_date", lit("YYYYMMDDHHMMSS")).as("crawl_date"),
         explode_outer(extractLinks($"url", $"content")).as("link")
       )
       .filter(
@@ -296,12 +296,12 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
 
     assert(results(0).get(0) == "http://www.archive.org/index.php")
     assert(results(0).get(1) == "archive.org")
-    assert(results(0).get(2) == "20080430")
+    assert(results(0).get(2) == "20080430204826")
     assert(results(0).get(3) == "http://www.archive.org/")
 
     assert(results(1).get(0) == "http://www.archive.org/index.php")
     assert(results(1).get(1) == "archive.org")
-    assert(results(1).get(2) == "20080430")
+    assert(results(1).get(2) == "20080430204826")
     assert(
       results(1).get(
         3
@@ -310,7 +310,7 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
 
     assert(results(2).get(0) == "http://www.archive.org/index.php")
     assert(results(2).get(1) == "archive.org")
-    assert(results(2).get(2) == "20080430")
+    assert(results(2).get(2) == "20080430204826")
     assert(results(2).get(3) == "http://www.archive.org/details/movies")
   }
 

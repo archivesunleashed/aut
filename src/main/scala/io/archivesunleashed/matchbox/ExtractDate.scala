@@ -21,14 +21,14 @@ object ExtractDate {
 
     /** An enum specifying years, months, days or a combination. */
     type DateComponent = Value
-    val YYYY, MM, DD, YYYYMM, YYYYMMDD = Value
+    val YYYY, MM, DD, YYYYMM, YYYYMMDD, YYYYMMDDHHMMSS = Value
   }
 
-  import DateComponent.{DateComponent, DD, MM, YYYY, YYYYMM}
+  import DateComponent.{DateComponent, DD, MM, YYYY, YYYYMM, YYYYMMDD}
 
   /** Extracts the wanted date component from a date.
     *
-    * @param fullDate date returned by `WARecord.getCrawlDate`, formatted as YYYYMMDD
+    * @param fullDate date returned by `WARecord.getCrawlDate`, formatted as YYYYMMDDHHMMSS
     * @param dateFormat an enum describing the portion of the date wanted
     */
   def apply(fullDate: String, dateFormat: DateComponent): String = {
@@ -36,15 +36,19 @@ object ExtractDate {
     val yearSS = 4
     val monthSS = 6
     val daySS = 8
+    val hourSS = 10
+    val minuteSS = 12
+    val secondSS = 14
     val maybeFullDate: Option[String] = Option(fullDate)
     maybeFullDate match {
       case Some(fulldate) =>
         dateFormat match {
-          case YYYY   => fullDate.substring(startSS, yearSS)
-          case MM     => fullDate.substring(yearSS, monthSS)
-          case DD     => fullDate.substring(monthSS, daySS)
-          case YYYYMM => fullDate.substring(startSS, monthSS)
-          case _      => fullDate.substring(startSS, daySS)
+          case YYYY     => fullDate.substring(startSS, yearSS)
+          case MM       => fullDate.substring(yearSS, monthSS)
+          case DD       => fullDate.substring(monthSS, daySS)
+          case YYYYMM   => fullDate.substring(startSS, monthSS)
+          case YYYYMMDD => fullDate.substring(startSS, daySS)
+          case _        => fullDate.substring(startSS, secondSS)
         }
       case None =>
         ""
@@ -53,7 +57,7 @@ object ExtractDate {
 
   /** Extracts a provided date component from a date (for DataFrames).
     *
-    * @param fullDate date returned by `WARecord.getCrawlDate`, formatted as YYYYMMDD
+    * @param fullDate date returned by `WARecord.getCrawlDate`, formatted as YYYYMMDDHHMMSS
     * @param dateFormat in String format
     */
   def apply(fullDate: String, dateFormat: String): String = {
@@ -61,15 +65,19 @@ object ExtractDate {
     val yearSS = 4
     val monthSS = 6
     val daySS = 8
+    val hourSS = 10
+    val minuteSS = 12
+    val secondSS = 14
     val maybeFullDate: Option[String] = Option(fullDate)
     maybeFullDate match {
       case Some(fulldate) =>
         dateFormat match {
-          case "YYYY"   => fullDate.substring(startSS, yearSS)
-          case "MM"     => fullDate.substring(yearSS, monthSS)
-          case "DD"     => fullDate.substring(monthSS, daySS)
-          case "YYYYMM" => fullDate.substring(startSS, monthSS)
-          case _        => fullDate.substring(startSS, daySS)
+          case "YYYY"     => fullDate.substring(startSS, yearSS)
+          case "MM"       => fullDate.substring(yearSS, monthSS)
+          case "DD"       => fullDate.substring(monthSS, daySS)
+          case "YYYYMM"   => fullDate.substring(startSS, monthSS)
+          case "YYYYMMDD" => fullDate.substring(startSS, daySS)
+          case _          => fullDate.substring(startSS, secondSS)
         }
       case None =>
         ""

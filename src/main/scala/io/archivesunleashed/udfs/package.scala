@@ -79,7 +79,16 @@ package object udfs extends Serializable {
         .exists(identity)
     })
   def hasDate: UserDefinedFunction =
-    udf((date_ : String, date: Seq[String]) => date.contains(date_))
+    udf((date: String, dates: Seq[String]) => {
+      dates
+        .map(re =>
+          date match {
+            case re.r() => true
+            case _      => false
+          }
+        )
+        .exists(identity)
+    })
   def hasDomains: UserDefinedFunction =
     udf((domain: String, domains: Seq[String]) => domains.contains(domain))
   def hasHTTPStatus: UserDefinedFunction =

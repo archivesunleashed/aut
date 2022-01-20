@@ -47,7 +47,7 @@ class PresentationProgramInformationExtractorTest
     val RESULTSLENGTH = 2
 
     assert(dfResults.length == RESULTSLENGTH)
-    assert(dfResults(0).get(0) == "20190815")
+    assert(dfResults(0).get(0) == "20190815004338")
     assert(
       dfResults(0).get(
         1

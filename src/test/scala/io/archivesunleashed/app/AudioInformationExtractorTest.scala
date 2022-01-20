@@ -45,7 +45,7 @@ class AudioInformationExtractorTest extends FunSuite with BeforeAndAfter {
     val RESULTSLENGTH = 1
 
     assert(dfResults.length == RESULTSLENGTH)
-    assert(dfResults(0).get(0) == "20190817")
+    assert(dfResults(0).get(0) == "20190817230242")
     assert(dfResults(0).get(1) == "https://ruebot.net/files/feniz.mp3")
     assert(dfResults(0).get(2) == "feniz.mp3")
     assert(dfResults(0).get(3) == "mp3")

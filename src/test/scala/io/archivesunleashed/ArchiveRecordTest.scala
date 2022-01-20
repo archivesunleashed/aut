@@ -32,7 +32,7 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
   private var sc: SparkContext = _
   private val exampleArc = "example.arc.gz"
   private val exampleWarc = "example.warc.gz"
-  private val exampleDate = "20080430"
+  private val exampleDate = "20080430204825"
   private val exampleUrl = "archive.org"
   private val exampleStatusCode1 = "000"
   private val exampleStatusCode2 = "200"
@@ -79,7 +79,7 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
       textSampleArc.deep == Array(exampleDate, exampleDate, exampleDate).deep
     )
     assert(
-      textSampleWarc.deep == Array(exampleDate, exampleDate, exampleDate).deep
+      textSampleWarc.deep == Array(exampleDate, exampleDate, "20080430204826").deep
     )
   }
 

@@ -45,7 +45,7 @@ class VideoInformationExtractorTest extends FunSuite with BeforeAndAfter {
     val RESULTSLENGTH = 1
 
     assert(dfResults.length == RESULTSLENGTH)
-    assert(dfResults(0).get(0) == "20190817")
+    assert(dfResults(0).get(0) == "20190817230310")
     assert(
       dfResults(0).get(1) == "https://ruebot.net/2018-11-12%2016.14.11.mp4"
     )
