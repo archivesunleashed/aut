@@ -1,5 +1,17 @@
 # Changelog
 
+## [aut-0.91.0](https://github.com/archivesunleashed/aut/tree/aut-0.91.0) (2022-01-21)
+
+[Full Changelog](https://github.com/archivesunleashed/aut/compare/aut-0.90.4...aut-0.91.0)
+
+**Implemented enhancements:**
+
+- Include timestamp in crawl date [\#525](https://github.com/archivesunleashed/aut/issues/525)
+
+**Merged pull requests:**
+
+- Change crawl\_date format to YYYYMMDDHHMMSS, update hasDate filter. [\#526](https://github.com/archivesunleashed/aut/pull/526) ([ruebot](https://github.com/ruebot))
+
 ## [aut-0.90.4](https://github.com/archivesunleashed/aut/tree/aut-0.90.4) (2021-11-01)
 
 [Full Changelog](https://github.com/archivesunleashed/aut/compare/aut-0.90.3...aut-0.90.4)
@@ -165,7 +177,6 @@
 - Add a number of additional app extractors. [\#451](https://github.com/archivesunleashed/aut/pull/451) ([ruebot](https://github.com/ruebot))
 - Remove RDD option in app; DataFrame only now. [\#450](https://github.com/archivesunleashed/aut/pull/450) ([ruebot](https://github.com/ruebot))
 - \[skip-travis\] Add spark-submit option to README; resolves \#444. [\#446](https://github.com/archivesunleashed/aut/pull/446) ([ruebot](https://github.com/ruebot))
-- Remove WriteGraph; resolves \#439. [\#441](https://github.com/archivesunleashed/aut/pull/441) ([ruebot](https://github.com/ruebot))
 
 ## [aut-0.60.0](https://github.com/archivesunleashed/aut/tree/aut-0.60.0) (2020-04-15)
 
@@ -194,6 +205,7 @@
 **Merged pull requests:**
 
 - Remove GraphX support; resolves \#442. [\#443](https://github.com/archivesunleashed/aut/pull/443) ([ruebot](https://github.com/ruebot))
+- Remove WriteGraph; resolves \#439. [\#441](https://github.com/archivesunleashed/aut/pull/441) ([ruebot](https://github.com/ruebot))
 -  Add graphml output to CommandLineApp and DomainGraphExtractor. [\#438](https://github.com/archivesunleashed/aut/pull/438) ([ruebot](https://github.com/ruebot))
 - Align RDD and DF output for DomainGraphExtractor. [\#437](https://github.com/archivesunleashed/aut/pull/437) ([ruebot](https://github.com/ruebot))
 - Update log4j configuration to resolve \#433. [\#434](https://github.com/archivesunleashed/aut/pull/434) ([ruebot](https://github.com/ruebot))
