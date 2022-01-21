@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExtractDomain.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Archives Unleashed Toolkit</a> &gt; <a href="index.source.html" class="el_package">io.archivesunleashed.matchbox</a> &gt; <span class="el_source">ExtractDomain.scala</span></div><h1>ExtractDomain.scala</h1><pre class="source lang-java linenums">/*
+ * Copyright © 2017 The Archives Unleashed Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.archivesunleashed.matchbox
+
+import java.net.URL
+
+/** Extracts the host domain name from a full url string. */
+<span class="fc" id="L21">object ExtractDomain {</span>
+<span class="pc bpc" id="L22" title="1 of 4 branches missed.">  lazy val Suffixes: Set[String] = {</span>
+<span class="fc" id="L23">    val source = scala.io.Source</span>
+      .fromURL(
+<span class="fc" id="L25">        &quot;https://publicsuffix.org/list/public_suffix_list.dat&quot;,</span>
+<span class="fc" id="L26">        &quot;utf-8&quot;</span>
+      )
+<span class="fc" id="L28">    try {</span>
+<span class="fc" id="L29">      source.getLines</span>
+<span class="fc" id="L30">        .map(_.trim)</span>
+<span class="fc" id="L31">        .filter(_.nonEmpty)</span>
+<span class="pc" id="L32">        .filter(!_.startsWith(&quot;//&quot;))</span>
+        .toSet
+    } catch {
+      case _: Exception =&gt;
+<span class="nc" id="L36">        Set.empty</span>
+    } finally {
+<span class="fc" id="L38">      source.close()</span>
+    }
+  }
+
+  /** Extract source domains from a full url string.
+    *
+    * @param url a url as a string
+    * @return domain host, source or null if url is null.
+    */
+  def apply(url: String): String = {
+
+<span class="fc" id="L49">    val maybeUrl: Option[URL] = checkUrl(url)</span>
+
+<span class="pc" id="L51">    maybeUrl match {</span>
+
+<span class="fc bfc" id="L53" title="All 2 branches covered.">      case Some(url) =&gt;</span>
+<span class="fc" id="L54">        val host = url.getHost.mkString</span>
+<span class="fc" id="L55">        resolve(host)</span>
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">      case None =&gt;</span>
+<span class="fc" id="L57">        &quot;&quot;</span>
+    }
+  }
+
+<span class="fc" id="L61">  def resolve(host: String): String = resolve(host, Suffixes)</span>
+
+  def resolve(host: String, suffixes: Set[String]): String = {
+<span class="fc" id="L64">    val hostSplit = host.split('.')</span>
+<span class="fc" id="L65">    hostSplit.tails</span>
+<span class="fc" id="L66">      .filter(_.length &gt; 1)</span>
+<span class="fc" id="L67">      .find { domain =&gt;</span>
+        val suffix = domain.tail
+        suffixes.contains(suffix.mkString(&quot;.&quot;)) || (suffix.length &gt; 1 &amp;&amp; {
+          suffixes.contains(&quot;*.&quot; + suffix.tail.mkString(&quot;.&quot;))
+        })
+      }
+<span class="fc" id="L73">      .getOrElse(hostSplit)</span>
+<span class="fc" id="L74">      .mkString(&quot;.&quot;)</span>
+  }
+
+  def checkUrl(url: String): Option[URL] = {
+    try {
+<span class="fc" id="L79">      Some(new URL(url.replace(&quot;\\&quot;, &quot;/&quot;)))</span>
+    } catch {
+      case e: Exception =&gt;
+<span class="fc" id="L82">        None</span>
+    }
+  }
+<span class="fc" id="L85">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

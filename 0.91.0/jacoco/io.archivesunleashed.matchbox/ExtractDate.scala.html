@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExtractDate.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Archives Unleashed Toolkit</a> &gt; <a href="index.source.html" class="el_package">io.archivesunleashed.matchbox</a> &gt; <span class="el_source">ExtractDate.scala</span></div><h1>ExtractDate.scala</h1><pre class="source lang-java linenums">/*
+ * Copyright © 2017 The Archives Unleashed Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.archivesunleashed.matchbox
+
+/** Gets different parts of a dateString. */
+<span class="fc" id="L19">object ExtractDate {</span>
+<span class="fc" id="L20">  object DateComponent extends Enumeration {</span>
+
+    /** An enum specifying years, months, days or a combination. */
+    type DateComponent = Value
+<span class="fc" id="L24">    val YYYY, MM, DD, YYYYMM, YYYYMMDD, YYYYMMDDHHMMSS = Value</span>
+  }
+
+  import DateComponent.{DateComponent, DD, MM, YYYY, YYYYMM, YYYYMMDD}
+
+  /** Extracts the wanted date component from a date.
+    *
+    * @param fullDate date returned by `WARecord.getCrawlDate`, formatted as YYYYMMDDHHMMSS
+    * @param dateFormat an enum describing the portion of the date wanted
+    */
+  def apply(fullDate: String, dateFormat: DateComponent): String = {
+<span class="fc" id="L35">    val startSS = 0</span>
+<span class="fc" id="L36">    val yearSS = 4</span>
+<span class="fc" id="L37">    val monthSS = 6</span>
+<span class="fc" id="L38">    val daySS = 8</span>
+<span class="fc" id="L39">    val hourSS = 10</span>
+<span class="fc" id="L40">    val minuteSS = 12</span>
+<span class="fc" id="L41">    val secondSS = 14</span>
+<span class="fc" id="L42">    val maybeFullDate: Option[String] = Option(fullDate)</span>
+<span class="pc" id="L43">    maybeFullDate match {</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">      case Some(fulldate) =&gt;</span>
+<span class="fc" id="L45">        dateFormat match {</span>
+<span class="pc bpc" id="L46" title="3 of 6 branches missed.">          case YYYY     =&gt; fullDate.substring(startSS, yearSS)</span>
+<span class="pc bpc" id="L47" title="3 of 6 branches missed.">          case MM       =&gt; fullDate.substring(yearSS, monthSS)</span>
+<span class="pc bpc" id="L48" title="3 of 6 branches missed.">          case DD       =&gt; fullDate.substring(monthSS, daySS)</span>
+<span class="pc bpc" id="L49" title="3 of 6 branches missed.">          case YYYYMM   =&gt; fullDate.substring(startSS, monthSS)</span>
+<span class="pc bpc" id="L50" title="3 of 6 branches missed.">          case YYYYMMDD =&gt; fullDate.substring(startSS, daySS)</span>
+<span class="fc" id="L51">          case _        =&gt; fullDate.substring(startSS, secondSS)</span>
+        }
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">      case None =&gt;</span>
+<span class="fc" id="L54">        &quot;&quot;</span>
+    }
+  }
+
+  /** Extracts a provided date component from a date (for DataFrames).
+    *
+    * @param fullDate date returned by `WARecord.getCrawlDate`, formatted as YYYYMMDDHHMMSS
+    * @param dateFormat in String format
+    */
+  def apply(fullDate: String, dateFormat: String): String = {
+<span class="fc" id="L64">    val startSS = 0</span>
+<span class="fc" id="L65">    val yearSS = 4</span>
+<span class="fc" id="L66">    val monthSS = 6</span>
+<span class="fc" id="L67">    val daySS = 8</span>
+<span class="fc" id="L68">    val hourSS = 10</span>
+<span class="fc" id="L69">    val minuteSS = 12</span>
+<span class="fc" id="L70">    val secondSS = 14</span>
+<span class="fc" id="L71">    val maybeFullDate: Option[String] = Option(fullDate)</span>
+<span class="pc" id="L72">    maybeFullDate match {</span>
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">      case Some(fulldate) =&gt;</span>
+<span class="fc" id="L74">        dateFormat match {</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">          case &quot;YYYY&quot;     =&gt; fullDate.substring(startSS, yearSS)</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">          case &quot;MM&quot;       =&gt; fullDate.substring(yearSS, monthSS)</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">          case &quot;DD&quot;       =&gt; fullDate.substring(monthSS, daySS)</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">          case &quot;YYYYMM&quot;   =&gt; fullDate.substring(startSS, monthSS)</span>
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">          case &quot;YYYYMMDD&quot; =&gt; fullDate.substring(startSS, daySS)</span>
+<span class="fc" id="L80">          case _          =&gt; fullDate.substring(startSS, secondSS)</span>
+        }
+<span class="nc bnc" id="L82" title="All 2 branches missed.">      case None =&gt;</span>
+<span class="nc" id="L83">        &quot;&quot;</span>
+    }
+  }
+<span class="fc" id="L86">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>
