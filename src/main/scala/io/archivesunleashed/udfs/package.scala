@@ -53,7 +53,7 @@ package object udfs extends Serializable {
   def extractDate: UserDefinedFunction =
     udf(ExtractDate.apply(_: String, _: String))
   def extractDomain: UserDefinedFunction =
-    udf(ExtractDomain.apply(_: String, ""))
+    udf(ExtractDomain.apply(_: String))
   def extractImageLinks: UserDefinedFunction =
     udf(ExtractImageLinks.apply(_: String, _: String))
   def extractLinks: UserDefinedFunction =
@@ -79,7 +79,16 @@ package object udfs extends Serializable {
         .exists(identity)
     })
   def hasDate: UserDefinedFunction =
-    udf((date_ : String, date: Seq[String]) => date.contains(date_))
+    udf((date: String, dates: Seq[String]) => {
+      dates
+        .map(re =>
+          date match {
+            case re.r() => true
+            case _      => false
+          }
+        )
+        .exists(identity)
+    })
   def hasDomains: UserDefinedFunction =
     udf((domain: String, domains: Seq[String]) => domains.contains(domain))
   def hasHTTPStatus: UserDefinedFunction =

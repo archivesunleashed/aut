@@ -45,7 +45,7 @@ class PDFInformationExtractorTest extends FunSuite with BeforeAndAfter {
     val RESULTSLENGTH = 2
 
     assert(dfResults.length == RESULTSLENGTH)
-    assert(dfResults(0).get(0) == "20190812")
+    assert(dfResults(0).get(0) == "20190812222529")
     assert(
       dfResults(0).get(
         1

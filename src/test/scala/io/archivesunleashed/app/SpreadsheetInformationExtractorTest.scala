@@ -45,7 +45,7 @@ class SpreadsheetInformationExtractorTest extends FunSuite with BeforeAndAfter {
     val RESULTSLENGTH = 4
 
     assert(dfResults.length == RESULTSLENGTH)
-    assert(dfResults(0).get(0) == "20190815")
+    assert(dfResults(0).get(0) == "20190815004345")
     assert(
       dfResults(0).get(
         1

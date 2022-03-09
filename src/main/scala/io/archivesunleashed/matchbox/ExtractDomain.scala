@@ -19,28 +19,59 @@ import java.net.URL
 
 /** Extracts the host domain name from a full url string. */
 object ExtractDomain {
+  lazy val Suffixes: Set[String] = {
+    val source = scala.io.Source
+      .fromURL(
+        "https://publicsuffix.org/list/public_suffix_list.dat",
+        "utf-8"
+      )
+    try {
+      source.getLines
+        .map(_.trim)
+        .filter(_.nonEmpty)
+        .filter(!_.startsWith("//"))
+        .toSet
+    } catch {
+      case _: Exception =>
+        Set.empty
+    } finally {
+      source.close()
+    }
+  }
 
   /** Extract source domains from a full url string.
     *
     * @param url a url as a string
-    * @param source an optional default url for urls with no valid domain host
     * @return domain host, source or null if url is null.
     */
-  def apply(url: String, source: String = ""): String = {
-    val maybeHost: Option[URL] = checkUrl(url)
-    val maybeSource: Option[URL] = checkUrl(source)
-    maybeHost match {
-      case Some(host) =>
-        host.getHost
+  def apply(url: String): String = {
 
+    val maybeUrl: Option[URL] = checkUrl(url)
+
+    maybeUrl match {
+
+      case Some(url) =>
+        val host = url.getHost.mkString
+        resolve(host)
       case None =>
-        maybeSource match {
-          case Some(source) =>
-            source.getHost
-          case None =>
-            ""
-        }
+        ""
     }
+  }
+
+  def resolve(host: String): String = resolve(host, Suffixes)
+
+  def resolve(host: String, suffixes: Set[String]): String = {
+    val hostSplit = host.split('.')
+    hostSplit.tails
+      .filter(_.length > 1)
+      .find { domain =>
+        val suffix = domain.tail
+        suffixes.contains(suffix.mkString(".")) || (suffix.length > 1 && {
+          suffixes.contains("*." + suffix.tail.mkString("."))
+        })
+      }
+      .getOrElse(hostSplit)
+      .mkString(".")
   }
 
   def checkUrl(url: String): Option[URL] = {

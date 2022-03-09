@@ -70,7 +70,7 @@ class DataFrameLoaderTest extends FunSuite with BeforeAndAfter {
     assert(r_2(1) == "Web")
 
     val r_3 = imagegraph.take(100)(99)
-    assert(r_3.get(0) == "20080430")
+    assert(r_3.get(0) == "20080430204841")
     assert(
       r_3.get(1) == "http://www.archive.org/details/secretarmiesb00spivrich"
     )

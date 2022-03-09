@@ -21,7 +21,8 @@ import io.archivesunleashed.matchbox.ExtractDate.DateComponent.{
   MM,
   YYYY,
   YYYYMM,
-  YYYYMMDD
+  YYYYMMDD,
+  YYYYMMDDHHMMSS
 }
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
@@ -31,18 +32,24 @@ import org.scalatest.junit.JUnitRunner
 class ExtractDateTest extends FunSuite {
 
   test("Date extraction RDD") {
-    val date = "20151204"
+    val date = "20151204235402"
     val startSS = 0
     val yearSS = 4
     val monthSS = 6
     val daySS = 8
+    val hourSS = 10
+    val minuteSS = 12
+    val secondSS = 14
     assert(ExtractDate(date, YYYY) == date.substring(startSS, yearSS))
     assert(ExtractDate(date, MM) == date.substring(yearSS, monthSS))
     assert(ExtractDate(date, DD) == date.substring(monthSS, daySS))
     assert(ExtractDate(date, YYYYMM) == date.substring(startSS, monthSS))
     assert(ExtractDate(date, YYYYMMDD) == date.substring(startSS, daySS))
+    assert(
+      ExtractDate(date, YYYYMMDDHHMMSS) == date.substring(startSS, secondSS)
+    )
     // scalastyle:off null
-    assert(ExtractDate(null, YYYYMMDD) == "")
+    assert(ExtractDate(null, YYYYMMDDHHMMSS) == "")
     // scalastyle:on null
   }
 }

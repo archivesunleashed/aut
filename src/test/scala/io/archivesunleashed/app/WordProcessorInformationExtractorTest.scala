@@ -47,7 +47,7 @@ class WordProcessorInformationExtractorTest
     val RESULTSLENGTH = 3
 
     assert(dfResults.length == RESULTSLENGTH)
-    assert(dfResults(0).get(0) == "20190815")
+    assert(dfResults(0).get(0) == "20190815004423")
     assert(
       dfResults(0).get(
         1

@@ -130,7 +130,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
       .loadArchives(arcPath, sc)
       .all()
       .select($"url")
-      .filter(hasDomains(extractDomain($"url"), lit(Array("www.archive.org"))))
+      .filter(hasDomains(extractDomain($"url"), lit(Array("archive.org"))))
       .take(1)(0)(0)
 
     assert(base1.toString == expected)
@@ -258,15 +258,15 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     import spark.implicits._
     // scalastyle:on
 
-    val expected = Array("20080430")
+    val date = Array("2008.*")
     val base = RecordLoader
       .loadArchives(arcPath, sc)
       .all()
       .select($"crawl_date")
-      .filter(hasDate($"crawl_date", lit(expected)))
-      .take(1)(0)(0)
+      .filter(hasDate($"crawl_date", lit(date)))
+      .count()
 
-    assert(base.toString == "20080430")
+    assert(base == 261)
   }
 
   after {
