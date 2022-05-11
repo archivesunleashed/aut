@@ -537,6 +537,11 @@
       <artifactId>hadoop-aws</artifactId>
       <version>${hadoop.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.github.internetarchive</groupId>
+	    <artifactId>Sparkling</artifactId>
+	    <version>main-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
   <developers>
