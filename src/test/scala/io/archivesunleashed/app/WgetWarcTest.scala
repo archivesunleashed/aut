@@ -54,9 +54,9 @@ class WgetWarcTest extends FunSuite with BeforeAndAfter {
 
     assert(dfResults.length == RESULTSLENGTH)
     assert(dfResults(0).get(0) == "20210511181400")
-    assert(dfResults(0).get(1) == "http://www.archiveteam.org/")
-    assert(dfResults(1).get(0) == "20210511181401")
-    assert(dfResults(1).get(1) == "https://wiki.archiveteam.org/")
+    assert(dfResults(0).get(1) == "")
+    assert(dfResults(1).get(0) == "20210511181400")
+    assert(dfResults(1).get(1) == "http://www.archiveteam.org/")
   }
 
   after {

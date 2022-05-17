@@ -167,9 +167,9 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
       .take(3)
     assert(
       r2.deep == Array(
-        "filedesc://IAH-20080430204825-00000-blackbook.arc",
         "http://www.archive.org/robots.txt",
-        "http://www.archive.org/images/logoc.jpg"
+        "http://www.archive.org/images/logoc.jpg",
+        "http://ia331306.us.archive.org/robots.txt"
       ).deep
     )
   }
@@ -211,9 +211,9 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
       .take(3)
     assert(
       r2.deep == Array(
-        "filedesc://IAH-20080430204825-00000-blackbook.arc",
         "http://www.archive.org/",
-        "http://www.archive.org/index.php"
+        "http://www.archive.org/index.php",
+        "http://www.archive.org/images/go-button-gateway.gif"
       ).deep
     )
   }
@@ -247,7 +247,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
   }
 
   test("Discard HTTP status codes RDD") {
-    val expected = 46
+    val expected = 45
     val base = RecordLoader.loadArchives(arcPath, sc)
     val statusCodes: Set[String] = Set("200", "404")
     val r2 = base.discardHttpStatus(statusCodes).count

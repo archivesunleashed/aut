@@ -20,10 +20,18 @@ import java.io.InputStream
 import java.security.MessageDigest
 import java.util.Base64
 
-import io.archivesunleashed.data.ArchiveRecordWritable.ArchiveFormat
-import io.archivesunleashed.data.{ArchiveRecordInputFormat, ArchiveRecordWritable}
-import io.archivesunleashed.udfs.{detectLanguage, detectMimeTypeTika, extractDate, extractDomain, removeHTML}
-import io.archivesunleashed.matchbox.{DetectLanguage, DetectMimeTypeTika, ExtractDate, ExtractDomain, ExtractImageDetails, ExtractImageLinks, ExtractLinks, GetExtensionMIME, RemoveHTML, RemoveHTTPHeader}
+import io.archivesunleashed.matchbox.{
+  DetectLanguage,
+  DetectMimeTypeTika,
+  ExtractDate,
+  ExtractDomain,
+  ExtractImageDetails,
+  ExtractImageLinks,
+  ExtractLinks,
+  GetExtensionMIME,
+  RemoveHTML,
+  RemoveHTTPHeader
+}
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent.DateComponent
 import java.net.URI
@@ -32,14 +40,24 @@ import java.net.URL
 import org.apache.commons.codec.binary.Hex
 import org.apache.commons.io.FilenameUtils
 import org.apache.hadoop.fs.{FileSystem, Path}
-import org.apache.hadoop.io.LongWritable
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.functions.{lit, udf}
-import org.apache.spark.sql.types.{BinaryType, IntegerType, StringType, StructField, StructType}
+import org.apache.spark.sql.types.{
+  BinaryType,
+  IntegerType,
+  StringType,
+  StructField,
+  StructType
+}
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 import org.apache.spark.{RangePartitioner, SerializableWritable, SparkContext}
 import org.archive.webservices.sparkling.io.{HdfsIO, IOUtil}
-import org.archive.webservices.sparkling.util.{IteratorUtil, ManagedVal, RddUtil, ValueSupplier}
+import org.archive.webservices.sparkling.util.{
+  IteratorUtil,
+  ManagedVal,
+  RddUtil,
+  ValueSupplier
+}
 import org.archive.webservices.sparkling.warc.{WarcLoader, WarcRecord}
 
 import scala.language.postfixOps
@@ -80,17 +98,20 @@ package object archivesunleashed {
         val filename = path.split('/').last
         val in = HdfsIO.open(path, decompress = false)
         var prev: Option[ManagedVal[ValueSupplier[InputStream]]] = None
-        IteratorUtil.cleanup(WarcLoader.load(in).map { record =>
-          for (p <- prev) p.clear(false)
-          val buffered = IOUtil.buffer(lazyEval = true) { out =>
-            IOUtil.copy(record.payload, out)
+        IteratorUtil.cleanup(
+          WarcLoader.load(in).map { record =>
+            for (p <- prev) p.clear(false)
+            val buffered = IOUtil.buffer(lazyEval = true) { out =>
+              IOUtil.copy(record.payload, out)
+            }
+            prev = Some(buffered)
+            new SparklingArchiveRecord(filename, record, buffered)
+          },
+          () => {
+            for (p <- prev) p.clear(false)
+            in.close()
           }
-          prev = Some(buffered)
-          new SparklingArchiveRecord(filename, record, buffered)
-        }, () => {
-          for (p <- prev) p.clear(false)
-          in.close()
-        })
+        )
       }
     }
   }
