@@ -814,8 +814,11 @@ package object archivesunleashed {
       *
       * @param date a list of dates
       */
-    def discardDate(date: String): RDD[ArchiveRecord] = {
-      rdd.filter(r => r.getCrawlDate != date)
+    def discardDate(
+      dates: List[String],
+      component: DateComponent = DateComponent.YYYYMMDD
+    ): RDD[ArchiveRecord] = {
+      rdd.filter(r => !dates.contains(ExtractDate(r.getCrawlDate, component)))
     }
 
     /** Filters detected URLs.
