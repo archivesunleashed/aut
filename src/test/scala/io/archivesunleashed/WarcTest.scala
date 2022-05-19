@@ -42,7 +42,7 @@ class WarcTest extends FunSuite with BeforeAndAfter {
   }
 
   test("Count records") {
-    assert(822L == records.count)
+    assert(299L == records.count)
   }
 
   test("WARC extract domain RDD") {

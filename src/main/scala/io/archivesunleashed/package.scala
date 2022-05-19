@@ -99,13 +99,14 @@ package object archivesunleashed {
         val in = HdfsIO.open(path, decompress = false)
         var prev: Option[ManagedVal[ValueSupplier[InputStream]]] = None
         IteratorUtil.cleanup(
-          WarcLoader.load(in).map { record =>
-            for (p <- prev) p.clear(false)
-            val buffered = IOUtil.buffer(lazyEval = true) { out =>
-              IOUtil.copy(record.payload, out)
-            }
-            prev = Some(buffered)
-            new SparklingArchiveRecord(filename, record, buffered)
+          WarcLoader.load(in).filter(r => r.isResponse || r.isRevisit).map {
+            record =>
+              for (p <- prev) p.clear(false)
+              val buffered = IOUtil.buffer(lazyEval = true) { out =>
+                IOUtil.copy(record.payload, out)
+              }
+              prev = Some(buffered)
+              new SparklingArchiveRecord(filename, record, buffered)
           },
           () => {
             for (p <- prev) p.clear(false)

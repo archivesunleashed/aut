@@ -24,6 +24,7 @@ import org.archive.webservices.sparkling.http.HttpMessage
 import org.archive.webservices.sparkling.io.IOUtil
 import org.archive.webservices.sparkling.util.{ManagedVal, ValueSupplier}
 import org.archive.webservices.sparkling.warc.{WarcHeaders, WarcRecord}
+import scala.util.Try
 
 object SparklingArchiveRecord {
   val MaxStringByteLength: Int = 1024
@@ -60,27 +61,34 @@ class SparklingArchiveRecord(
     meta.timestamp.filter(_.length >= 14).map(_.take(14)).getOrElse("")
   override def getCrawlMonth: String =
     warc.timestamp.filter(_.length >= 6).map(_.take(6)).getOrElse("")
-  override def getContentBytes: Array[Byte] = payload(warc)
-  override def getContentString: String = {
-    val record =
-      if (maxMemoryBytes < 0) limitBodyLength(MaxStringByteLength).warc
-      else warc
-    http(record)
-      .map { http =>
-        new String(WarcHeaders.http(http.statusLine, http.headers)) + http.bodyString
-      }
-      .getOrElse(new String(payload(record)))
-  }
+  override def getContentBytes: Array[Byte] =
+    Try {
+      payload(warc)
+    }.getOrElse(Array.empty)
+  override def getContentString: String =
+    Try {
+      val record =
+        if (maxMemoryBytes < 0) limitBodyLength(MaxStringByteLength).warc
+        else warc
+      http(record)
+        .map { http =>
+          new String(WarcHeaders.http(http.statusLine, http.headers)) + http.bodyString
+        }
+        .getOrElse(new String(payload(record)))
+    }.getOrElse("")
   override def getMimeType: String =
     http(warc).flatMap(_.mime).getOrElse("unknown")
   override def getUrl: String = warc.url.getOrElse("").replaceAll("<|>", "")
   override def getDomain: String = ExtractDomain(getUrl)
-  override def getBinaryBytes: Array[Byte] = {
-    var record = warc
-    http(record).map(_.body).map(IOUtil.bytes).getOrElse(payload(record))
-  }
+  override def getBinaryBytes: Array[Byte] =
+    Try {
+      var record = warc
+      http(record).map(_.body).map(IOUtil.bytes).getOrElse(payload(record))
+    }.getOrElse(Array.empty)
   override def getHttpStatus: String =
     http(warc).map(_.status.toString).getOrElse("000")
   override def getPayloadDigest: String =
-    meta.payloadDigest.orElse(warc.digestPayload()).getOrElse("")
+    Try {
+      meta.payloadDigest.orElse(warc.digestPayload()).getOrElse("")
+    }.getOrElse("")
 }

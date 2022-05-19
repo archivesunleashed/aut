@@ -48,7 +48,7 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
 
   test("Count records") {
     assert(RecordLoader.loadArchives(arcPath, sc).count == 299L)
-    assert(RecordLoader.loadArchives(warcPath, sc).count == 822L)
+    assert(RecordLoader.loadArchives(warcPath, sc).count == 299L)
   }
 
   test("Resource name produces expected result") {
@@ -79,7 +79,7 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
       textSampleArc.deep == Array(exampleDate, exampleDate, "20080430204826").deep
     )
     assert(
-      textSampleWarc.deep == Array(exampleDate, exampleDate, exampleDate).deep
+      textSampleWarc.deep == Array(exampleDate, exampleDate, "20080430204826").deep
     )
   }
 
@@ -93,7 +93,7 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
       .map(x => x.getDomain)
       .take(3)
     assert(textSampleArc.deep == Array("", exampleUrl, exampleUrl).deep)
-    assert(textSampleWarc.deep == Array("", "", exampleUrl).deep)
+    assert(textSampleWarc.deep == Array("", exampleUrl, exampleUrl).deep)
   }
 
   test("URLs") {
@@ -114,9 +114,9 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
     )
     assert(
       textSampleWarc.deep == Array(
-        "",
         "dns:www.archive.org",
-        "http://www.archive.org/robots.txt"
+        "http://www.archive.org/robots.txt",
+        "http://www.archive.org/"
       ).deep
     )
   }
@@ -138,7 +138,7 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
       ).deep
     )
     assert(
-      textSampleWarc.deep == Array("unknown", "unknown", exampleMimeType).deep
+      textSampleWarc.deep == Array("unknown", exampleMimeType, "text/html").deep
     )
   }
 
@@ -161,7 +161,7 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
     assert(
       textSampleWarc.deep == Array(
         exampleStatusCode1,
-        exampleStatusCode1,
+        exampleStatusCode2,
         exampleStatusCode2
       ).deep
     )
@@ -185,9 +185,9 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
     )
     assert(
       textSampleWarc.deep == Array(
-        "sha1:B3CPX3Q4JK373UZA6HDKGYZVSNQDTGFQ",
         "sha1:RUIV2DUDYXONM2YTMGPAJVQKG3FSYHXE",
-        "sha1:sucgmuvxdkvb5cs2nl4r4jabnx7k466u"
+        "sha1:sucgmuvxdkvb5cs2nl4r4jabnx7k466u",
+        "sha1:2waxx5nuwnncs2bdkco5ovdqbjvnkivv"
       ).deep
     )
   }
