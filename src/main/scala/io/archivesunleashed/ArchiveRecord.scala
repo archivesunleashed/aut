@@ -28,9 +28,6 @@ trait ArchiveRecord extends Serializable {
   /** Returns the crawl month. */
   def getCrawlMonth: String
 
-  /** Returns the content of the record as an array of bytes. */
-  def getContentBytes: Array[Byte]
-
   /** Returns the content of the record as a String. */
   def getContentString: String
 

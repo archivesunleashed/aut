@@ -129,7 +129,7 @@ package object archivesunleashed {
   }
 
   /**
-    * A Wrapper class around DF to allow Dfs of type ARCRecord and WARCRecord to be queried via a fluent API.
+    * A Wrapper class around DF to allow Dfs of type ArchiveRecord to be queried via a fluent API.
     *
     * To load such an DF, please use [[RecordLoader]] and apply .all() on it.
     */
@@ -155,7 +155,7 @@ package object archivesunleashed {
   }
 
   /**
-    * A Wrapper class around RDD to allow RDDs of type ARCRecord and WARCRecord to be queried via a fluent API.
+    * A Wrapper class around RDD to allow RDDs of type ArchiveRecord to be queried via a fluent API.
     *
     * To load such an RDD, please see [[RecordLoader]].
     */
@@ -163,7 +163,7 @@ package object archivesunleashed {
       extends java.io.Serializable {
 
     /* Creates a column for Bytes as well in Dataframe.
-       Call KeepImages OR KeepValidPages on RDD depending upon the requirement before calling this method */
+       Call KeepImages OR KeepValidPages on RDD depending upon the requirement before calling this method. */
     def all(): DataFrame = {
       val records = rdd
         .removeFiledesc()
@@ -570,6 +570,7 @@ package object archivesunleashed {
         .map(r => (r, (DetectMimeTypeTika(r.getBinaryBytes))))
         .filter(r =>
           r._2 == "application/vnd.ms-powerpoint"
+            || r._2 == "application/vnd.apple.keynote"
             || r._2 == "application/vnd.openxmlformats-officedocument.presentationml.presentation"
             || r._2 == "application/vnd.oasis.opendocument.presentation"
             || r._2 == "application/vnd.oasis.opendocument.presentation-template"
