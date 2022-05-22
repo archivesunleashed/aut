@@ -223,6 +223,7 @@ package object archivesunleashed {
         .map(r =>
           Row(
             r.getCrawlDate,
+            ExtractDomain(r.getUrl).replaceAll("^\\s*www\\.", ""),
             r.getUrl,
             r.getMimeType,
             DetectMimeTypeTika(r.getBinaryBytes),
@@ -233,6 +234,7 @@ package object archivesunleashed {
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
+        .add(StructField("domain", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("mime_type_web_server", StringType, true))
         .add(StructField("mime_type_tika", StringType, true))
