@@ -68,10 +68,6 @@
       <url>https://repo.maven.apache.org/maven2/</url>
     </repository>
     <repository>
-      <id>mvn-repo</id>
-      <url>https://raw.githubusercontent.com/archivesunleashed/aut-resources/master/mvn-repo</url>
-    </repository>
-    <repository>
       <id>jitpack.io</id>
       <url>https://jitpack.io</url>
     </repository>
@@ -512,10 +508,7 @@
       <version>${tika.version}</version>
     </dependency>
     <dependency>
-      <!-- See issue #302.
       <groupId>org.apache.tika</groupId>
-      -->
-      <groupId>com.github.archivesunleashed.tika</groupId>
       <artifactId>tika-parsers</artifactId>
       <version>${tika.version}</version>
     </dependency>
