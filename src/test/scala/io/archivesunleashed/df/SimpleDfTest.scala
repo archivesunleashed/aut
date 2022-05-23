@@ -51,15 +51,14 @@ class SimpleDfTest extends FunSuite with BeforeAndAfter {
     // scalastyle:on
 
     val results = df
-      .select(extractDomain($"Url").as("Domain"))
-      .groupBy("Domain")
+      .groupBy($"domain")
       .count()
-      .orderBy(desc("count"))
+      .sort($"count".desc)
       .head(3)
 
     // Results should be:
     // +------------------+-----+
-    // |            Domain|count|
+    // |            domain|count|
     // +------------------+-----+
     // |       archive.org|   91|
     // |     deadlists.com|    2|
