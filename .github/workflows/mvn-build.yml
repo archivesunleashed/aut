@@ -19,5 +19,6 @@ jobs:
           mvn javadoc:jar
           mvn javadoc:test-aggregate
           mvn site
-      - name: Upload coverage report to Codecov
-        run: bash <(curl -s https://codecov.io/bash)
+      - name: Upload coverage to Codecov
+        uses: actions/checkout@master
+        uses: codecov/codecov-action@v2
