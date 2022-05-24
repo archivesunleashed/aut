@@ -43,7 +43,7 @@
     <jacoco.plugin.version>0.8.4</jacoco.plugin.version>
     <versions.plugin.version>2.1</versions.plugin.version>
     <tika.version>1.22</tika.version>
-    <jackson.version>2.10.0</jackson.version>
+    <jackson.version>2.12.6.1</jackson.version>
     <scala.maven.plugin.version>4.5.4</scala.maven.plugin.version>
   </properties>
 
