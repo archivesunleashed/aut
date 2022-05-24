@@ -22,7 +22,7 @@
     <project.name>${project.artifactId}</project.name>
     <scala.version>2.12.10</scala.version>
     <scala.binary.version>2.12</scala.binary.version>
-    <hadoop.version>2.7.4</hadoop.version>
+    <hadoop.version>3.2.3</hadoop.version>
     <spark.version>3.0.1</spark.version>
     <guava.version>29.0-jre</guava.version>
     <github.global.server>github</github.global.server>
