@@ -27,7 +27,6 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 @RunWith(classOf[JUnitRunner])
 class RecordRDDTest extends FunSuite with BeforeAndAfter {
   private val arcPath = Resources.getResource("arc/example.arc.gz").getPath
-  private val badPath = Resources.getResource("arc/badexample.arc.gz").getPath
   private val master = "local[4]"
   private val appName = "example-spark"
   private var sc: SparkContext = _
@@ -41,24 +40,6 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
       .setAppName(appName)
     conf.set("spark.driver.allowMultipleContexts", "true");
     sc = new SparkContext(conf)
-  }
-
-  test("Expect no valid pages RDD") {
-    val expectedLength = 0
-    val base = RecordLoader
-      .loadArchives(badPath, sc)
-      .keepValidPages()
-      .take(2)
-    assert(base.length == expectedLength)
-  }
-
-  test("Expect no images RDD") {
-    val expectedLength = 0
-    val base = RecordLoader
-      .loadArchives(badPath, sc)
-      .keepValidPages()
-      .take(2)
-    assert(base.length == expectedLength)
   }
 
   test("Keep date RDD") {
@@ -167,9 +148,9 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
       .take(3)
     assert(
       r2.deep == Array(
-        "filedesc://IAH-20080430204825-00000-blackbook.arc",
         "http://www.archive.org/robots.txt",
-        "http://www.archive.org/images/logoc.jpg"
+        "http://www.archive.org/images/logoc.jpg",
+        "http://ia331306.us.archive.org/robots.txt"
       ).deep
     )
   }
@@ -211,19 +192,26 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
       .take(3)
     assert(
       r2.deep == Array(
-        "filedesc://IAH-20080430204825-00000-blackbook.arc",
         "http://www.archive.org/",
-        "http://www.archive.org/index.php"
+        "http://www.archive.org/index.php",
+        "http://www.archive.org/images/go-button-gateway.gif"
       ).deep
     )
   }
 
   test("Discard date RDD") {
     val base = RecordLoader.loadArchives(arcPath, sc)
-    val date = "20080430"
-    val r = base.filter(x => !(x.getCrawlDate.contains(date))).collect()
-    val r2 = base.discardDate(date).take(3)
-    assert(r.deep == Array().deep)
+    val date = "2007"
+    val dateComponent = DateComponent.YYYY
+    val r = base
+      .filter(x => ExtractDate(x.getCrawlDate, dateComponent) != date)
+      .map(mp => mp.getUrl)
+      .take(3)
+    val r2 = base
+      .discardDate(List(date), dateComponent)
+      .map(mp => mp.getUrl)
+      .take(3)
+    assert(r2.sameElements(r))
   }
 
   test("Discard URLs RDD") {
@@ -247,7 +235,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
   }
 
   test("Discard HTTP status codes RDD") {
-    val expected = 46
+    val expected = 45
     val base = RecordLoader.loadArchives(arcPath, sc)
     val statusCodes: Set[String] = Set("200", "404")
     val r2 = base.discardHttpStatus(statusCodes).count

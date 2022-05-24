@@ -16,28 +16,6 @@
 
 package io.archivesunleashed
 
-import java.io.ByteArrayInputStream
-import java.security.MessageDigest
-import java.text.SimpleDateFormat
-
-import io.archivesunleashed.data.{
-  ArcRecordUtils,
-  WarcRecordUtils,
-  ArchiveRecordWritable
-}
-import io.archivesunleashed.matchbox.{
-  ComputeMD5,
-  ExtractDate,
-  ExtractDomain,
-  RemoveHTTPHeader
-}
-import org.apache.commons.httpclient.{Header, HttpParser, StatusLine}
-import org.apache.spark.SerializableWritable
-import org.archive.io.arc.ARCRecord
-import org.archive.io.warc.WARCRecord
-import org.archive.util.ArchiveUtils
-import scala.util.Try
-
 /** Trait for a record in a web archive. */
 trait ArchiveRecord extends Serializable {
 
@@ -49,9 +27,6 @@ trait ArchiveRecord extends Serializable {
 
   /** Returns the crawl month. */
   def getCrawlMonth: String
-
-  /** Returns the content of the record as an array of bytes. */
-  def getContentBytes: Array[Byte]
 
   /** Returns the content of the record as a String. */
   def getContentString: String
@@ -73,143 +48,4 @@ trait ArchiveRecord extends Serializable {
 
   /** Returns payload digest (SHA1). */
   def getPayloadDigest: String
-}
-
-/** Default implementation of a record in a web archive.
-  *
-  *  @constructor an archive record.
-  *  @param r the serialized record
-  */
-class ArchiveRecordImpl(r: SerializableWritable[ArchiveRecordWritable])
-    extends ArchiveRecord {
-  val recordFormat = r.t.getFormat
-  val ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX")
-
-  val getArchiveFilename: String = {
-    if (recordFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {
-      r.t.getRecord.asInstanceOf[ARCRecord].getMetaData.getReaderIdentifier()
-    } else {
-      r.t.getRecord.asInstanceOf[WARCRecord].getHeader.getReaderIdentifier()
-    }
-  }
-
-  val getCrawlDate: String = {
-    if (recordFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {
-      ExtractDate(
-        r.t.getRecord.asInstanceOf[ARCRecord].getMetaData.getDate,
-        ExtractDate.DateComponent.YYYYMMDDHHMMSS
-      )
-    } else {
-      ExtractDate(
-        ArchiveUtils.get14DigitDate(
-          ISO8601.parse(
-            r.t.getRecord.asInstanceOf[WARCRecord].getHeader.getDate
-          )
-        ),
-        ExtractDate.DateComponent.YYYYMMDDHHMMSS
-      )
-    }
-  }
-
-  val getCrawlMonth: String = {
-    if (recordFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {
-      ExtractDate(
-        r.t.getRecord.asInstanceOf[ARCRecord].getMetaData.getDate,
-        ExtractDate.DateComponent.YYYYMM
-      )
-    } else {
-      ExtractDate(
-        ArchiveUtils.get14DigitDate(
-          ISO8601.parse(
-            r.t.getRecord.asInstanceOf[WARCRecord].getHeader.getDate
-          )
-        ),
-        ExtractDate.DateComponent.YYYYMM
-      )
-    }
-  }
-
-  val getContentBytes: Array[Byte] = {
-    if (recordFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {
-      ArcRecordUtils.getContent(r.t.getRecord.asInstanceOf[ARCRecord])
-    } else {
-      WarcRecordUtils.getContent(r.t.getRecord.asInstanceOf[WARCRecord])
-    }
-  }
-
-  val getContentString: String = {
-    new String(getContentBytes)
-  }
-
-  val getMimeType: String = {
-    if (recordFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {
-      Option(r.t.getRecord.asInstanceOf[ARCRecord].getMetaData.getMimetype)
-        .getOrElse("unknown")
-    } else {
-      Option(WarcRecordUtils.getWarcResponseMimeType(getContentBytes))
-        .getOrElse("unknown")
-    }
-  }
-
-  val getUrl: String = {
-    if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {
-      r.t.getRecord.asInstanceOf[ARCRecord].getMetaData.getUrl
-    } else {
-      r.t.getRecord
-        .asInstanceOf[WARCRecord]
-        .getHeader
-        .getUrl
-        .replaceAll("<|>", "")
-    }
-  }
-
-  val getHttpStatus: String = {
-    if (r.t.getFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {
-      Option(r.t.getRecord.asInstanceOf[ARCRecord].getMetaData.getStatusCode)
-        .getOrElse("000")
-    } else {
-      Try(
-        new StatusLine(
-          new String(
-            HttpParser.readRawLine(new ByteArrayInputStream(getContentBytes))
-          )
-        ).getStatusCode
-      ).toOption match {
-        case Some(x) => x.toString
-        case None    => "000"
-      }
-    }
-  }
-
-  val getDomain: String = {
-    ExtractDomain(getUrl)
-  }
-
-  val getBinaryBytes: Array[Byte] = {
-    if (getContentString.startsWith("HTTP/")) {
-      getContentBytes.slice(
-        getContentString.indexOf(RemoveHTTPHeader.headerEnd)
-          + RemoveHTTPHeader.headerEnd.length,
-        getContentBytes.length
-      )
-    } else {
-      getContentBytes
-    }
-  }
-
-  val getPayloadDigest: String = {
-    if (recordFormat == ArchiveRecordWritable.ArchiveFormat.ARC) {
-      "sha1:" + MessageDigest
-        .getInstance("SHA1")
-        .digest(getContentBytes)
-        .map("%02x".format(_))
-        .mkString
-    } else {
-      r.t.getRecord
-        .asInstanceOf[WARCRecord]
-        .getHeader
-        .getHeaderValue("WARC-Payload-Digest")
-        .asInstanceOf[String]
-    }
-  }
 }

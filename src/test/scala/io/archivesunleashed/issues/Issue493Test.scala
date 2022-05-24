@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package io.archivesunleashed
+package io.archivesunleashed.app
 
 import com.google.common.io.Resources
-import io.archivesunleashed.udfs.extractDomain
-import org.apache.spark.sql.functions.desc
+import io.archivesunleashed.RecordLoader
+import io.archivesunleashed.udfs.{removeHTML, removeHTTPHeader}
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
@@ -26,10 +26,10 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
-class SimpleDfTest extends FunSuite with BeforeAndAfter {
-  private val arcPath = Resources.getResource("arc/example.arc.gz").getPath
+class Issue493Test extends FunSuite with BeforeAndAfter {
+  private val arcPath = Resources.getResource("warc/issue-493.warc").getPath
   private val master = "local[4]"
-  private val appName = "example-df"
+  private val appName = "example-spark"
   private var sc: SparkContext = _
 
   before {
@@ -39,10 +39,8 @@ class SimpleDfTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test("Count records DF") {
-    val df = RecordLoader
-      .loadArchives(arcPath, sc)
-      .webpages()
+  test("Test for issue 493 - compressed payload warcs") {
+    val df = RecordLoader.loadArchives(arcPath, sc).webpages()
 
     // We need this in order to use the $-notation
     val spark = SparkSession.builder().master("local").getOrCreate()
@@ -50,29 +48,14 @@ class SimpleDfTest extends FunSuite with BeforeAndAfter {
     import spark.implicits._
     // scalastyle:on
 
-    val results = df
-      .groupBy($"domain")
-      .count()
-      .sort($"count".desc)
-      .head(3)
+    val dfResults = df
+      .select(removeHTML(removeHTTPHeader($"content")))
+      .head(2)
+    val RESULTSLENGTH = 2
 
-    // Results should be:
-    // +------------------+-----+
-    // |            domain|count|
-    // +------------------+-----+
-    // |       archive.org|   91|
-    // |     deadlists.com|    2|
-    // |    hideout.com.br|    1|
-    // +------------------+-----+
-
-    assert(results(0).get(0) == "archive.org")
-    assert(results(0).get(1) == 91)
-
-    assert(results(1).get(0) == "deadlists.com")
-    assert(results(1).get(1) == 2)
-
-    assert(results(2).get(0) == "hideout.com.br")
-    assert(results(2).get(1) == 1)
+    assert(dfResults.length == RESULTSLENGTH)
+    assert(dfResults(0).get(0) == "makkaronisch fuer niedlich")
+    assert(dfResults(1).get(0) == "makkaronisch fuer niedlich die melodie")
   }
 
   after {

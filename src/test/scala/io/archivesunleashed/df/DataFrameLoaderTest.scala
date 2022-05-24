@@ -36,6 +36,7 @@ class DataFrameLoaderTest extends FunSuite with BeforeAndAfter {
   private val master = "local[4]"
   private val appName = "example-df"
   private var sc: SparkContext = _
+  private val domain = "domain"
   private val url = "url"
   private val mime_type = "mime_type_web_server"
   private val md5 = "md5"
@@ -61,7 +62,8 @@ class DataFrameLoaderTest extends FunSuite with BeforeAndAfter {
     val word = df.wordProcessorFiles(docPath)
     val all = df.all(arcPath)
 
-    val r_1 = validPages.select(url, mime_type).take(1)(0)
+    val r_1 = validPages.select(domain, url, mime_type).take(1)(0)
+    assert(r_1.getAs[String](domain) == "archive.org")
     assert(r_1.getAs[String](url) == "http://www.archive.org/")
     assert(r_1.getAs[String](mime_type) == "text/html")
 

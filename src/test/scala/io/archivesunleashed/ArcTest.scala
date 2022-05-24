@@ -48,7 +48,7 @@ class ArcTest extends FunSuite with BeforeAndAfter {
   val dayMonthTestA = "200805"
 
   test("Count records") {
-    assert(RecordLoader.loadArchives(arcPath, sc).count == 300L)
+    assert(RecordLoader.loadArchives(arcPath, sc).count == 299L)
   }
 
   test("Filter date RDD") {
@@ -80,14 +80,14 @@ class ArcTest extends FunSuite with BeforeAndAfter {
       .loadArchives(arcPath, sc)
       .discardUrlPatterns(Set("http://www.archive.org/about/.*".r))
     assert(keepMatches.count == 16L)
-    assert(discardMatches.count == 284L)
+    assert(discardMatches.count == 283L)
   }
 
   test("Count links RDD") {
     val links = RecordLoader
       .loadArchives(arcPath, sc)
       .map(r => ExtractLinks(r.getUrl, r.getContentString))
-    assert(links.count == 300L)
+    assert(links.count == 299L)
   }
 
   test("Detect language RDD") {

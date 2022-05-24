@@ -16,23 +16,9 @@
 
 package io
 
+import java.io.InputStream
 import java.security.MessageDigest
 import java.util.Base64
-
-import io.archivesunleashed.data.ArchiveRecordWritable.ArchiveFormat
-import io.archivesunleashed.data.{
-  ArchiveRecordInputFormat,
-  ArchiveRecordWritable
-}
-
-import ArchiveRecordWritable.ArchiveFormat
-import io.archivesunleashed.udfs.{
-  detectLanguage,
-  detectMimeTypeTika,
-  extractDate,
-  extractDomain,
-  removeHTML
-}
 
 import io.archivesunleashed.matchbox.{
   DetectLanguage,
@@ -50,10 +36,10 @@ import io.archivesunleashed.matchbox.ExtractDate.DateComponent
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent.DateComponent
 import java.net.URI
 import java.net.URL
+
 import org.apache.commons.codec.binary.Hex
 import org.apache.commons.io.FilenameUtils
 import org.apache.hadoop.fs.{FileSystem, Path}
-import org.apache.hadoop.io.LongWritable
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.functions.{lit, udf}
 import org.apache.spark.sql.types.{
@@ -65,6 +51,15 @@ import org.apache.spark.sql.types.{
 }
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 import org.apache.spark.{RangePartitioner, SerializableWritable, SparkContext}
+import org.archive.webservices.sparkling.io.{HdfsIO, IOUtil}
+import org.archive.webservices.sparkling.util.{
+  IteratorUtil,
+  ManagedVal,
+  RddUtil,
+  ValueSupplier
+}
+import org.archive.webservices.sparkling.warc.{WarcLoader, WarcRecord}
+
 import scala.language.postfixOps
 import scala.reflect.ClassTag
 import scala.util.matching.Regex
@@ -99,22 +94,26 @@ package object archivesunleashed {
       * @return an RDD of ArchiveRecords for mapping.
       */
     def loadArchives(path: String, sc: SparkContext): RDD[ArchiveRecord] = {
-      val uri = new URI(path)
-      val fs = FileSystem.get(uri, sc.hadoopConfiguration)
-      val p = new Path(path)
-      sc.newAPIHadoopFile(
-          getFiles(p, fs),
-          classOf[ArchiveRecordInputFormat],
-          classOf[LongWritable],
-          classOf[ArchiveRecordWritable]
+      RddUtil.loadFilesLocality(path).flatMap { path =>
+        val filename = path.split('/').last
+        val in = HdfsIO.open(path, decompress = false)
+        var prev: Option[ManagedVal[ValueSupplier[InputStream]]] = None
+        IteratorUtil.cleanup(
+          WarcLoader.load(in).filter(r => r.isResponse || r.isRevisit).map {
+            record =>
+              for (p <- prev) p.clear(false)
+              val buffered = IOUtil.buffer(lazyEval = true) { out =>
+                IOUtil.copy(record.payload, out)
+              }
+              prev = Some(buffered)
+              new SparklingArchiveRecord(filename, record, buffered)
+          },
+          () => {
+            for (p <- prev) p.clear(false)
+            in.close()
+          }
         )
-        .filter(r =>
-          (r._2.getFormat == ArchiveFormat.ARC) ||
-            ((r._2.getFormat == ArchiveFormat.WARC) && r._2.getRecord.getHeader
-              .getHeaderValue("WARC-Type")
-              .equals("response"))
-        )
-        .map(r => new ArchiveRecordImpl(new SerializableWritable(r._2)))
+      }
     }
   }
 
@@ -130,7 +129,7 @@ package object archivesunleashed {
   }
 
   /**
-    * A Wrapper class around DF to allow Dfs of type ARCRecord and WARCRecord to be queried via a fluent API.
+    * A Wrapper class around DF to allow Dfs of type ArchiveRecord to be queried via a fluent API.
     *
     * To load such an DF, please use [[RecordLoader]] and apply .all() on it.
     */
@@ -156,7 +155,7 @@ package object archivesunleashed {
   }
 
   /**
-    * A Wrapper class around RDD to allow RDDs of type ARCRecord and WARCRecord to be queried via a fluent API.
+    * A Wrapper class around RDD to allow RDDs of type ArchiveRecord to be queried via a fluent API.
     *
     * To load such an RDD, please see [[RecordLoader]].
     */
@@ -164,7 +163,7 @@ package object archivesunleashed {
       extends java.io.Serializable {
 
     /* Creates a column for Bytes as well in Dataframe.
-       Call KeepImages OR KeepValidPages on RDD depending upon the requirement before calling this method */
+       Call KeepImages OR KeepValidPages on RDD depending upon the requirement before calling this method. */
     def all(): DataFrame = {
       val records = rdd
         .removeFiledesc()
@@ -224,6 +223,7 @@ package object archivesunleashed {
         .map(r =>
           Row(
             r.getCrawlDate,
+            ExtractDomain(r.getUrl).replaceAll("^\\s*www\\.", ""),
             r.getUrl,
             r.getMimeType,
             DetectMimeTypeTika(r.getBinaryBytes),
@@ -234,6 +234,7 @@ package object archivesunleashed {
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
+        .add(StructField("domain", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("mime_type_web_server", StringType, true))
         .add(StructField("mime_type_tika", StringType, true))
@@ -571,6 +572,7 @@ package object archivesunleashed {
         .map(r => (r, (DetectMimeTypeTika(r.getBinaryBytes))))
         .filter(r =>
           r._2 == "application/vnd.ms-powerpoint"
+            || r._2 == "application/vnd.apple.keynote"
             || r._2 == "application/vnd.openxmlformats-officedocument.presentationml.presentation"
             || r._2 == "application/vnd.oasis.opendocument.presentation"
             || r._2 == "application/vnd.oasis.opendocument.presentation-template"
@@ -816,8 +818,11 @@ package object archivesunleashed {
       *
       * @param date a list of dates
       */
-    def discardDate(date: String): RDD[ArchiveRecord] = {
-      rdd.filter(r => r.getCrawlDate != date)
+    def discardDate(
+        dates: List[String],
+        component: DateComponent = DateComponent.YYYYMMDD
+    ): RDD[ArchiveRecord] = {
+      rdd.filter(r => !dates.contains(ExtractDate(r.getCrawlDate, component)))
     }
 
     /** Filters detected URLs.

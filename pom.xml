@@ -24,13 +24,13 @@
     <scala.binary.version>2.12</scala.binary.version>
     <hadoop.version>2.7.4</hadoop.version>
     <spark.version>3.0.1</spark.version>
+    <guava.version>29.0-jre</guava.version>
     <github.global.server>github</github.global.server>
     <license.plugin.version>3.0</license.plugin.version>
     <release.plugin.version>2.5.2</release.plugin.version>
     <scm-provider-gitexe.plugin.version>1.9.5</scm-provider-gitexe.plugin.version>
     <changelog.plugin.version>2.3</changelog.plugin.version>
     <github-site.plugin.version>0.12</github-site.plugin.version>
-    <javadoc.plugin.version>3.1.1</javadoc.plugin.version>
     <gpg.plugin.version>1.6</gpg.plugin.version>
     <build-helper.plugin.version>3.0.0</build-helper.plugin.version>
     <deploy.plugin.version>2.8.2</deploy.plugin.version>
@@ -68,10 +68,6 @@
       <url>https://repo.maven.apache.org/maven2/</url>
     </repository>
     <repository>
-      <id>mvn-repo</id>
-      <url>https://raw.githubusercontent.com/archivesunleashed/aut-resources/master/mvn-repo</url>
-    </repository>
-    <repository>
       <id>jitpack.io</id>
       <url>https://jitpack.io</url>
     </repository>
@@ -107,7 +103,12 @@
                   <resource>META-INF/services/org.apache.lucene.codecs.Codec</resource>
                 </transformer>
               </transformers>
-
+              <relocations>
+                <relocation>
+                  <pattern>com.google.common.</pattern>
+                  <shadedPattern>com.google.common.shaded.</shadedPattern>
+                </relocation>
+              </relocations>
               <!-- This fixes the issue "Invalid signature file digest for Manifest main attributes"
                    cf. http://zhentao-li.blogspot.com/2012/06/maven-shade-plugin-invalid-signature.html -->
               <filters>
@@ -192,12 +193,9 @@
         <configuration>
           <header>config/LICENSE_HEADER.txt</header>
           <mapping>
-            <java>SLASHSTAR_STYLE</java>
             <scala>SLASHSTAR_STYLE</scala>
           </mapping>
           <includes>
-            <include>src/main/java/**</include>
-            <include>src/test/java/**</include>
             <include>src/main/scala/**</include>
             <include>src/test/scala/**</include>
           </includes>
@@ -282,34 +280,6 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>${javadoc.plugin.version}</version>
-        <configuration>
-          <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
-          <linksource>true</linksource>
-          <quiet>true</quiet>
-          <source>11</source>
-        </configuration>
-        <executions>
-          <execution>
-            <id>verify-javadocs</id>
-            <goals>
-              <goal>jar</goal>
-              <goal>test-jar</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>attach-javadocs</id>
-            <goals>
-              <goal>jar</goal>
-              <goal>javadoc</goal>
-            </goals>
-            <phase>site</phase>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <artifactId>maven-changelog-plugin</artifactId>
         <version>${changelog.plugin.version}</version>
       </plugin>
@@ -369,13 +339,6 @@
         <version>${failsafe.plugin.version}</version>
         <configuration>
           <argLine>--illegal-access=permit</argLine>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>${javadoc.plugin.version}</version>
-        <configuration>
-          <linksource>true</linksource>
         </configuration>
       </plugin>
       <plugin>
@@ -455,6 +418,21 @@
       <version>${scala.version}</version>
     </dependency>
     <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.12</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-compress</artifactId>
+      <version>1.14</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>${guava.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.hadoop</groupId>
       <artifactId>hadoop-mapreduce-client-core</artifactId>
       <version>${hadoop.version}</version>
@@ -505,6 +483,18 @@
           <groupId>org.apache.hadoop</groupId>
           <artifactId>hadoop-core</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpcore</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpclient</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>joda-time</groupId>
+          <artifactId>joda-time</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -518,10 +508,7 @@
       <version>${tika.version}</version>
     </dependency>
     <dependency>
-      <!-- See issue #302.
       <groupId>org.apache.tika</groupId>
-      -->
-      <groupId>com.github.archivesunleashed.tika</groupId>
       <artifactId>tika-parsers</artifactId>
       <version>${tika.version}</version>
     </dependency>
@@ -576,6 +563,11 @@
       <artifactId>hadoop-aws</artifactId>
       <version>${hadoop.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.github.internetarchive</groupId>
+      <artifactId>Sparkling</artifactId>
+      <version>main-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
   <developers>
@@ -622,11 +614,6 @@
       <build>
         <pluginManagement>
           <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-javadoc-plugin</artifactId>
-              <version>${javadoc.plugin.version}</version>
-            </plugin>
             <plugin>
               <artifactId>maven-gpg-plugin</artifactId>
               <version>${gpg.plugin.version}</version>

@@ -47,7 +47,7 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
   }
 
   test("Count records") {
-    assert(RecordLoader.loadArchives(arcPath, sc).count == 300L)
+    assert(RecordLoader.loadArchives(arcPath, sc).count == 299L)
     assert(RecordLoader.loadArchives(warcPath, sc).count == 299L)
   }
 
@@ -76,7 +76,7 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
       .map(x => x.getCrawlDate)
       .take(3)
     assert(
-      textSampleArc.deep == Array(exampleDate, exampleDate, exampleDate).deep
+      textSampleArc.deep == Array(exampleDate, exampleDate, "20080430204826").deep
     )
     assert(
       textSampleWarc.deep == Array(exampleDate, exampleDate, "20080430204826").deep
@@ -92,7 +92,7 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
       .loadArchives(warcPath, sc)
       .map(x => x.getDomain)
       .take(3)
-    assert(textSampleArc.deep == Array("", "", exampleUrl).deep)
+    assert(textSampleArc.deep == Array("", exampleUrl, exampleUrl).deep)
     assert(textSampleWarc.deep == Array("", exampleUrl, exampleUrl).deep)
   }
 
@@ -107,9 +107,9 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
       .take(3)
     assert(
       textSampleArc.deep == Array(
-        "filedesc://IAH-20080430204825-00000-blackbook.arc",
         "dns:www.archive.org",
-        "http://www.archive.org/robots.txt"
+        "http://www.archive.org/robots.txt",
+        "http://www.archive.org/"
       ).deep
     )
     assert(
@@ -132,9 +132,9 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
       .take(3)
     assert(
       textSampleArc.deep == Array(
+        "unknown",
         exampleMimeType,
-        "text/dns",
-        exampleMimeType
+        "text/html"
       ).deep
     )
     assert(
@@ -154,7 +154,7 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
     assert(
       textSampleArc.deep == Array(
         exampleStatusCode1,
-        exampleStatusCode1,
+        exampleStatusCode2,
         exampleStatusCode2
       ).deep
     )
@@ -178,16 +178,16 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
       .take(3)
     assert(
       textSampleArc.deep == Array(
-        "sha1:252efd6dd414d91812dd9b0f897cdb2b44f64601",
-        "sha1:8d115d0e83c5dcd66b13619e04d60a36cb2c1ee4",
-        "sha1:ede22581685942721c7b9743dced317633d00e33"
+        "sha1:RUIV2DUDYXONM2YTMGPAJVQKG3FSYHXE",
+        "sha1:SUCGMUVXDKVB5CS2NL4R4JABNX7K466U",
+        "sha1:2WAXX5NUWNNCS2BDKCO5OVDQBJVNKIVV"
       ).deep
     )
     assert(
       textSampleWarc.deep == Array(
-        null,
-        "sha1:SUCGMUVXDKVB5CS2NL4R4JABNX7K466U",
-        "sha1:2WAXX5NUWNNCS2BDKCO5OVDQBJVNKIVV"
+        "sha1:RUIV2DUDYXONM2YTMGPAJVQKG3FSYHXE",
+        "sha1:sucgmuvxdkvb5cs2nl4r4jabnx7k466u",
+        "sha1:2waxx5nuwnncs2bdkco5ovdqbjvnkivv"
       ).deep
     )
   }
