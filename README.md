@@ -10,7 +10,7 @@ The Archives Unleashed Toolkit is an open-source platform for analyzing web arch
 
 To learn more about the Toolkit and how to use, please see our [comprehensive documentation](https://aut.docs.archivesunleashed.org/).
 
-If you would like a more in-depth look at the project, please checkout the following two articles:
+If you would like a more in-depth look at the project, please check out the following two articles:
 
 + Nick Ruest, Jimmy Lin, Ian Milligan, and Samantha Fritz. [The Archives Unleashed Project: Technology, Process, and Community to Improve Scholarly Access to Web Archives](https://yorkspace.library.yorku.ca/xmlui/handle/10315/37506). Proceedings of the 2020 IEEE/ACM Joint Conference on Digital Libraries (JCDL 2020), Wuhan, China.
 + Jimmy Lin, Ian Milligan, Jeremy Wiebe, and Alice Zhou. [Warcbase: Scalable Analytics Infrastructure for Exploring Web Archives](https://dl.acm.org/authorize.cfm?key=N46731). _ACM Journal on Computing and Cultural Heritage_, 10(4), Article 22, 2017.
