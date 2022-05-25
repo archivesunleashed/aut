@@ -20,5 +20,6 @@ jobs:
           mvn javadoc:test-aggregate
           mvn site
       - name: Upload coverage to Codecov
-        uses: actions/checkout@master
         uses: codecov/codecov-action@v2
+        with:
+          verbose: true
