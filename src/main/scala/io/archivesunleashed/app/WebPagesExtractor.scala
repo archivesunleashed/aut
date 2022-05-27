@@ -40,12 +40,12 @@ object WebPagesExtractor {
     // scalastyle:on
     d.select(
       $"crawl_date",
-      removePrefixWWW(extractDomain($"url")).as("domain"),
+      $"domain",
       $"url",
       $"mime_type_web_server",
       $"mime_type_tika",
       $"language",
-      removeHTML(removeHTTPHeader(($"content"))).alias("content")
+      $"content"
     )
   }
 }

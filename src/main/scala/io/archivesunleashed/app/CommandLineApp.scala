@@ -20,7 +20,7 @@ import java.nio.file.{Files, Paths}
 
 import io.archivesunleashed.{ArchiveRecord, RecordLoader}
 import org.apache.log4j.Logger
-import org.apache.spark.sql.{Dataset, Row}
+import org.apache.spark.sql.{DataFrame, Dataset, Row}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.rogach.scallop.exceptions.ScallopException
 import org.rogach.scallop.ScallopConf
@@ -209,9 +209,9 @@ class CommandLineApp(conf: CmdAppConf) {
     "PlainTextExtractor" ->
       ((inputFiles: List[String]) => {
         var df =
-          RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).webpages()
+          RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).all()
         inputFiles.tail foreach { f =>
-          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).webpages())
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).all())
         }
         if (!configuration.outputFormat.isEmpty && configuration
               .outputFormat() == "parquet") {
@@ -327,12 +327,19 @@ class CommandLineApp(conf: CmdAppConf) {
       d.coalesce(configuration.partition())
         .write
         .option("timestampFormat", "yyyy/MM/dd HH:mm:ss ZZ")
+        .format("csv")
         .option("header", "true")
-        .csv(saveTarget)
+        .option("escape", "\"")
+        .option("encoding", "utf-8")
+        .save(saveTarget)
     } else {
       d.write
         .option("timestampFormat", "yyyy/MM/dd HH:mm:ss ZZ")
-        .csv(saveTarget)
+        .format("csv")
+        .option("header", "true")
+        .option("escape", "\"")
+        .option("encoding", "utf-8")
+        .save(saveTarget)
     }
   }
 

@@ -50,7 +50,8 @@ class UdfsTest extends FunSuite with BeforeAndAfter {
   ) {
     val df = RecordLoader
       .loadArchives(arcPath, sc)
-      .webpages()
+      .all()
+      .keepValidPagesDF()
 
     // We need this in order to use the $-notation
     val spark = SparkSession.builder().master("local").getOrCreate()

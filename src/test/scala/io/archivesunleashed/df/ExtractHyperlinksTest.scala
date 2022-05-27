@@ -42,7 +42,8 @@ class ExtractHyperlinksTest extends FunSuite with BeforeAndAfter {
   test("Extract links DF") {
     val df = RecordLoader
       .loadArchives(arcPath, sc)
-      .webpages()
+      .all()
+      .keepValidPagesDF()
 
     val dest = udf((vs: Seq[Any]) => vs(0).toString.split(",")(1))
 
@@ -54,19 +55,19 @@ class ExtractHyperlinksTest extends FunSuite with BeforeAndAfter {
 
     val interResults = df
       .select(
-        removePrefixWWW(extractDomain($"url")).as("Domain"),
-        $"url".as("url"),
+        $"domain",
+        $"url",
         $"crawl_date",
         explode_outer(extractLinks($"url", $"content")).as("link")
       )
       .filter(
         lower($"content").contains("keynote")
-      ) // filtered on keyword internet
+      )
 
     val results = interResults
       .select(
         $"url",
-        $"Domain",
+        $"domain",
         $"crawl_date",
         dest(array($"link")).as("destination_page")
       )

@@ -47,7 +47,8 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
   test("Extract dates YYYY DF") {
     val df = RecordLoader
       .loadArchives(arcPath, sc)
-      .webpages()
+      .all()
+      .keepValidPagesDF()
 
     val dest = udf((vs: Seq[Any]) => vs(0).toString.split(",")(1))
 
@@ -60,19 +61,19 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
 
     val interResults = df
       .select(
-        removePrefixWWW(extractDomain($"url")).as("Domain"),
-        $"url".as("url"),
+        $"domain",
+        $"url",
         extractDate($"crawl_date", lit("YYYY")).as("crawl_date"),
         explode_outer(extractLinks($"url", $"content")).as("link")
       )
       .filter(
         lower($"content").contains("keynote")
-      ) // filtered on keyword internet
+      )
 
     val results = interResults
       .select(
         $"url",
-        $"Domain",
+        $"domain",
         $"crawl_date",
         dest(array($"link")).as("destination_page")
       )
@@ -101,7 +102,8 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
   test("Extract dates YYYYMM DF") {
     val df = RecordLoader
       .loadArchives(arcPath, sc)
-      .webpages()
+      .all()
+      .keepValidPagesDF()
 
     val dest = udf((vs: Seq[Any]) => vs(0).toString.split(",")(1))
 
@@ -114,8 +116,8 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
 
     val interResults = df
       .select(
-        removePrefixWWW(extractDomain($"url")).as("Domain"),
-        $"url".as("url"),
+        $"domain",
+        $"url",
         extractDate($"crawl_date", lit("YYYYMM")).as("crawl_date"),
         explode_outer(extractLinks($"url", $"content")).as("link")
       )
@@ -126,7 +128,7 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
     val results = interResults
       .select(
         $"url",
-        $"Domain",
+        $"domain",
         $"crawl_date",
         dest(array($"link")).as("destination_page")
       )
@@ -155,7 +157,8 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
   test("Extract dates MM DF") {
     val df = RecordLoader
       .loadArchives(arcPath, sc)
-      .webpages()
+      .all()
+      .keepValidPagesDF()
 
     val dest = udf((vs: Seq[Any]) => vs(0).toString.split(",")(1))
 
@@ -168,19 +171,19 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
 
     val interResults = df
       .select(
-        removePrefixWWW(extractDomain($"url")).as("Domain"),
-        $"url".as("url"),
+        $"domain",
+        $"url",
         extractDate($"crawl_date", lit("MM")).as("crawl_date"),
         explode_outer(extractLinks($"url", $"content")).as("link")
       )
       .filter(
         lower($"content").contains("keynote")
-      ) // filtered on keyword internet
+      )
 
     val results = interResults
       .select(
         $"url",
-        $"Domain",
+        $"domain",
         $"crawl_date",
         dest(array($"link")).as("destination_page")
       )
@@ -209,7 +212,8 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
   test("Extract dates DD DF") {
     val df = RecordLoader
       .loadArchives(arcPath, sc)
-      .webpages()
+      .all()
+      .keepValidPagesDF()
 
     val dest = udf((vs: Seq[Any]) => vs(0).toString.split(",")(1))
 
@@ -222,19 +226,19 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
 
     val interResults = df
       .select(
-        removePrefixWWW(extractDomain($"url")).as("Domain"),
-        $"url".as("url"),
+        $"domain",
+        $"url",
         extractDate($"crawl_date", lit("DD")).as("crawl_date"),
         explode_outer(extractLinks($"url", $"content")).as("link")
       )
       .filter(
         lower($"content").contains("keynote")
-      ) // filtered on keyword internet
+      )
 
     val results = interResults
       .select(
         $"url",
-        $"Domain",
+        $"domain",
         $"crawl_date",
         dest(array($"link")).as("destination_page")
       )
@@ -263,7 +267,8 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
   test("Extract dates YYYYMMDD DF") {
     val df = RecordLoader
       .loadArchives(arcPath, sc)
-      .webpages()
+      .all()
+      .keepValidPagesDF()
 
     val dest = udf((vs: Seq[Any]) => vs(0).toString.split(",")(1))
 
@@ -276,19 +281,19 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
 
     val interResults = df
       .select(
-        removePrefixWWW(extractDomain($"url")).as("Domain"),
-        $"url".as("url"),
+        $"domain",
+        $"url",
         extractDate($"crawl_date", lit("YYYYMMDDHHMMSS")).as("crawl_date"),
         explode_outer(extractLinks($"url", $"content")).as("link")
       )
       .filter(
         lower($"content").contains("keynote")
-      ) // filtered on keyword internet
+      )
 
     val results = interResults
       .select(
         $"url",
-        $"Domain",
+        $"domain",
         $"crawl_date",
         dest(array($"link")).as("destination_page")
       )
