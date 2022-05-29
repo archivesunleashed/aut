@@ -58,10 +58,10 @@ class ExtractHyperlinksTest extends FunSuite with BeforeAndAfter {
         $"domain",
         $"url",
         $"crawl_date",
-        explode_outer(extractLinks($"url", $"content")).as("link")
+        explode_outer(extractLinks($"url", $"raw_content")).as("link")
       )
       .filter(
-        lower($"content").contains("keynote")
+        lower($"raw_content").contains("keynote")
       )
 
     val results = interResults

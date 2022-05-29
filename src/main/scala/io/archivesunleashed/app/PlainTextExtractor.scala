@@ -46,6 +46,6 @@ object PlainTextExtractor {
         !(lower($"url").startsWith("filedesc:"))
           && (!(lower($"url").startsWith("dns:")))
       )
-      .select(extractBoilerpipeText($"content").as("content"))
+      .select(extractBoilerpipeText($"raw_content").as("content"))
   }
 }

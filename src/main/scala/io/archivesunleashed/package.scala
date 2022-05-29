@@ -187,7 +187,7 @@ package object archivesunleashed {
         .add(StructField("url", StringType, true))
         .add(StructField("mime_type_web_server", StringType, true))
         .add(StructField("mime_type_tika", StringType, true))
-        .add(StructField("content", StringType, true))
+        .add(StructField("raw_content", StringType, true))
         .add(StructField("bytes", BinaryType, true))
         .add(StructField("http_status_code", StringType, true))
         .add(StructField("archive_filename", StringType, true))

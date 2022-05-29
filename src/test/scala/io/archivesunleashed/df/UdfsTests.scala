@@ -64,9 +64,9 @@ class UdfsTest extends FunSuite with BeforeAndAfter {
         $"url",
         $"mime_type_web_server",
         $"mime_type_tika",
-        computeSHA1($"content").as("sha1_test"),
-        computeMD5($"content").as("md5_test"),
-        explode(extractImageLinks($"url", $"content")).as("image_link"),
+        computeSHA1($"raw_content").as("sha1_test"),
+        computeMD5($"raw_content").as("md5_test"),
+        explode(extractImageLinks($"url", $"raw_content")).as("image_link"),
         getExtensionMime($"url", $"mime_type_tika").as("extension")
       )
       .orderBy(desc("md5_test"))

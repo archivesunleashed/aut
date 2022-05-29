@@ -64,10 +64,10 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
         $"domain",
         $"url",
         extractDate($"crawl_date", lit("YYYY")).as("crawl_date"),
-        explode_outer(extractLinks($"url", $"content")).as("link")
+        explode_outer(extractLinks($"url", $"raw_content")).as("link")
       )
       .filter(
-        lower($"content").contains("keynote")
+        lower($"raw_content").contains("keynote")
       )
 
     val results = interResults
@@ -119,10 +119,10 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
         $"domain",
         $"url",
         extractDate($"crawl_date", lit("YYYYMM")).as("crawl_date"),
-        explode_outer(extractLinks($"url", $"content")).as("link")
+        explode_outer(extractLinks($"url", $"raw_content")).as("link")
       )
       .filter(
-        lower($"content").contains("keynote")
+        lower($"raw_content").contains("keynote")
       ) // filtered on keyword internet
 
     val results = interResults
@@ -174,10 +174,10 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
         $"domain",
         $"url",
         extractDate($"crawl_date", lit("MM")).as("crawl_date"),
-        explode_outer(extractLinks($"url", $"content")).as("link")
+        explode_outer(extractLinks($"url", $"raw_content")).as("link")
       )
       .filter(
-        lower($"content").contains("keynote")
+        lower($"raw_content").contains("keynote")
       )
 
     val results = interResults
@@ -229,10 +229,10 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
         $"domain",
         $"url",
         extractDate($"crawl_date", lit("DD")).as("crawl_date"),
-        explode_outer(extractLinks($"url", $"content")).as("link")
+        explode_outer(extractLinks($"url", $"raw_content")).as("link")
       )
       .filter(
-        lower($"content").contains("keynote")
+        lower($"raw_content").contains("keynote")
       )
 
     val results = interResults
@@ -284,10 +284,10 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
         $"domain",
         $"url",
         extractDate($"crawl_date", lit("YYYYMMDDHHMMSS")).as("crawl_date"),
-        explode_outer(extractLinks($"url", $"content")).as("link")
+        explode_outer(extractLinks($"url", $"raw_content")).as("link")
       )
       .filter(
-        lower($"content").contains("keynote")
+        lower($"raw_content").contains("keynote")
       )
 
     val results = interResults
