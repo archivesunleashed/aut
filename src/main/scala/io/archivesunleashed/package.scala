@@ -41,7 +41,7 @@ import org.apache.commons.codec.binary.Hex
 import org.apache.commons.io.FilenameUtils
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.functions.{lit, udf}
+import org.apache.spark.sql.functions.{lit, lower, udf}
 import org.apache.spark.sql.types.{
   BinaryType,
   IntegerType,
@@ -170,6 +170,7 @@ package object archivesunleashed {
         .map(r =>
           Row(
             r.getCrawlDate,
+            ExtractDomain(r.getUrl).replaceAll("^\\s*www\\.", ""),
             r.getUrl,
             r.getMimeType,
             DetectMimeTypeTika(r.getBinaryBytes),
@@ -182,10 +183,11 @@ package object archivesunleashed {
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
+        .add(StructField("domain", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("mime_type_web_server", StringType, true))
         .add(StructField("mime_type_tika", StringType, true))
-        .add(StructField("content", StringType, true))
+        .add(StructField("raw_content", StringType, true))
         .add(StructField("bytes", BinaryType, true))
         .add(StructField("http_status_code", StringType, true))
         .add(StructField("archive_filename", StringType, true))
@@ -228,7 +230,7 @@ package object archivesunleashed {
             r.getMimeType,
             DetectMimeTypeTika(r.getBinaryBytes),
             DetectLanguage(RemoveHTML(RemoveHTTPHeader(r.getContentString))),
-            r.getContentString
+            RemoveHTML(RemoveHTTPHeader(r.getContentString))
           )
         )
 

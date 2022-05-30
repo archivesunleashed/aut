@@ -20,7 +20,7 @@ If you would like a more in-depth look at the project, please check out the foll
 - Java 11
 - Python 3.7.3+ (PySpark)
 - Scala 2.12+
-- Apache Spark 3.0.0+
+- Apache Spark (Hadoop 2.7) 3.0.3+
 
  More information on setting up dependencies can be found [here](https://aut.docs.archivesunleashed.org/docs/next/dependencies).
 

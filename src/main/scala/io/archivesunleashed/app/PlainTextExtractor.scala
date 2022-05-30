@@ -19,19 +19,33 @@ package io.archivesunleashed.app
 import io.archivesunleashed.ArchiveRecord
 import io.archivesunleashed.udfs.{extractBoilerpipeText}
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
+import org.apache.spark.sql.functions.lower
 
 object PlainTextExtractor {
 
   /** Extract plain text from web archive using DataFrame and Spark SQL.
     *
     * @param d DataFrame obtained from RecordLoader
-    * @return Dataset[Row], where the schema is (crawl date, domain, url, text)
+    * @return Dataset[Row], where the schema is (content)
     */
   def apply(d: DataFrame): Dataset[Row] = {
     val spark = SparkSession.builder().master("local").getOrCreate()
     // scalastyle:off
     import spark.implicits._
     // scalastyle:on
-    d.select(extractBoilerpipeText($"content").as("content"))
+    d.filter($"crawl_date" isNotNull)
+      .filter(
+        !($"url".rlike(".*robots\\.txt$")) &&
+          ($"mime_type_web_server".rlike("text/html") ||
+            $"mime_type_web_server".rlike("application/xhtml+xml") ||
+            $"url".rlike("(?i).*htm$") ||
+            $"url".rlike("(?i).*html$"))
+      )
+      .filter($"http_status_code" === 200)
+      .filter(
+        !(lower($"url").startsWith("filedesc:"))
+          && (!(lower($"url").startsWith("dns:")))
+      )
+      .select(extractBoilerpipeText($"raw_content").as("content"))
   }
 }

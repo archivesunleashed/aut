@@ -39,7 +39,7 @@ class PlainTextExtractorTest extends FunSuite with BeforeAndAfter {
   }
 
   test("Plain text extractor") {
-    val df = RecordLoader.loadArchives(arcPath, sc).webpages()
+    val df = RecordLoader.loadArchives(arcPath, sc).all()
     val dfResults = PlainTextExtractor(df).collect()
     val RESULTSLENGTH = 94
 

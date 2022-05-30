@@ -34,7 +34,7 @@ import io.archivesunleashed.udfs.{
 }
 import com.google.common.io.Resources
 import org.apache.spark.sql.functions.lit
-import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
+import org.apache.spark.sql.{Dataset, Row, SparkSession}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -61,7 +61,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
       .loadArchives(arcPath, sc)
       .all()
       .keepValidPagesDF()
-      .take(1)(0)(1)
+      .take(2)(0)(2)
 
     assert(base.toString == expected)
   }
@@ -180,8 +180,10 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     val base = RecordLoader
       .loadArchives(arcPath, sc)
       .all()
-      .select($"url", $"content")
-      .filter(hasContent($"content", lit(Array("Content-Length: [0-9]{4}"))))
+      .select($"url", $"raw_content")
+      .filter(
+        hasContent($"raw_content", lit(Array("Content-Length: [0-9]{4}")))
+      )
       .take(1)(0)(0)
 
     assert(base.toString == expected)
@@ -223,10 +225,10 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
     val base = RecordLoader
       .loadArchives(arcPath, sc)
       .all()
-      .select(detectLanguage(removeHTML($"content")).as("language"))
+      .select(detectLanguage(removeHTML($"raw_content")).as("language"))
       .filter(
         hasLanguages(
-          detectLanguage(removeHTML($"content")),
+          detectLanguage(removeHTML($"raw_content")),
           lit(Array("de", "ht"))
         )
       )
