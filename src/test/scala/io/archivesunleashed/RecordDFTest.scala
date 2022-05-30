@@ -181,7 +181,9 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
       .loadArchives(arcPath, sc)
       .all()
       .select($"url", $"raw_content")
-      .filter(hasContent($"raw_content", lit(Array("Content-Length: [0-9]{4}"))))
+      .filter(
+        hasContent($"raw_content", lit(Array("Content-Length: [0-9]{4}")))
+      )
       .take(1)(0)(0)
 
     assert(base.toString == expected)
