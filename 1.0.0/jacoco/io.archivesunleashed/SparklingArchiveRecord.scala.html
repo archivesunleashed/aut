@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SparklingArchiveRecord.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Archives Unleashed Toolkit</a> &gt; <a href="index.source.html" class="el_package">io.archivesunleashed</a> &gt; <span class="el_source">SparklingArchiveRecord.scala</span></div><h1>SparklingArchiveRecord.scala</h1><pre class="source lang-java linenums">/*
+ * Copyright © 2017 The Archives Unleashed Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package io.archivesunleashed
+
+import java.io.InputStream
+
+import io.archivesunleashed.matchbox.ExtractDomain
+import org.apache.tika.io.BoundedInputStream
+import org.archive.webservices.sparkling.http.HttpMessage
+import org.archive.webservices.sparkling.io.IOUtil
+import org.archive.webservices.sparkling.util.{ManagedVal, ValueSupplier}
+import org.archive.webservices.sparkling.warc.{WarcHeaders, WarcRecord}
+import scala.util.Try
+
+/** Set MaxStringByteLength for SparklingArchiveRecord. */
+<span class="pc" id="L30">object SparklingArchiveRecord {</span>
+<span class="fc" id="L31">  val MaxStringByteLength: Int = 1024</span>
+}
+
+/**
+  * Extension of ArchiveRecord via Sparkling.
+  */
+<span class="fc" id="L37">class SparklingArchiveRecord(</span>
+<span class="fc" id="L38">    filename: String,</span>
+<span class="fc" id="L39">    meta: WarcRecord,</span>
+<span class="fc" id="L40">    payload: ManagedVal[ValueSupplier[InputStream]],</span>
+<span class="fc" id="L41">    maxMemoryBytes: Long = -1</span>
+<span class="fc" id="L42">) extends ArchiveRecord {</span>
+  import SparklingArchiveRecord._
+
+  def warc: WarcRecord =
+<span class="fc" id="L46">    new WarcRecord(meta.versionStr, meta.headers, payload.get.get)</span>
+
+  private def payload(r: WarcRecord): Array[Byte] = {
+<span class="fc" id="L49">    IOUtil.bytes(</span>
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">      if (maxMemoryBytes &lt; 0) r.payload</span>
+<span class="pc" id="L51">      else new BoundedInputStream(maxMemoryBytes, r.payload)</span>
+    )
+  }
+  private def http(r: WarcRecord): Option[HttpMessage] = {
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">    if (maxMemoryBytes &lt; 0) r.http</span>
+<span class="pc" id="L56">    else r.http.map(_.copy(maxBodyLength = maxMemoryBytes))</span>
+  }
+
+  def limitBodyLength(maxBodyLength: Long): SparklingArchiveRecord = {
+<span class="fc" id="L60">    new SparklingArchiveRecord(filename, meta, payload, maxBodyLength)</span>
+  }
+
+<span class="fc" id="L63">  override def getArchiveFilename: String = filename</span>
+
+  override def getCrawlDate: String =
+<span class="fc" id="L66">    meta.timestamp.filter(_.length &gt;= 14).map(_.take(14)).getOrElse(&quot;&quot;)</span>
+
+  override def getCrawlMonth: String =
+<span class="nc" id="L69">    warc.timestamp.filter(_.length &gt;= 6).map(_.take(6)).getOrElse(&quot;&quot;)</span>
+
+  override def getContentString: String =
+<span class="fc" id="L72">    Try {</span>
+      val record =
+        if (maxMemoryBytes &lt; 0) limitBodyLength(MaxStringByteLength).warc
+        else warc
+      http(record)
+        .map { http =&gt;
+          new String(WarcHeaders.http(http.statusLine, http.headers)) + http.bodyString
+        }
+        .getOrElse(new String(payload(record)))
+<span class="fc" id="L81">    }.getOrElse(&quot;&quot;)</span>
+
+  override def getMimeType: String =
+<span class="fc" id="L84">    http(warc).flatMap(_.mime).getOrElse(&quot;unknown&quot;)</span>
+
+<span class="fc" id="L86">  override def getUrl: String = warc.url.getOrElse(&quot;&quot;).replaceAll(&quot;&lt;|&gt;&quot;, &quot;&quot;)</span>
+
+<span class="fc" id="L88">  override def getDomain: String = ExtractDomain(getUrl)</span>
+
+  override def getBinaryBytes: Array[Byte] =
+<span class="fc" id="L91">    Try {</span>
+      var record = warc
+      http(record).map(_.body).map(IOUtil.bytes).getOrElse(payload(record))
+<span class="fc" id="L94">    }.getOrElse(Array.empty)</span>
+
+  override def getHttpStatus: String =
+<span class="fc" id="L97">    http(warc).map(_.status.toString).getOrElse(&quot;000&quot;)</span>
+
+  override def getPayloadDigest: String =
+<span class="fc" id="L100">    Try {</span>
+<span class="fc" id="L101">      meta.payloadDigest.orElse(warc.digestPayload()).getOrElse(&quot;&quot;)</span>
+<span class="fc" id="L102">    }.getOrElse(&quot;&quot;)</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>
