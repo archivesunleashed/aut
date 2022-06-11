@@ -1,5 +1,45 @@
 # Changelog
 
+## [aut-1.0.0](https://github.com/archivesunleashed/aut/tree/aut-1.0.0) (2022-06-10)
+
+[Full Changelog](https://github.com/archivesunleashed/aut/compare/aut-0.91.0...aut-1.0.0)
+
+**Implemented enhancements:**
+
+- Remove http headers, and html on webpages\(\) [\#538](https://github.com/archivesunleashed/aut/issues/538)
+- Add domain column to webpages\(\) [\#534](https://github.com/archivesunleashed/aut/issues/534)
+- Replace Java ARC/WARC record processing library [\#494](https://github.com/archivesunleashed/aut/issues/494)
+- Method to perform finer-grained selection of ARCs and WARCs [\#247](https://github.com/archivesunleashed/aut/issues/247)
+- Unnecessary buffer copying [\#18](https://github.com/archivesunleashed/aut/issues/18)
+
+**Fixed bugs:**
+
+- Discard date RDD filter only takes a single string, not a list of strings. [\#532](https://github.com/archivesunleashed/aut/issues/532)
+- Extract gzip data from transfer-encoded WARC [\#493](https://github.com/archivesunleashed/aut/issues/493)
+- ARC reader string vs int error on record length [\#492](https://github.com/archivesunleashed/aut/issues/492)
+
+**Closed issues:**
+
+- java.lang.RuntimeException: Unsupported literal type class scala.collection.immutable.Set$Set1 Set\(liberal.ca\) [\#529](https://github.com/archivesunleashed/aut/issues/529)
+- Improve CommandLineApp.scala test coverage [\#262](https://github.com/archivesunleashed/aut/issues/262)
+- Improve ExtractBoilerpipeText.scala test coverage [\#261](https://github.com/archivesunleashed/aut/issues/261)
+- Improve ArchiveRecord.scala test coverage [\#260](https://github.com/archivesunleashed/aut/issues/260)
+- Unit testing for RecordLoader [\#182](https://github.com/archivesunleashed/aut/issues/182)
+- Improve ArchiveRecordWritable.java test coverage [\#76](https://github.com/archivesunleashed/aut/issues/76)
+- Improve WarcRecordUtils.java test coverage [\#74](https://github.com/archivesunleashed/aut/issues/74)
+- Improve ArcRecordUtils.java test coverage [\#73](https://github.com/archivesunleashed/aut/issues/73)
+- Improve ExtractDate.scala test coverage [\#64](https://github.com/archivesunleashed/aut/issues/64)
+- Remove org.apache.commons.httpclient [\#23](https://github.com/archivesunleashed/aut/issues/23)
+
+**Merged pull requests:**
+
+- Make webpages\(\) consistent across aut and ARCH. [\#539](https://github.com/archivesunleashed/aut/pull/539) ([ruebot](https://github.com/ruebot))
+- Update README [\#537](https://github.com/archivesunleashed/aut/pull/537) ([ruebot](https://github.com/ruebot))
+- Fix codecov GitHub action. [\#536](https://github.com/archivesunleashed/aut/pull/536) ([ruebot](https://github.com/ruebot))
+- Bump commons-compress from 1.14 to 1.21 [\#535](https://github.com/archivesunleashed/aut/pull/535) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Remove Java w/arc processing, and replace it with Sparkling. [\#533](https://github.com/archivesunleashed/aut/pull/533) ([ruebot](https://github.com/ruebot))
+- Bump xercesImpl from 2.12.0 to 2.12.2 [\#527](https://github.com/archivesunleashed/aut/pull/527) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [aut-0.91.0](https://github.com/archivesunleashed/aut/tree/aut-0.91.0) (2022-01-21)
 
 [Full Changelog](https://github.com/archivesunleashed/aut/compare/aut-0.90.4...aut-0.91.0)
@@ -462,13 +502,13 @@
 - Add ExtractGraphX including algorithms for PageRank and Components. Issue 203 [\#245](https://github.com/archivesunleashed/aut/pull/245) ([greebie](https://github.com/greebie))
 - Travis build fixes [\#244](https://github.com/archivesunleashed/aut/pull/244) ([ruebot](https://github.com/ruebot))
 - Data frame implementation of extractors. Also added cmd arguments to resolve \#235 [\#236](https://github.com/archivesunleashed/aut/pull/236) ([TitusAn](https://github.com/TitusAn))
-- Save images from dataframe to disk [\#234](https://github.com/archivesunleashed/aut/pull/234) ([JWZ2018](https://github.com/JWZ2018))
+- Save images from dataframe to disk [\#234](https://github.com/archivesunleashed/aut/pull/234) ([jwli229](https://github.com/jwli229))
 - Add missing dependencies in; addresses \#227. [\#233](https://github.com/archivesunleashed/aut/pull/233) ([ruebot](https://github.com/ruebot))
 - Code cleanup: ArchiveRecord + impl moved into same Scala file [\#230](https://github.com/archivesunleashed/aut/pull/230) ([lintool](https://github.com/lintool))
-- Add Extract Image Details API [\#226](https://github.com/archivesunleashed/aut/pull/226) ([JWZ2018](https://github.com/JWZ2018))
+- Add Extract Image Details API [\#226](https://github.com/archivesunleashed/aut/pull/226) ([jwli229](https://github.com/jwli229))
 - Implement DomainFrequency, DomainGraph and PlainText extractor that can be run from command line [\#225](https://github.com/archivesunleashed/aut/pull/225) ([TitusAn](https://github.com/TitusAn))
-- Remove duplicate call of keepValidPages [\#224](https://github.com/archivesunleashed/aut/pull/224) ([JWZ2018](https://github.com/JWZ2018))
-- Extract Image Links DF API + Test [\#221](https://github.com/archivesunleashed/aut/pull/221) ([JWZ2018](https://github.com/JWZ2018))
+- Remove duplicate call of keepValidPages [\#224](https://github.com/archivesunleashed/aut/pull/224) ([jwli229](https://github.com/jwli229))
+- Extract Image Links DF API + Test [\#221](https://github.com/archivesunleashed/aut/pull/221) ([jwli229](https://github.com/jwli229))
 - Update Apache Spark to 2.3.0; resolves \#218 [\#219](https://github.com/archivesunleashed/aut/pull/219) ([ruebot](https://github.com/ruebot))
 - Resolve https://github.com/archivesunleashed/docker-aut/issues/17 [\#217](https://github.com/archivesunleashed/aut/pull/217) ([ruebot](https://github.com/ruebot))
 - Create issue templates [\#216](https://github.com/archivesunleashed/aut/pull/216) ([ruebot](https://github.com/ruebot))
