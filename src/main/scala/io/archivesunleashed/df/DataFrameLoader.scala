@@ -37,6 +37,20 @@ class DataFrameLoader(sc: SparkContext) {
       .audio()
   }
 
+  /* Create a DataFrame with css url, filename, extension, mime_type_web_server, mime_type_tika, md5, sha1, and content. */
+  def css(path: String): DataFrame = {
+    RecordLoader
+      .loadArchives(path, sc)
+      .css()
+  }
+
+  /* Create a DataFrame with html url, filename, extension, mime_type_web_server, mime_type_tika, md5, sha1, and content. */
+  def html(path: String): DataFrame = {
+    RecordLoader
+      .loadArchives(path, sc)
+      .html()
+  }
+
   /* Create a DataFrame with crawl date, source page, image url, and alt text. */
   def imagegraph(path: String): DataFrame = {
     RecordLoader
@@ -51,11 +65,32 @@ class DataFrameLoader(sc: SparkContext) {
       .images()
   }
 
+  /* Create a DataFrame with js url, filename, extension, mime_type_web_server, mime_type_tika, md5, sha1, and content. */
+  def js(path: String): DataFrame = {
+    RecordLoader
+      .loadArchives(path, sc)
+      .js()
+  }
+
+  /* Create a DataFrame with json url, filename, extension, mime_type_web_server, mime_type_tika, md5, sha1, and content. */
+  def json(path: String): DataFrame = {
+    RecordLoader
+      .loadArchives(path, sc)
+      .json()
+  }
+
   /** Create a DataFrame with PDF url, filename, extension, mime_type_web_server, mime_type_tika, md5, sha1, and raw bytes. */
   def pdfs(path: String): DataFrame = {
     RecordLoader
       .loadArchives(path, sc)
       .pdfs()
+  }
+
+  /* Create a DataFrame with plain-text url, filename, extension, mime_type_web_server, mime_type_tika, md5, sha1, and content. */
+  def plainText(path: String): DataFrame = {
+    RecordLoader
+      .loadArchives(path, sc)
+      .plainText()
   }
 
   /** Create a DataFrame with presentation program file url, filename, extension, mime_type_web_server, mime_type_tika, md5, sha1, and raw bytes. */
@@ -98,5 +133,12 @@ class DataFrameLoader(sc: SparkContext) {
     RecordLoader
       .loadArchives(path, sc)
       .wordProcessorFiles()
+  }
+
+  /* Create a DataFrame with xml url, filename, extension, mime_type_web_server, mime_type_tika, md5, sha1, and content. */
+  def xml(path: String): DataFrame = {
+    RecordLoader
+      .loadArchives(path, sc)
+      .xml()
   }
 }

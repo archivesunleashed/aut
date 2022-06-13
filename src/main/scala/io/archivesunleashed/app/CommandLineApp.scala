@@ -313,6 +313,108 @@ class CommandLineApp(conf: CmdAppConf) {
         } else {
           saveCsv(WordProcessorInformationExtractor(df))
         }
+      }),
+    "CssInformationExtractor" ->
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader
+          .loadArchives(inputFiles.head, sparkCtx.get)
+          .css()
+        inputFiles.tail foreach { f =>
+          df = df.union(
+            RecordLoader.loadArchives(f, sparkCtx.get).css()
+          )
+        }
+        if (!configuration.outputFormat.isEmpty && configuration
+              .outputFormat() == "parquet") {
+          saveParquet(CssInformationExtractor(df))
+        } else {
+          saveCsv(CssInformationExtractor(df))
+        }
+      }),
+    "HtmlInformationExtractor" ->
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader
+          .loadArchives(inputFiles.head, sparkCtx.get)
+          .html()
+        inputFiles.tail foreach { f =>
+          df = df.union(
+            RecordLoader.loadArchives(f, sparkCtx.get).html()
+          )
+        }
+        if (!configuration.outputFormat.isEmpty && configuration
+              .outputFormat() == "parquet") {
+          saveParquet(HtmlInformationExtractor(df))
+        } else {
+          saveCsv(HtmlInformationExtractor(df))
+        }
+      }),
+    "JsInformationExtractor" ->
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader
+          .loadArchives(inputFiles.head, sparkCtx.get)
+          .js()
+        inputFiles.tail foreach { f =>
+          df = df.union(
+            RecordLoader.loadArchives(f, sparkCtx.get).js()
+          )
+        }
+        if (!configuration.outputFormat.isEmpty && configuration
+              .outputFormat() == "parquet") {
+          saveParquet(JsInformationExtractor(df))
+        } else {
+          saveCsv(JsInformationExtractor(df))
+        }
+      }),
+    "JsonInformationExtractor" ->
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader
+          .loadArchives(inputFiles.head, sparkCtx.get)
+          .json()
+        inputFiles.tail foreach { f =>
+          df = df.union(
+            RecordLoader.loadArchives(f, sparkCtx.get).json()
+          )
+        }
+        if (!configuration.outputFormat.isEmpty && configuration
+              .outputFormat() == "parquet") {
+          saveParquet(JsonInformationExtractor(df))
+        } else {
+          saveCsv(JsonInformationExtractor(df))
+        }
+      }),
+    "PlainTextInformationExtractor" ->
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader
+          .loadArchives(inputFiles.head, sparkCtx.get)
+          .plainText()
+        inputFiles.tail foreach { f =>
+          df = df.union(
+            RecordLoader.loadArchives(f, sparkCtx.get).plainText()
+          )
+        }
+        if (!configuration.outputFormat.isEmpty && configuration
+              .outputFormat() == "parquet") {
+          saveParquet(PlainTextInformationExtractor(df))
+        } else {
+          saveCsv(PlainTextInformationExtractor(df))
+        }
+      }),
+    "XmlInformationExtractor" ->
+      ((inputFiles: List[String]) => {
+        var df = RecordLoader
+          .loadArchives(inputFiles.head, sparkCtx.get)
+          .xml()
+        inputFiles.tail foreach { f =>
+          df = df.union(
+            RecordLoader.loadArchives(f, sparkCtx.get).xml()
+          )
+        }
+        if (!configuration.outputFormat.isEmpty && configuration
+              .outputFormat() == "parquet") {
+          saveParquet(XmlInformationExtractor(df))
+        } else {
+          saveCsv(XmlInformationExtractor(df))
+        }
       })
   )
 

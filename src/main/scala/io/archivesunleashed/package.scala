@@ -694,6 +694,283 @@ package object archivesunleashed {
       sqlContext.getOrCreate().createDataFrame(records, schema)
     }
 
+    /* Extract css. */
+    def css(): DataFrame = {
+      val records = rdd
+        .map(r => (r, (r.getMimeType)))
+        .filter(r => r._2 == "text/css")
+        .map(r => {
+          val bytes = r._1.getBinaryBytes
+          val md5Hash = new String(
+            Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes))
+          )
+          val sha1Hash = new String(
+            Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes))
+          )
+          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
+          val url = new URL(r._1.getUrl)
+          val filename = FilenameUtils.getName(url.getPath())
+          val extension = GetExtensionMIME(url.getPath(), r._2)
+          (
+            r._1.getCrawlDate,
+            r._1.getUrl,
+            filename,
+            extension,
+            r._1.getMimeType,
+            DetectMimeTypeTika(r._1.getBinaryBytes),
+            md5Hash,
+            sha1Hash,
+            RemoveHTTPHeader(r._1.getContentString)
+          )
+        })
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
+
+      val schema = new StructType()
+        .add(StructField("crawl_date", StringType, true))
+        .add(StructField("url", StringType, true))
+        .add(StructField("filename", StringType, true))
+        .add(StructField("extension", StringType, true))
+        .add(StructField("mime_type_web_server", StringType, true))
+        .add(StructField("mime_type_tika", StringType, true))
+        .add(StructField("md5", StringType, true))
+        .add(StructField("sha1", StringType, true))
+        .add(StructField("content", StringType, true))
+
+      val sqlContext = SparkSession.builder();
+      sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
+    /* Extract html. */
+    def html(): DataFrame = {
+      val records = rdd
+        .map(r => (r, (r.getMimeType)))
+        .filter(r => r._2 == "text/html")
+        .map(r => {
+          val bytes = r._1.getBinaryBytes
+          val md5Hash = new String(
+            Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes))
+          )
+          val sha1Hash = new String(
+            Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes))
+          )
+          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
+          val url = new URL(r._1.getUrl)
+          val filename = FilenameUtils.getName(url.getPath())
+          val extension = GetExtensionMIME(url.getPath(), r._2)
+          (
+            r._1.getCrawlDate,
+            r._1.getUrl,
+            filename,
+            extension,
+            r._1.getMimeType,
+            DetectMimeTypeTika(r._1.getBinaryBytes),
+            md5Hash,
+            sha1Hash,
+            RemoveHTTPHeader(r._1.getContentString)
+          )
+        })
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
+
+      val schema = new StructType()
+        .add(StructField("crawl_date", StringType, true))
+        .add(StructField("url", StringType, true))
+        .add(StructField("filename", StringType, true))
+        .add(StructField("extension", StringType, true))
+        .add(StructField("mime_type_web_server", StringType, true))
+        .add(StructField("mime_type_tika", StringType, true))
+        .add(StructField("md5", StringType, true))
+        .add(StructField("sha1", StringType, true))
+        .add(StructField("content", StringType, true))
+
+      val sqlContext = SparkSession.builder();
+      sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
+    /* Extract javascript. */
+    def js(): DataFrame = {
+      val records = rdd
+        .map(r => (r, (r.getMimeType)))
+        .filter(r => r._2.contains("javascript"))
+        .map(r => {
+          val bytes = r._1.getBinaryBytes
+          val md5Hash = new String(
+            Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes))
+          )
+          val sha1Hash = new String(
+            Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes))
+          )
+          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
+          val url = new URL(r._1.getUrl)
+          val filename = FilenameUtils.getName(url.getPath())
+          val extension = GetExtensionMIME(url.getPath(), r._2)
+          (
+            r._1.getCrawlDate,
+            r._1.getUrl,
+            filename,
+            extension,
+            r._1.getMimeType,
+            DetectMimeTypeTika(r._1.getBinaryBytes),
+            md5Hash,
+            sha1Hash,
+            RemoveHTTPHeader(r._1.getContentString)
+          )
+        })
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
+
+      val schema = new StructType()
+        .add(StructField("crawl_date", StringType, true))
+        .add(StructField("url", StringType, true))
+        .add(StructField("filename", StringType, true))
+        .add(StructField("extension", StringType, true))
+        .add(StructField("mime_type_web_server", StringType, true))
+        .add(StructField("mime_type_tika", StringType, true))
+        .add(StructField("md5", StringType, true))
+        .add(StructField("sha1", StringType, true))
+        .add(StructField("content", StringType, true))
+
+      val sqlContext = SparkSession.builder();
+      sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
+    /* Extract json. */
+    def json(): DataFrame = {
+      val records = rdd
+        .map(r => (r, (r.getMimeType)))
+        .filter(r => r._2.contains("json"))
+        .map(r => {
+          val bytes = r._1.getBinaryBytes
+          val md5Hash = new String(
+            Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes))
+          )
+          val sha1Hash = new String(
+            Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes))
+          )
+          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
+          val url = new URL(r._1.getUrl)
+          val filename = FilenameUtils.getName(url.getPath())
+          val extension = GetExtensionMIME(url.getPath(), r._2)
+          (
+            r._1.getCrawlDate,
+            r._1.getUrl,
+            filename,
+            extension,
+            r._1.getMimeType,
+            DetectMimeTypeTika(r._1.getBinaryBytes),
+            md5Hash,
+            sha1Hash,
+            RemoveHTTPHeader(r._1.getContentString)
+          )
+        })
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
+
+      val schema = new StructType()
+        .add(StructField("crawl_date", StringType, true))
+        .add(StructField("url", StringType, true))
+        .add(StructField("filename", StringType, true))
+        .add(StructField("extension", StringType, true))
+        .add(StructField("mime_type_web_server", StringType, true))
+        .add(StructField("mime_type_tika", StringType, true))
+        .add(StructField("md5", StringType, true))
+        .add(StructField("sha1", StringType, true))
+        .add(StructField("content", StringType, true))
+
+      val sqlContext = SparkSession.builder();
+      sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
+    /* Extract plain text. */
+    def plainText(): DataFrame = {
+      val records = rdd
+        .map(r => (r, (r.getMimeType), (DetectMimeTypeTika(r.getBinaryBytes))))
+        .filter(r => r._2 == "text/plain")
+        .filter(r => r._3 == "text/plain")
+        .map(r => {
+          val bytes = r._1.getBinaryBytes
+          val md5Hash = new String(
+            Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes))
+          )
+          val sha1Hash = new String(
+            Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes))
+          )
+          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
+          val url = new URL(r._1.getUrl)
+          val filename = FilenameUtils.getName(url.getPath())
+          val extension = GetExtensionMIME(url.getPath(), r._2)
+          (
+            r._1.getCrawlDate,
+            r._1.getUrl,
+            filename,
+            extension,
+            r._1.getMimeType,
+            DetectMimeTypeTika(r._1.getBinaryBytes),
+            md5Hash,
+            sha1Hash,
+            RemoveHTTPHeader(r._1.getContentString)
+          )
+        })
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
+
+      val schema = new StructType()
+        .add(StructField("crawl_date", StringType, true))
+        .add(StructField("url", StringType, true))
+        .add(StructField("filename", StringType, true))
+        .add(StructField("extension", StringType, true))
+        .add(StructField("mime_type_web_server", StringType, true))
+        .add(StructField("mime_type_tika", StringType, true))
+        .add(StructField("md5", StringType, true))
+        .add(StructField("sha1", StringType, true))
+        .add(StructField("content", StringType, true))
+
+      val sqlContext = SparkSession.builder();
+      sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
+    /* Extract xml. */
+    def xml(): DataFrame = {
+      val records = rdd
+        .map(r => (r, (r.getMimeType)))
+        .filter(r => r._2.contains("xml"))
+        .map(r => {
+          val bytes = r._1.getBinaryBytes
+          val md5Hash = new String(
+            Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes))
+          )
+          val sha1Hash = new String(
+            Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes))
+          )
+          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
+          val url = new URL(r._1.getUrl)
+          val filename = FilenameUtils.getName(url.getPath())
+          val extension = GetExtensionMIME(url.getPath(), r._2)
+          (
+            r._1.getCrawlDate,
+            r._1.getUrl,
+            filename,
+            extension,
+            r._1.getMimeType,
+            DetectMimeTypeTika(r._1.getBinaryBytes),
+            md5Hash,
+            sha1Hash,
+            RemoveHTTPHeader(r._1.getContentString)
+          )
+        })
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
+
+      val schema = new StructType()
+        .add(StructField("crawl_date", StringType, true))
+        .add(StructField("url", StringType, true))
+        .add(StructField("filename", StringType, true))
+        .add(StructField("extension", StringType, true))
+        .add(StructField("mime_type_web_server", StringType, true))
+        .add(StructField("mime_type_tika", StringType, true))
+        .add(StructField("md5", StringType, true))
+        .add(StructField("sha1", StringType, true))
+        .add(StructField("content", StringType, true))
+
+      val sqlContext = SparkSession.builder();
+      sqlContext.getOrCreate().createDataFrame(records, schema)
+    }
+
     /** Removes all data except images. */
     def keepImages(): RDD[ArchiveRecord] = {
       rdd.filter(r =>
