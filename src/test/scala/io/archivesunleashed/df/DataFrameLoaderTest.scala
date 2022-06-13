@@ -25,6 +25,7 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 @RunWith(classOf[JUnitRunner])
 class DataFrameLoaderTest extends FunSuite with BeforeAndAfter {
   private val arcPath = Resources.getResource("arc/example.arc.gz").getPath
+  private val warcPath = Resources.getResource("warc/example.warc.gz").getPath
   private val mediaPath =
     Resources.getResource("warc/example.media.warc.gz").getPath
   private val docPath =
@@ -40,6 +41,7 @@ class DataFrameLoaderTest extends FunSuite with BeforeAndAfter {
   private val url = "url"
   private val mime_type = "mime_type_web_server"
   private val md5 = "md5"
+  private val crawl_date = "crawl_date"
 
   before {
     val conf = new SparkConf()
@@ -61,6 +63,12 @@ class DataFrameLoaderTest extends FunSuite with BeforeAndAfter {
     val powerpoint = df.presentationProgramFiles(docPath)
     val word = df.wordProcessorFiles(docPath)
     val all = df.all(arcPath)
+    val css = df.css(warcPath)
+    val html = df.html(warcPath)
+    val js = df.js(warcPath)
+    val json = df.json(pdfPath)
+    val pt = df.plainText(warcPath)
+    val xml = df.xml(warcPath)
 
     val r_1 = validPages.select(domain, url, mime_type).take(1)(0)
     assert(r_1.getAs[String](domain) == "archive.org")
@@ -129,6 +137,44 @@ class DataFrameLoaderTest extends FunSuite with BeforeAndAfter {
       r_11.getAs[String](url) == "http://www.archive.org/robots.txt"
     )
     assert(r_11.getAs[String](mime_type) == "text/plain")
+
+    val r_12 = css.select(crawl_date, url).take(1)(0)
+    assert(r_12.getAs[String](crawl_date) == "20080430204833")
+    assert(
+      r_12
+        .getAs[String](url) == "http://www.archive.org/stylesheets/details.css"
+    )
+
+    val r_13 = html.select(crawl_date, url).take(1)(0)
+    assert(r_13.getAs[String](crawl_date) == "20080430204826")
+    assert(
+      r_13.getAs[String](url) == "http://www.archive.org/"
+    )
+
+    val r_14 = js.select(crawl_date, url).take(1)(0)
+    assert(r_14.getAs[String](crawl_date) == "20080430204833")
+    assert(
+      r_14.getAs[String](url) == "http://www.archive.org/flv/flv.js?v=1.34"
+    )
+
+    val r_15 = json.select(crawl_date, url).take(1)(0)
+    assert(r_15.getAs[String](crawl_date) == "20190812222538")
+    assert(
+      r_15.getAs[String](url) == "https://api.plu.mx/widget/other/artifact?type=doi&id=10.1109%2FJCDL.2019.00043&href=https%3A%2F%2Fplu.mx%2Fpitt%2Fa%2F%3Fdoi%3D10.1109%2FJCDL.2019.00043&ref=https%3A%2F%2Fyorkspace.library.yorku.ca%2Fxmlui%2Fhandle%2F10315%2F36158&pageToken=f74d46f3-f622-c670-e1bc-bdc3-aa500a283693&isElsWidget=false"
+    )
+
+    val r_16 = pt.select(crawl_date, url).take(1)(0)
+    assert(r_16.getAs[String](crawl_date) == "20080430204825")
+    assert(
+      r_16.getAs[String](url) == "http://www.archive.org/robots.txt"
+    )
+
+    val r_17 = xml.select(crawl_date, url).take(1)(0)
+    assert(r_17.getAs[String](crawl_date) == "20080430204830")
+    assert(
+      r_17.getAs[String](url) == "http://www.archive.org/services/collection-rss.php"
+    )
+
   }
 
   after {
