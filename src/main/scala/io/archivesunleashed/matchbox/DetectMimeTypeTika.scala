@@ -55,7 +55,11 @@ object DetectMimeTypeTika {
     */
   def getExtension(mimeType: String): String = {
     val regMimeType = allMimeTypes.forName(mimeType)
-    regMimeType.getExtension
+    try {
+      regMimeType.getExtension
+    } catch {
+      case e: Exception => ""
+    }
   }
 
   /** Return the list of all known file extensions for a MIME type string
@@ -65,7 +69,10 @@ object DetectMimeTypeTika {
     */
   def getExtensions(mimeType: String): List[String] = {
     val regMimeType = allMimeTypes.forName(mimeType)
-    regMimeType.getExtensions.asScala.toList
+    try {
+      regMimeType.getExtensions.asScala.toList
+    } catch {
+      case e: Exception => Nil
+    }
   }
-
 }
