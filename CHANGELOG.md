@@ -1,5 +1,21 @@
 # Changelog
 
+## [aut-1.1.0](https://github.com/archivesunleashed/aut/tree/aut-1.1.0) (2022-06-17)
+
+[Full Changelog](https://github.com/archivesunleashed/aut/compare/aut-1.0.0...aut-1.1.0)
+
+**Fixed bugs:**
+
+- org.apache.tika.mime.MimeTypeException: Invalid media type name: application/rss+xml lang=utf-8 [\#542](https://github.com/archivesunleashed/aut/issues/542)
+
+**Closed issues:**
+
+- Add ARCH text files derivatives [\#540](https://github.com/archivesunleashed/aut/issues/540)
+
+**Merged pull requests:**
+
+- Add ARCH text files derivatives. [\#541](https://github.com/archivesunleashed/aut/pull/541) ([ruebot](https://github.com/ruebot))
+
 ## [aut-1.0.0](https://github.com/archivesunleashed/aut/tree/aut-1.0.0) (2022-06-10)
 
 [Full Changelog](https://github.com/archivesunleashed/aut/compare/aut-0.91.0...aut-1.0.0)
