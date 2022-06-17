@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>package.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Archives Unleashed Toolkit</a> &gt; <a href="index.source.html" class="el_package">io.archivesunleashed.df</a> &gt; <span class="el_source">package.scala</span></div><h1>package.scala</h1><pre class="source lang-java linenums">/*
+ * Copyright © 2017 The Archives Unleashed Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.archivesunleashed
+
+import io.archivesunleashed.matchbox.ComputeMD5
+import java.io.ByteArrayInputStream
+import java.io.FileOutputStream
+import java.util.Base64
+import org.apache.commons.io.IOUtils
+import org.apache.spark.sql.DataFrame
+
+<span class="fc" id="L25">package object df {</span>
+
+  /**
+    * Given a dataframe, serializes binary object and saves to disk
+    * @param df the input dataframe
+    */
+<span class="fc" id="L31">  implicit class SaveBytes(df: DataFrame) {</span>
+
+    /**
+      * @param bytesColumnName the name of the column containing the bytes
+      * @param fileName the name of the file to save the binary file to (without extension)
+      * @param extensionColumnName the name of the column containin the extension
+      * e.g. fileName = &quot;foo&quot; =&gt; files are saved as &quot;foo-[MD5 hash].pdf&quot;
+      */
+    def saveToDisk(
+        bytesColumnName: String,
+        fileName: String,
+        extensionColumnName: String
+    ): Unit = {
+<span class="fc" id="L44">      df.select(bytesColumnName, extensionColumnName)</span>
+<span class="fc" id="L45">        .foreach(row =&gt; {</span>
+          try {
+            // Assumes the bytes are base64 encoded.
+            val encodedBytes: String = row.getAs(bytesColumnName);
+            val bytes = Base64.getDecoder.decode(encodedBytes);
+            val in = new ByteArrayInputStream(bytes);
+
+            val extension: String = row.getAs(extensionColumnName);
+            val suffix = ComputeMD5(bytes)
+            val file = new FileOutputStream(
+              fileName + &quot;-&quot; + suffix + &quot;.&quot; + extension.toLowerCase
+            )
+            IOUtils.copy(in, file)
+            file.close()
+          } catch {
+            case e: Throwable =&gt; {}
+          }
+        })
+    }
+  }
+<span class="fc" id="L65">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>
