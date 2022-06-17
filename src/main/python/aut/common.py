@@ -14,14 +14,29 @@ class WebArchive:
     def audio(self):
         return DataFrame(self.loader.audio(self.path), self.sqlContext)
 
+    def css(self):
+        return DataFrame(self.loader.css(self.path), self.sqlContext)
+
+    def html(self):
+        return DataFrame(self.loader.html(self.path), self.sqlContext)
+
     def imagegraph(self):
         return DataFrame(self.loader.imagegraph(self.path), self.sqlContext)
 
     def images(self):
         return DataFrame(self.loader.images(self.path), self.sqlContext)
 
+    def js(self):
+        return DataFrame(self.loader.js(self.path), self.sqlContext)
+
+    def json(self):
+        return DataFrame(self.loader.json(self.path), self.sqlContext)
+
     def pdfs(self):
         return DataFrame(self.loader.pdfs(self.path), self.sqlContext)
+
+    def plain_text(self):
+        return DataFrame(self.loader.plainText(self.path), self.sqlContext)
 
     def presentation_program(self):
         return DataFrame(
@@ -42,3 +57,6 @@ class WebArchive:
 
     def word_processor(self):
         return DataFrame(self.loader.wordProcessorFiles(self.path), self.sqlContext)
+
+    def xml(self):
+        return DataFrame(self.loader.xml(self.path), self.sqlContext)

@@ -17,27 +17,19 @@
 package io.archivesunleashed.app
 
 import io.archivesunleashed.ArchiveRecord
-import io.archivesunleashed.udfs.{
-  extractDomain,
-  removeHTML,
-  removeHTTPHeader,
-  removePrefixWWW
-}
+import io.archivesunleashed.df.DataFrameLoader
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
-object WebPagesExtractor {
+object JsonInformationExtractor {
 
-  /** Extract web pages from web archive using DataFrame and Spark SQL.
+  /** Extract web graph from web archive using DataFrame and Spark SQL.
     *
     * @param d DataFrame obtained from RecordLoader
-    * @return Dataset[Row], where the schema is (crawl date, url,
-    *   mime_type_web_server, mime_type_tika, language, content)
+    * @return Dataset[Row], where the schema is (crawl date, src, image url,
+    *   alt text)
     */
   def apply(d: DataFrame): Dataset[Row] = {
     val spark = SparkSession.builder().master("local").getOrCreate()
-    // scalastyle:off
-    import spark.implicits._
-    // scalastyle:on
     d
   }
 }

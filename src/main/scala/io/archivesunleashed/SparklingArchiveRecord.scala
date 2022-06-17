@@ -81,7 +81,10 @@ class SparklingArchiveRecord(
     }.getOrElse("")
 
   override def getMimeType: String =
-    http(warc).flatMap(_.mime).getOrElse("unknown")
+    http(warc)
+      .flatMap(_.mime)
+      .getOrElse("unknown")
+      .replaceAll(" .*|\\s|\\n", "")
 
   override def getUrl: String = warc.url.getOrElse("").replaceAll("<|>", "")
 
