@@ -22,7 +22,11 @@ import io.archivesunleashed.matchbox.ExtractDomain
 import org.apache.tika.io.BoundedInputStream
 import org.archive.webservices.sparkling.http.HttpMessage
 import org.archive.webservices.sparkling.io.IOUtil
-import org.archive.webservices.sparkling.util.{ManagedVal, ValueSupplier}
+import org.archive.webservices.sparkling.util.{
+  ManagedVal,
+  RegexUtil,
+  ValueSupplier
+}
 import org.archive.webservices.sparkling.warc.{WarcHeaders, WarcRecord}
 import scala.util.Try
 
@@ -59,6 +63,11 @@ class SparklingArchiveRecord(
   def limitBodyLength(maxBodyLength: Long): SparklingArchiveRecord = {
     new SparklingArchiveRecord(filename, meta, payload, maxBodyLength)
   }
+
+  override def getLastModified: String =
+    http(warc)
+      .flatMap(_.lastModified)
+      .getOrElse("")
 
   override def getArchiveFilename: String = filename
 
