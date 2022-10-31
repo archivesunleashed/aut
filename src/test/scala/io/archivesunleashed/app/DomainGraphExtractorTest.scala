@@ -39,21 +39,21 @@ class DomainGraphExtractorDfTest extends FunSuite with BeforeAndAfter {
   }
 
   test("Domain graph extractor DF") {
-    val TESTLENGTH = 82
+    val TESTLENGTH = 10
     val df = RecordLoader.loadArchives(arcPath, sc).webgraph()
     val dfResult = DomainGraphExtractor(df).collect()
 
     assert(dfResult.length == TESTLENGTH)
 
-    assert(dfResult(0).get(0) == "20080430205151")
+    assert(dfResult(0).get(0) == "20080430")
     assert(dfResult(0).get(1) == "archive.org")
     assert(dfResult(0).get(2) == "archive.org")
-    assert(dfResult(0).get(3) == 10566)
+    assert(dfResult(0).get(3) == 37511)
 
-    assert(dfResult(1).get(0) == "20080430204948")
+    assert(dfResult(1).get(0) == "20080430")
     assert(dfResult(1).get(1) == "archive.org")
-    assert(dfResult(1).get(2) == "archive.org")
-    assert(dfResult(1).get(3) == 7143)
+    assert(dfResult(1).get(2) == "etree.org")
+    assert(dfResult(1).get(3) == 31)
   }
 
   after {

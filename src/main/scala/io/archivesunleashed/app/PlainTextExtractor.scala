@@ -20,6 +20,7 @@ import io.archivesunleashed.ArchiveRecord
 import io.archivesunleashed.udfs.{extractBoilerpipeText}
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 import org.apache.spark.sql.functions.lower
+import scala.language.postfixOps
 
 object PlainTextExtractor {
 
