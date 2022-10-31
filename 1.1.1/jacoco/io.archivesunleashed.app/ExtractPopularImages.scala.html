@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExtractPopularImages.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Archives Unleashed Toolkit</a> &gt; <a href="index.source.html" class="el_package">io.archivesunleashed.app</a> &gt; <span class="el_source">ExtractPopularImages.scala</span></div><h1>ExtractPopularImages.scala</h1><pre class="source lang-java linenums">/*
+ * Copyright © 2017 The Archives Unleashed Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.archivesunleashed.app
+
+import io.archivesunleashed.ArchiveRecord
+import io.archivesunleashed.matchbox.{ComputeImageSize, ComputeMD5}
+import org.apache.spark.rdd.RDD
+import org.apache.spark.{RangePartitioner, SparkContext}
+
+/** Extract most popular images from an RDD. */
+<span class="fc" id="L24">object ExtractPopularImages {</span>
+<span class="fc" id="L25">  val LIMIT_MAXIMUM: Int = 500</span>
+<span class="fc" id="L26">  val LIMIT_DENOMINATOR: Int = 250</span>
+<span class="fc" id="L27">  val MIN_WIDTH: Int = 30</span>
+<span class="fc" id="L28">  val MIN_HEIGHT: Int = 30</span>
+
+  /** Extracts the &lt;i&gt;n&lt;/i&gt; most popular images from an RDD within a given size range.
+    *
+    * @param records
+    * @param limit number of most popular images in the output
+    * @param sc SparkContext
+    * @param minWidth of image
+    * @param minHeight of image
+    */
+  def apply(
+      records: RDD[ArchiveRecord],
+      limit: Int,
+      sc: SparkContext,
+<span class="fc" id="L42">      minWidth: Int = MIN_WIDTH,</span>
+<span class="fc" id="L43">      minHeight: Int = MIN_HEIGHT</span>
+  ): RDD[String] = {
+<span class="fc" id="L45">    val res = records</span>
+      .keepImages()
+<span class="fc" id="L47">      .map(r =&gt; ((r.getUrl, r.getBinaryBytes), 1))</span>
+<span class="fc" id="L48">      .map(img =&gt;</span>
+        (
+          ComputeMD5(img._1._2),
+          (ComputeImageSize(img._1._2), img._1._1, img._2)
+        )
+      )
+<span class="fc" id="L54">      .filter(img =&gt; img._2._1._1 &gt;= minWidth &amp;&amp; img._2._1._2 &gt;= minHeight)</span>
+<span class="fc" id="L55">      .reduceByKey((image1, image2) =&gt;</span>
+        (image1._1, image1._2, image1._3 + image2._3)
+      )
+<span class="fc" id="L58">      .map(x =&gt; (x._2._3, x._2._2))</span>
+<span class="fc" id="L59">      .takeOrdered(limit)(Ordering[Int].on(x =&gt; -x._1))</span>
+    val numPartitions =
+<span class="fc bfc" id="L61" title="All 2 branches covered.">      if (limit &lt;= LIMIT_MAXIMUM) 1</span>
+<span class="fc" id="L62">      else Math.ceil(limit / LIMIT_DENOMINATOR).toInt</span>
+<span class="fc" id="L63">    val rdd = sc.parallelize(res)</span>
+<span class="fc" id="L64">    rdd</span>
+<span class="fc" id="L65">      .repartitionAndSortWithinPartitions(</span>
+<span class="fc" id="L66">        new RangePartitioner(numPartitions, rdd, false)</span>
+      )
+<span class="fc" id="L68">      .sortByKey(false)</span>
+<span class="fc" id="L69">      .map(x =&gt; x._1 + &quot;\t&quot; + x._2)</span>
+  }
+<span class="fc" id="L71">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

@@ -1,0 +1,585 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CommandLineApp.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Archives Unleashed Toolkit</a> &gt; <a href="index.source.html" class="el_package">io.archivesunleashed.app</a> &gt; <span class="el_source">CommandLineApp.scala</span></div><h1>CommandLineApp.scala</h1><pre class="source lang-java linenums">/*
+ * Copyright © 2017 The Archives Unleashed Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.archivesunleashed.app
+
+import java.io.File
+import java.nio.file.{Files, Paths}
+
+import io.archivesunleashed.{ArchiveRecord, RecordLoader}
+import org.apache.log4j.Logger
+import org.apache.spark.sql.{DataFrame, Dataset, Row}
+import org.apache.spark.{SparkConf, SparkContext}
+import org.rogach.scallop.exceptions.ScallopException
+import org.rogach.scallop.ScallopConf
+
+/* Usage:
+ *
+ * PATH_TO_SPARK
+ *   --class io.archivesunleashed.app.CommandLinAppRunner
+ *   PATH_TO_AUT_JAR
+ *   --extractor EXTRACTOR
+ *   --input INPUT_FILE ...
+ *   --output OUTPUT_DIRECTORY
+ *   [--output-format FORMAT]
+ *   [--split]
+ *   [--partiton]
+ *
+ * where EXTRACTOR is one of
+ * AudioInformationExtractor, DomainFrequencyExtractor, DomainGraphExtractor,
+ * ImageGraphExtractor, ImageInformationExtractor, PDFInformationExtractor,
+ * PlainTextExtractor, PresentationProgramInformationExtractor,
+ * SpreadsheetInformationExtractor, VideoInformationExtractor,
+ * WebGraphExtractor, WebPagesExtractor, or WordProcessorInformationExtractor.
+ *
+ * INPUT_FILE is a list of input files separated by space (or path containing wildcard)
+ * OUTPUT_DIRECTORY is the directory to put result in
+ *
+ * FORMAT is meant to work with DomainGraphExtractor
+ * Four supported options are csv (default), and gexf, graphml as
+ * additional options for DomainGraphExtractor.
+ *
+ * If --split is present, the program will put results for each input file in its own folder.
+ * Otherwise they will be merged.
+ *
+ * If --partition N is present, the program will partition the DataFrame according
+ * to N before writing results. Otherwise, the partition is left as is.
+ */
+
+/** Construct a Scallop option reader from command line argument string list.
+  *
+  * @param args list of command line arguments passed as is from argv
+  */
+<span class="fc" id="L65">class CmdAppConf(args: Seq[String]) extends ScallopConf(args) {</span>
+
+  /** Register callbacks when Scallop detects errors.
+    * Useful in unit tests.
+    *
+    * @param e exception that Scallop throws
+    */
+  // scalastyle:off regex
+  override def onError(e: Throwable): Unit =
+<span class="pc" id="L74">    e match {</span>
+<span class="pc bpc" id="L75" title="2 of 4 branches missed.">      case ScallopException(message) =&gt;</span>
+<span class="fc" id="L76">        println(message)</span>
+<span class="fc" id="L77">        throw new IllegalArgumentException()</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">      case other: Any =&gt; throw other</span>
+    }
+  // scalastyle:on regex
+
+<span class="fc" id="L82">  mainOptions = Seq(input, output)</span>
+<span class="pc" id="L83">  var extractor = opt[String](descr = &quot;extractor&quot;, required = true)</span>
+<span class="fc" id="L84">  val input = opt[List[String]](descr = &quot;input file path&quot;, required = true)</span>
+<span class="fc" id="L85">  val output = opt[String](descr = &quot;output directory path&quot;, required = true)</span>
+<span class="fc" id="L86">  val outputFormat = opt[String](descr =</span>
+<span class="fc" id="L87">    &quot;output format for DomainGraphExtractor, one of csv, gexf, or graphml&quot;</span>
+  )
+<span class="fc" id="L89">  val split = opt[Boolean]()</span>
+<span class="fc" id="L90">  val partition = opt[Int]()</span>
+<span class="fc" id="L91">  verify()</span>
+}
+
+/** Main application that parse command line arguments and invoke appropriate extractor.
+  *
+  * @param conf Scallop option reader constructed with class CmdAppConf
+  */
+<span class="fc" id="L98">class CommandLineApp(conf: CmdAppConf) {</span>
+<span class="fc" id="L99">  private val logger = Logger.getLogger(getClass().getName())</span>
+<span class="fc" id="L100">  private val configuration = conf</span>
+<span class="fc" id="L101">  private var saveTarget = &quot;&quot;</span>
+<span class="fc" id="L102">  private var sparkCtx: Option[SparkContext] = None</span>
+
+  /** Maps extractor type string to DataFrame Extractors.
+    *
+    * Each closure takes a list of file names to be extracted, loads them using RecordLoader,
+    * performs the extraction, and saves results to file by calling save method of
+    * CommandLineApp class.
+    * Closures return nothing.
+    */
+<span class="fc" id="L111">  private val extractors = Map[String, List[String] =&gt; Any](</span>
+<span class="fc" id="L112">    &quot;AudioInformationExtractor&quot; -&gt;</span>
+<span class="fc" id="L113">      ((inputFiles: List[String]) =&gt; {</span>
+        var df =
+          RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).audio()
+        inputFiles.tail foreach { f =&gt;
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).audio())
+        }
+        if (!configuration.outputFormat.isEmpty &amp;&amp; configuration
+              .outputFormat() == &quot;parquet&quot;) {
+          saveParquet(AudioInformationExtractor(df))
+        } else {
+          saveCsv(AudioInformationExtractor(df))
+        }
+      }),
+<span class="fc" id="L126">    &quot;DomainFrequencyExtractor&quot; -&gt;</span>
+<span class="fc" id="L127">      ((inputFiles: List[String]) =&gt; {</span>
+        var df =
+          RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).webpages()
+        inputFiles.tail foreach { f =&gt;
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).webpages())
+        }
+        if (!configuration.outputFormat.isEmpty &amp;&amp; configuration
+              .outputFormat() == &quot;parquet&quot;) {
+          saveParquet(DomainFrequencyExtractor(df))
+        } else {
+          saveCsv(DomainFrequencyExtractor(df))
+        }
+      }),
+<span class="fc" id="L140">    &quot;DomainGraphExtractor&quot; -&gt;</span>
+<span class="fc" id="L141">      ((inputFiles: List[String]) =&gt; {</span>
+        var df =
+          RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).webgraph()
+        inputFiles.tail foreach { f =&gt;
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).webgraph())
+        }
+        if (!configuration.outputFormat.isEmpty &amp;&amp; configuration
+              .outputFormat() == &quot;gexf&quot;) {
+          new File(saveTarget).mkdirs()
+          WriteGEXF(
+            DomainGraphExtractor(df).collect(),
+            Paths.get(saveTarget).toString + &quot;/GEXF.gexf&quot;
+          )
+        } else if (!configuration.outputFormat.isEmpty &amp;&amp; configuration
+                     .outputFormat() == &quot;parquet&quot;) {
+          saveParquet(DomainGraphExtractor(df))
+        } else if (!configuration.outputFormat.isEmpty &amp;&amp; configuration
+                     .outputFormat() == &quot;graphml&quot;) {
+          new File(saveTarget).mkdirs()
+          WriteGraphML(
+            DomainGraphExtractor(df).collect(),
+            Paths.get(saveTarget).toString + &quot;/GRAPHML.graphml&quot;
+          )
+        } else {
+          saveCsv(DomainGraphExtractor(df))
+        }
+      }),
+<span class="fc" id="L168">    &quot;ImageInformationExtractor&quot; -&gt;</span>
+<span class="fc" id="L169">      ((inputFiles: List[String]) =&gt; {</span>
+        var df =
+          RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).images()
+        inputFiles.tail foreach { f =&gt;
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).images())
+        }
+        if (!configuration.outputFormat.isEmpty &amp;&amp; configuration
+              .outputFormat() == &quot;parquet&quot;) {
+          saveParquet(ImageInformationExtractor(df))
+        } else {
+          saveCsv(ImageInformationExtractor(df))
+        }
+      }),
+<span class="fc" id="L182">    &quot;ImageGraphExtractor&quot; -&gt;</span>
+<span class="fc" id="L183">      ((inputFiles: List[String]) =&gt; {</span>
+        var df =
+          RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).imagegraph()
+        inputFiles.tail foreach { f =&gt;
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).imagegraph())
+        }
+        if (!configuration.outputFormat.isEmpty &amp;&amp; configuration
+              .outputFormat() == &quot;parquet&quot;) {
+          saveParquet(ImageGraphExtractor(df))
+        } else {
+          saveCsv(ImageGraphExtractor(df))
+        }
+      }),
+<span class="fc" id="L196">    &quot;PDFInformationExtractor&quot; -&gt;</span>
+<span class="fc" id="L197">      ((inputFiles: List[String]) =&gt; {</span>
+        var df = RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).pdfs()
+        inputFiles.tail foreach { f =&gt;
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).pdfs())
+        }
+        if (!configuration.outputFormat.isEmpty &amp;&amp; configuration
+              .outputFormat() == &quot;parquet&quot;) {
+          saveParquet(PDFInformationExtractor(df))
+        } else {
+          saveCsv(PDFInformationExtractor(df))
+        }
+      }),
+<span class="fc" id="L209">    &quot;PlainTextExtractor&quot; -&gt;</span>
+<span class="fc" id="L210">      ((inputFiles: List[String]) =&gt; {</span>
+        var df =
+          RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).all()
+        inputFiles.tail foreach { f =&gt;
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).all())
+        }
+        if (!configuration.outputFormat.isEmpty &amp;&amp; configuration
+              .outputFormat() == &quot;parquet&quot;) {
+          saveParquet(PlainTextExtractor(df))
+        } else {
+          saveCsv(PlainTextExtractor(df))
+        }
+      }),
+<span class="fc" id="L223">    &quot;PresentationProgramInformationExtractor&quot; -&gt;</span>
+<span class="fc" id="L224">      ((inputFiles: List[String]) =&gt; {</span>
+        var df = RecordLoader
+          .loadArchives(inputFiles.head, sparkCtx.get)
+          .presentationProgramFiles()
+        inputFiles.tail foreach { f =&gt;
+          df = df.union(
+            RecordLoader
+              .loadArchives(f, sparkCtx.get)
+              .presentationProgramFiles()
+          )
+        }
+        if (!configuration.outputFormat.isEmpty &amp;&amp; configuration
+              .outputFormat() == &quot;parquet&quot;) {
+          saveParquet(PresentationProgramInformationExtractor(df))
+        } else {
+          saveCsv(PresentationProgramInformationExtractor(df))
+        }
+      }),
+<span class="fc" id="L242">    &quot;SpreadsheetInformationExtractor&quot; -&gt;</span>
+<span class="fc" id="L243">      ((inputFiles: List[String]) =&gt; {</span>
+        var df = RecordLoader
+          .loadArchives(inputFiles.head, sparkCtx.get)
+          .spreadsheets()
+        inputFiles.tail foreach { f =&gt;
+          df =
+            df.union(RecordLoader.loadArchives(f, sparkCtx.get).spreadsheets())
+        }
+        if (!configuration.outputFormat.isEmpty &amp;&amp; configuration
+              .outputFormat() == &quot;parquet&quot;) {
+          saveParquet(SpreadsheetInformationExtractor(df))
+        } else {
+          saveCsv(SpreadsheetInformationExtractor(df))
+        }
+      }),
+<span class="fc" id="L258">    &quot;VideoInformationExtractor&quot; -&gt;</span>
+<span class="fc" id="L259">      ((inputFiles: List[String]) =&gt; {</span>
+        var df =
+          RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).videos()
+        inputFiles.tail foreach { f =&gt;
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).videos())
+        }
+        if (!configuration.outputFormat.isEmpty &amp;&amp; configuration
+              .outputFormat() == &quot;parquet&quot;) {
+          saveParquet(VideoInformationExtractor(df))
+        } else {
+          saveCsv(VideoInformationExtractor(df))
+        }
+      }),
+<span class="fc" id="L272">    &quot;WebGraphExtractor&quot; -&gt;</span>
+<span class="fc" id="L273">      ((inputFiles: List[String]) =&gt; {</span>
+        var df =
+          RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).webgraph()
+        inputFiles.tail foreach { f =&gt;
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).webgraph())
+        }
+        if (!configuration.outputFormat.isEmpty &amp;&amp; configuration
+              .outputFormat() == &quot;parquet&quot;) {
+          saveParquet(WebGraphExtractor(df))
+        } else {
+          saveCsv(WebGraphExtractor(df))
+        }
+      }),
+<span class="fc" id="L286">    &quot;WebPagesExtractor&quot; -&gt;</span>
+<span class="fc" id="L287">      ((inputFiles: List[String]) =&gt; {</span>
+        var df =
+          RecordLoader.loadArchives(inputFiles.head, sparkCtx.get).webpages()
+        inputFiles.tail foreach { f =&gt;
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).webpages())
+        }
+        if (!configuration.outputFormat.isEmpty &amp;&amp; configuration
+              .outputFormat() == &quot;parquet&quot;) {
+          saveParquet(WebPagesExtractor(df))
+        } else {
+          saveCsv(WebPagesExtractor(df))
+        }
+      }),
+<span class="fc" id="L300">    &quot;WordProcessorInformationExtractor&quot; -&gt;</span>
+<span class="fc" id="L301">      ((inputFiles: List[String]) =&gt; {</span>
+        var df = RecordLoader
+          .loadArchives(inputFiles.head, sparkCtx.get)
+          .wordProcessorFiles()
+        inputFiles.tail foreach { f =&gt;
+          df = df.union(
+            RecordLoader.loadArchives(f, sparkCtx.get).wordProcessorFiles()
+          )
+        }
+        if (!configuration.outputFormat.isEmpty &amp;&amp; configuration
+              .outputFormat() == &quot;parquet&quot;) {
+          saveParquet(WordProcessorInformationExtractor(df))
+        } else {
+          saveCsv(WordProcessorInformationExtractor(df))
+        }
+      }),
+<span class="fc" id="L317">    &quot;CssInformationExtractor&quot; -&gt;</span>
+<span class="fc" id="L318">      ((inputFiles: List[String]) =&gt; {</span>
+        var df = RecordLoader
+          .loadArchives(inputFiles.head, sparkCtx.get)
+          .css()
+        inputFiles.tail foreach { f =&gt;
+          df = df.union(
+            RecordLoader.loadArchives(f, sparkCtx.get).css()
+          )
+        }
+        if (!configuration.outputFormat.isEmpty &amp;&amp; configuration
+              .outputFormat() == &quot;parquet&quot;) {
+          saveParquet(CssInformationExtractor(df))
+        } else {
+          saveCsv(CssInformationExtractor(df))
+        }
+      }),
+<span class="fc" id="L334">    &quot;HtmlInformationExtractor&quot; -&gt;</span>
+<span class="fc" id="L335">      ((inputFiles: List[String]) =&gt; {</span>
+        var df = RecordLoader
+          .loadArchives(inputFiles.head, sparkCtx.get)
+          .html()
+        inputFiles.tail foreach { f =&gt;
+          df = df.union(
+            RecordLoader.loadArchives(f, sparkCtx.get).html()
+          )
+        }
+        if (!configuration.outputFormat.isEmpty &amp;&amp; configuration
+              .outputFormat() == &quot;parquet&quot;) {
+          saveParquet(HtmlInformationExtractor(df))
+        } else {
+          saveCsv(HtmlInformationExtractor(df))
+        }
+      }),
+<span class="fc" id="L351">    &quot;JsInformationExtractor&quot; -&gt;</span>
+<span class="fc" id="L352">      ((inputFiles: List[String]) =&gt; {</span>
+        var df = RecordLoader
+          .loadArchives(inputFiles.head, sparkCtx.get)
+          .js()
+        inputFiles.tail foreach { f =&gt;
+          df = df.union(
+            RecordLoader.loadArchives(f, sparkCtx.get).js()
+          )
+        }
+        if (!configuration.outputFormat.isEmpty &amp;&amp; configuration
+              .outputFormat() == &quot;parquet&quot;) {
+          saveParquet(JsInformationExtractor(df))
+        } else {
+          saveCsv(JsInformationExtractor(df))
+        }
+      }),
+<span class="fc" id="L368">    &quot;JsonInformationExtractor&quot; -&gt;</span>
+<span class="fc" id="L369">      ((inputFiles: List[String]) =&gt; {</span>
+        var df = RecordLoader
+          .loadArchives(inputFiles.head, sparkCtx.get)
+          .json()
+        inputFiles.tail foreach { f =&gt;
+          df = df.union(
+            RecordLoader.loadArchives(f, sparkCtx.get).json()
+          )
+        }
+        if (!configuration.outputFormat.isEmpty &amp;&amp; configuration
+              .outputFormat() == &quot;parquet&quot;) {
+          saveParquet(JsonInformationExtractor(df))
+        } else {
+          saveCsv(JsonInformationExtractor(df))
+        }
+      }),
+<span class="fc" id="L385">    &quot;PlainTextInformationExtractor&quot; -&gt;</span>
+<span class="fc" id="L386">      ((inputFiles: List[String]) =&gt; {</span>
+        var df = RecordLoader
+          .loadArchives(inputFiles.head, sparkCtx.get)
+          .plainText()
+        inputFiles.tail foreach { f =&gt;
+          df = df.union(
+            RecordLoader.loadArchives(f, sparkCtx.get).plainText()
+          )
+        }
+        if (!configuration.outputFormat.isEmpty &amp;&amp; configuration
+              .outputFormat() == &quot;parquet&quot;) {
+          saveParquet(PlainTextInformationExtractor(df))
+        } else {
+          saveCsv(PlainTextInformationExtractor(df))
+        }
+      }),
+<span class="fc" id="L402">    &quot;XmlInformationExtractor&quot; -&gt;</span>
+<span class="fc" id="L403">      ((inputFiles: List[String]) =&gt; {</span>
+        var df = RecordLoader
+          .loadArchives(inputFiles.head, sparkCtx.get)
+          .xml()
+        inputFiles.tail foreach { f =&gt;
+          df = df.union(
+            RecordLoader.loadArchives(f, sparkCtx.get).xml()
+          )
+        }
+        if (!configuration.outputFormat.isEmpty &amp;&amp; configuration
+              .outputFormat() == &quot;parquet&quot;) {
+          saveParquet(XmlInformationExtractor(df))
+        } else {
+          saveCsv(XmlInformationExtractor(df))
+        }
+      })
+  )
+
+  /** Routine for saving Dataset obtained from querying DataFrames to CSV.
+    * Files may be merged according to options specified in 'partition' setting.
+    *
+    * @param d generic dataset obtained from querying DataFrame
+    * @return Unit
+    */
+  def saveCsv(d: Dataset[Row]): Unit = {
+<span class="fc bfc" id="L428" title="All 2 branches covered.">    if (!configuration.partition.isEmpty) {</span>
+<span class="fc" id="L429">      d.coalesce(configuration.partition())</span>
+        .write
+<span class="fc" id="L431">        .option(&quot;timestampFormat&quot;, &quot;yyyy/MM/dd HH:mm:ss ZZ&quot;)</span>
+<span class="fc" id="L432">        .format(&quot;csv&quot;)</span>
+<span class="fc" id="L433">        .option(&quot;header&quot;, &quot;true&quot;)</span>
+<span class="fc" id="L434">        .option(&quot;escape&quot;, &quot;\&quot;&quot;)</span>
+<span class="fc" id="L435">        .option(&quot;encoding&quot;, &quot;utf-8&quot;)</span>
+<span class="fc" id="L436">        .save(saveTarget)</span>
+    } else {
+<span class="fc" id="L438">      d.write</span>
+<span class="fc" id="L439">        .option(&quot;timestampFormat&quot;, &quot;yyyy/MM/dd HH:mm:ss ZZ&quot;)</span>
+<span class="fc" id="L440">        .format(&quot;csv&quot;)</span>
+<span class="fc" id="L441">        .option(&quot;escape&quot;, &quot;\&quot;&quot;)</span>
+<span class="fc" id="L442">        .option(&quot;encoding&quot;, &quot;utf-8&quot;)</span>
+<span class="fc" id="L443">        .save(saveTarget)</span>
+    }
+  }
+
+  /** Routine for saving Dataset obtained from querying DataFrames to Parquet.
+    * Files may be merged according to options specified in 'partition' setting.
+    *
+    * @param d generic dataset obtained from querying DataFrame
+    * @return Unit
+    */
+  def saveParquet(d: Dataset[Row]): Unit = {
+<span class="fc bfc" id="L454" title="All 2 branches covered.">    if (!configuration.partition.isEmpty) {</span>
+<span class="fc" id="L455">      d.coalesce(configuration.partition())</span>
+        .write
+<span class="fc" id="L457">        .option(&quot;timestampFormat&quot;, &quot;yyyy/MM/dd HH:mm:ss ZZ&quot;)</span>
+<span class="fc" id="L458">        .parquet(saveTarget)</span>
+    } else {
+<span class="fc" id="L460">      d.write</span>
+<span class="fc" id="L461">        .option(&quot;timestampFormat&quot;, &quot;yyyy/MM/dd HH:mm:ss ZZ&quot;)</span>
+<span class="fc" id="L462">        .parquet(saveTarget)</span>
+    }
+  }
+
+  /** Verify the validity of command line arguments regarding input and output files.
+    *
+    * All input files need to exist, and ouput files should not exist, for this to pass.
+    * Throws exception if condition is not met.
+    * @return Unit
+    * @throws IllegalArgumentException exception thrown
+    */
+  def verifyArgumentsOrExit(): Unit = {
+<span class="fc" id="L474">    configuration.input() foreach { f =&gt;</span>
+      if (!Files.exists(Paths.get(f))) {
+        logger.error(f + &quot; not found&quot;)
+        throw new IllegalArgumentException()
+      }
+    }
+
+<span class="pc bpc" id="L481" title="1 of 2 branches missed.">    if (Files.exists(Paths.get(configuration.output()))) {</span>
+<span class="nc" id="L482">      logger.error(configuration.output() + &quot; already exists&quot;)</span>
+<span class="nc" id="L483">      throw new IllegalArgumentException()</span>
+    }
+  }
+
+  /** Set the app name.
+    *
+    * @return String
+    */
+  def setAppName(): String = {
+<span class="nc" id="L492">    &quot;aut - &quot; + configuration.extractor()</span>
+  }
+
+  /** Prepare for invoking extractors.
+    *
+    * @return Any
+    */
+  def handler(): Any = {
+<span class="fc bfc" id="L500" title="All 2 branches covered.">    if (!(extractors contains configuration.extractor())) {</span>
+<span class="fc" id="L501">      logger.error(</span>
+<span class="fc" id="L502">        configuration.extractor() + &quot; not supported. &quot; +</span>
+<span class="fc" id="L503">          &quot;The following extractors are supported: &quot;</span>
+      )
+<span class="fc" id="L505">      extractors foreach { tuple =&gt;</span>
+        logger.error(tuple._1)
+      }
+<span class="fc" id="L508">      throw new IllegalArgumentException()</span>
+    }
+
+    val extractFunction: List[String] =&gt; Any =
+<span class="pc" id="L512">      extractors get configuration.extractor() match {</span>
+<span class="pc bpc" id="L513" title="1 of 2 branches missed.">        case Some(func) =&gt; func</span>
+<span class="nc bnc" id="L514" title="All 2 branches missed.">        case None =&gt;</span>
+<span class="nc" id="L515">          throw new InternalError()</span>
+      }
+
+<span class="pc bpc" id="L518" title="1 of 4 branches missed.">    if (!configuration.split.isEmpty &amp;&amp; configuration.split()) {</span>
+<span class="fc" id="L519">      configuration.input() foreach { f =&gt;</span>
+        saveTarget = Paths
+          .get(configuration.output(), Paths.get(f).getFileName.toString)
+          .toString
+        extractFunction(List[String](f))
+      }
+    } else {
+<span class="fc" id="L526">      saveTarget = Paths.get(configuration.output()).toString</span>
+<span class="fc" id="L527">      extractFunction(configuration.input())</span>
+    }
+  }
+
+  /** Process the handler.
+    *
+    * @return Any
+    */
+  def process(): Any = {
+<span class="fc" id="L536">    handler()</span>
+  }
+
+  /** Set Spark context to be used.
+    *
+    * @param sc either a brand new or existing Spark context
+    */
+  def setSparkContext(sc: SparkContext): Unit = {
+<span class="fc" id="L544">    sparkCtx = Some(sc)</span>
+  }
+}
+
+<span class="fc" id="L548">object CommandLineAppRunner {</span>
+
+  /** Entry point for command line application.
+    *
+    * @param argv command line arguments passed by the OS
+    */
+  def main(argv: Array[String]): Unit = {
+<span class="nc" id="L555">    val app = new CommandLineApp(new CmdAppConf(argv))</span>
+
+    try {
+<span class="nc" id="L558">      app.verifyArgumentsOrExit()</span>
+    } catch {
+<span class="nc" id="L560">      case e: IllegalArgumentException =&gt; System.exit(1)</span>
+<span class="nc" id="L561">      case x: Throwable                =&gt; throw x</span>
+    }
+
+<span class="nc" id="L564">    val appName = app.setAppName()</span>
+<span class="nc" id="L565">    val conf = new SparkConf().setAppName(appName)</span>
+<span class="nc" id="L566">    conf.set(&quot;spark.driver.allowMultipleContexts&quot;, &quot;true&quot;)</span>
+<span class="nc" id="L567">    app.setSparkContext(new SparkContext(conf))</span>
+<span class="nc" id="L568">    app.process()</span>
+  }
+
+  /** Entry point for testing.
+    * Takes an existed spark session to prevent new ones from being created.
+    *
+    * @param argv command line arguments (array of strings).
+    * @param sc spark context to be used for this session
+    */
+  def test(argv: Array[String], sc: SparkContext): Unit = {
+<span class="fc" id="L578">    val app = new CommandLineApp(new CmdAppConf(argv))</span>
+
+<span class="fc" id="L580">    app.verifyArgumentsOrExit()</span>
+<span class="fc" id="L581">    app.setSparkContext(sc)</span>
+<span class="fc" id="L582">    app.process()</span>
+  }
+<span class="fc" id="L584">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>
