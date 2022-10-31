@@ -1,5 +1,18 @@
 # Changelog
 
+## [aut-1.1.1](https://github.com/archivesunleashed/aut/tree/aut-1.1.1) (2022-10-31)
+
+[Full Changelog](https://github.com/archivesunleashed/aut/compare/aut-1.1.0...aut-1.1.1)
+
+**Fixed bugs:**
+
+- DomainGraph should use YYYYMMDD not YYYYMMDDHHMMSS [\#544](https://github.com/archivesunleashed/aut/issues/544)
+
+**Merged pull requests:**
+
+- Use YYYYMMDD for crawl\_date for DomainGraphExtractor. [\#545](https://github.com/archivesunleashed/aut/pull/545) ([ruebot](https://github.com/ruebot))
+- Bump jsoup from 1.14.2 to 1.15.3 [\#543](https://github.com/archivesunleashed/aut/pull/543) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [aut-1.1.0](https://github.com/archivesunleashed/aut/tree/aut-1.1.0) (2022-06-17)
 
 [Full Changelog](https://github.com/archivesunleashed/aut/compare/aut-1.0.0...aut-1.1.0)
