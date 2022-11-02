@@ -45,13 +45,14 @@ class JsInformationExtractorTest extends FunSuite with BeforeAndAfter {
 
     assert(dfResults.length == RESULTSLENGTH)
     assert(dfResults(0).get(0) == "20080430204833")
-    assert(dfResults(0).get(1) == "http://www.archive.org/flv/flv.js?v=1.34")
-    assert(dfResults(0).get(2) == "flv.js")
-    assert(dfResults(0).get(3) == "js")
-    assert(dfResults(0).get(4) == "application/x-javascript")
-    assert(dfResults(0).get(5) == "text/plain")
-    assert(dfResults(0).get(6) == "8c73985a47e0d3720765d92fbde8cc9f")
-    assert(dfResults(0).get(7) == "83a0951127abb1da11b141ad22ac72c20f2b4804")
+    assert(dfResults(0).get(1) == "20080430064607")
+    assert(dfResults(0).get(2) == "http://www.archive.org/flv/flv.js?v=1.34")
+    assert(dfResults(0).get(3) == "flv.js")
+    assert(dfResults(0).get(4) == "js")
+    assert(dfResults(0).get(5) == "application/x-javascript")
+    assert(dfResults(0).get(6) == "text/plain")
+    assert(dfResults(0).get(7) == "8c73985a47e0d3720765d92fbde8cc9f")
+    assert(dfResults(0).get(8) == "83a0951127abb1da11b141ad22ac72c20f2b4804")
   }
 
   after {

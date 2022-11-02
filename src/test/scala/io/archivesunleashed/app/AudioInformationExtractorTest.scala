@@ -46,13 +46,14 @@ class AudioInformationExtractorTest extends FunSuite with BeforeAndAfter {
 
     assert(dfResults.length == RESULTSLENGTH)
     assert(dfResults(0).get(0) == "20190817230242")
-    assert(dfResults(0).get(1) == "https://ruebot.net/files/feniz.mp3")
-    assert(dfResults(0).get(2) == "feniz.mp3")
-    assert(dfResults(0).get(3) == "mp3")
-    assert(dfResults(0).get(4) == "audio/mpeg")
+    assert(dfResults(0).get(1) == "20111026005826")
+    assert(dfResults(0).get(2) == "https://ruebot.net/files/feniz.mp3")
+    assert(dfResults(0).get(3) == "feniz.mp3")
+    assert(dfResults(0).get(4) == "mp3")
     assert(dfResults(0).get(5) == "audio/mpeg")
-    assert(dfResults(0).get(6) == "f7e7ec84b12c294e19af1ba41732c733")
-    assert(dfResults(0).get(7) == "a3eb95dbbea76460529d0d9ebdde5faabaff544a")
+    assert(dfResults(0).get(6) == "audio/mpeg")
+    assert(dfResults(0).get(7) == "f7e7ec84b12c294e19af1ba41732c733")
+    assert(dfResults(0).get(8) == "a3eb95dbbea76460529d0d9ebdde5faabaff544a")
   }
 
   after {

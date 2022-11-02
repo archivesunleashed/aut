@@ -46,17 +46,18 @@ class PDFInformationExtractorTest extends FunSuite with BeforeAndAfter {
 
     assert(dfResults.length == RESULTSLENGTH)
     assert(dfResults(0).get(0) == "20190812222529")
+    assert(dfResults(0).get(1) == "20190626132632")
     assert(
       dfResults(0).get(
-        1
+        2
       ) == "https://yorkspace.library.yorku.ca/xmlui/bitstream/handle/10315/36158/cost-analysis.pdf?sequence=1&isAllowed=y"
     )
-    assert(dfResults(0).get(2) == "cost-analysis.pdf")
-    assert(dfResults(0).get(3) == "pdf")
-    assert(dfResults(0).get(4) == "application/pdf")
+    assert(dfResults(0).get(3) == "cost-analysis.pdf")
+    assert(dfResults(0).get(4) == "pdf")
     assert(dfResults(0).get(5) == "application/pdf")
-    assert(dfResults(0).get(6) == "aaba59d2287afd40c996488a39bbc0dd")
-    assert(dfResults(0).get(7) == "569c28e0e8faa6945d6ca88fcd9e195825052c71")
+    assert(dfResults(0).get(6) == "application/pdf")
+    assert(dfResults(0).get(7) == "aaba59d2287afd40c996488a39bbc0dd")
+    assert(dfResults(0).get(8) == "569c28e0e8faa6945d6ca88fcd9e195825052c71")
   }
 
   after {

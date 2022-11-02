@@ -45,13 +45,14 @@ class HtmlInformationExtractorTest extends FunSuite with BeforeAndAfter {
 
     assert(dfResults.length == RESULTSLENGTH)
     assert(dfResults(0).get(0) == "20080430204826")
-    assert(dfResults(0).get(1) == "http://www.archive.org/")
-    assert(dfResults(0).get(2) == "")
-    assert(dfResults(0).get(3) == "html")
-    assert(dfResults(0).get(4) == "text/html")
+    assert(dfResults(0).get(1) == "20080109231829")
+    assert(dfResults(0).get(2) == "http://www.archive.org/")
+    assert(dfResults(0).get(3) == "")
+    assert(dfResults(0).get(4) == "html")
     assert(dfResults(0).get(5) == "text/html")
-    assert(dfResults(0).get(6) == "990fc5f1674fd21b9a035cf9193c3f10")
-    assert(dfResults(0).get(7) == "d5817bf5b4b35a296823509dd754700a6ad522b5")
+    assert(dfResults(0).get(6) == "text/html")
+    assert(dfResults(0).get(7) == "990fc5f1674fd21b9a035cf9193c3f10")
+    assert(dfResults(0).get(8) == "d5817bf5b4b35a296823509dd754700a6ad522b5")
   }
 
   after {
