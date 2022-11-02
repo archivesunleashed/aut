@@ -185,7 +185,7 @@ package object archivesunleashed {
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
-        .add(StructField("last_modified", StringType, true))
+        .add(StructField("last_modified_date", StringType, true))
         .add(StructField("domain", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("mime_type_web_server", StringType, true))
@@ -240,7 +240,7 @@ package object archivesunleashed {
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
-        .add(StructField("last_modified", StringType, true))
+        .add(StructField("last_modified_date", StringType, true))
         .add(StructField("domain", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("mime_type_web_server", StringType, true))
@@ -341,7 +341,7 @@ package object archivesunleashed {
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
-        .add(StructField("last_modified", StringType, true))
+        .add(StructField("last_modified_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -393,7 +393,7 @@ package object archivesunleashed {
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
-        .add(StructField("last_modified", StringType, true))
+        .add(StructField("last_modified_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -443,7 +443,7 @@ package object archivesunleashed {
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
-        .add(StructField("last_modified", StringType, true))
+        .add(StructField("last_modified_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -493,7 +493,7 @@ package object archivesunleashed {
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
-        .add(StructField("last_modified", StringType, true))
+        .add(StructField("last_modified_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -578,7 +578,7 @@ package object archivesunleashed {
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
-        .add(StructField("last_modified", StringType, true))
+        .add(StructField("last_modified_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -643,7 +643,7 @@ package object archivesunleashed {
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
-        .add(StructField("last_modified", StringType, true))
+        .add(StructField("last_modified_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -712,7 +712,7 @@ package object archivesunleashed {
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
-        .add(StructField("last_modified", StringType, true))
+        .add(StructField("last_modified_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -762,7 +762,7 @@ package object archivesunleashed {
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
-        .add(StructField("last_modified", StringType, true))
+        .add(StructField("last_modified_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -812,7 +812,7 @@ package object archivesunleashed {
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
-        .add(StructField("last_modified", StringType, true))
+        .add(StructField("last_modified_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -862,7 +862,7 @@ package object archivesunleashed {
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
-        .add(StructField("last_modified", StringType, true))
+        .add(StructField("last_modified_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -912,7 +912,7 @@ package object archivesunleashed {
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
-        .add(StructField("last_modified", StringType, true))
+        .add(StructField("last_modified_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -963,7 +963,7 @@ package object archivesunleashed {
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
-        .add(StructField("last_modified", StringType, true))
+        .add(StructField("last_modified_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -1013,7 +1013,7 @@ package object archivesunleashed {
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
-        .add(StructField("last_modified", StringType, true))
+        .add(StructField("last_modified_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))

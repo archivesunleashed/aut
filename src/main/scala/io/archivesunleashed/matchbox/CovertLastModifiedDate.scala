@@ -22,10 +22,10 @@ import java.time.format.DateTimeFormatter
 object CovertLastModifiedDate {
   lazy val outputFormat = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")
 
-  /** Converts last_modified to yyyyMMddHHmmss.
+  /** Converts last_modified_date to yyyyMMddHHmmss.
     *
     * @param lastModifiedDate date returned by `getLastModified`, formatted as RFC 1123
-    * @return last_modified as yyyyMMddHHmmss.
+    * @return last_modified_date as yyyyMMddHHmmss.
     */
   def apply(lastModifiedDate: String): String = {
     if (lastModifiedDate.isEmpty) {

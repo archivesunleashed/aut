@@ -66,7 +66,7 @@ class SparklingArchiveRecord(
 
   override def getLastModified: String =
     http(warc)
-      .flatMap(_.lastModified)
+      .flatMap(_.headerMap.get("last-modified"))
       .getOrElse("")
 
   override def getArchiveFilename: String = filename

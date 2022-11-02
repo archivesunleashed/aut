@@ -35,7 +35,7 @@ object PresentationProgramInformationExtractor {
     // scalastyle:on
     d.select(
       $"crawl_date",
-      $"last_modified",
+      $"last_modified_date",
       $"url",
       $"filename",
       $"extension",

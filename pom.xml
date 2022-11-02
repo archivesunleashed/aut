@@ -564,9 +564,9 @@
       <version>${hadoop.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.github.ruebot</groupId>
+      <groupId>com.github.internetarchive</groupId>
       <artifactId>Sparkling</artifactId>
-      <version>last-modified-headers-6569515a55-1</version>
+      <version>main-f002a0509e-1</version>
     </dependency>
   </dependencies>
 
