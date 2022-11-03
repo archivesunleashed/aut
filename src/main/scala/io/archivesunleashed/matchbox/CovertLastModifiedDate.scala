@@ -15,12 +15,22 @@
  */
 package io.archivesunleashed.matchbox
 
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
-
 /** Converts RFC 1123 dates to yyyyMMddHHmmss. */
 object CovertLastModifiedDate {
-  lazy val outputFormat = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")
+  val months = Seq(
+    "jan",
+    "feb",
+    "mar",
+    "apr",
+    "may",
+    "jun",
+    "jul",
+    "aug",
+    "sep",
+    "oct",
+    "nov",
+    "dec"
+  ).zipWithIndex.map { case (s, d) => (s, ("0" + (d + 1)).takeRight(2)) }
 
   /** Converts last_modified_date to yyyyMMddHHmmss.
     *
@@ -31,11 +41,25 @@ object CovertLastModifiedDate {
     if (lastModifiedDate.isEmpty) {
       ""
     } else {
-      val d = ZonedDateTime.parse(
-        lastModifiedDate,
-        DateTimeFormatter.RFC_1123_DATE_TIME
-      )
-      outputFormat.format(d)
+      // Credit: Helge Holzmann (@helgeho)
+      // Adapted from https://github.com/archivesunleashed/aut/pull/547#issuecomment-1302094573
+      val lc = lastModifiedDate.toLowerCase
+      val date = months.find(m => lc.contains(m._1)).map(_._2).flatMap { m =>
+        val d = lc
+          .replace(":", "")
+          .split(' ')
+          .drop(1)
+          .map(d => (d.length, d))
+          .toMap
+        for (y <- d.get(4); n <- d.get(2); t <- d.get(6))
+          yield y + m + n + t
+      }
+      date match {
+        case Some(date) =>
+          date
+        case None =>
+          ""
+      }
     }
   }
 }
