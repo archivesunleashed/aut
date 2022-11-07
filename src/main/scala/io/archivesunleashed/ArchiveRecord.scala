@@ -48,4 +48,7 @@ trait ArchiveRecord extends Serializable {
 
   /** Returns payload digest (SHA1). */
   def getPayloadDigest: String
+
+  /** Returns last-modified date from HTTPS headers as a string. */
+  def getLastModified: String
 }

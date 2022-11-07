@@ -46,16 +46,17 @@ class JsonInformationExtractorTest extends FunSuite with BeforeAndAfter {
 
     assert(dfResults.length == RESULTSLENGTH)
     assert(dfResults(0).get(0) == "20190812222538")
+    assert(dfResults(0).get(1) == "")
     assert(
       dfResults(0)
-        .get(1) == "https://api.plu.mx/widget/other/artifact?type=doi&id=10.1109%2FJCDL.2019.00043&href=https%3A%2F%2Fplu.mx%2Fpitt%2Fa%2F%3Fdoi%3D10.1109%2FJCDL.2019.00043&ref=https%3A%2F%2Fyorkspace.library.yorku.ca%2Fxmlui%2Fhandle%2F10315%2F36158&pageToken=f74d46f3-f622-c670-e1bc-bdc3-aa500a283693&isElsWidget=false"
+        .get(2) == "https://api.plu.mx/widget/other/artifact?type=doi&id=10.1109%2FJCDL.2019.00043&href=https%3A%2F%2Fplu.mx%2Fpitt%2Fa%2F%3Fdoi%3D10.1109%2FJCDL.2019.00043&ref=https%3A%2F%2Fyorkspace.library.yorku.ca%2Fxmlui%2Fhandle%2F10315%2F36158&pageToken=f74d46f3-f622-c670-e1bc-bdc3-aa500a283693&isElsWidget=false"
     )
-    assert(dfResults(0).get(2) == "artifact")
-    assert(dfResults(0).get(3) == "json")
-    assert(dfResults(0).get(4) == "application/json")
-    assert(dfResults(0).get(5) == "N/A")
-    assert(dfResults(0).get(6) == "d41d8cd98f00b204e9800998ecf8427e")
-    assert(dfResults(0).get(7) == "da39a3ee5e6b4b0d3255bfef95601890afd80709")
+    assert(dfResults(0).get(3) == "artifact")
+    assert(dfResults(0).get(4) == "json")
+    assert(dfResults(0).get(5) == "application/json")
+    assert(dfResults(0).get(6) == "N/A")
+    assert(dfResults(0).get(7) == "d41d8cd98f00b204e9800998ecf8427e")
+    assert(dfResults(0).get(8) == "da39a3ee5e6b4b0d3255bfef95601890afd80709")
   }
 
   after {

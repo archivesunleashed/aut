@@ -56,7 +56,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
   }
 
   test("Keep valid pages DF") {
-    val expected = "http://www.archive.org/"
+    val expected = "archive.org"
     val base = RecordLoader
       .loadArchives(arcPath, sc)
       .all()

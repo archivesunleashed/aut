@@ -48,25 +48,26 @@ class PresentationProgramInformationExtractorTest
 
     assert(dfResults.length == RESULTSLENGTH)
     assert(dfResults(0).get(0) == "20190815004338")
+    assert(dfResults(0).get(1) == "20190814234811")
     assert(
       dfResults(0).get(
-        1
+        2
       ) == "https://ruebot.net/files/aut-test-fixtures/aut-test-fixtures.pptx"
     )
-    assert(dfResults(0).get(2) == "aut-test-fixtures.pptx")
-    assert(dfResults(0).get(3) == "pptx")
-    assert(
-      dfResults(0).get(
-        4
-      ) == "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-    )
+    assert(dfResults(0).get(3) == "aut-test-fixtures.pptx")
+    assert(dfResults(0).get(4) == "pptx")
     assert(
       dfResults(0).get(
         5
       ) == "application/vnd.openxmlformats-officedocument.presentationml.presentation"
     )
-    assert(dfResults(0).get(6) == "7a7b1fe4b6d311376eaced9de3b682ee")
-    assert(dfResults(0).get(7) == "86fadca47b134b68247ccde62da4ce3f62b4d2ec")
+    assert(
+      dfResults(0).get(
+        6
+      ) == "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+    )
+    assert(dfResults(0).get(7) == "7a7b1fe4b6d311376eaced9de3b682ee")
+    assert(dfResults(0).get(8) == "86fadca47b134b68247ccde62da4ce3f62b4d2ec")
   }
 
   after {

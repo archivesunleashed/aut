@@ -35,6 +35,7 @@ object PDFInformationExtractor {
     // scalastyle:on
     d.select(
       $"crawl_date",
+      $"last_modified_date",
       $"url",
       $"filename",
       $"extension",

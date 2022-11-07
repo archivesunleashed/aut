@@ -45,13 +45,14 @@ class PlainTextInformationExtractorTest extends FunSuite with BeforeAndAfter {
 
     assert(dfResults.length == RESULTSLENGTH)
     assert(dfResults(0).get(0) == "20080430204825")
-    assert(dfResults(0).get(1) == "http://www.archive.org/robots.txt")
-    assert(dfResults(0).get(2) == "robots.txt")
-    assert(dfResults(0).get(3) == "txt")
-    assert(dfResults(0).get(4) == "text/plain")
+    assert(dfResults(0).get(1) == "20080202194044")
+    assert(dfResults(0).get(2) == "http://www.archive.org/robots.txt")
+    assert(dfResults(0).get(3) == "robots.txt")
+    assert(dfResults(0).get(4) == "txt")
     assert(dfResults(0).get(5) == "text/plain")
-    assert(dfResults(0).get(6) == "a6d6869f680b1bdd0d27bf5a5f49482e")
-    assert(dfResults(0).get(7) == "95046652b71aaa1e8a5a6af91e24016dfeae7bd4")
+    assert(dfResults(0).get(6) == "text/plain")
+    assert(dfResults(0).get(7) == "a6d6869f680b1bdd0d27bf5a5f49482e")
+    assert(dfResults(0).get(8) == "95046652b71aaa1e8a5a6af91e24016dfeae7bd4")
   }
 
   after {

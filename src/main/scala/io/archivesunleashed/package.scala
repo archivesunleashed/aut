@@ -21,6 +21,7 @@ import java.security.MessageDigest
 import java.util.Base64
 
 import io.archivesunleashed.matchbox.{
+  CovertLastModifiedDate,
   DetectLanguage,
   DetectMimeTypeTika,
   ExtractDate,
@@ -170,6 +171,7 @@ package object archivesunleashed {
         .map(r =>
           Row(
             r.getCrawlDate,
+            CovertLastModifiedDate(r.getLastModified),
             ExtractDomain(r.getUrl).replaceAll("^\\s*www\\.", ""),
             r.getUrl,
             r.getMimeType,
@@ -183,6 +185,7 @@ package object archivesunleashed {
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
+        .add(StructField("last_modified_date", StringType, true))
         .add(StructField("domain", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("mime_type_web_server", StringType, true))
@@ -225,6 +228,7 @@ package object archivesunleashed {
         .map(r =>
           Row(
             r.getCrawlDate,
+            CovertLastModifiedDate(r.getLastModified),
             ExtractDomain(r.getUrl).replaceAll("^\\s*www\\.", ""),
             r.getUrl,
             r.getMimeType,
@@ -236,6 +240,7 @@ package object archivesunleashed {
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
+        .add(StructField("last_modified_date", StringType, true))
         .add(StructField("domain", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("mime_type_web_server", StringType, true))
@@ -304,6 +309,7 @@ package object archivesunleashed {
           val extension = GetExtensionMIME(url.getPath(), mimeTypeTika)
           (
             r.getCrawlDate,
+            CovertLastModifiedDate(r.getLastModified),
             r.getUrl,
             filename,
             extension,
@@ -328,12 +334,14 @@ package object archivesunleashed {
             t._8,
             t._9,
             t._10,
-            t._11
+            t._11,
+            t._12
           )
         )
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
+        .add(StructField("last_modified_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -368,6 +376,7 @@ package object archivesunleashed {
           val extension = GetExtensionMIME(url.getPath(), r._2)
           (
             r._1.getCrawlDate,
+            CovertLastModifiedDate(r._1.getLastModified),
             r._1.getUrl,
             filename,
             extension,
@@ -378,10 +387,13 @@ package object archivesunleashed {
             encodedBytes
           )
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
+        .map(t =>
+          Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10)
+        )
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
+        .add(StructField("last_modified_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -414,6 +426,7 @@ package object archivesunleashed {
           val extension = GetExtensionMIME(url.getPath(), r._2)
           (
             r._1.getCrawlDate,
+            CovertLastModifiedDate(r._1.getLastModified),
             r._1.getUrl,
             filename,
             extension,
@@ -424,10 +437,13 @@ package object archivesunleashed {
             encodedBytes
           )
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
+        .map(t =>
+          Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10)
+        )
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
+        .add(StructField("last_modified_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -460,6 +476,7 @@ package object archivesunleashed {
           val extension = GetExtensionMIME(url.getPath(), r._2)
           (
             r._1.getCrawlDate,
+            CovertLastModifiedDate(r._1.getLastModified),
             r._1.getUrl,
             filename,
             extension,
@@ -470,10 +487,13 @@ package object archivesunleashed {
             encodedBytes
           )
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
+        .map(t =>
+          Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10)
+        )
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
+        .add(StructField("last_modified_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -541,6 +561,7 @@ package object archivesunleashed {
           val extension = GetExtensionMIME(url.getPath(), mimeType)
           (
             r._1.getCrawlDate,
+            CovertLastModifiedDate(r._1.getLastModified),
             r._1.getUrl,
             filename,
             extension,
@@ -551,10 +572,13 @@ package object archivesunleashed {
             encodedBytes
           )
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
+        .map(t =>
+          Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10)
+        )
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
+        .add(StructField("last_modified_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -602,6 +626,7 @@ package object archivesunleashed {
           val extension = GetExtensionMIME(url.getPath(), r._2)
           (
             r._1.getCrawlDate,
+            CovertLastModifiedDate(r._1.getLastModified),
             r._1.getUrl,
             filename,
             extension,
@@ -612,10 +637,13 @@ package object archivesunleashed {
             encodedBytes
           )
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
+        .map(t =>
+          Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10)
+        )
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
+        .add(StructField("last_modified_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -667,6 +695,7 @@ package object archivesunleashed {
           val extension = GetExtensionMIME(url.getPath(), r._2)
           (
             r._1.getCrawlDate,
+            CovertLastModifiedDate(r._1.getLastModified),
             r._1.getUrl,
             filename,
             extension,
@@ -677,10 +706,13 @@ package object archivesunleashed {
             encodedBytes
           )
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
+        .map(t =>
+          Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10)
+        )
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
+        .add(StructField("last_modified_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -713,6 +745,7 @@ package object archivesunleashed {
           val extension = GetExtensionMIME(url.getPath(), r._2)
           (
             r._1.getCrawlDate,
+            CovertLastModifiedDate(r._1.getLastModified),
             r._1.getUrl,
             filename,
             extension,
@@ -723,10 +756,13 @@ package object archivesunleashed {
             RemoveHTTPHeader(r._1.getContentString)
           )
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
+        .map(t =>
+          Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10)
+        )
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
+        .add(StructField("last_modified_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -759,6 +795,7 @@ package object archivesunleashed {
           val extension = GetExtensionMIME(url.getPath(), r._2)
           (
             r._1.getCrawlDate,
+            CovertLastModifiedDate(r._1.getLastModified),
             r._1.getUrl,
             filename,
             extension,
@@ -769,10 +806,13 @@ package object archivesunleashed {
             RemoveHTTPHeader(r._1.getContentString)
           )
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
+        .map(t =>
+          Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10)
+        )
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
+        .add(StructField("last_modified_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -805,6 +845,7 @@ package object archivesunleashed {
           val extension = GetExtensionMIME(url.getPath(), r._2)
           (
             r._1.getCrawlDate,
+            CovertLastModifiedDate(r._1.getLastModified),
             r._1.getUrl,
             filename,
             extension,
@@ -815,10 +856,13 @@ package object archivesunleashed {
             RemoveHTTPHeader(r._1.getContentString)
           )
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
+        .map(t =>
+          Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10)
+        )
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
+        .add(StructField("last_modified_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -851,6 +895,7 @@ package object archivesunleashed {
           val extension = GetExtensionMIME(url.getPath(), r._2)
           (
             r._1.getCrawlDate,
+            CovertLastModifiedDate(r._1.getLastModified),
             r._1.getUrl,
             filename,
             extension,
@@ -861,10 +906,13 @@ package object archivesunleashed {
             RemoveHTTPHeader(r._1.getContentString)
           )
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
+        .map(t =>
+          Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10)
+        )
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
+        .add(StructField("last_modified_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -898,6 +946,7 @@ package object archivesunleashed {
           val extension = GetExtensionMIME(url.getPath(), r._2)
           (
             r._1.getCrawlDate,
+            CovertLastModifiedDate(r._1.getLastModified),
             r._1.getUrl,
             filename,
             extension,
@@ -908,10 +957,13 @@ package object archivesunleashed {
             RemoveHTTPHeader(r._1.getContentString)
           )
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
+        .map(t =>
+          Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10)
+        )
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
+        .add(StructField("last_modified_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
@@ -944,6 +996,7 @@ package object archivesunleashed {
           val extension = GetExtensionMIME(url.getPath(), r._2)
           (
             r._1.getCrawlDate,
+            CovertLastModifiedDate(r._1.getLastModified),
             r._1.getUrl,
             filename,
             extension,
@@ -954,10 +1007,13 @@ package object archivesunleashed {
             RemoveHTTPHeader(r._1.getContentString)
           )
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9))
+        .map(t =>
+          Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10)
+        )
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
+        .add(StructField("last_modified_date", StringType, true))
         .add(StructField("url", StringType, true))
         .add(StructField("filename", StringType, true))
         .add(StructField("extension", StringType, true))
