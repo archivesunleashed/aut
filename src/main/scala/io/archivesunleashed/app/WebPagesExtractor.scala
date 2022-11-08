@@ -16,13 +16,6 @@
 
 package io.archivesunleashed.app
 
-import io.archivesunleashed.ArchiveRecord
-import io.archivesunleashed.udfs.{
-  extractDomain,
-  removeHTML,
-  removeHTTPHeader,
-  removePrefixWWW
-}
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
 object WebPagesExtractor {
@@ -35,9 +28,6 @@ object WebPagesExtractor {
     */
   def apply(d: DataFrame): Dataset[Row] = {
     val spark = SparkSession.builder().master("local").getOrCreate()
-    // scalastyle:off
-    import spark.implicits._
-    // scalastyle:on
     d
   }
 }

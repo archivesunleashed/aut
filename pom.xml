@@ -182,7 +182,15 @@
             <arg>-feature</arg>
             <arg>-explaintypes</arg>
             <arg>-target:jvm-1.8</arg>
+            <arg>-Ywarn-unused-import</arg>
           </args>
+          <compilerPlugins>
+            <compilerPlugin>
+              <groupId>org.scalameta</groupId>
+              <artifactId>semanticdb-scalac_${scala.version}</artifactId>
+              <version>4.6.0</version>
+            </compilerPlugin>
+          </compilerPlugins>
         </configuration>
       </plugin>
       <!-- For license header enforcement. -->
@@ -327,6 +335,11 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>io.github.evis</groupId>
+        <artifactId>scalafix-maven-plugin_${scala.binary.version}</artifactId>
+        <version>0.1.7_0.10.4</version>
       </plugin>
     </plugins>
   </build>

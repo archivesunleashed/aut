@@ -18,7 +18,6 @@ package io.archivesunleashed
 
 import com.google.common.io.Resources
 import org.apache.spark.sql.functions.desc
-import org.apache.spark.sql.SparkSession
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner

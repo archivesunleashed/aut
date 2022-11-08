@@ -31,11 +31,8 @@ import io.archivesunleashed.matchbox.{
   RemoveHTML,
   RemoveHTTPHeader
 }
-import org.apache.commons.lang3.StringUtils
 import org.apache.spark.sql.expressions.UserDefinedFunction
 import org.apache.spark.sql.functions.udf
-import org.apache.spark.sql.SparkSession
-import scala.util.matching.Regex
 
 /** Package object providing UDFs for DataFrames in Scala and PySpark. * */
 package object udfs extends Serializable {

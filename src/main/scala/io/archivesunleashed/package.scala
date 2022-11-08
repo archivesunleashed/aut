@@ -35,14 +35,12 @@ import io.archivesunleashed.matchbox.{
 }
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent
 import io.archivesunleashed.matchbox.ExtractDate.DateComponent.DateComponent
-import java.net.URI
 import java.net.URL
 
 import org.apache.commons.codec.binary.Hex
 import org.apache.commons.io.FilenameUtils
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.functions.{lit, lower, udf}
 import org.apache.spark.sql.types.{
   BinaryType,
   IntegerType,
@@ -50,8 +48,8 @@ import org.apache.spark.sql.types.{
   StructField,
   StructType
 }
-import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
-import org.apache.spark.{RangePartitioner, SerializableWritable, SparkContext}
+import org.apache.spark.sql.{DataFrame, Row, SparkSession}
+import org.apache.spark.SparkContext
 import org.archive.webservices.sparkling.io.{HdfsIO, IOUtil}
 import org.archive.webservices.sparkling.util.{
   IteratorUtil,
@@ -59,12 +57,11 @@ import org.archive.webservices.sparkling.util.{
   RddUtil,
   ValueSupplier
 }
-import org.archive.webservices.sparkling.warc.{WarcLoader, WarcRecord}
+import org.archive.webservices.sparkling.warc.WarcLoader
 
 import scala.language.postfixOps
 import scala.reflect.ClassTag
 import scala.util.matching.Regex
-import scala.util.Try
 
 /**
   * Package object which supplies implicits to augment generic RDDs with AUT-specific transformations.

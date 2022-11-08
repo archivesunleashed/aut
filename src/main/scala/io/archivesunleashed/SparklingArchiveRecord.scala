@@ -22,11 +22,7 @@ import io.archivesunleashed.matchbox.ExtractDomain
 import org.apache.tika.io.BoundedInputStream
 import org.archive.webservices.sparkling.http.HttpMessage
 import org.archive.webservices.sparkling.io.IOUtil
-import org.archive.webservices.sparkling.util.{
-  ManagedVal,
-  RegexUtil,
-  ValueSupplier
-}
+import org.archive.webservices.sparkling.util.{ManagedVal, ValueSupplier}
 import org.archive.webservices.sparkling.warc.{WarcHeaders, WarcRecord}
 import scala.util.Try
 
