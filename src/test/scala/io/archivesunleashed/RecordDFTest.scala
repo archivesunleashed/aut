@@ -34,7 +34,7 @@ import io.archivesunleashed.udfs.{
 }
 import com.google.common.io.Resources
 import org.apache.spark.sql.functions.lit
-import org.apache.spark.sql.{Dataset, Row, SparkSession}
+import org.apache.spark.sql.SparkSession
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner

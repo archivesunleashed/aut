@@ -15,7 +15,6 @@
  */
 package io.archivesunleashed.matchbox
 
-import java.io.IOException
 import org.jsoup.Jsoup
 import org.jsoup.select.Elements
 import scala.collection.mutable

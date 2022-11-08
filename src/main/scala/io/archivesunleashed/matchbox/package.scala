@@ -17,7 +17,6 @@
 package io.archivesunleashed
 
 import java.io.IOException
-import java.security.MessageDigest
 import scala.xml.Utility.escape
 
 /** Package object which supplies implicits providing common UDF-related functionalities. */

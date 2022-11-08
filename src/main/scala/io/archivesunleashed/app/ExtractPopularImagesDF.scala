@@ -15,10 +15,8 @@
  */
 package io.archivesunleashed.app
 
-import io.archivesunleashed.ArchiveRecord
-import org.apache.spark.sql.functions.{col, desc, first}
+import org.apache.spark.sql.functions.{desc, first}
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
-import org.apache.spark.{RangePartitioner, SparkContext}
 
 /** Extract the most popular images from a DataFrame. */
 object ExtractPopularImagesDF {

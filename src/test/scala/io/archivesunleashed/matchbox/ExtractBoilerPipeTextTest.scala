@@ -16,8 +16,6 @@
 
 package io.archivesunleashed.matchbox
 
-import java.io.IOException
-
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner

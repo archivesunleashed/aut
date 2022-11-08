@@ -16,7 +16,6 @@
 
 package io.archivesunleashed.app
 
-import io.archivesunleashed.ArchiveRecord
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
 object PresentationProgramInformationExtractor {

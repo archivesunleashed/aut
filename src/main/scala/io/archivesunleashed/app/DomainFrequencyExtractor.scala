@@ -16,10 +16,7 @@
 
 package io.archivesunleashed.app
 
-import io.archivesunleashed.ArchiveRecord
-import io.archivesunleashed.df.DataFrameLoader
 import io.archivesunleashed.udfs.{extractDomain, removePrefixWWW}
-import org.apache.spark.sql.functions.desc
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
 object DomainFrequencyExtractor {

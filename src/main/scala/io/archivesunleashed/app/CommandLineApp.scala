@@ -18,9 +18,9 @@ package io.archivesunleashed.app
 import java.io.File
 import java.nio.file.{Files, Paths}
 
-import io.archivesunleashed.{ArchiveRecord, RecordLoader}
+import io.archivesunleashed.RecordLoader
 import org.apache.log4j.Logger
-import org.apache.spark.sql.{DataFrame, Dataset, Row}
+import org.apache.spark.sql.{Dataset, Row}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.rogach.scallop.exceptions.ScallopException
 import org.rogach.scallop.ScallopConf

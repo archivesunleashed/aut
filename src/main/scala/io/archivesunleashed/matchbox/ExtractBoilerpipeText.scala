@@ -16,7 +16,6 @@
 package io.archivesunleashed.matchbox
 
 import de.l3s.boilerpipe.extractors.DefaultExtractor
-import java.io.IOException
 
 /** Extract raw text content from an HTML page, minus "boilerplate" content (using boilerpipe). */
 object ExtractBoilerpipeText {
