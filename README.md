@@ -1,8 +1,8 @@
 # The Archives Unleashed Toolkit
 [![codecov](https://codecov.io/gh/archivesunleashed/aut/branch/main/graph/badge.svg)](https://codecov.io/gh/archivesunleashed/aut)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.archivesunleashed/aut/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.archivesunleashed/aut)
-[![Scaladoc](https://img.shields.io/badge/Scaladoc-1.1.1-blue?style=flat)](https://api.docs.archivesunleashed.io/1.1.1/scaladocs/io/archivesunleashed/index.html)
-[![UserDocs](https://img.shields.io/badge/UserDocs-1.1.1-blue?style=flat)](https://aut.docs.archivesunleashed.org/docs/home)
+[![Scaladoc](https://img.shields.io/badge/Scaladoc-1.2.0-blue?style=flat)](https://api.docs.archivesunleashed.io/1.2.0/scaladocs/io/archivesunleashed/index.html)
+[![UserDocs](https://img.shields.io/badge/UserDocs-1.2.0-blue?style=flat)](https://aut.docs.archivesunleashed.org/docs/home)
 [![LICENSE](https://img.shields.io/badge/license-Apache-blue.svg?style=flat)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Contribution Guidelines](http://img.shields.io/badge/CONTRIBUTING-Guidelines-blue.svg)](./CONTRIBUTING.md)
 
