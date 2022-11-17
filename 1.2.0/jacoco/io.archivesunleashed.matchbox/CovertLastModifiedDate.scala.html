@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CovertLastModifiedDate.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Archives Unleashed Toolkit</a> &gt; <a href="index.source.html" class="el_package">io.archivesunleashed.matchbox</a> &gt; <span class="el_source">CovertLastModifiedDate.scala</span></div><h1>CovertLastModifiedDate.scala</h1><pre class="source lang-java linenums">/*
+ * Copyright © 2017 The Archives Unleashed Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.archivesunleashed.matchbox
+
+/** Converts RFC 1123 dates to yyyyMMddHHmmss. */
+<span class="fc" id="L19">object CovertLastModifiedDate {</span>
+<span class="fc" id="L20">  val months = Seq(</span>
+<span class="fc" id="L21">    &quot;jan&quot;,</span>
+<span class="fc" id="L22">    &quot;feb&quot;,</span>
+<span class="fc" id="L23">    &quot;mar&quot;,</span>
+<span class="fc" id="L24">    &quot;apr&quot;,</span>
+<span class="fc" id="L25">    &quot;may&quot;,</span>
+<span class="fc" id="L26">    &quot;jun&quot;,</span>
+<span class="fc" id="L27">    &quot;jul&quot;,</span>
+<span class="fc" id="L28">    &quot;aug&quot;,</span>
+<span class="fc" id="L29">    &quot;sep&quot;,</span>
+<span class="fc" id="L30">    &quot;oct&quot;,</span>
+<span class="fc" id="L31">    &quot;nov&quot;,</span>
+<span class="fc" id="L32">    &quot;dec&quot;</span>
+<span class="fc" id="L33">  ).zipWithIndex.map { case (s, d) =&gt; (s, (&quot;0&quot; + (d + 1)).takeRight(2)) }</span>
+
+  /** Converts last_modified_date to yyyyMMddHHmmss.
+    *
+    * @param lastModifiedDate date returned by `getLastModified`, formatted as RFC 1123
+    * @return last_modified_date as yyyyMMddHHmmss.
+    */
+  def apply(lastModifiedDate: String): String = {
+<span class="fc bfc" id="L41" title="All 2 branches covered.">    if (lastModifiedDate.isEmpty) {</span>
+<span class="fc" id="L42">      &quot;&quot;</span>
+    } else {
+      // Credit: Helge Holzmann (@helgeho)
+      // Adapted from https://github.com/archivesunleashed/aut/pull/547#issuecomment-1302094573
+<span class="fc" id="L46">      val lc = lastModifiedDate.toLowerCase</span>
+<span class="fc" id="L47">      val date = months.find(m =&gt; lc.contains(m._1)).map(_._2).flatMap { m =&gt;</span>
+        val d = lc
+          .replace(&quot;:&quot;, &quot;&quot;)
+          .split(' ')
+          .drop(1)
+          .map(d =&gt; (d.length, d))
+          .toMap
+        for (y &lt;- d.get(4); n &lt;- d.get(2); t &lt;- d.get(6))
+          yield y + m + n + t
+      }
+<span class="pc" id="L57">      date match {</span>
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">        case Some(date) =&gt;</span>
+<span class="fc" id="L59">          date</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">        case None =&gt;</span>
+<span class="nc" id="L61">          &quot;&quot;</span>
+      }
+    }
+  }
+<span class="fc" id="L65">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>
