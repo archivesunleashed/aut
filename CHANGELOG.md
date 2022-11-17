@@ -1,5 +1,18 @@
 # Changelog
 
+## [aut-1.2.0](https://github.com/archivesunleashed/aut/tree/aut-1.2.0) (2022-11-17)
+
+[Full Changelog](https://github.com/archivesunleashed/aut/compare/aut-1.1.1...aut-1.2.0)
+
+**Closed issues:**
+
+- Include last modified date for a resource [\#546](https://github.com/archivesunleashed/aut/issues/546)
+
+**Merged pull requests:**
+
+- Add scalafix and remove unused imports. [\#548](https://github.com/archivesunleashed/aut/pull/548) ([ruebot](https://github.com/ruebot))
+- Last modified headers [\#547](https://github.com/archivesunleashed/aut/pull/547) ([ruebot](https://github.com/ruebot))
+
 ## [aut-1.1.1](https://github.com/archivesunleashed/aut/tree/aut-1.1.1) (2022-10-31)
 
 [Full Changelog](https://github.com/archivesunleashed/aut/compare/aut-1.1.0...aut-1.1.1)
