@@ -42,7 +42,7 @@
     <surefire.plugin.version>2.22.0</surefire.plugin.version>
     <jacoco.plugin.version>0.8.4</jacoco.plugin.version>
     <versions.plugin.version>2.1</versions.plugin.version>
-    <tika.version>1.23</tika.version>
+    <tika.version>1.28.3</tika.version>
     <jackson.version>2.10.0</jackson.version>
     <scala.maven.plugin.version>4.5.4</scala.maven.plugin.version>
   </properties>
