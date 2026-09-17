@@ -20,6 +20,9 @@ import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
+import scala.concurrent.duration._
+import scala.concurrent.{Await, ExecutionContext, Future}
+
 @RunWith(classOf[JUnitRunner])
 class ExtractBoilerPipeTextTest extends FunSuite {
   val header = "HTTP/1.0 200 OK Content-Type: text/html;" +
@@ -37,5 +40,47 @@ class ExtractBoilerPipeTextTest extends FunSuite {
 
   test("Removes HTTP header information RDD") {
     assert(ExtractBoilerpipeText(header + text) == boiler)
+  }
+
+  // ExtractBoilerpipeText.removeBoilerplate reuses a single shared
+  // DefaultExtractor.INSTANCE across every call rather than constructing
+  // one per invocation. Under Sparkling's async record pipeline that
+  // singleton can be invoked from several threads at once within one
+  // executor JVM, so this hammers it concurrently across many threads and
+  // distinct inputs to check it stays correct under contention.
+  test(
+    "Shared boilerpipe extractor singleton produces correct, stable results under concurrent load"
+  ) {
+    val samples: Seq[(String, String)] = Seq(
+      (text, boiler),
+      (
+        """<p>Text with a boiler plate.<p>
+   <footer>Copyright 2018</footer>""",
+        "Copyright 2018"
+      ),
+      (
+        """<p>Text with a boiler plate.<p>
+   <footer>Copyright 2019</footer>""",
+        "Copyright 2019"
+      ),
+      ("All Rights Reserved.", ""),
+      ("", "")
+    )
+
+    implicit val ec: ExecutionContext = ExecutionContext.global
+    val iterationsPerSample = 200
+
+    val futures = for {
+      (input, expected) <- samples
+      _ <- 1 to iterationsPerSample
+    } yield Future {
+      val actual = ExtractBoilerpipeText(input)
+      assert(
+        actual == expected,
+        s"expected '$expected' but got '$actual' under concurrent load"
+      )
+    }
+
+    Await.result(Future.sequence(futures), 2.minutes)
   }
 }
