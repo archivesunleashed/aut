@@ -19,5 +19,5 @@ jobs:
           pip install isort black
       - name: Run isort and black
         run: |
-          isort -c -l 88 -m 3 -tc src/main/python/aut/*
-          black --check -q src/main/python/aut/*
+          isort -c -l 88 -m 3 -tc src/main/python/aut/* src/test/python/*.py
+          black --check -q src/main/python/aut/* src/test/python/*.py
