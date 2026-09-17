@@ -163,13 +163,14 @@ package object archivesunleashed {
     /* Creates a column for Bytes as well in Dataframe.
        Call KeepImages OR KeepValidPages on RDD depending upon the requirement before calling this method. */
     def all(): DataFrame = {
+      val suffixes = ExtractDomain.broadcast(rdd.context)
       val records = rdd
         .removeFiledesc()
         .map(r =>
           Row(
             r.getCrawlDate,
             CovertLastModifiedDate(r.getLastModified),
-            ExtractDomain(r.getUrl).replaceAll("^\\s*www\\.", ""),
+            ExtractDomain(r.getUrl, suffixes.value).replaceAll("^\\s*www\\.", ""),
             r.getUrl,
             r.getMimeType,
             DetectMimeTypeTika(r.getBinaryBytes),
@@ -219,6 +220,7 @@ package object archivesunleashed {
 
     /** Extracts webpages with columns for crawl data, url, MIME type, and content. */
     def webpages(): DataFrame = {
+      val suffixes = ExtractDomain.broadcast(rdd.context)
       val records = rdd
         .removeFiledesc()
         .keepValidPages()
@@ -226,7 +228,7 @@ package object archivesunleashed {
           Row(
             r.getCrawlDate,
             CovertLastModifiedDate(r.getLastModified),
-            ExtractDomain(r.getUrl).replaceAll("^\\s*www\\.", ""),
+            ExtractDomain(r.getUrl, suffixes.value).replaceAll("^\\s*www\\.", ""),
             r.getUrl,
             r.getMimeType,
             DetectMimeTypeTika(r.getBinaryBytes),
@@ -1098,8 +1100,11 @@ package object archivesunleashed {
       * @param urls a list of urls for the source domains
       */
     def keepDomains(urls: Set[String]): RDD[ArchiveRecord] = {
+      val suffixes = ExtractDomain.broadcast(rdd.context)
       rdd.filter(r =>
-        urls.contains(ExtractDomain(r.getUrl).replace("^\\s*www\\.", ""))
+        urls.contains(
+          ExtractDomain(r.getUrl, suffixes.value).replace("^\\s*www\\.", "")
+        )
       )
     }
 
@@ -1195,7 +1200,8 @@ package object archivesunleashed {
       * @param urls a list of urls for the source domains
       */
     def discardDomains(urls: Set[String]): RDD[ArchiveRecord] = {
-      rdd.filter(r => !urls.contains(r.getDomain))
+      val suffixes = ExtractDomain.broadcast(rdd.context)
+      rdd.filter(r => !urls.contains(ExtractDomain(r.getUrl, suffixes.value)))
     }
 
     /** Filters detected content (regex).
