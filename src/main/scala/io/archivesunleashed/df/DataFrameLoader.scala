@@ -23,14 +23,20 @@ import org.apache.spark.sql.DataFrame
 /** DataFrame wrapper for PySpark implementation. * */
 class DataFrameLoader(sc: SparkContext) {
 
-  /** Create a DataFrame with crawl_date, url, mime_type_web_server, mime_type_tika, content, bytes, http_status_code, and archive_filename. */
+  /**
+   * Create a DataFrame with crawl_date, url, mime_type_web_server, mime_type_tika, content,
+   * bytes, http_status_code, and archive_filename.
+   */
   def all(path: String): DataFrame = {
     RecordLoader
       .loadArchives(path, sc)
       .all()
   }
 
-  /** Create a DataFrame with audio url, filename, extension, mime_type_web_server, mime_type_tika, md5, sha1, and raw bytes. */
+  /**
+   * Create a DataFrame with audio url, filename, extension, mime_type_web_server, mime_type_tika,
+   * md5, sha1, and raw bytes.
+   */
   def audio(path: String): DataFrame = {
     RecordLoader
       .loadArchives(path, sc)
@@ -58,7 +64,10 @@ class DataFrameLoader(sc: SparkContext) {
       .imagegraph()
   }
 
-  /** Create a DataFrame with image url, filename, extension, mime_type_web_server, mime_type_tika, width, height, md5, sha1, and raw bytes. */
+  /**
+   * Create a DataFrame with image url, filename, extension, mime_type_web_server, mime_type_tika,
+   * width, height, md5, sha1, and raw bytes.
+   */
   def images(path: String): DataFrame = {
     RecordLoader
       .loadArchives(path, sc)
@@ -79,7 +88,10 @@ class DataFrameLoader(sc: SparkContext) {
       .json()
   }
 
-  /** Create a DataFrame with PDF url, filename, extension, mime_type_web_server, mime_type_tika, md5, sha1, and raw bytes. */
+  /**
+   * Create a DataFrame with PDF url, filename, extension, mime_type_web_server, mime_type_tika,
+   * md5, sha1, and raw bytes.
+   */
   def pdfs(path: String): DataFrame = {
     RecordLoader
       .loadArchives(path, sc)
@@ -93,21 +105,30 @@ class DataFrameLoader(sc: SparkContext) {
       .plainText()
   }
 
-  /** Create a DataFrame with presentation program file url, filename, extension, mime_type_web_server, mime_type_tika, md5, sha1, and raw bytes. */
+  /**
+   * Create a DataFrame with presentation program file url, filename, extension,
+   * mime_type_web_server, mime_type_tika, md5, sha1, and raw bytes.
+   */
   def presentationProgramFiles(path: String): DataFrame = {
     RecordLoader
       .loadArchives(path, sc)
       .presentationProgramFiles()
   }
 
-  /** Create a DataFrame with spreadsheet url, filename, extension, mime_type_web_server, mime_type_tika, md5, sha1, and raw bytes. */
+  /**
+   * Create a DataFrame with spreadsheet url, filename, extension, mime_type_web_server,
+   * mime_type_tika, md5, sha1, and raw bytes.
+   */
   def spreadsheets(path: String): DataFrame = {
     RecordLoader
       .loadArchives(path, sc)
       .spreadsheets()
   }
 
-  /** Create a DataFrame with video url, filename, extension, mime_type_web_server, mime_type_tika, md5, sha1, and raw bytes. */
+  /**
+   * Create a DataFrame with video url, filename, extension, mime_type_web_server, mime_type_tika,
+   * md5, sha1, and raw bytes.
+   */
   def videos(path: String): DataFrame = {
     RecordLoader
       .loadArchives(path, sc)
@@ -128,7 +149,10 @@ class DataFrameLoader(sc: SparkContext) {
       .webpages()
   }
 
-  /** Create a DataFrame with word processor file url, filename, extension, mime_type_web_server, mime_type_tika, md5, sha1, and raw bytes. */
+  /**
+   * Create a DataFrame with word processor file url, filename, extension, mime_type_web_server,
+   * mime_type_tika, md5, sha1, and raw bytes.
+   */
   def wordProcessorFiles(path: String): DataFrame = {
     RecordLoader
       .loadArchives(path, sc)

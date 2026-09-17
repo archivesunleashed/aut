@@ -47,9 +47,7 @@ class VideoInformationExtractorTest extends FunSuite with BeforeAndAfter {
     assert(dfResults.length == RESULTSLENGTH)
     assert(dfResults(0).get(0) == "20190817230310")
     assert(dfResults(0).get(1) == "20190812230929")
-    assert(
-      dfResults(0).get(2) == "https://ruebot.net/2018-11-12%2016.14.11.mp4"
-    )
+    assert(dfResults(0).get(2) == "https://ruebot.net/2018-11-12%2016.14.11.mp4")
     assert(dfResults(0).get(3) == "2018-11-12%2016.14.11.mp4")
     assert(dfResults(0).get(4) == "mp4")
     assert(dfResults(0).get(5) == "video/mp4")

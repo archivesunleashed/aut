@@ -45,9 +45,7 @@ class UdfsTest extends FunSuite with BeforeAndAfter {
     sc = new SparkContext(conf)
   }
 
-  test(
-    "DF Udf tests; computeSHA1, computeMD5, extractImageLinks, getExtensionMime"
-  ) {
+  test("DF Udf tests; computeSHA1, computeMD5, extractImageLinks, getExtensionMime") {
     val df = RecordLoader
       .loadArchives(arcPath, sc)
       .all()
@@ -67,18 +65,13 @@ class UdfsTest extends FunSuite with BeforeAndAfter {
         computeSHA1($"raw_content").as("sha1_test"),
         computeMD5($"raw_content").as("md5_test"),
         explode(extractImageLinks($"url", $"raw_content")).as("image_link"),
-        getExtensionMime($"url", $"mime_type_tika").as("extension")
-      )
+        getExtensionMime($"url", $"mime_type_tika").as("extension"))
       .orderBy(desc("md5_test"))
       .head(4)
       .toList
 
     assert(extracted.size == 4)
-    assert(
-      extracted(0).get(
-        0
-      ) == "http://www.archive.org/iathreads/post-view.php?id=186011"
-    )
+    assert(extracted(0).get(0) == "http://www.archive.org/iathreads/post-view.php?id=186011")
     assert(extracted(0).get(1) == "text/html")
     assert(extracted(0).get(2) == "text/html")
     assert(extracted(0).get(3) == "9b9cd08e300f49ae59b1f2ced1bcd43fa8b5418c")
@@ -86,15 +79,12 @@ class UdfsTest extends FunSuite with BeforeAndAfter {
     assert(
       extracted(0)
         .get(5)
-        .toString == "[http://www.archive.org/iathreads/post-view.php?id=186011,http://www.archive.org/images/logo.jpg,(logo)]"
-    )
+        .toString == "[http://www.archive.org/iathreads/post-view.php?id=186011,http://www.archive.org/images/logo.jpg,(logo)]")
     assert(extracted(0).get(6) == "html")
 
     assert(
       extracted(3).get(
-        0
-      ) == "http://www.archive.org/iathreads/forum-display.php?poster=RipJarvis"
-    )
+        0) == "http://www.archive.org/iathreads/forum-display.php?poster=RipJarvis")
     assert(extracted(3).get(1) == "text/html")
     assert(extracted(3).get(2) == "text/html")
     assert(extracted(3).get(3) == "284a847892deaeb7790fe1b4123a9ccb47a246ed")
@@ -102,8 +92,7 @@ class UdfsTest extends FunSuite with BeforeAndAfter {
     assert(
       extracted(3)
         .get(5)
-        .toString == "[http://www.archive.org/iathreads/forum-display.php?poster=RipJarvis,http://www.archive.org/images/logo.jpg,(logo)]"
-    )
+        .toString == "[http://www.archive.org/iathreads/forum-display.php?poster=RipJarvis,http://www.archive.org/images/logo.jpg,(logo)]")
     assert(extracted(3).get(6) == "html")
   }
 
@@ -126,8 +115,7 @@ class UdfsTest extends FunSuite with BeforeAndAfter {
         $"width",
         computeImageSize(unbase64($"bytes")).as("image_size"),
         computeSHA1(unbase64($"bytes")).as("sha1_test"),
-        computeMD5(unbase64($"bytes")).as("md5_test")
-      )
+        computeMD5(unbase64($"bytes")).as("md5_test"))
       .withColumn("img_width", $"image_size._1")
       .withColumn("img_height", $"image_size._2")
       .orderBy(desc("md5"))

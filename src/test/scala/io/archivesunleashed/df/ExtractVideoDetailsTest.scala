@@ -44,14 +44,7 @@ class VideoTest extends FunSuite with BeforeAndAfter {
       .videos()
 
     val extracted = df
-      .select(
-        "url",
-        "filename",
-        "extension",
-        "mime_type_web_server",
-        "mime_type_tika",
-        "md5"
-      )
+      .select("url", "filename", "extension", "mime_type_web_server", "mime_type_tika", "md5")
       .orderBy(desc("md5"))
       .head(1)
       .toList

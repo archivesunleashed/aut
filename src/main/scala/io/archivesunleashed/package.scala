@@ -41,22 +41,11 @@ import org.apache.commons.codec.binary.Hex
 import org.apache.commons.io.FilenameUtils
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.types.{
-  BinaryType,
-  IntegerType,
-  StringType,
-  StructField,
-  StructType
-}
+import org.apache.spark.sql.types.{BinaryType, IntegerType, StringType, StructField, StructType}
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 import org.apache.spark.SparkContext
 import org.archive.webservices.sparkling.io.{HdfsIO, IOUtil}
-import org.archive.webservices.sparkling.util.{
-  IteratorUtil,
-  ManagedVal,
-  RddUtil,
-  ValueSupplier
-}
+import org.archive.webservices.sparkling.util.{IteratorUtil, ManagedVal, RddUtil, ValueSupplier}
 import org.archive.webservices.sparkling.warc.WarcLoader
 
 import scala.language.postfixOps
@@ -64,19 +53,24 @@ import scala.reflect.ClassTag
 import scala.util.matching.Regex
 
 /**
-  * Package object which supplies implicits to augment generic RDDs with AUT-specific transformations.
-  */
+ * Package object which supplies implicits to augment generic RDDs with AUT-specific
+ * transformations.
+ */
 package object archivesunleashed {
 
   /** Loads records from either WARCs or ARCs. */
   object RecordLoader {
 
-    /** Gets all non-empty archive files.
-      *
-      * @param dir the path to the directory containing archive files
-      * @param fs filesystem
-      * @return a String consisting of all non-empty archive files path.
-      */
+    /**
+     * Gets all non-empty archive files.
+     *
+     * @param dir
+     *   the path to the directory containing archive files
+     * @param fs
+     *   filesystem
+     * @return
+     *   a String consisting of all non-empty archive files path.
+     */
     def getFiles(dir: Path, fs: FileSystem): String = {
       val statuses = fs.globStatus(dir)
       val files = statuses
@@ -85,39 +79,40 @@ package object archivesunleashed {
       files.mkString(",")
     }
 
-    /** Creates an Archive Record RDD from a WARC or ARC file.
-      *
-      * @param path the path to the WARC(s)
-      * @param sc the apache spark context
-      * @return an RDD of ArchiveRecords for mapping.
-      */
+    /**
+     * Creates an Archive Record RDD from a WARC or ARC file.
+     *
+     * @param path
+     *   the path to the WARC(s)
+     * @param sc
+     *   the apache spark context
+     * @return
+     *   an RDD of ArchiveRecords for mapping.
+     */
     def loadArchives(path: String, sc: SparkContext): RDD[ArchiveRecord] = {
       RddUtil.loadFilesLocality(path).flatMap { path =>
         val filename = path.split('/').last
         val in = HdfsIO.open(path, decompress = false)
         var prev: Option[ManagedVal[ValueSupplier[InputStream]]] = None
         IteratorUtil.cleanup(
-          WarcLoader.load(in).filter(r => r.isResponse || r.isRevisit).map {
-            record =>
-              for (p <- prev) p.clear(false)
-              val buffered = IOUtil.buffer(lazyEval = true) { out =>
-                IOUtil.copy(record.payload, out)
-              }
-              prev = Some(buffered)
-              new SparklingArchiveRecord(filename, record, buffered)
+          WarcLoader.load(in).filter(r => r.isResponse || r.isRevisit).map { record =>
+            for (p <- prev) p.clear(false)
+            val buffered = IOUtil.buffer(lazyEval = true) { out =>
+              IOUtil.copy(record.payload, out)
+            }
+            prev = Some(buffered)
+            new SparklingArchiveRecord(filename, record, buffered)
           },
           () => {
             for (p <- prev) p.clear(false)
             in.close()
-          }
-        )
+          })
       }
     }
   }
 
   /** A Wrapper class around RDD to simplify counting. */
-  implicit class CountableRDD[T: ClassTag](rdd: RDD[T])
-      extends java.io.Serializable {
+  implicit class CountableRDD[T: ClassTag](rdd: RDD[T]) extends java.io.Serializable {
     def countItems(): RDD[(T, Int)] = {
       rdd
         .map(r => (r, 1))
@@ -127,10 +122,10 @@ package object archivesunleashed {
   }
 
   /**
-    * A Wrapper class around DF to allow Dfs of type ArchiveRecord to be queried via a fluent API.
-    *
-    * To load such an DF, please use [[RecordLoader]] and apply .all() on it.
-    */
+   * A Wrapper class around DF to allow Dfs of type ArchiveRecord to be queried via a fluent API.
+   *
+   * To load such an DF, please use [[RecordLoader]] and apply .all() on it.
+   */
   implicit class WARecordDF(df: DataFrame) extends java.io.Serializable {
 
     val spark = SparkSession.builder().master("local").getOrCreate()
@@ -146,19 +141,18 @@ package object archivesunleashed {
             ($"mime_type_web_server".rlike("text/html") ||
               $"mime_type_web_server".rlike("application/xhtml+xml") ||
               $"url".rlike("(?i).*htm$") ||
-              $"url".rlike("(?i).*html$"))
-        )
+              $"url".rlike("(?i).*html$")))
         .filter($"http_status_code" === 200)
     }
   }
 
   /**
-    * A Wrapper class around RDD to allow RDDs of type ArchiveRecord to be queried via a fluent API.
-    *
-    * To load such an RDD, please see [[RecordLoader]].
-    */
-  implicit class WARecordRDD(rdd: RDD[ArchiveRecord])
-      extends java.io.Serializable {
+   * A Wrapper class around RDD to allow RDDs of type ArchiveRecord to be queried via a fluent
+   * API.
+   *
+   * To load such an RDD, please see [[RecordLoader]].
+   */
+  implicit class WARecordRDD(rdd: RDD[ArchiveRecord]) extends java.io.Serializable {
 
     /* Creates a column for Bytes as well in Dataframe.
        Call KeepImages OR KeepValidPages on RDD depending upon the requirement before calling this method. */
@@ -170,16 +164,15 @@ package object archivesunleashed {
           Row(
             r.getCrawlDate,
             CovertLastModifiedDate(r.getLastModified),
-            ExtractDomain(r.getUrl, suffixes.value).replaceAll("^\\s*www\\.", ""),
+            ExtractDomain(r.getUrl, suffixes.value)
+              .replaceAll("^\\s*www\\.", ""),
             r.getUrl,
             r.getMimeType,
             DetectMimeTypeTika(r.getBinaryBytes),
             r.getContentString,
             r.getBinaryBytes,
             r.getHttpStatus,
-            r.getArchiveFilename
-          )
-        )
+            r.getArchiveFilename))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -201,8 +194,7 @@ package object archivesunleashed {
     def removeFiledesc(): RDD[ArchiveRecord] = {
       rdd.filter(r =>
         !r.getUrl.toLowerCase.startsWith("filedesc:")
-          && !r.getUrl.toLowerCase.startsWith("dns:")
-      )
+          && !r.getUrl.toLowerCase.startsWith("dns:"))
     }
 
     /** Removes all non-html-based data (images, executables, etc.) from html text. */
@@ -214,8 +206,7 @@ package object archivesunleashed {
             || r.getUrl.toLowerCase.endsWith("htm")
             || r.getUrl.toLowerCase.endsWith("html"))
           && !r.getUrl.toLowerCase.endsWith("robots.txt")
-          && r.getHttpStatus == "200"
-      )
+          && r.getHttpStatus == "200")
     }
 
     /** Extracts webpages with columns for crawl data, url, MIME type, and content. */
@@ -229,13 +220,13 @@ package object archivesunleashed {
           Row(
             r.getCrawlDate,
             CovertLastModifiedDate(r.getLastModified),
-            ExtractDomain(r.getUrl, suffixes.value).replaceAll("^\\s*www\\.", ""),
+            ExtractDomain(r.getUrl, suffixes.value)
+              .replaceAll("^\\s*www\\.", ""),
             r.getUrl,
             r.getMimeType,
             DetectMimeTypeTika(r.getBinaryBytes),
             DetectLanguage(content),
-            content
-          )
+            content)
         }
 
       val schema = new StructType()
@@ -252,15 +243,17 @@ package object archivesunleashed {
       sqlContext.getOrCreate().createDataFrame(records, schema)
     }
 
-    /** Extracts a webgraph with columns for crawl date, source url, destination url, and anchor text. */
+    /**
+     * Extracts a webgraph with columns for crawl date, source url, destination url, and anchor
+     * text.
+     */
     def webgraph(): DataFrame = {
       val records = rdd
         .removeFiledesc()
         .keepValidPages()
         .flatMap(r =>
           ExtractLinks(r.getUrl, r.getContentString)
-            .map(t => (r.getCrawlDate, t._1, t._2, t._3))
-        )
+            .map(t => (r.getCrawlDate, t._1, t._2, t._3)))
         .filter(t => t._2 != "" && t._3 != "")
         .map(t => Row(t._1, t._2, t._3, t._4))
 
@@ -281,8 +274,7 @@ package object archivesunleashed {
         .keepValidPages()
         .flatMap(r =>
           ExtractImageLinks(r.getUrl, r.getContentString)
-            .map(t => (r.getCrawlDate, t._1, t._2, t._3))
-        )
+            .map(t => (r.getCrawlDate, t._1, t._2, t._3)))
         .filter(t => t._2 != "" && t._3 != "")
         .map(t => Row(t._1, t._2, t._3, t._4))
 
@@ -321,25 +313,9 @@ package object archivesunleashed {
             image.height,
             image.md5Hash,
             image.sha1Hash,
-            image.body
-          )
+            image.body)
         }
-        .map(t =>
-          Row(
-            t._1,
-            t._2,
-            t._3,
-            t._4,
-            t._5,
-            t._6,
-            t._7,
-            t._8,
-            t._9,
-            t._10,
-            t._11,
-            t._12
-          )
-        )
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10, t._11, t._12))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -366,12 +342,9 @@ package object archivesunleashed {
         .filter(r => r._2 == "application/pdf")
         .map(r => {
           val bytes = r._1.getBinaryBytes
-          val md5Hash = new String(
-            Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes))
-          )
-          val sha1Hash = new String(
-            Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes))
-          )
+          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val sha1Hash =
+            new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
@@ -386,12 +359,9 @@ package object archivesunleashed {
             r._2,
             md5Hash,
             sha1Hash,
-            encodedBytes
-          )
+            encodedBytes)
         })
-        .map(t =>
-          Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10)
-        )
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -416,12 +386,9 @@ package object archivesunleashed {
         .filter(r => r._2.startsWith("audio/"))
         .map(r => {
           val bytes = r._1.getBinaryBytes
-          val md5Hash = new String(
-            Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes))
-          )
-          val sha1Hash = new String(
-            Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes))
-          )
+          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val sha1Hash =
+            new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
@@ -436,12 +403,9 @@ package object archivesunleashed {
             r._2,
             md5Hash,
             sha1Hash,
-            encodedBytes
-          )
+            encodedBytes)
         })
-        .map(t =>
-          Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10)
-        )
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -466,12 +430,9 @@ package object archivesunleashed {
         .filter(r => r._2.startsWith("video/"))
         .map(r => {
           val bytes = r._1.getBinaryBytes
-          val md5Hash = new String(
-            Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes))
-          )
-          val sha1Hash = new String(
-            Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes))
-          )
+          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val sha1Hash =
+            new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
@@ -486,12 +447,9 @@ package object archivesunleashed {
             r._2,
             md5Hash,
             sha1Hash,
-            encodedBytes
-          )
+            encodedBytes)
         })
-        .map(t =>
-          Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10)
-        )
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -539,16 +497,12 @@ package object archivesunleashed {
             || r._1.getMimeType == "text/tab-separated-values")
             || ((r._1.getUrl.toLowerCase.endsWith(".csv")
               || r._1.getUrl.toLowerCase.endsWith(".tsv"))
-              && r._2 == "text/plain")
-        )
+              && r._2 == "text/plain"))
         .map(r => {
           val bytes = r._1.getBinaryBytes
-          val md5Hash = new String(
-            Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes))
-          )
-          val sha1Hash = new String(
-            Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes))
-          )
+          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val sha1Hash =
+            new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
@@ -571,12 +525,9 @@ package object archivesunleashed {
             r._2,
             md5Hash,
             sha1Hash,
-            encodedBytes
-          )
+            encodedBytes)
         })
-        .map(t =>
-          Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10)
-        )
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -612,16 +563,12 @@ package object archivesunleashed {
             || r._2 == "application/vnd.ms-powerpoint.presentation.macroEnabled.12"
             || r._2 == "application/vnd.ms-powerpoint.slide.macroEnabled.12"
             || r._2 == "application/vnd.ms-powerpoint.slideshow.macroEnabled.12"
-            || r._2 == "application/vnd.ms-powerpoint.template.macroEnabled.12"
-        )
+            || r._2 == "application/vnd.ms-powerpoint.template.macroEnabled.12")
         .map(r => {
           val bytes = r._1.getBinaryBytes
-          val md5Hash = new String(
-            Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes))
-          )
-          val sha1Hash = new String(
-            Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes))
-          )
+          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val sha1Hash =
+            new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
@@ -636,12 +583,9 @@ package object archivesunleashed {
             r._2,
             md5Hash,
             sha1Hash,
-            encodedBytes
-          )
+            encodedBytes)
         })
-        .map(t =>
-          Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10)
-        )
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -681,16 +625,12 @@ package object archivesunleashed {
             || r._2 == "application/vnd.apple.pages"
             || r._2 == "application/macwriteii"
             || r._2 == "application/vnd.ms-works"
-            || r._2 == "application/rtf"
-        )
+            || r._2 == "application/rtf")
         .map(r => {
           val bytes = r._1.getBinaryBytes
-          val md5Hash = new String(
-            Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes))
-          )
-          val sha1Hash = new String(
-            Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes))
-          )
+          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val sha1Hash =
+            new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
@@ -705,12 +645,9 @@ package object archivesunleashed {
             r._2,
             md5Hash,
             sha1Hash,
-            encodedBytes
-          )
+            encodedBytes)
         })
-        .map(t =>
-          Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10)
-        )
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -735,12 +672,9 @@ package object archivesunleashed {
         .filter(r => r._2 == "text/css")
         .map(r => {
           val bytes = r._1.getBinaryBytes
-          val md5Hash = new String(
-            Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes))
-          )
-          val sha1Hash = new String(
-            Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes))
-          )
+          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val sha1Hash =
+            new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
@@ -755,12 +689,9 @@ package object archivesunleashed {
             DetectMimeTypeTika(r._1.getBinaryBytes),
             md5Hash,
             sha1Hash,
-            RemoveHTTPHeader(r._1.getContentString)
-          )
+            RemoveHTTPHeader(r._1.getContentString))
         })
-        .map(t =>
-          Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10)
-        )
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -785,12 +716,9 @@ package object archivesunleashed {
         .filter(r => r._2 == "text/html")
         .map(r => {
           val bytes = r._1.getBinaryBytes
-          val md5Hash = new String(
-            Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes))
-          )
-          val sha1Hash = new String(
-            Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes))
-          )
+          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val sha1Hash =
+            new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
@@ -805,12 +733,9 @@ package object archivesunleashed {
             DetectMimeTypeTika(r._1.getBinaryBytes),
             md5Hash,
             sha1Hash,
-            RemoveHTTPHeader(r._1.getContentString)
-          )
+            RemoveHTTPHeader(r._1.getContentString))
         })
-        .map(t =>
-          Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10)
-        )
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -835,12 +760,9 @@ package object archivesunleashed {
         .filter(r => r._2.contains("javascript"))
         .map(r => {
           val bytes = r._1.getBinaryBytes
-          val md5Hash = new String(
-            Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes))
-          )
-          val sha1Hash = new String(
-            Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes))
-          )
+          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val sha1Hash =
+            new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
@@ -855,12 +777,9 @@ package object archivesunleashed {
             DetectMimeTypeTika(r._1.getBinaryBytes),
             md5Hash,
             sha1Hash,
-            RemoveHTTPHeader(r._1.getContentString)
-          )
+            RemoveHTTPHeader(r._1.getContentString))
         })
-        .map(t =>
-          Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10)
-        )
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -885,12 +804,9 @@ package object archivesunleashed {
         .filter(r => r._2.contains("json"))
         .map(r => {
           val bytes = r._1.getBinaryBytes
-          val md5Hash = new String(
-            Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes))
-          )
-          val sha1Hash = new String(
-            Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes))
-          )
+          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val sha1Hash =
+            new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
@@ -905,12 +821,9 @@ package object archivesunleashed {
             DetectMimeTypeTika(r._1.getBinaryBytes),
             md5Hash,
             sha1Hash,
-            RemoveHTTPHeader(r._1.getContentString)
-          )
+            RemoveHTTPHeader(r._1.getContentString))
         })
-        .map(t =>
-          Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10)
-        )
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -936,12 +849,9 @@ package object archivesunleashed {
         .filter(r => r._3 == "text/plain")
         .map(r => {
           val bytes = r._1.getBinaryBytes
-          val md5Hash = new String(
-            Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes))
-          )
-          val sha1Hash = new String(
-            Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes))
-          )
+          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val sha1Hash =
+            new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
@@ -956,12 +866,9 @@ package object archivesunleashed {
             r._3,
             md5Hash,
             sha1Hash,
-            RemoveHTTPHeader(r._1.getContentString)
-          )
+            RemoveHTTPHeader(r._1.getContentString))
         })
-        .map(t =>
-          Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10)
-        )
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -986,12 +893,9 @@ package object archivesunleashed {
         .filter(r => r._2.contains("xml"))
         .map(r => {
           val bytes = r._1.getBinaryBytes
-          val md5Hash = new String(
-            Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes))
-          )
-          val sha1Hash = new String(
-            Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes))
-          )
+          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+          val sha1Hash =
+            new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
           val encodedBytes = Base64.getEncoder.encodeToString(bytes)
           val url = new URL(r._1.getUrl)
           val filename = FilenameUtils.getName(url.getPath())
@@ -1006,12 +910,9 @@ package object archivesunleashed {
             DetectMimeTypeTika(r._1.getBinaryBytes),
             md5Hash,
             sha1Hash,
-            RemoveHTTPHeader(r._1.getContentString)
-          )
+            RemoveHTTPHeader(r._1.getContentString))
         })
-        .map(t =>
-          Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10)
-        )
+        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -1033,205 +934,224 @@ package object archivesunleashed {
     def keepImages(): RDD[ArchiveRecord] = {
       rdd.filter(r =>
         r.getCrawlDate != null
-          && DetectMimeTypeTika(r.getBinaryBytes).startsWith("image/")
-      )
+          && DetectMimeTypeTika(r.getBinaryBytes).startsWith("image/"))
     }
 
-    /** Removes all data but selected mimeTypes specified.
-      *
-      * @param mimeTypes a list of Mime Types
-      */
+    /**
+     * Removes all data but selected mimeTypes specified.
+     *
+     * @param mimeTypes
+     *   a list of Mime Types
+     */
     def keepMimeTypes(mimeTypes: Set[String]): RDD[ArchiveRecord] = {
       rdd.filter(r => mimeTypes.contains(r.getMimeType))
     }
 
-    /** Removes all data but selected mimeTypes as detected by Tika.
-      *
-      * @param mimeTypes a list of Mime Types
-      */
+    /**
+     * Removes all data but selected mimeTypes as detected by Tika.
+     *
+     * @param mimeTypes
+     *   a list of Mime Types
+     */
     def keepMimeTypesTika(mimeTypes: Set[String]): RDD[ArchiveRecord] = {
       rdd.filter(r => mimeTypes.contains(DetectMimeTypeTika(r.getBinaryBytes)))
     }
 
-    /** Removes all data that does not have selected HTTP status codes.
-      *
-      *  @param statusCodes a list of HTTP status codes
-      */
+    /**
+     * Removes all data that does not have selected HTTP status codes.
+     *
+     * @param statusCodes
+     *   a list of HTTP status codes
+     */
     def keepHttpStatus(statusCodes: Set[String]): RDD[ArchiveRecord] = {
       rdd.filter(r => statusCodes.contains(r.getHttpStatus))
     }
 
-    /** Removes all data that does not have selected date.
-      *
-      * @param dates a list of dates
-      * @param component the selected DateComponent enum value
-      */
+    /**
+     * Removes all data that does not have selected date.
+     *
+     * @param dates
+     *   a list of dates
+     * @param component
+     *   the selected DateComponent enum value
+     */
     def keepDate(
         dates: List[String],
-        component: DateComponent = DateComponent.YYYYMMDD
-    ): RDD[ArchiveRecord] = {
+        component: DateComponent = DateComponent.YYYYMMDD): RDD[ArchiveRecord] = {
       rdd.filter(r => dates.contains(ExtractDate(r.getCrawlDate, component)))
     }
 
-    /** Removes all data but selected exact URLs.
-      *
-      * @param urls a list of URLs to keep
-      */
+    /**
+     * Removes all data but selected exact URLs.
+     *
+     * @param urls
+     *   a list of URLs to keep
+     */
     def keepUrls(urls: Set[String]): RDD[ArchiveRecord] = {
       rdd.filter(r => urls.contains(r.getUrl))
     }
 
-    /** Removes all data but selected URL patterns.
-      *
-      * @param urlREs a list of regular expressions
-      */
+    /**
+     * Removes all data but selected URL patterns.
+     *
+     * @param urlREs
+     *   a list of regular expressions
+     */
     def keepUrlPatterns(urlREs: Set[Regex]): RDD[ArchiveRecord] = {
       rdd.filter(r =>
         urlREs
           .map(re =>
             r.getUrl match {
               case re() => true
-              case _    => false
-            }
-          )
-          .exists(identity)
-      )
+              case _ => false
+            })
+          .exists(identity))
     }
 
-    /** Removes all data but selected source domains.
-      *
-      * @param urls a list of urls for the source domains
-      */
+    /**
+     * Removes all data but selected source domains.
+     *
+     * @param urls
+     *   a list of urls for the source domains
+     */
     def keepDomains(urls: Set[String]): RDD[ArchiveRecord] = {
       val suffixes = ExtractDomain.broadcast(rdd.context)
       rdd.filter(r =>
-        urls.contains(
-          ExtractDomain(r.getUrl, suffixes.value).replace("^\\s*www\\.", "")
-        )
-      )
+        urls.contains(ExtractDomain(r.getUrl, suffixes.value).replace("^\\s*www\\.", "")))
     }
 
-    /** Removes all data not in selected language.
-      *
-      * @param lang a set of ISO 639-2 codes
-      */
+    /**
+     * Removes all data not in selected language.
+     *
+     * @param lang
+     *   a set of ISO 639-2 codes
+     */
     def keepLanguages(lang: Set[String]): RDD[ArchiveRecord] = {
-      rdd.filter(r =>
-        lang.contains(DetectLanguage(RemoveHTML(r.getContentString)))
-      )
+      rdd.filter(r => lang.contains(DetectLanguage(RemoveHTML(r.getContentString))))
     }
 
-    /** Removes all content that does not pass Regular Expression test.
-      *
-      * @param contentREs a list of regular expressions to keep
-      */
+    /**
+     * Removes all content that does not pass Regular Expression test.
+     *
+     * @param contentREs
+     *   a list of regular expressions to keep
+     */
     def keepContent(contentREs: Set[Regex]): RDD[ArchiveRecord] = {
       rdd.filter(r =>
         contentREs
           .map(re =>
             (re findFirstIn r.getContentString) match {
               case Some(v) => true
-              case None    => false
-            }
-          )
-          .exists(identity)
-      )
+              case None => false
+            })
+          .exists(identity))
     }
 
-    /** Filters ArchiveRecord MimeTypes (web server).
-      *
-      * @param mimeTypes a list of Mime Types
-      */
+    /**
+     * Filters ArchiveRecord MimeTypes (web server).
+     *
+     * @param mimeTypes
+     *   a list of Mime Types
+     */
     def discardMimeTypes(mimeTypes: Set[String]): RDD[ArchiveRecord] = {
       rdd.filter(r => !mimeTypes.contains(r.getMimeType))
     }
 
-    /** Filters detected MimeTypes (Tika).
-      *
-      * @param mimeTypes a list of Mime Types
-      */
+    /**
+     * Filters detected MimeTypes (Tika).
+     *
+     * @param mimeTypes
+     *   a list of Mime Types
+     */
     def discardMimeTypesTika(mimeTypes: Set[String]): RDD[ArchiveRecord] = {
       rdd.filter(r => !mimeTypes.contains(DetectMimeTypeTika(r.getBinaryBytes)))
     }
 
-    /** Filters detected dates.
-      *
-      * @param date a list of dates
-      */
+    /**
+     * Filters detected dates.
+     *
+     * @param date
+     *   a list of dates
+     */
     def discardDate(
         dates: List[String],
-        component: DateComponent = DateComponent.YYYYMMDD
-    ): RDD[ArchiveRecord] = {
+        component: DateComponent = DateComponent.YYYYMMDD): RDD[ArchiveRecord] = {
       rdd.filter(r => !dates.contains(ExtractDate(r.getCrawlDate, component)))
     }
 
-    /** Filters detected URLs.
-      *
-      * @param urls a list of urls
-      */
+    /**
+     * Filters detected URLs.
+     *
+     * @param urls
+     *   a list of urls
+     */
     def discardUrls(urls: Set[String]): RDD[ArchiveRecord] = {
       rdd.filter(r => !urls.contains(r.getUrl))
     }
 
-    /** Filters detected HTTP status codes.
-      *
-      * @param statusCodes a list of HTTP status codes
-      */
+    /**
+     * Filters detected HTTP status codes.
+     *
+     * @param statusCodes
+     *   a list of HTTP status codes
+     */
     def discardHttpStatus(statusCodes: Set[String]): RDD[ArchiveRecord] = {
       rdd.filter(r => !statusCodes.contains(r.getHttpStatus))
     }
 
-    /** Filters detected URL patterns (regex).
-      *
-      *  @param urlREs a list of Regular expressions
-      */
+    /**
+     * Filters detected URL patterns (regex).
+     *
+     * @param urlREs
+     *   a list of Regular expressions
+     */
     def discardUrlPatterns(urlREs: Set[Regex]): RDD[ArchiveRecord] = {
       rdd.filter(r =>
         !urlREs
           .map(re =>
             r.getUrl match {
               case re() => true
-              case _    => false
-            }
-          )
-          .exists(identity)
-      )
+              case _ => false
+            })
+          .exists(identity))
     }
 
-    /** Filters detected domains (regex).
-      *
-      * @param urls a list of urls for the source domains
-      */
+    /**
+     * Filters detected domains (regex).
+     *
+     * @param urls
+     *   a list of urls for the source domains
+     */
     def discardDomains(urls: Set[String]): RDD[ArchiveRecord] = {
       val suffixes = ExtractDomain.broadcast(rdd.context)
       rdd.filter(r => !urls.contains(ExtractDomain(r.getUrl, suffixes.value)))
     }
 
-    /** Filters detected content (regex).
-      *
-      * @param contentREs a list of regular expressions
-      */
+    /**
+     * Filters detected content (regex).
+     *
+     * @param contentREs
+     *   a list of regular expressions
+     */
     def discardContent(contentREs: Set[Regex]): RDD[ArchiveRecord] = {
       rdd.filter(r =>
         !contentREs
           .map(re =>
             (re findFirstIn r.getContentString) match {
               case Some(v) => true
-              case None    => false
-            }
-          )
-          .exists(identity)
-      )
+              case None => false
+            })
+          .exists(identity))
     }
 
-    /** Filters detected language.
-      *
-      * @param lang a set of ISO 639-2 codes
-      */
+    /**
+     * Filters detected language.
+     *
+     * @param lang
+     *   a set of ISO 639-2 codes
+     */
     def discardLanguages(lang: Set[String]): RDD[ArchiveRecord] = {
-      rdd.filter(r =>
-        !lang.contains(DetectLanguage(RemoveHTML(r.getContentString)))
-      )
+      rdd.filter(r => !lang.contains(DetectLanguage(RemoveHTML(r.getContentString))))
     }
   }
 }

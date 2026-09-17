@@ -24,9 +24,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 @RunWith(classOf[JUnitRunner])
-class WordProcessorInformationExtractorTest
-    extends FunSuite
-    with BeforeAndAfter {
+class WordProcessorInformationExtractorTest extends FunSuite with BeforeAndAfter {
   private val arcPath =
     Resources.getResource("warc/example.docs.warc.gz").getPath
   private var sc: SparkContext = _
@@ -50,10 +48,7 @@ class WordProcessorInformationExtractorTest
     assert(dfResults(0).get(0) == "20190815004423")
     assert(dfResults(0).get(1) == "20190814234647")
     assert(
-      dfResults(0).get(
-        2
-      ) == "https://ruebot.net/files/aut-test-fixtures/test-aut-fixtures.rtf"
-    )
+      dfResults(0).get(2) == "https://ruebot.net/files/aut-test-fixtures/test-aut-fixtures.rtf")
     assert(dfResults(0).get(3) == "test-aut-fixtures.rtf")
     assert(dfResults(0).get(4) == "rtf")
     assert(dfResults(0).get(5) == "application/rtf")

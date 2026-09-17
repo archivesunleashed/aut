@@ -21,11 +21,13 @@ import java.security.MessageDigest
 // scalastyle:off object.name
 object ComputeSHA1 {
 // scalastyle:on object.name
-  /** Computes the MD5 checksum of a byte array (eg. an image).
-    *
-    * @param bytes
-    * @return SHA1 checksum.
-    */
+  /**
+   * Computes the MD5 checksum of a byte array (eg. an image).
+   *
+   * @param bytes
+   * @return
+   *   SHA1 checksum.
+   */
   def apply(bytes: Array[Byte]): String = {
     MessageDigest
       .getInstance("SHA1")

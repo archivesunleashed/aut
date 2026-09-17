@@ -80,9 +80,7 @@ class DataFrameLoaderTest extends FunSuite with BeforeAndAfter {
 
     val r_3 = imagegraph.take(100)(99)
     assert(r_3.get(0) == "20080430204841")
-    assert(
-      r_3.get(1) == "http://www.archive.org/details/secretarmiesb00spivrich"
-    )
+    assert(r_3.get(1) == "http://www.archive.org/details/secretarmiesb00spivrich")
     assert(r_3.get(2) == "http://www.archive.org/images/star.png")
 
     val r_4 = images.take(1)(0)
@@ -92,9 +90,7 @@ class DataFrameLoaderTest extends FunSuite with BeforeAndAfter {
     val r_5 = pdfs.take(1)(0)
     assert(
       r_5.getAs[String](
-        url
-      ) == "https://yorkspace.library.yorku.ca/xmlui/bitstream/handle/10315/36158/cost-analysis.pdf?sequence=1&isAllowed=y"
-    )
+        url) == "https://yorkspace.library.yorku.ca/xmlui/bitstream/handle/10315/36158/cost-analysis.pdf?sequence=1&isAllowed=y")
     assert(r_5.getAs[String](md5) == "aaba59d2287afd40c996488a39bbc0dd")
 
     val r_6 = audio.take(1)(0)
@@ -102,79 +98,57 @@ class DataFrameLoaderTest extends FunSuite with BeforeAndAfter {
     assert(r_6.getAs[String](md5) == "f7e7ec84b12c294e19af1ba41732c733")
 
     val r_7 = video.take(1)(0)
-    assert(
-      r_7.getAs[String](url) == "https://ruebot.net/2018-11-12%2016.14.11.mp4"
-    )
+    assert(r_7.getAs[String](url) == "https://ruebot.net/2018-11-12%2016.14.11.mp4")
     assert(r_7.getAs[String](md5) == "2cde7de3213a87269957033f6315fce2")
 
     val r_8 = spreadsheets.take(1)(0)
     assert(
-      r_8.getAs[String](
-        url
-      ) == "https://ruebot.net/files/aut-test-fixtures/test-aut-fixture.ods"
-    )
+      r_8.getAs[String](url) == "https://ruebot.net/files/aut-test-fixtures/test-aut-fixture.ods")
     assert(r_8.getAs[String](md5) == "7f70280757d8beb2d1bfd6fb1b6ae6e9")
 
     val r_9 = powerpoint.take(1)(0)
     assert(
       r_9.getAs[String](
-        url
-      ) == "https://ruebot.net/files/aut-test-fixtures/aut-test-fixtures.pptx"
-    )
+        url) == "https://ruebot.net/files/aut-test-fixtures/aut-test-fixtures.pptx")
     assert(r_9.getAs[String](md5) == "7a7b1fe4b6d311376eaced9de3b682ee")
 
     val r_10 = word.take(1)(0)
     assert(
       r_10.getAs[String](
-        url
-      ) == "https://ruebot.net/files/aut-test-fixtures/test-aut-fixtures.rtf"
-    )
+        url) == "https://ruebot.net/files/aut-test-fixtures/test-aut-fixtures.rtf")
     assert(r_10.getAs[String](md5) == "e483512b65ba44d71e843c57de2adeb7")
 
     val r_11 = all.select(url, mime_type).take(1)(0)
-    assert(
-      r_11.getAs[String](url) == "http://www.archive.org/robots.txt"
-    )
+    assert(r_11.getAs[String](url) == "http://www.archive.org/robots.txt")
     assert(r_11.getAs[String](mime_type) == "text/plain")
 
     val r_12 = css.select(crawl_date, url).take(1)(0)
     assert(r_12.getAs[String](crawl_date) == "20080430204833")
     assert(
       r_12
-        .getAs[String](url) == "http://www.archive.org/stylesheets/details.css"
-    )
+        .getAs[String](url) == "http://www.archive.org/stylesheets/details.css")
 
     val r_13 = html.select(crawl_date, url).take(1)(0)
     assert(r_13.getAs[String](crawl_date) == "20080430204826")
-    assert(
-      r_13.getAs[String](url) == "http://www.archive.org/"
-    )
+    assert(r_13.getAs[String](url) == "http://www.archive.org/")
 
     val r_14 = js.select(crawl_date, url).take(1)(0)
     assert(r_14.getAs[String](crawl_date) == "20080430204833")
-    assert(
-      r_14.getAs[String](url) == "http://www.archive.org/flv/flv.js?v=1.34"
-    )
+    assert(r_14.getAs[String](url) == "http://www.archive.org/flv/flv.js?v=1.34")
 
     val r_15 = json.select(crawl_date, url).take(1)(0)
     assert(r_15.getAs[String](crawl_date) == "20190812222538")
     assert(
-      r_15.getAs[String](url) == "https://api.plu.mx/widget/other/artifact?type=doi&id=10.1109%2FJCDL.2019.00043&href=https%3A%2F%2Fplu.mx%2Fpitt%2Fa%2F%3Fdoi%3D10.1109%2FJCDL.2019.00043&ref=https%3A%2F%2Fyorkspace.library.yorku.ca%2Fxmlui%2Fhandle%2F10315%2F36158&pageToken=f74d46f3-f622-c670-e1bc-bdc3-aa500a283693&isElsWidget=false"
-    )
+      r_15.getAs[String](
+        url) == "https://api.plu.mx/widget/other/artifact?type=doi&id=10.1109%2FJCDL.2019.00043&href=https%3A%2F%2Fplu.mx%2Fpitt%2Fa%2F%3Fdoi%3D10.1109%2FJCDL.2019.00043&ref=https%3A%2F%2Fyorkspace.library.yorku.ca%2Fxmlui%2Fhandle%2F10315%2F36158&pageToken=f74d46f3-f622-c670-e1bc-bdc3-aa500a283693&isElsWidget=false")
 
     val r_16 = pt.select(crawl_date, url).take(1)(0)
     assert(r_16.getAs[String](crawl_date) == "20080430205210")
-    assert(
-      r_16.getAs[String](
-        url
-      ) == "http://www.archive.org/includes/csshover.htc"
-    )
+    assert(r_16.getAs[String](url) == "http://www.archive.org/includes/csshover.htc")
 
     val r_17 = xml.select(crawl_date, url).take(1)(0)
     assert(r_17.getAs[String](crawl_date) == "20080430204830")
-    assert(
-      r_17.getAs[String](url) == "http://www.archive.org/services/collection-rss.php"
-    )
+    assert(r_17.getAs[String](url) == "http://www.archive.org/services/collection-rss.php")
 
   }
 

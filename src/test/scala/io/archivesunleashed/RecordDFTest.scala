@@ -95,17 +95,9 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
       .loadArchives(arcPath, sc)
       .all()
       .select($"url")
-      .filter(
-        hasUrls(
-          $"url",
-          lit(
-            Array(
-              "http://www.archive.org/",
-              "http://www.archive.org/robots.txt"
-            )
-          )
-        )
-      )
+      .filter(hasUrls(
+        $"url",
+        lit(Array("http://www.archive.org/", "http://www.archive.org/robots.txt"))))
       .take(1)(0)(0)
 
     val base2 = RecordLoader
@@ -181,9 +173,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
       .loadArchives(arcPath, sc)
       .all()
       .select($"url", $"raw_content")
-      .filter(
-        hasContent($"raw_content", lit(Array("Content-Length: [0-9]{4}")))
-      )
+      .filter(hasContent($"raw_content", lit(Array("Content-Length: [0-9]{4}"))))
       .take(1)(0)(0)
 
     assert(base.toString == expected)
@@ -226,12 +216,7 @@ class RecordDFTest extends FunSuite with BeforeAndAfter {
       .loadArchives(arcPath, sc)
       .all()
       .select(detectLanguage(removeHTML($"raw_content")).as("language"))
-      .filter(
-        hasLanguages(
-          detectLanguage(removeHTML($"raw_content")),
-          lit(Array("de", "ht"))
-        )
-      )
+      .filter(hasLanguages(detectLanguage(removeHTML($"raw_content")), lit(Array("de", "ht"))))
       .take(1)(0)(0)
 
     assert(base.toString == expected)

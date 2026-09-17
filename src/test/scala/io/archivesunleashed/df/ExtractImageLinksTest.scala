@@ -57,15 +57,11 @@ class ImageLinksTest extends FunSuite with BeforeAndAfter {
     assert("http://www.archive.org/index.php" == extracted(0)(0))
     assert(
       "http://www.archive.org/services/get-item-image.php?identifier=zh27814&collection=zh27&mediatype=audio" == extracted(
-        0
-      )(1)
-    )
+        0)(1))
     assert("http://www.archive.org/index.php" == extracted(1)(0))
     assert(
       "http://www.archive.org/services/get-item-image.php?identifier=secretarmiesb00spivrich&collection=americana&mediatype=texts" == extracted(
-        1
-      )(1)
-    )
+        1)(1))
   }
 
   after {

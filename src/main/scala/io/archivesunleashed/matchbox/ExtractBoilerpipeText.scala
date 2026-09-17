@@ -20,13 +20,17 @@ import de.l3s.boilerpipe.extractors.DefaultExtractor
 /** Extract raw text content from an HTML page, minus "boilerplate" content (using boilerpipe). */
 object ExtractBoilerpipeText {
 
-  /** Uses boilerpipe to extract raw text content from a page.
-    *
-    * ExtractBoilerpipeText removes boilerplate text (e.g. a copyright statement) from an HTML string.
-    *
-    * @param input an html string possibly containing boilerpipe text
-    * @return text with boilerplate removed or Nil if the text is empty.
-    */
+  /**
+   * Uses boilerpipe to extract raw text content from a page.
+   *
+   * ExtractBoilerpipeText removes boilerplate text (e.g. a copyright statement) from an HTML
+   * string.
+   *
+   * @param input
+   *   an html string possibly containing boilerpipe text
+   * @return
+   *   text with boilerplate removed or Nil if the text is empty.
+   */
   def apply(input: String): String = {
     removeBoilerplate(RemoveHTTPHeader(input))
   }
@@ -36,8 +40,7 @@ object ExtractBoilerpipeText {
       DefaultExtractor.INSTANCE
         .getText(input)
         .replaceAll("[\\r\\n]+", " ")
-        .trim()
-    )
+        .trim())
     maybeInput match {
       case Some(text) =>
         text

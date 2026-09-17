@@ -46,9 +46,7 @@ class PlainTextInformationExtractorTest extends FunSuite with BeforeAndAfter {
     assert(dfResults.length == RESULTSLENGTH)
     assert(dfResults(0).get(0) == "20080430205210")
     assert(dfResults(0).get(1) == "20060210060725")
-    assert(
-      dfResults(0).get(2) == "http://www.archive.org/includes/csshover.htc"
-    )
+    assert(dfResults(0).get(2) == "http://www.archive.org/includes/csshover.htc")
     assert(dfResults(0).get(3) == "csshover.htc")
     assert(dfResults(0).get(4) == "htc")
     assert(dfResults(0).get(5) == "text/plain")

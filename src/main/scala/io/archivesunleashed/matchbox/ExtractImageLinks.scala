@@ -23,12 +23,16 @@ import scala.collection.mutable
 /** Extracts image links from a webpage given the HTML content (using Jsoup). */
 object ExtractImageLinks {
 
-  /** Extracts image links.
-    *
-    * @param src the src link
-    * @param html the content from which links are to be extracted
-    * @return a sequence of (source, image link, alt-text).
-    */
+  /**
+   * Extracts image links.
+   *
+   * @param src
+   *   the src link
+   * @param html
+   *   the content from which links are to be extracted
+   * @return
+   *   a sequence of (source, image link, alt-text).
+   */
   def apply(src: String, html: String): Seq[(String, String, String)] = {
     if (html.isEmpty) Nil
     try {

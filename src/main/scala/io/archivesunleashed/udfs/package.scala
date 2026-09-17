@@ -57,9 +57,7 @@ package object udfs extends Serializable {
   // but ExtractDomain.broadcast itself caches by applicationId, so this
   // stays cheap after the first call.
   def extractDomain: UserDefinedFunction = {
-    val suffixes = ExtractDomain.broadcast(
-      SparkSession.builder().getOrCreate().sparkContext
-    )
+    val suffixes = ExtractDomain.broadcast(SparkSession.builder().getOrCreate().sparkContext)
     udf((url: String) => ExtractDomain(url, suffixes.value))
   }
   def extractImageLinks: UserDefinedFunction =
@@ -81,9 +79,8 @@ package object udfs extends Serializable {
         .map(re =>
           (re.r findFirstIn c) match {
             case Some(v) => true
-            case None    => false
-          }
-        )
+            case None => false
+          })
         .exists(identity)
     })
   def hasDate: UserDefinedFunction =
@@ -92,42 +89,30 @@ package object udfs extends Serializable {
         .map(re =>
           date match {
             case re.r() => true
-            case _      => false
-          }
-        )
+            case _ => false
+          })
         .exists(identity)
     })
   def hasDomains: UserDefinedFunction =
     udf((domain: String, domains: Seq[String]) => domains.contains(domain))
   def hasHTTPStatus: UserDefinedFunction =
-    udf((statusCode: String, statusCodes: Seq[String]) =>
-      statusCodes.contains(statusCode)
-    )
+    udf((statusCode: String, statusCodes: Seq[String]) => statusCodes.contains(statusCode))
   def hasImages: UserDefinedFunction =
-    udf((date: String, mimeType: String) =>
-      date != null && mimeType.startsWith("image/")
-    )
+    udf((date: String, mimeType: String) => date != null && mimeType.startsWith("image/"))
   def hasLanguages: UserDefinedFunction =
-    udf((language: String, languages: Seq[String]) =>
-      languages.contains(language)
-    )
+    udf((language: String, languages: Seq[String]) => languages.contains(language))
   def hasMIMETypes: UserDefinedFunction =
-    udf((mimeType: String, mimeTypes: Seq[String]) =>
-      mimeTypes.contains(mimeType)
-    )
+    udf((mimeType: String, mimeTypes: Seq[String]) => mimeTypes.contains(mimeType))
   def hasMIMETypesTika: UserDefinedFunction =
-    udf((mimeType: String, mimeTypesTika: Seq[String]) =>
-      mimeTypesTika.contains(mimeType)
-    )
+    udf((mimeType: String, mimeTypesTika: Seq[String]) => mimeTypesTika.contains(mimeType))
   def hasUrlPatterns: UserDefinedFunction =
     udf((urlPattern: String, urlREs: Seq[String]) => {
       urlREs
         .map(re =>
           urlPattern match {
             case re.r() => true
-            case _      => false
-          }
-        )
+            case _ => false
+          })
         .exists(identity)
     })
   def hasUrls: UserDefinedFunction =

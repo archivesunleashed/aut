@@ -105,3 +105,68 @@ def remove_prefix_www(col):
         sc.getOrCreate()._jvm.io.archivesunleashed.udfs.package.removePrefixWWW().apply
     )
     return Column(udf(_to_seq(sc, [col], _to_java_column)))
+
+
+# Filters
+
+
+def has_content(col, content_res):
+    sc = SparkContext.getOrCreate()
+    udf = sc.getOrCreate()._jvm.io.archivesunleashed.udfs.package.hasContent().apply
+    return Column(udf(_to_seq(sc, [col, content_res], _to_java_column)))
+
+
+def has_date(col, dates):
+    sc = SparkContext.getOrCreate()
+    udf = sc.getOrCreate()._jvm.io.archivesunleashed.udfs.package.hasDate().apply
+    return Column(udf(_to_seq(sc, [col, dates], _to_java_column)))
+
+
+def has_domains(col, domains):
+    sc = SparkContext.getOrCreate()
+    udf = sc.getOrCreate()._jvm.io.archivesunleashed.udfs.package.hasDomains().apply
+    return Column(udf(_to_seq(sc, [col, domains], _to_java_column)))
+
+
+def has_http_status(col, status_codes):
+    sc = SparkContext.getOrCreate()
+    udf = sc.getOrCreate()._jvm.io.archivesunleashed.udfs.package.hasHTTPStatus().apply
+    return Column(udf(_to_seq(sc, [col, status_codes], _to_java_column)))
+
+
+def has_images(col, mime_type):
+    sc = SparkContext.getOrCreate()
+    udf = sc.getOrCreate()._jvm.io.archivesunleashed.udfs.package.hasImages().apply
+    return Column(udf(_to_seq(sc, [col, mime_type], _to_java_column)))
+
+
+def has_languages(col, languages):
+    sc = SparkContext.getOrCreate()
+    udf = sc.getOrCreate()._jvm.io.archivesunleashed.udfs.package.hasLanguages().apply
+    return Column(udf(_to_seq(sc, [col, languages], _to_java_column)))
+
+
+def has_mime_types(col, mime_types):
+    sc = SparkContext.getOrCreate()
+    udf = sc.getOrCreate()._jvm.io.archivesunleashed.udfs.package.hasMIMETypes().apply
+    return Column(udf(_to_seq(sc, [col, mime_types], _to_java_column)))
+
+
+def has_mime_types_tika(col, mime_types_tika):
+    sc = SparkContext.getOrCreate()
+    udf = (
+        sc.getOrCreate()._jvm.io.archivesunleashed.udfs.package.hasMIMETypesTika().apply
+    )
+    return Column(udf(_to_seq(sc, [col, mime_types_tika], _to_java_column)))
+
+
+def has_url_patterns(col, url_res):
+    sc = SparkContext.getOrCreate()
+    udf = sc.getOrCreate()._jvm.io.archivesunleashed.udfs.package.hasUrlPatterns().apply
+    return Column(udf(_to_seq(sc, [col, url_res], _to_java_column)))
+
+
+def has_urls(col, urls):
+    sc = SparkContext.getOrCreate()
+    udf = sc.getOrCreate()._jvm.io.archivesunleashed.udfs.package.hasUrls().apply
+    return Column(udf(_to_seq(sc, [col, urls], _to_java_column)))

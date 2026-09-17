@@ -59,19 +59,11 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
         $"domain",
         $"url",
         extractDate($"crawl_date", lit("YYYY")).as("crawl_date"),
-        explode_outer(extractLinks($"url", $"raw_content")).as("link")
-      )
-      .filter(
-        lower($"raw_content").contains("keynote")
-      )
+        explode_outer(extractLinks($"url", $"raw_content")).as("link"))
+      .filter(lower($"raw_content").contains("keynote"))
 
     val results = interResults
-      .select(
-        $"url",
-        $"domain",
-        $"crawl_date",
-        dest(array($"link")).as("destination_page")
-      )
+      .select($"url", $"domain", $"crawl_date", dest(array($"link")).as("destination_page"))
       .head(3)
 
     assert(results(0).get(0) == "http://www.archive.org/index.php")
@@ -82,11 +74,7 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
     assert(results(1).get(0) == "http://www.archive.org/index.php")
     assert(results(1).get(1) == "archive.org")
     assert(results(1).get(2) == "2008")
-    assert(
-      results(1).get(
-        3
-      ) == "http://www.archive.org/web/web.php"
-    )
+    assert(results(1).get(3) == "http://www.archive.org/web/web.php")
 
     assert(results(2).get(0) == "http://www.archive.org/index.php")
     assert(results(2).get(1) == "archive.org")
@@ -114,19 +102,11 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
         $"domain",
         $"url",
         extractDate($"crawl_date", lit("YYYYMM")).as("crawl_date"),
-        explode_outer(extractLinks($"url", $"raw_content")).as("link")
-      )
-      .filter(
-        lower($"raw_content").contains("keynote")
-      ) // filtered on keyword internet
+        explode_outer(extractLinks($"url", $"raw_content")).as("link"))
+      .filter(lower($"raw_content").contains("keynote")) // filtered on keyword internet
 
     val results = interResults
-      .select(
-        $"url",
-        $"domain",
-        $"crawl_date",
-        dest(array($"link")).as("destination_page")
-      )
+      .select($"url", $"domain", $"crawl_date", dest(array($"link")).as("destination_page"))
       .head(3)
 
     assert(results(0).get(0) == "http://www.archive.org/index.php")
@@ -137,11 +117,7 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
     assert(results(1).get(0) == "http://www.archive.org/index.php")
     assert(results(1).get(1) == "archive.org")
     assert(results(1).get(2) == "200804")
-    assert(
-      results(1).get(
-        3
-      ) == "http://www.archive.org/web/web.php"
-    )
+    assert(results(1).get(3) == "http://www.archive.org/web/web.php")
 
     assert(results(2).get(0) == "http://www.archive.org/index.php")
     assert(results(2).get(1) == "archive.org")
@@ -169,19 +145,11 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
         $"domain",
         $"url",
         extractDate($"crawl_date", lit("MM")).as("crawl_date"),
-        explode_outer(extractLinks($"url", $"raw_content")).as("link")
-      )
-      .filter(
-        lower($"raw_content").contains("keynote")
-      )
+        explode_outer(extractLinks($"url", $"raw_content")).as("link"))
+      .filter(lower($"raw_content").contains("keynote"))
 
     val results = interResults
-      .select(
-        $"url",
-        $"domain",
-        $"crawl_date",
-        dest(array($"link")).as("destination_page")
-      )
+      .select($"url", $"domain", $"crawl_date", dest(array($"link")).as("destination_page"))
       .head(3)
 
     assert(results(0).get(0) == "http://www.archive.org/index.php")
@@ -192,11 +160,7 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
     assert(results(1).get(0) == "http://www.archive.org/index.php")
     assert(results(1).get(1) == "archive.org")
     assert(results(1).get(2) == "04")
-    assert(
-      results(1).get(
-        3
-      ) == "http://www.archive.org/web/web.php"
-    )
+    assert(results(1).get(3) == "http://www.archive.org/web/web.php")
 
     assert(results(2).get(0) == "http://www.archive.org/index.php")
     assert(results(2).get(1) == "archive.org")
@@ -224,19 +188,11 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
         $"domain",
         $"url",
         extractDate($"crawl_date", lit("DD")).as("crawl_date"),
-        explode_outer(extractLinks($"url", $"raw_content")).as("link")
-      )
-      .filter(
-        lower($"raw_content").contains("keynote")
-      )
+        explode_outer(extractLinks($"url", $"raw_content")).as("link"))
+      .filter(lower($"raw_content").contains("keynote"))
 
     val results = interResults
-      .select(
-        $"url",
-        $"domain",
-        $"crawl_date",
-        dest(array($"link")).as("destination_page")
-      )
+      .select($"url", $"domain", $"crawl_date", dest(array($"link")).as("destination_page"))
       .head(3)
 
     assert(results(0).get(0) == "http://www.archive.org/index.php")
@@ -247,11 +203,7 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
     assert(results(1).get(0) == "http://www.archive.org/index.php")
     assert(results(1).get(1) == "archive.org")
     assert(results(1).get(2) == "30")
-    assert(
-      results(1).get(
-        3
-      ) == "http://www.archive.org/web/web.php"
-    )
+    assert(results(1).get(3) == "http://www.archive.org/web/web.php")
 
     assert(results(2).get(0) == "http://www.archive.org/index.php")
     assert(results(2).get(1) == "archive.org")
@@ -279,19 +231,11 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
         $"domain",
         $"url",
         extractDate($"crawl_date", lit("YYYYMMDDHHMMSS")).as("crawl_date"),
-        explode_outer(extractLinks($"url", $"raw_content")).as("link")
-      )
-      .filter(
-        lower($"raw_content").contains("keynote")
-      )
+        explode_outer(extractLinks($"url", $"raw_content")).as("link"))
+      .filter(lower($"raw_content").contains("keynote"))
 
     val results = interResults
-      .select(
-        $"url",
-        $"domain",
-        $"crawl_date",
-        dest(array($"link")).as("destination_page")
-      )
+      .select($"url", $"domain", $"crawl_date", dest(array($"link")).as("destination_page"))
       .head(3)
 
     assert(results(0).get(0) == "http://www.archive.org/index.php")
@@ -302,11 +246,7 @@ class ExtractDateDFTest extends FunSuite with BeforeAndAfter {
     assert(results(1).get(0) == "http://www.archive.org/index.php")
     assert(results(1).get(1) == "archive.org")
     assert(results(1).get(2) == "20080430204826")
-    assert(
-      results(1).get(
-        3
-      ) == "http://www.archive.org/web/web.php"
-    )
+    assert(results(1).get(3) == "http://www.archive.org/web/web.php")
 
     assert(results(2).get(0) == "http://www.archive.org/index.php")
     assert(results(2).get(1) == "archive.org")

@@ -23,11 +23,14 @@ import scala.language.postfixOps
 
 object PlainTextExtractor {
 
-  /** Extract plain text from web archive using DataFrame and Spark SQL.
-    *
-    * @param d DataFrame obtained from RecordLoader
-    * @return Dataset[Row], where the schema is (content)
-    */
+  /**
+   * Extract plain text from web archive using DataFrame and Spark SQL.
+   *
+   * @param d
+   *   DataFrame obtained from RecordLoader
+   * @return
+   *   Dataset[Row], where the schema is (content)
+   */
   def apply(d: DataFrame): Dataset[Row] = {
     val spark = SparkSession.builder().master("local").getOrCreate()
     // scalastyle:off
@@ -39,13 +42,10 @@ object PlainTextExtractor {
           ($"mime_type_web_server".rlike("text/html") ||
             $"mime_type_web_server".rlike("application/xhtml+xml") ||
             $"url".rlike("(?i).*htm$") ||
-            $"url".rlike("(?i).*html$"))
-      )
+            $"url".rlike("(?i).*html$")))
       .filter($"http_status_code" === 200)
-      .filter(
-        !(lower($"url").startsWith("filedesc:"))
-          && (!(lower($"url").startsWith("dns:")))
-      )
+      .filter(!(lower($"url").startsWith("filedesc:"))
+        && (!(lower($"url").startsWith("dns:"))))
       .select(extractBoilerpipeText($"raw_content").as("content"))
   }
 }

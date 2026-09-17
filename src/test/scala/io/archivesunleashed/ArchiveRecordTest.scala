@@ -61,9 +61,7 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
       .map(x => FilenameUtils.getName(x.getArchiveFilename))
       .take(3)
     assert(textSampleArc.deep == Array(exampleArc, exampleArc, exampleArc).deep)
-    assert(
-      textSampleWarc.deep == Array(exampleWarc, exampleWarc, exampleWarc).deep
-    )
+    assert(textSampleWarc.deep == Array(exampleWarc, exampleWarc, exampleWarc).deep)
   }
 
   test("Crawl Dates") {
@@ -75,12 +73,8 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
       .loadArchives(warcPath, sc)
       .map(x => x.getCrawlDate)
       .take(3)
-    assert(
-      textSampleArc.deep == Array(exampleDate, exampleDate, "20080430204826").deep
-    )
-    assert(
-      textSampleWarc.deep == Array(exampleDate, exampleDate, "20080430204826").deep
-    )
+    assert(textSampleArc.deep == Array(exampleDate, exampleDate, "20080430204826").deep)
+    assert(textSampleWarc.deep == Array(exampleDate, exampleDate, "20080430204826").deep)
   }
 
   test("Domains") {
@@ -109,16 +103,12 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
       textSampleArc.deep == Array(
         "dns:www.archive.org",
         "http://www.archive.org/robots.txt",
-        "http://www.archive.org/"
-      ).deep
-    )
+        "http://www.archive.org/").deep)
     assert(
       textSampleWarc.deep == Array(
         "dns:www.archive.org",
         "http://www.archive.org/robots.txt",
-        "http://www.archive.org/"
-      ).deep
-    )
+        "http://www.archive.org/").deep)
   }
 
   test("MIMEtype") {
@@ -130,16 +120,8 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
       .loadArchives(warcPath, sc)
       .map(x => x.getMimeType)
       .take(3)
-    assert(
-      textSampleArc.deep == Array(
-        "unknown",
-        exampleMimeType,
-        "text/html"
-      ).deep
-    )
-    assert(
-      textSampleWarc.deep == Array("unknown", exampleMimeType, "text/html").deep
-    )
+    assert(textSampleArc.deep == Array("unknown", exampleMimeType, "text/html").deep)
+    assert(textSampleWarc.deep == Array("unknown", exampleMimeType, "text/html").deep)
   }
 
   test("Get HTTP status") {
@@ -155,16 +137,12 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
       textSampleArc.deep == Array(
         exampleStatusCode1,
         exampleStatusCode2,
-        exampleStatusCode2
-      ).deep
-    )
+        exampleStatusCode2).deep)
     assert(
       textSampleWarc.deep == Array(
         exampleStatusCode1,
         exampleStatusCode2,
-        exampleStatusCode2
-      ).deep
-    )
+        exampleStatusCode2).deep)
   }
 
   test("Get Payload Digest") {
@@ -180,16 +158,12 @@ class ArchiveRecordTest extends FunSuite with BeforeAndAfter {
       textSampleArc.deep == Array(
         "sha1:RUIV2DUDYXONM2YTMGPAJVQKG3FSYHXE",
         "sha1:SUCGMUVXDKVB5CS2NL4R4JABNX7K466U",
-        "sha1:2WAXX5NUWNNCS2BDKCO5OVDQBJVNKIVV"
-      ).deep
-    )
+        "sha1:2WAXX5NUWNNCS2BDKCO5OVDQBJVNKIVV").deep)
     assert(
       textSampleWarc.deep == Array(
         "sha1:RUIV2DUDYXONM2YTMGPAJVQKG3FSYHXE",
         "sha1:sucgmuvxdkvb5cs2nl4r4jabnx7k466u",
-        "sha1:2waxx5nuwnncs2bdkco5ovdqbjvnkivv"
-      ).deep
-    )
+        "sha1:2waxx5nuwnncs2bdkco5ovdqbjvnkivv").deep)
   }
 
   after {

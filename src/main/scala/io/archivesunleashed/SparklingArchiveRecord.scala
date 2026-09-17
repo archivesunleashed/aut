@@ -32,14 +32,14 @@ object SparklingArchiveRecord {
 }
 
 /**
-  * Extension of ArchiveRecord via Sparkling.
-  */
+ * Extension of ArchiveRecord via Sparkling.
+ */
 class SparklingArchiveRecord(
     filename: String,
     meta: WarcRecord,
     payload: ManagedVal[ValueSupplier[InputStream]],
-    maxMemoryBytes: Long = -1
-) extends ArchiveRecord {
+    maxMemoryBytes: Long = -1)
+    extends ArchiveRecord {
   import SparklingArchiveRecord._
 
   def warc: WarcRecord =
@@ -48,8 +48,7 @@ class SparklingArchiveRecord(
   private def payload(r: WarcRecord): Array[Byte] = {
     IOUtil.bytes(
       if (maxMemoryBytes < 0) r.payload
-      else new BoundedInputStream(maxMemoryBytes, r.payload)
-    )
+      else new BoundedInputStream(maxMemoryBytes, r.payload))
   }
   private def http(r: WarcRecord): Option[HttpMessage] = {
     if (maxMemoryBytes < 0) r.http

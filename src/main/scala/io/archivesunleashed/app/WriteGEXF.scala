@@ -22,12 +22,14 @@ import org.apache.spark.sql.Row
 
 object WriteGEXF {
 
-  /** Verifies gexfPath is empty.
-    *
-    * @param data Array[Row] of elements in format (crawl_date, src_domain,
-    *        dest_domain, count)
-    * @param gexfPath output file
-    */
+  /**
+   * Verifies gexfPath is empty.
+   *
+   * @param data
+   *   Array[Row] of elements in format (crawl_date, src_domain, dest_domain, count)
+   * @param gexfPath
+   *   output file
+   */
   def apply(data: Array[Row], gexfPath: String): Boolean = {
     if (gexfPath.isEmpty()) {
       false
@@ -36,13 +38,16 @@ object WriteGEXF {
     }
   }
 
-  /** Produces the GEXF output from an Array[Row] and outputs it to gexfPath.
-    *
-    * @param data a Array[Row] of elements in format (crawl_date, src_domain,
-    *        dest_domain, count)
-    * @param gexfPath output file
-    * @return true on success.
-    */
+  /**
+   * Produces the GEXF output from an Array[Row] and outputs it to gexfPath.
+   *
+   * @param data
+   *   a Array[Row] of elements in format (crawl_date, src_domain, dest_domain, count)
+   * @param gexfPath
+   *   output file
+   * @return
+   *   true on success.
+   */
   def makeFile(data: Array[Row], gexfPath: String): Boolean = {
     val outFile =
       Files.newBufferedWriter(Paths.get(gexfPath), StandardCharsets.UTF_8)
@@ -64,30 +69,23 @@ object WriteGEXF {
         "<attributes class=\"edge\">\n" +
         "  <attribute id=\"0\" title=\"crawlDate\" type=\"string\" />\n" +
         "</attributes>\n" +
-        "<nodes>\n"
-    )
+        "<nodes>\n")
     vertices foreach { v =>
       outFile.write(
         "<node id=\"" +
           ComputeMD5(v.getBytes) + "\" label=\"" +
-          v.escapeInvalidXML() + endAttribute
-      )
+          v.escapeInvalidXML() + endAttribute)
     }
     outFile.write("</nodes>\n<edges>\n")
     data foreach { e =>
       outFile.write(
-        "<edge source=\"" + ComputeMD5(
-          e.get(1).asInstanceOf[String].getBytes
-        ) + "\" target=\"" +
-          ComputeMD5(
-            e.get(2).asInstanceOf[String].getBytes
-          ) + "\" weight=\"" + e.get(3) +
+        "<edge source=\"" + ComputeMD5(e.get(1).asInstanceOf[String].getBytes) + "\" target=\"" +
+          ComputeMD5(e.get(2).asInstanceOf[String].getBytes) + "\" weight=\"" + e.get(3) +
           "\" type=\"directed\">\n" +
           "<attvalues>\n" +
           "<attvalue for=\"0\" value=\"" + e.get(0) + endAttribute +
           "</attvalues>\n" +
-          "</edge>\n"
-      )
+          "</edge>\n")
     }
     outFile.write("</edges>\n</graph>\n</gexf>")
     outFile.close()

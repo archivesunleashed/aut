@@ -67,9 +67,7 @@ class ArcTest extends FunSuite with BeforeAndAfter {
       .collect()
 
     four.foreach(date => assert(date.substring(startSS, monthSS) == "200804"))
-    five.foreach(date =>
-      assert(date.substring(startSS, monthSS) == dayMonthTestA)
-    )
+    five.foreach(date => assert(date.substring(startSS, monthSS) == dayMonthTestA))
   }
 
   test("Filter URL pattern RDD") {
@@ -108,7 +106,7 @@ class ArcTest extends FunSuite with BeforeAndAfter {
       case ("lt", count) => assert(61L == count)
       case ("no", count) => assert(6L == count)
       case ("ro", count) => assert(4L == count)
-      case (_, count)    => print(_)
+      case (_, count) => print(_)
     }
   }
 
@@ -123,17 +121,17 @@ class ArcTest extends FunSuite with BeforeAndAfter {
       .collect
 
     mimeTypeCounts.foreach {
-      case ("image/gif", count)                     => assert(29L == count)
-      case ("text/html", count)                     => assert(132L == count)
-      case ("text/plain", count)                    => assert(53L == count)
-      case ("text/x-robots", count)                 => assert(32L == count)
-      case ("text/javascript", count)               => assert(1L == count)
-      case ("application/xspf+xml", count)          => assert(1L == count)
-      case ("application/rss+xml", count)           => assert(9L == count)
-      case ("application/xhtml+xml", count)         => assert(1L == count)
-      case ("application/octet-stream", count)      => assert(26L == count)
+      case ("image/gif", count) => assert(29L == count)
+      case ("text/html", count) => assert(132L == count)
+      case ("text/plain", count) => assert(53L == count)
+      case ("text/x-robots", count) => assert(32L == count)
+      case ("text/javascript", count) => assert(1L == count)
+      case ("application/xspf+xml", count) => assert(1L == count)
+      case ("application/rss+xml", count) => assert(9L == count)
+      case ("application/xhtml+xml", count) => assert(1L == count)
+      case ("application/octet-stream", count) => assert(26L == count)
       case ("application/x-shockwave-flash", count) => assert(8L == count)
-      case ("N/A", count)                           => assert(7L == count)
+      case ("N/A", count) => assert(7L == count)
       case (mimeType, count) =>
         fail(s"Unexpected MIME type in results: $mimeType ($count records)")
     }

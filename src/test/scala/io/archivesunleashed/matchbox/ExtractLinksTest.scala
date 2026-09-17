@@ -74,12 +74,10 @@ class ExtractLinksTest extends FunSuite {
     // scalastyle:off null
     assert(
       ExtractLinks(null, fragment) == mutable
-        .MutableList[(String, String, String)]()
-    )
+        .MutableList[(String, String, String)]())
     // scalastyle:on null
     assert(
       ExtractLinks("", "") == mutable
-        .MutableList[(String, String, String)]()
-    )
+        .MutableList[(String, String, String)]())
   }
 }

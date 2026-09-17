@@ -24,18 +24,19 @@ object ExtractDomain {
   private var suffixesBroadcast: Option[(String, Broadcast[Set[String]])] =
     None
 
-  /** Broadcasts the public suffix list once per Spark application.
-    *
-    * `Suffixes` fetches `publicsuffix.org`'s list lazily and caches it
-    * per-JVM, so calling `ExtractDomain(url)` directly inside a Spark
-    * transformation makes every executor JVM independently fetch it over
-    * the network the first time it processes a record. Broadcasting it
-    * once from the driver and using the `apply(url, suffixes)` overload
-    * below avoids that.
-    *
-    * @param sc the active SparkContext
-    * @return a broadcast variable containing the public suffix list.
-    */
+  /**
+   * Broadcasts the public suffix list once per Spark application.
+   *
+   * `Suffixes` fetches `publicsuffix.org`'s list lazily and caches it per-JVM, so calling
+   * `ExtractDomain(url)` directly inside a Spark transformation makes every executor JVM
+   * independently fetch it over the network the first time it processes a record. Broadcasting it
+   * once from the driver and using the `apply(url, suffixes)` overload below avoids that.
+   *
+   * @param sc
+   *   the active SparkContext
+   * @return
+   *   a broadcast variable containing the public suffix list.
+   */
   def broadcast(sc: SparkContext): Broadcast[Set[String]] = synchronized {
     suffixesBroadcast match {
       case Some((appId, bc)) if appId == sc.applicationId => bc
@@ -49,10 +50,7 @@ object ExtractDomain {
 
   lazy val Suffixes: Set[String] = {
     val source = scala.io.Source
-      .fromURL(
-        "https://publicsuffix.org/list/public_suffix_list.dat",
-        "utf-8"
-      )
+      .fromURL("https://publicsuffix.org/list/public_suffix_list.dat", "utf-8")
     try {
       source.getLines
         .map(_.trim)
@@ -67,11 +65,14 @@ object ExtractDomain {
     }
   }
 
-  /** Extract source domains from a full url string.
-    *
-    * @param url a url as a string
-    * @return domain host, source or null if url is null.
-    */
+  /**
+   * Extract source domains from a full url string.
+   *
+   * @param url
+   *   a url as a string
+   * @return
+   *   domain host, source or null if url is null.
+   */
   def apply(url: String): String = {
 
     val maybeUrl: Option[URL] = checkUrl(url)
@@ -86,19 +87,22 @@ object ExtractDomain {
     }
   }
 
-  /** Extract source domains from a full url string, using a pre-computed
-    * public suffix list (e.g. from `ExtractDomain.broadcast(sc).value`).
-    * Prefer this overload over the single-argument `apply` inside Spark
-    * transformations to avoid a redundant network fetch per executor.
-    *
-    * @param url a url as a string
-    * @param suffixes a public suffix list
-    * @return domain host, source or "" if url is invalid.
-    */
+  /**
+   * Extract source domains from a full url string, using a pre-computed public suffix list (e.g.
+   * from `ExtractDomain.broadcast(sc).value`). Prefer this overload over the single-argument
+   * `apply` inside Spark transformations to avoid a redundant network fetch per executor.
+   *
+   * @param url
+   *   a url as a string
+   * @param suffixes
+   *   a public suffix list
+   * @return
+   *   domain host, source or "" if url is invalid.
+   */
   def apply(url: String, suffixes: Set[String]): String = {
     checkUrl(url) match {
       case Some(u) => resolve(u.getHost.mkString, suffixes)
-      case None    => ""
+      case None => ""
     }
   }
 

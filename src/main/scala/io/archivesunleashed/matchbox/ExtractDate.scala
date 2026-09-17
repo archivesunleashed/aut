@@ -26,11 +26,14 @@ object ExtractDate {
 
   import DateComponent.{DateComponent, DD, MM, YYYY, YYYYMM, YYYYMMDD}
 
-  /** Extracts the wanted date component from a date.
-    *
-    * @param fullDate date returned by `WARecord.getCrawlDate`, formatted as YYYYMMDDHHMMSS
-    * @param dateFormat an enum describing the portion of the date wanted
-    */
+  /**
+   * Extracts the wanted date component from a date.
+   *
+   * @param fullDate
+   *   date returned by `WARecord.getCrawlDate`, formatted as YYYYMMDDHHMMSS
+   * @param dateFormat
+   *   an enum describing the portion of the date wanted
+   */
   def apply(fullDate: String, dateFormat: DateComponent): String = {
     val startSS = 0
     val yearSS = 4
@@ -43,23 +46,26 @@ object ExtractDate {
     maybeFullDate match {
       case Some(fulldate) =>
         dateFormat match {
-          case YYYY     => fullDate.substring(startSS, yearSS)
-          case MM       => fullDate.substring(yearSS, monthSS)
-          case DD       => fullDate.substring(monthSS, daySS)
-          case YYYYMM   => fullDate.substring(startSS, monthSS)
+          case YYYY => fullDate.substring(startSS, yearSS)
+          case MM => fullDate.substring(yearSS, monthSS)
+          case DD => fullDate.substring(monthSS, daySS)
+          case YYYYMM => fullDate.substring(startSS, monthSS)
           case YYYYMMDD => fullDate.substring(startSS, daySS)
-          case _        => fullDate.substring(startSS, secondSS)
+          case _ => fullDate.substring(startSS, secondSS)
         }
       case None =>
         ""
     }
   }
 
-  /** Extracts a provided date component from a date (for DataFrames).
-    *
-    * @param fullDate date returned by `WARecord.getCrawlDate`, formatted as YYYYMMDDHHMMSS
-    * @param dateFormat in String format
-    */
+  /**
+   * Extracts a provided date component from a date (for DataFrames).
+   *
+   * @param fullDate
+   *   date returned by `WARecord.getCrawlDate`, formatted as YYYYMMDDHHMMSS
+   * @param dateFormat
+   *   in String format
+   */
   def apply(fullDate: String, dateFormat: String): String = {
     val startSS = 0
     val yearSS = 4
@@ -72,12 +78,12 @@ object ExtractDate {
     maybeFullDate match {
       case Some(fulldate) =>
         dateFormat match {
-          case "YYYY"     => fullDate.substring(startSS, yearSS)
-          case "MM"       => fullDate.substring(yearSS, monthSS)
-          case "DD"       => fullDate.substring(monthSS, daySS)
-          case "YYYYMM"   => fullDate.substring(startSS, monthSS)
+          case "YYYY" => fullDate.substring(startSS, yearSS)
+          case "MM" => fullDate.substring(yearSS, monthSS)
+          case "DD" => fullDate.substring(monthSS, daySS)
+          case "YYYYMM" => fullDate.substring(startSS, monthSS)
           case "YYYYMMDD" => fullDate.substring(startSS, daySS)
-          case _          => fullDate.substring(startSS, secondSS)
+          case _ => fullDate.substring(startSS, secondSS)
         }
       case None =>
         ""

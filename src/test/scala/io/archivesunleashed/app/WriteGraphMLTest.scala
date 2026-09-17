@@ -35,8 +35,7 @@ class WriteGraphMLTest extends FunSuite with BeforeAndAfter {
   private val network = Seq(
     ("Date1", "Source1", "Destination1", linkCountOne),
     ("Date2", "Source2", "Destination2", linkCountTwo),
-    ("Date3", "Source3", "Destination3", linkCountThree)
-  )
+    ("Date3", "Source3", "Destination3", linkCountThree))
   private val testFile = "temporaryTestFile.graphml"
 
   before {
@@ -52,11 +51,8 @@ class WriteGraphMLTest extends FunSuite with BeforeAndAfter {
     if (Files.exists(Paths.get(testFile))) {
       new File(testFile).delete()
     }
-    val networkarray = Array(
-      Row.fromTuple(network(0)),
-      Row.fromTuple(network(1)),
-      Row.fromTuple(network(2))
-    )
+    val networkarray =
+      Array(Row.fromTuple(network(0)), Row.fromTuple(network(1)), Row.fromTuple(network(2)))
     val ret = WriteGraphML(networkarray, testFile)
     assert(ret)
     assert(Files.exists(Paths.get(testFile)))
@@ -68,11 +64,8 @@ class WriteGraphMLTest extends FunSuite with BeforeAndAfter {
   }
 
   test("Test if GraphML path is empty") {
-    val networkarray = Array(
-      Row.fromTuple(network(0)),
-      Row.fromTuple(network(1)),
-      Row.fromTuple(network(2))
-    )
+    val networkarray =
+      Array(Row.fromTuple(network(0)), Row.fromTuple(network(1)), Row.fromTuple(network(2)))
     val graphml = WriteGraphML(networkarray, testFile)
     assert(graphml)
     assert(!WriteGraphML(networkarray, ""))

@@ -26,7 +26,7 @@ package object matchbox {
       val maybeString: Option[String] = Option(s)
       maybeString match {
         case Some(s) => s.replaceAll("^\\s*www\\.", "")
-        case None    => ""
+        case None => ""
       }
     }
 

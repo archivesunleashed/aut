@@ -49,9 +49,7 @@ class StringUtilsTest extends FunSuite {
   }
   test("SHA1 hash") {
     val s: String = "unesco.org";
-    assert(
-      ComputeSHA1(s.getBytes) == "2d0e5377157172045d87befe46e157cda42c4f6e"
-    );
+    assert(ComputeSHA1(s.getBytes) == "2d0e5377157172045d87befe46e157cda42c4f6e");
   }
 
 }

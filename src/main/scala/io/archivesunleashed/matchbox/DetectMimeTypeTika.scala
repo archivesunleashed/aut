@@ -32,11 +32,14 @@ object DetectMimeTypeTika {
 
   val allMimeTypes = MimeTypes.getDefaultMimeTypes();
 
-  /** Detect MIME type from an input string.
-    *
-    * @param content a byte array of content for which to detect the MimeType
-    * @return MIME type (e.g. "text/html" or "application/xml") or "N/A".
-    */
+  /**
+   * Detect MIME type from an input string.
+   *
+   * @param content
+   *   a byte array of content for which to detect the MimeType
+   * @return
+   *   MIME type (e.g. "text/html" or "application/xml") or "N/A".
+   */
   def apply(content: Array[Byte]): String = {
     if (content.size == 0) {
       "N/A"
@@ -48,11 +51,14 @@ object DetectMimeTypeTika {
     }
   }
 
-  /** Return the best guess at a file extension from a MIME type string
-    *
-    * @param mimeType string representation of the MimeType
-    * @return file extension (e.g. ".jpg" for "image/jpeg").
-    */
+  /**
+   * Return the best guess at a file extension from a MIME type string
+   *
+   * @param mimeType
+   *   string representation of the MimeType
+   * @return
+   *   file extension (e.g. ".jpg" for "image/jpeg").
+   */
   def getExtension(mimeType: String): String = {
     try {
       val regMimeType = allMimeTypes.forName(mimeType)
@@ -62,11 +68,14 @@ object DetectMimeTypeTika {
     }
   }
 
-  /** Return the list of all known file extensions for a MIME type string
-    *
-    * @param mimeType string representation of the MimeType
-    * @return list of file extensions (e.g. ".jpg" for "image/jpeg").
-    */
+  /**
+   * Return the list of all known file extensions for a MIME type string
+   *
+   * @param mimeType
+   *   string representation of the MimeType
+   * @return
+   *   list of file extensions (e.g. ".jpg" for "image/jpeg").
+   */
   def getExtensions(mimeType: String): List[String] = {
     try {
       val regMimeType = allMimeTypes.forName(mimeType)

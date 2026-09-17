@@ -44,45 +44,26 @@ class PresentationProgramFilesTest extends FunSuite with BeforeAndAfter {
       .presentationProgramFiles()
 
     val extracted = df
-      .select(
-        "url",
-        "filename",
-        "extension",
-        "mime_type_web_server",
-        "mime_type_tika",
-        "md5"
-      )
+      .select("url", "filename", "extension", "mime_type_web_server", "mime_type_tika", "md5")
       .orderBy(desc("md5"))
       .head(2)
       .toList
     assert(extracted.size == 2)
-    assert(
-      "https://ruebot.net/files/aut-test-fixtures/aut-test-fixtures.odp" == extracted(
-        0
-      )(0)
-    )
+    assert("https://ruebot.net/files/aut-test-fixtures/aut-test-fixtures.odp" == extracted(0)(0))
     assert("aut-test-fixtures.odp" == extracted(0)(1))
     assert("odp" == extracted(0)(2))
     assert("application/vnd.oasis.opendocument.presentation" == extracted(0)(3))
     assert("application/vnd.oasis.opendocument.presentation" == extracted(0)(4))
     assert("f38b2679029cf3453c8151b92c615c70" == extracted(0)(5))
-    assert(
-      "https://ruebot.net/files/aut-test-fixtures/aut-test-fixtures.pptx" == extracted(
-        1
-      )(0)
-    )
+    assert("https://ruebot.net/files/aut-test-fixtures/aut-test-fixtures.pptx" == extracted(1)(0))
     assert("aut-test-fixtures.pptx" == extracted(1)(1))
     assert("pptx" == extracted(1)(2))
     assert(
-      "application/vnd.openxmlformats-officedocument.presentationml.presentation" == extracted(
-        1
-      )(3)
-    )
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation" == extracted(1)(
+        3))
     assert(
-      "application/vnd.openxmlformats-officedocument.presentationml.presentation" == extracted(
-        1
-      )(4)
-    )
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation" == extracted(1)(
+        4))
     assert("7a7b1fe4b6d311376eaced9de3b682ee" == extracted(1)(5))
   }
 

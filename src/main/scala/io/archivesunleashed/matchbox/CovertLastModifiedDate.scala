@@ -29,14 +29,16 @@ object CovertLastModifiedDate {
     "sep",
     "oct",
     "nov",
-    "dec"
-  ).zipWithIndex.map { case (s, d) => (s, ("0" + (d + 1)).takeRight(2)) }
+    "dec").zipWithIndex.map { case (s, d) => (s, ("0" + (d + 1)).takeRight(2)) }
 
-  /** Converts last_modified_date to yyyyMMddHHmmss.
-    *
-    * @param lastModifiedDate date returned by `getLastModified`, formatted as RFC 1123
-    * @return last_modified_date as yyyyMMddHHmmss.
-    */
+  /**
+   * Converts last_modified_date to yyyyMMddHHmmss.
+   *
+   * @param lastModifiedDate
+   *   date returned by `getLastModified`, formatted as RFC 1123
+   * @return
+   *   last_modified_date as yyyyMMddHHmmss.
+   */
   def apply(lastModifiedDate: String): String = {
     if (lastModifiedDate.isEmpty) {
       ""

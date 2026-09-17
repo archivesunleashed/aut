@@ -45,9 +45,7 @@ class ExtractDateTest extends FunSuite {
     assert(ExtractDate(date, DD) == date.substring(monthSS, daySS))
     assert(ExtractDate(date, YYYYMM) == date.substring(startSS, monthSS))
     assert(ExtractDate(date, YYYYMMDD) == date.substring(startSS, daySS))
-    assert(
-      ExtractDate(date, YYYYMMDDHHMMSS) == date.substring(startSS, secondSS)
-    )
+    assert(ExtractDate(date, YYYYMMDDHHMMSS) == date.substring(startSS, secondSS))
     // scalastyle:off null
     assert(ExtractDate(null, YYYYMMDDHHMMSS) == "")
     // scalastyle:on null

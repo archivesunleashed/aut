@@ -134,9 +134,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
       r2.deep == Array(
         "dns:www.archive.org",
         "http://www.archive.org/images/logoc.jpg",
-        "dns:ia331306.us.archive.org"
-      ).deep
-    )
+        "dns:ia331306.us.archive.org").deep)
   }
 
   test("Keep MIMEtype RDD") {
@@ -150,9 +148,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
       r2.deep == Array(
         "http://www.archive.org/robots.txt",
         "http://www.archive.org/images/logoc.jpg",
-        "http://ia331306.us.archive.org/robots.txt"
-      ).deep
-    )
+        "http://ia331306.us.archive.org/robots.txt").deep)
   }
 
   test("Keep content RDD") {
@@ -175,12 +171,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
       .map(mp => mp.getUrl)
       .take(3)
     assert(
-      r2.deep == Array(
-        "dns:www.archive.org",
-        archive,
-        "http://www.archive.org/index.php"
-      ).deep
-    )
+      r2.deep == Array("dns:www.archive.org", archive, "http://www.archive.org/index.php").deep)
   }
 
   test("Discard MIMEtype Tika RDD") {
@@ -194,9 +185,7 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
       r2.deep == Array(
         "http://www.archive.org/robots.txt",
         "http://www.archive.org/",
-        "http://www.archive.org/index.php"
-      ).deep
-    )
+        "http://www.archive.org/index.php").deep)
   }
 
   test("Discard date RDD") {

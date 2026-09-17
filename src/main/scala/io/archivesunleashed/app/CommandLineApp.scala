@@ -58,17 +58,20 @@ import org.rogach.scallop.ScallopConf
  * to N before writing results. Otherwise, the partition is left as is.
  */
 
-/** Construct a Scallop option reader from command line argument string list.
-  *
-  * @param args list of command line arguments passed as is from argv
-  */
+/**
+ * Construct a Scallop option reader from command line argument string list.
+ *
+ * @param args
+ *   list of command line arguments passed as is from argv
+ */
 class CmdAppConf(args: Seq[String]) extends ScallopConf(args) {
 
-  /** Register callbacks when Scallop detects errors.
-    * Useful in unit tests.
-    *
-    * @param e exception that Scallop throws
-    */
+  /**
+   * Register callbacks when Scallop detects errors. Useful in unit tests.
+   *
+   * @param e
+   *   exception that Scallop throws
+   */
   // scalastyle:off regex
   override def onError(e: Throwable): Unit =
     e match {
@@ -83,31 +86,32 @@ class CmdAppConf(args: Seq[String]) extends ScallopConf(args) {
   var extractor = opt[String](descr = "extractor", required = true)
   val input = opt[List[String]](descr = "input file path", required = true)
   val output = opt[String](descr = "output directory path", required = true)
-  val outputFormat = opt[String](descr =
-    "output format for DomainGraphExtractor, one of csv, gexf, or graphml"
-  )
+  val outputFormat =
+    opt[String](descr = "output format for DomainGraphExtractor, one of csv, gexf, or graphml")
   val split = opt[Boolean]()
   val partition = opt[Int]()
   verify()
 }
 
-/** Main application that parse command line arguments and invoke appropriate extractor.
-  *
-  * @param conf Scallop option reader constructed with class CmdAppConf
-  */
+/**
+ * Main application that parse command line arguments and invoke appropriate extractor.
+ *
+ * @param conf
+ *   Scallop option reader constructed with class CmdAppConf
+ */
 class CommandLineApp(conf: CmdAppConf) {
   private val logger = Logger.getLogger(getClass().getName())
   private val configuration = conf
   private var saveTarget = ""
   private var sparkCtx: Option[SparkContext] = None
 
-  /** Maps extractor type string to DataFrame Extractors.
-    *
-    * Each closure takes a list of file names to be extracted, loads them using RecordLoader,
-    * performs the extraction, and saves results to file by calling save method of
-    * CommandLineApp class.
-    * Closures return nothing.
-    */
+  /**
+   * Maps extractor type string to DataFrame Extractors.
+   *
+   * Each closure takes a list of file names to be extracted, loads them using RecordLoader,
+   * performs the extraction, and saves results to file by calling save method of CommandLineApp
+   * class. Closures return nothing.
+   */
   private val extractors = Map[String, List[String] => Any](
     "AudioInformationExtractor" ->
       ((inputFiles: List[String]) => {
@@ -117,7 +121,7 @@ class CommandLineApp(conf: CmdAppConf) {
           df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).audio())
         }
         if (!configuration.outputFormat.isEmpty && configuration
-              .outputFormat() == "parquet") {
+            .outputFormat() == "parquet") {
           saveParquet(AudioInformationExtractor(df))
         } else {
           saveCsv(AudioInformationExtractor(df))
@@ -131,7 +135,7 @@ class CommandLineApp(conf: CmdAppConf) {
           df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).webpages())
         }
         if (!configuration.outputFormat.isEmpty && configuration
-              .outputFormat() == "parquet") {
+            .outputFormat() == "parquet") {
           saveParquet(DomainFrequencyExtractor(df))
         } else {
           saveCsv(DomainFrequencyExtractor(df))
@@ -145,22 +149,20 @@ class CommandLineApp(conf: CmdAppConf) {
           df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).webgraph())
         }
         if (!configuration.outputFormat.isEmpty && configuration
-              .outputFormat() == "gexf") {
+            .outputFormat() == "gexf") {
           new File(saveTarget).mkdirs()
           WriteGEXF(
             DomainGraphExtractor(df).collect(),
-            Paths.get(saveTarget).toString + "/GEXF.gexf"
-          )
+            Paths.get(saveTarget).toString + "/GEXF.gexf")
         } else if (!configuration.outputFormat.isEmpty && configuration
-                     .outputFormat() == "parquet") {
+            .outputFormat() == "parquet") {
           saveParquet(DomainGraphExtractor(df))
         } else if (!configuration.outputFormat.isEmpty && configuration
-                     .outputFormat() == "graphml") {
+            .outputFormat() == "graphml") {
           new File(saveTarget).mkdirs()
           WriteGraphML(
             DomainGraphExtractor(df).collect(),
-            Paths.get(saveTarget).toString + "/GRAPHML.graphml"
-          )
+            Paths.get(saveTarget).toString + "/GRAPHML.graphml")
         } else {
           saveCsv(DomainGraphExtractor(df))
         }
@@ -173,7 +175,7 @@ class CommandLineApp(conf: CmdAppConf) {
           df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).images())
         }
         if (!configuration.outputFormat.isEmpty && configuration
-              .outputFormat() == "parquet") {
+            .outputFormat() == "parquet") {
           saveParquet(ImageInformationExtractor(df))
         } else {
           saveCsv(ImageInformationExtractor(df))
@@ -187,7 +189,7 @@ class CommandLineApp(conf: CmdAppConf) {
           df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).imagegraph())
         }
         if (!configuration.outputFormat.isEmpty && configuration
-              .outputFormat() == "parquet") {
+            .outputFormat() == "parquet") {
           saveParquet(ImageGraphExtractor(df))
         } else {
           saveCsv(ImageGraphExtractor(df))
@@ -200,7 +202,7 @@ class CommandLineApp(conf: CmdAppConf) {
           df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).pdfs())
         }
         if (!configuration.outputFormat.isEmpty && configuration
-              .outputFormat() == "parquet") {
+            .outputFormat() == "parquet") {
           saveParquet(PDFInformationExtractor(df))
         } else {
           saveCsv(PDFInformationExtractor(df))
@@ -214,7 +216,7 @@ class CommandLineApp(conf: CmdAppConf) {
           df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).all())
         }
         if (!configuration.outputFormat.isEmpty && configuration
-              .outputFormat() == "parquet") {
+            .outputFormat() == "parquet") {
           saveParquet(PlainTextExtractor(df))
         } else {
           saveCsv(PlainTextExtractor(df))
@@ -229,11 +231,10 @@ class CommandLineApp(conf: CmdAppConf) {
           df = df.union(
             RecordLoader
               .loadArchives(f, sparkCtx.get)
-              .presentationProgramFiles()
-          )
+              .presentationProgramFiles())
         }
         if (!configuration.outputFormat.isEmpty && configuration
-              .outputFormat() == "parquet") {
+            .outputFormat() == "parquet") {
           saveParquet(PresentationProgramInformationExtractor(df))
         } else {
           saveCsv(PresentationProgramInformationExtractor(df))
@@ -245,11 +246,10 @@ class CommandLineApp(conf: CmdAppConf) {
           .loadArchives(inputFiles.head, sparkCtx.get)
           .spreadsheets()
         inputFiles.tail foreach { f =>
-          df =
-            df.union(RecordLoader.loadArchives(f, sparkCtx.get).spreadsheets())
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).spreadsheets())
         }
         if (!configuration.outputFormat.isEmpty && configuration
-              .outputFormat() == "parquet") {
+            .outputFormat() == "parquet") {
           saveParquet(SpreadsheetInformationExtractor(df))
         } else {
           saveCsv(SpreadsheetInformationExtractor(df))
@@ -263,7 +263,7 @@ class CommandLineApp(conf: CmdAppConf) {
           df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).videos())
         }
         if (!configuration.outputFormat.isEmpty && configuration
-              .outputFormat() == "parquet") {
+            .outputFormat() == "parquet") {
           saveParquet(VideoInformationExtractor(df))
         } else {
           saveCsv(VideoInformationExtractor(df))
@@ -277,7 +277,7 @@ class CommandLineApp(conf: CmdAppConf) {
           df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).webgraph())
         }
         if (!configuration.outputFormat.isEmpty && configuration
-              .outputFormat() == "parquet") {
+            .outputFormat() == "parquet") {
           saveParquet(WebGraphExtractor(df))
         } else {
           saveCsv(WebGraphExtractor(df))
@@ -291,7 +291,7 @@ class CommandLineApp(conf: CmdAppConf) {
           df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).webpages())
         }
         if (!configuration.outputFormat.isEmpty && configuration
-              .outputFormat() == "parquet") {
+            .outputFormat() == "parquet") {
           saveParquet(WebPagesExtractor(df))
         } else {
           saveCsv(WebPagesExtractor(df))
@@ -303,12 +303,10 @@ class CommandLineApp(conf: CmdAppConf) {
           .loadArchives(inputFiles.head, sparkCtx.get)
           .wordProcessorFiles()
         inputFiles.tail foreach { f =>
-          df = df.union(
-            RecordLoader.loadArchives(f, sparkCtx.get).wordProcessorFiles()
-          )
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).wordProcessorFiles())
         }
         if (!configuration.outputFormat.isEmpty && configuration
-              .outputFormat() == "parquet") {
+            .outputFormat() == "parquet") {
           saveParquet(WordProcessorInformationExtractor(df))
         } else {
           saveCsv(WordProcessorInformationExtractor(df))
@@ -320,12 +318,10 @@ class CommandLineApp(conf: CmdAppConf) {
           .loadArchives(inputFiles.head, sparkCtx.get)
           .css()
         inputFiles.tail foreach { f =>
-          df = df.union(
-            RecordLoader.loadArchives(f, sparkCtx.get).css()
-          )
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).css())
         }
         if (!configuration.outputFormat.isEmpty && configuration
-              .outputFormat() == "parquet") {
+            .outputFormat() == "parquet") {
           saveParquet(CssInformationExtractor(df))
         } else {
           saveCsv(CssInformationExtractor(df))
@@ -337,12 +333,10 @@ class CommandLineApp(conf: CmdAppConf) {
           .loadArchives(inputFiles.head, sparkCtx.get)
           .html()
         inputFiles.tail foreach { f =>
-          df = df.union(
-            RecordLoader.loadArchives(f, sparkCtx.get).html()
-          )
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).html())
         }
         if (!configuration.outputFormat.isEmpty && configuration
-              .outputFormat() == "parquet") {
+            .outputFormat() == "parquet") {
           saveParquet(HtmlInformationExtractor(df))
         } else {
           saveCsv(HtmlInformationExtractor(df))
@@ -354,12 +348,10 @@ class CommandLineApp(conf: CmdAppConf) {
           .loadArchives(inputFiles.head, sparkCtx.get)
           .js()
         inputFiles.tail foreach { f =>
-          df = df.union(
-            RecordLoader.loadArchives(f, sparkCtx.get).js()
-          )
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).js())
         }
         if (!configuration.outputFormat.isEmpty && configuration
-              .outputFormat() == "parquet") {
+            .outputFormat() == "parquet") {
           saveParquet(JsInformationExtractor(df))
         } else {
           saveCsv(JsInformationExtractor(df))
@@ -371,12 +363,10 @@ class CommandLineApp(conf: CmdAppConf) {
           .loadArchives(inputFiles.head, sparkCtx.get)
           .json()
         inputFiles.tail foreach { f =>
-          df = df.union(
-            RecordLoader.loadArchives(f, sparkCtx.get).json()
-          )
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).json())
         }
         if (!configuration.outputFormat.isEmpty && configuration
-              .outputFormat() == "parquet") {
+            .outputFormat() == "parquet") {
           saveParquet(JsonInformationExtractor(df))
         } else {
           saveCsv(JsonInformationExtractor(df))
@@ -388,12 +378,10 @@ class CommandLineApp(conf: CmdAppConf) {
           .loadArchives(inputFiles.head, sparkCtx.get)
           .plainText()
         inputFiles.tail foreach { f =>
-          df = df.union(
-            RecordLoader.loadArchives(f, sparkCtx.get).plainText()
-          )
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).plainText())
         }
         if (!configuration.outputFormat.isEmpty && configuration
-              .outputFormat() == "parquet") {
+            .outputFormat() == "parquet") {
           saveParquet(PlainTextInformationExtractor(df))
         } else {
           saveCsv(PlainTextInformationExtractor(df))
@@ -405,25 +393,25 @@ class CommandLineApp(conf: CmdAppConf) {
           .loadArchives(inputFiles.head, sparkCtx.get)
           .xml()
         inputFiles.tail foreach { f =>
-          df = df.union(
-            RecordLoader.loadArchives(f, sparkCtx.get).xml()
-          )
+          df = df.union(RecordLoader.loadArchives(f, sparkCtx.get).xml())
         }
         if (!configuration.outputFormat.isEmpty && configuration
-              .outputFormat() == "parquet") {
+            .outputFormat() == "parquet") {
           saveParquet(XmlInformationExtractor(df))
         } else {
           saveCsv(XmlInformationExtractor(df))
         }
-      })
-  )
+      }))
 
-  /** Routine for saving Dataset obtained from querying DataFrames to CSV.
-    * Files may be merged according to options specified in 'partition' setting.
-    *
-    * @param d generic dataset obtained from querying DataFrame
-    * @return Unit
-    */
+  /**
+   * Routine for saving Dataset obtained from querying DataFrames to CSV. Files may be merged
+   * according to options specified in 'partition' setting.
+   *
+   * @param d
+   *   generic dataset obtained from querying DataFrame
+   * @return
+   *   Unit
+   */
   def saveCsv(d: Dataset[Row]): Unit = {
     if (!configuration.partition.isEmpty) {
       d.coalesce(configuration.partition())
@@ -444,12 +432,15 @@ class CommandLineApp(conf: CmdAppConf) {
     }
   }
 
-  /** Routine for saving Dataset obtained from querying DataFrames to Parquet.
-    * Files may be merged according to options specified in 'partition' setting.
-    *
-    * @param d generic dataset obtained from querying DataFrame
-    * @return Unit
-    */
+  /**
+   * Routine for saving Dataset obtained from querying DataFrames to Parquet. Files may be merged
+   * according to options specified in 'partition' setting.
+   *
+   * @param d
+   *   generic dataset obtained from querying DataFrame
+   * @return
+   *   Unit
+   */
   def saveParquet(d: Dataset[Row]): Unit = {
     if (!configuration.partition.isEmpty) {
       d.coalesce(configuration.partition())
@@ -463,13 +454,16 @@ class CommandLineApp(conf: CmdAppConf) {
     }
   }
 
-  /** Verify the validity of command line arguments regarding input and output files.
-    *
-    * All input files need to exist, and ouput files should not exist, for this to pass.
-    * Throws exception if condition is not met.
-    * @return Unit
-    * @throws IllegalArgumentException exception thrown
-    */
+  /**
+   * Verify the validity of command line arguments regarding input and output files.
+   *
+   * All input files need to exist, and ouput files should not exist, for this to pass. Throws
+   * exception if condition is not met.
+   * @return
+   *   Unit
+   * @throws IllegalArgumentException
+   *   exception thrown
+   */
   def verifyArgumentsOrExit(): Unit = {
     configuration.input() foreach { f =>
       if (!Files.exists(Paths.get(f))) {
@@ -484,24 +478,27 @@ class CommandLineApp(conf: CmdAppConf) {
     }
   }
 
-  /** Set the app name.
-    *
-    * @return String
-    */
+  /**
+   * Set the app name.
+   *
+   * @return
+   *   String
+   */
   def setAppName(): String = {
     "aut - " + configuration.extractor()
   }
 
-  /** Prepare for invoking extractors.
-    *
-    * @return Any
-    */
+  /**
+   * Prepare for invoking extractors.
+   *
+   * @return
+   *   Any
+   */
   def handler(): Any = {
     if (!(extractors contains configuration.extractor())) {
       logger.error(
         configuration.extractor() + " not supported. " +
-          "The following extractors are supported: "
-      )
+          "The following extractors are supported: ")
       extractors foreach { tuple =>
         logger.error(tuple._1)
       }
@@ -528,18 +525,22 @@ class CommandLineApp(conf: CmdAppConf) {
     }
   }
 
-  /** Process the handler.
-    *
-    * @return Any
-    */
+  /**
+   * Process the handler.
+   *
+   * @return
+   *   Any
+   */
   def process(): Any = {
     handler()
   }
 
-  /** Set Spark context to be used.
-    *
-    * @param sc either a brand new or existing Spark context
-    */
+  /**
+   * Set Spark context to be used.
+   *
+   * @param sc
+   *   either a brand new or existing Spark context
+   */
   def setSparkContext(sc: SparkContext): Unit = {
     sparkCtx = Some(sc)
   }
@@ -547,10 +548,12 @@ class CommandLineApp(conf: CmdAppConf) {
 
 object CommandLineAppRunner {
 
-  /** Entry point for command line application.
-    *
-    * @param argv command line arguments passed by the OS
-    */
+  /**
+   * Entry point for command line application.
+   *
+   * @param argv
+   *   command line arguments passed by the OS
+   */
   def main(argv: Array[String]): Unit = {
     val app = new CommandLineApp(new CmdAppConf(argv))
 
@@ -558,7 +561,7 @@ object CommandLineAppRunner {
       app.verifyArgumentsOrExit()
     } catch {
       case e: IllegalArgumentException => System.exit(1)
-      case x: Throwable                => throw x
+      case x: Throwable => throw x
     }
 
     val appName = app.setAppName()
@@ -568,12 +571,15 @@ object CommandLineAppRunner {
     app.process()
   }
 
-  /** Entry point for testing.
-    * Takes an existed spark session to prevent new ones from being created.
-    *
-    * @param argv command line arguments (array of strings).
-    * @param sc spark context to be used for this session
-    */
+  /**
+   * Entry point for testing. Takes an existed spark session to prevent new ones from being
+   * created.
+   *
+   * @param argv
+   *   command line arguments (array of strings).
+   * @param sc
+   *   spark context to be used for this session
+   */
   def test(argv: Array[String], sc: SparkContext): Unit = {
     val app = new CommandLineApp(new CmdAppConf(argv))
 

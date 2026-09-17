@@ -50,8 +50,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       outputOpt,
       outputDir,
       extractOpt,
-      "DomainFrequencyExtractor"
-    ),
+      "DomainFrequencyExtractor"),
     Array(
       inputOpt,
       arcPath,
@@ -60,8 +59,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       outputDir,
       extractOpt,
       "DomainFrequencyExtractor",
-      "--split"
-    ),
+      "--split"),
     Array(
       inputOpt,
       arcPath,
@@ -71,8 +69,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       "DomainFrequencyExtractor",
       "--output-format",
-      "parquet"
-    ),
+      "parquet"),
     Array(
       inputOpt,
       arcPath,
@@ -84,17 +81,8 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       "--output-format",
       "parquet",
       "--partition",
-      "1"
-    ),
-    Array(
-      inputOpt,
-      arcPath,
-      warcPath,
-      outputOpt,
-      outputDir,
-      extractOpt,
-      domainGraphOpt
-    ),
+      "1"),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, domainGraphOpt),
     Array(
       inputOpt,
       arcPath,
@@ -104,8 +92,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       domainGraphOpt,
       "--output-format",
-      "parquet"
-    ),
+      "parquet"),
     Array(
       inputOpt,
       arcPath,
@@ -115,8 +102,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       domainGraphOpt,
       "--output-format",
-      "gexf"
-    ),
+      "gexf"),
     Array(
       inputOpt,
       arcPath,
@@ -126,8 +112,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       domainGraphOpt,
       "--output-format",
-      "graphml"
-    ),
+      "graphml"),
     Array(
       inputOpt,
       arcPath,
@@ -137,27 +122,9 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       domainGraphOpt,
       "--output-format",
-      "parquet"
-    ),
-    Array(
-      inputOpt,
-      arcPath,
-      warcPath,
-      outputOpt,
-      outputDir,
-      extractOpt,
-      plainTextOpt
-    ),
-    Array(
-      inputOpt,
-      arcPath,
-      warcPath,
-      outputOpt,
-      outputDir,
-      extractOpt,
-      plainTextOpt,
-      "--split"
-    ),
+      "parquet"),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, plainTextOpt),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, plainTextOpt, "--split"),
     Array(
       inputOpt,
       arcPath,
@@ -167,8 +134,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       plainTextOpt,
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -178,8 +144,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       plainTextOpt,
       "--output-format",
-      "parquet"
-    ),
+      "parquet"),
     Array(
       inputOpt,
       arcPath,
@@ -191,8 +156,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       "--output-format",
       "parquet",
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -202,17 +166,8 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       "--partition",
       "1",
       extractOpt,
-      plainTextOpt
-    ),
-    Array(
-      inputOpt,
-      arcPath,
-      warcPath,
-      outputOpt,
-      outputDir,
-      extractOpt,
-      imageGraphOpt
-    ),
+      plainTextOpt),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, imageGraphOpt),
     Array(
       inputOpt,
       arcPath,
@@ -221,8 +176,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       outputDir,
       extractOpt,
       imageGraphOpt,
-      "--split"
-    ),
+      "--split"),
     Array(
       inputOpt,
       arcPath,
@@ -232,8 +186,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       imageGraphOpt,
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -243,8 +196,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       imageGraphOpt,
       "--output-format",
-      "parquet"
-    ),
+      "parquet"),
     Array(
       inputOpt,
       arcPath,
@@ -256,27 +208,9 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       "--output-format",
       "parquet",
       "--partition",
-      "1"
-    ),
-    Array(
-      inputOpt,
-      arcPath,
-      warcPath,
-      outputOpt,
-      outputDir,
-      extractOpt,
-      webPagesOpt
-    ),
-    Array(
-      inputOpt,
-      arcPath,
-      warcPath,
-      outputOpt,
-      outputDir,
-      extractOpt,
-      webPagesOpt,
-      "--split"
-    ),
+      "1"),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, webPagesOpt),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, webPagesOpt, "--split"),
     Array(
       inputOpt,
       arcPath,
@@ -286,8 +220,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       webPagesOpt,
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -297,8 +230,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       webPagesOpt,
       "--output-format",
-      "parquet"
-    ),
+      "parquet"),
     Array(
       inputOpt,
       arcPath,
@@ -310,8 +242,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       "--output-format",
       "parquet",
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -319,8 +250,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       outputOpt,
       outputDir,
       extractOpt,
-      "AudioInformationExtractor"
-    ),
+      "AudioInformationExtractor"),
     Array(
       inputOpt,
       arcPath,
@@ -329,8 +259,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       outputDir,
       extractOpt,
       "AudioInformationExtractor",
-      "--split"
-    ),
+      "--split"),
     Array(
       inputOpt,
       arcPath,
@@ -340,8 +269,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       "AudioInformationExtractor",
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -351,8 +279,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       "AudioInformationExtractor",
       "--output-format",
-      "parquet"
-    ),
+      "parquet"),
     Array(
       inputOpt,
       arcPath,
@@ -364,8 +291,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       "--output-format",
       "parquet",
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -373,8 +299,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       outputOpt,
       outputDir,
       extractOpt,
-      "ImageInformationExtractor"
-    ),
+      "ImageInformationExtractor"),
     Array(
       inputOpt,
       arcPath,
@@ -383,8 +308,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       outputDir,
       extractOpt,
       "ImageInformationExtractor",
-      "--split"
-    ),
+      "--split"),
     Array(
       inputOpt,
       arcPath,
@@ -394,8 +318,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       "ImageInformationExtractor",
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -405,8 +328,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       "ImageInformationExtractor",
       "--output-format",
-      "parquet"
-    ),
+      "parquet"),
     Array(
       inputOpt,
       arcPath,
@@ -418,8 +340,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       "--output-format",
       "parquet",
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -427,8 +348,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       outputOpt,
       outputDir,
       extractOpt,
-      "PDFInformationExtractor"
-    ),
+      "PDFInformationExtractor"),
     Array(
       inputOpt,
       arcPath,
@@ -437,8 +357,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       outputDir,
       extractOpt,
       "PDFInformationExtractor",
-      "--split"
-    ),
+      "--split"),
     Array(
       inputOpt,
       arcPath,
@@ -448,8 +367,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       "PDFInformationExtractor",
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -459,8 +377,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       "PDFInformationExtractor",
       "--output-format",
-      "parquet"
-    ),
+      "parquet"),
     Array(
       inputOpt,
       arcPath,
@@ -472,8 +389,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       "--output-format",
       "parquet",
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -481,8 +397,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       outputOpt,
       outputDir,
       extractOpt,
-      "PresentationProgramInformationExtractor"
-    ),
+      "PresentationProgramInformationExtractor"),
     Array(
       inputOpt,
       arcPath,
@@ -491,8 +406,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       outputDir,
       extractOpt,
       "PresentationProgramInformationExtractor",
-      "--split"
-    ),
+      "--split"),
     Array(
       inputOpt,
       arcPath,
@@ -502,8 +416,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       "PresentationProgramInformationExtractor",
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -513,8 +426,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       "PresentationProgramInformationExtractor",
       "--output-format",
-      "parquet"
-    ),
+      "parquet"),
     Array(
       inputOpt,
       arcPath,
@@ -526,8 +438,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       "--output-format",
       "parquet",
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -535,8 +446,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       outputOpt,
       outputDir,
       extractOpt,
-      "SpreadsheetInformationExtractor"
-    ),
+      "SpreadsheetInformationExtractor"),
     Array(
       inputOpt,
       arcPath,
@@ -545,8 +455,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       outputDir,
       extractOpt,
       "SpreadsheetInformationExtractor",
-      "--split"
-    ),
+      "--split"),
     Array(
       inputOpt,
       arcPath,
@@ -556,8 +465,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       "SpreadsheetInformationExtractor",
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -567,8 +475,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       "SpreadsheetInformationExtractor",
       "--output-format",
-      "parquet"
-    ),
+      "parquet"),
     Array(
       inputOpt,
       arcPath,
@@ -580,8 +487,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       "--output-format",
       "parquet",
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -589,8 +495,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       outputOpt,
       outputDir,
       extractOpt,
-      "VideoInformationExtractor"
-    ),
+      "VideoInformationExtractor"),
     Array(
       inputOpt,
       arcPath,
@@ -599,8 +504,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       outputDir,
       extractOpt,
       "VideoInformationExtractor",
-      "--split"
-    ),
+      "--split"),
     Array(
       inputOpt,
       arcPath,
@@ -610,8 +514,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       "VideoInformationExtractor",
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -621,8 +524,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       "VideoInformationExtractor",
       "--output-format",
-      "parquet"
-    ),
+      "parquet"),
     Array(
       inputOpt,
       arcPath,
@@ -634,8 +536,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       "--output-format",
       "parquet",
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -643,8 +544,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       outputOpt,
       outputDir,
       extractOpt,
-      "WordProcessorInformationExtractor"
-    ),
+      "WordProcessorInformationExtractor"),
     Array(
       inputOpt,
       arcPath,
@@ -653,8 +553,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       outputDir,
       extractOpt,
       "WordProcessorInformationExtractor",
-      "--split"
-    ),
+      "--split"),
     Array(
       inputOpt,
       arcPath,
@@ -664,8 +563,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       "WordProcessorInformationExtractor",
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -675,8 +573,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       "WordProcessorInformationExtractor",
       "--output-format",
-      "parquet"
-    ),
+      "parquet"),
     Array(
       inputOpt,
       arcPath,
@@ -688,17 +585,8 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       "--output-format",
       "parquet",
       "--partition",
-      "1"
-    ),
-    Array(
-      inputOpt,
-      arcPath,
-      warcPath,
-      outputOpt,
-      outputDir,
-      extractOpt,
-      "WebGraphExtractor"
-    ),
+      "1"),
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, "WebGraphExtractor"),
     Array(
       inputOpt,
       arcPath,
@@ -707,8 +595,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       outputDir,
       extractOpt,
       "WebGraphExtractor",
-      "--split"
-    ),
+      "--split"),
     Array(
       inputOpt,
       arcPath,
@@ -718,8 +605,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       "WebGraphExtractor",
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -729,8 +615,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       "WebGraphExtractor",
       "--output-format",
-      "parquet"
-    ),
+      "parquet"),
     Array(
       inputOpt,
       arcPath,
@@ -742,8 +627,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       "--output-format",
       "parquet",
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -751,8 +635,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       outputOpt,
       outputDir,
       extractOpt,
-      "CssInformationExtractor"
-    ),
+      "CssInformationExtractor"),
     Array(
       inputOpt,
       arcPath,
@@ -761,8 +644,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       outputDir,
       extractOpt,
       "CssInformationExtractor",
-      "--split"
-    ),
+      "--split"),
     Array(
       inputOpt,
       arcPath,
@@ -772,8 +654,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       "CssInformationExtractor",
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -783,8 +664,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       "CssInformationExtractor",
       "--output-format",
-      "parquet"
-    ),
+      "parquet"),
     Array(
       inputOpt,
       arcPath,
@@ -796,8 +676,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       "--output-format",
       "parquet",
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -805,8 +684,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       outputOpt,
       outputDir,
       extractOpt,
-      "HtmlInformationExtractor"
-    ),
+      "HtmlInformationExtractor"),
     Array(
       inputOpt,
       arcPath,
@@ -815,8 +693,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       outputDir,
       extractOpt,
       "HtmlInformationExtractor",
-      "--split"
-    ),
+      "--split"),
     Array(
       inputOpt,
       arcPath,
@@ -826,8 +703,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       "HtmlInformationExtractor",
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -837,8 +713,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       "HtmlInformationExtractor",
       "--output-format",
-      "parquet"
-    ),
+      "parquet"),
     Array(
       inputOpt,
       arcPath,
@@ -850,8 +725,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       "--output-format",
       "parquet",
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -859,8 +733,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       outputOpt,
       outputDir,
       extractOpt,
-      "JsInformationExtractor"
-    ),
+      "JsInformationExtractor"),
     Array(
       inputOpt,
       arcPath,
@@ -869,8 +742,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       outputDir,
       extractOpt,
       "JsInformationExtractor",
-      "--split"
-    ),
+      "--split"),
     Array(
       inputOpt,
       arcPath,
@@ -880,8 +752,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       "JsInformationExtractor",
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -891,8 +762,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       "JsInformationExtractor",
       "--output-format",
-      "parquet"
-    ),
+      "parquet"),
     Array(
       inputOpt,
       arcPath,
@@ -904,8 +774,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       "--output-format",
       "parquet",
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -913,8 +782,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       outputOpt,
       outputDir,
       extractOpt,
-      "JsonInformationExtractor"
-    ),
+      "JsonInformationExtractor"),
     Array(
       inputOpt,
       arcPath,
@@ -923,8 +791,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       outputDir,
       extractOpt,
       "JsonInformationExtractor",
-      "--split"
-    ),
+      "--split"),
     Array(
       inputOpt,
       arcPath,
@@ -934,8 +801,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       "JsonInformationExtractor",
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -945,8 +811,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       "JsonInformationExtractor",
       "--output-format",
-      "parquet"
-    ),
+      "parquet"),
     Array(
       inputOpt,
       arcPath,
@@ -958,8 +823,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       "--output-format",
       "parquet",
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -967,8 +831,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       outputOpt,
       outputDir,
       extractOpt,
-      "PlainTextInformationExtractor"
-    ),
+      "PlainTextInformationExtractor"),
     Array(
       inputOpt,
       arcPath,
@@ -977,8 +840,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       outputDir,
       extractOpt,
       "PlainTextInformationExtractor",
-      "--split"
-    ),
+      "--split"),
     Array(
       inputOpt,
       arcPath,
@@ -988,8 +850,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       "PlainTextInformationExtractor",
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -999,8 +860,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       "PlainTextInformationExtractor",
       "--output-format",
-      "parquet"
-    ),
+      "parquet"),
     Array(
       inputOpt,
       arcPath,
@@ -1012,8 +872,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       "--output-format",
       "parquet",
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -1021,8 +880,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       outputOpt,
       outputDir,
       extractOpt,
-      "XmlInformationExtractor"
-    ),
+      "XmlInformationExtractor"),
     Array(
       inputOpt,
       arcPath,
@@ -1031,8 +889,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       outputDir,
       extractOpt,
       "XmlInformationExtractor",
-      "--split"
-    ),
+      "--split"),
     Array(
       inputOpt,
       arcPath,
@@ -1042,8 +899,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       "XmlInformationExtractor",
       "--partition",
-      "1"
-    ),
+      "1"),
     Array(
       inputOpt,
       arcPath,
@@ -1053,8 +909,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       extractOpt,
       "XmlInformationExtractor",
       "--output-format",
-      "parquet"
-    ),
+      "parquet"),
     Array(
       inputOpt,
       arcPath,
@@ -1066,24 +921,13 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
       "--output-format",
       "parquet",
       "--partition",
-      "1"
-    )
-  )
+      "1"))
 
   private val testFailCmds = Array(
     Array(inputOpt, "_abracadabra", outputOpt, outputDir),
     Array(outputOpt, outputDir),
     Array(inputOpt, "_abracadabra"),
-    Array(
-      inputOpt,
-      arcPath,
-      warcPath,
-      outputOpt,
-      outputDir,
-      extractOpt,
-      "abracadabra"
-    )
-  )
+    Array(inputOpt, arcPath, warcPath, outputOpt, outputDir, extractOpt, "abracadabra"))
 
   before {
     val conf = new SparkConf()
@@ -1105,7 +949,7 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
         assert(false)
       } catch {
         case e: IllegalArgumentException => assert(true)
-        case _: Throwable                => assert(false)
+        case _: Throwable => assert(false)
       } finally {
         assert(!Files.exists(Paths.get(outputDir)))
       }

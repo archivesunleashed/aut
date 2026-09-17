@@ -49,16 +49,12 @@ class PlainTextExtractorTest extends FunSuite with BeforeAndAfter {
       dfResults(4)
         .get(0)
         .toString
-        .startsWith(
-          "Author: Spivak, John L. (John Louis), b. 1897 Published: 1939"
-        )
-    )
+        .startsWith("Author: Spivak, John L. (John Louis), b. 1897 Published: 1939"))
     assert(
       dfResults(50)
         .get(0)
         .toString
-        .startsWith("How many hours in a day They tell me 24 ")
-    )
+        .startsWith("How many hours in a day They tell me 24 "))
   }
 
   after {

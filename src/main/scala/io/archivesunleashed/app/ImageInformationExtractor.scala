@@ -20,13 +20,15 @@ import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
 object ImageInformationExtractor {
 
-  /** Extract information about images from web archive using DataFrame
-    * and Spark SQL.
-    *
-    * @param d DataFrame obtained from RecordLoader
-    * @return Dataset[Row], where the schema is (crawl date, url,
-    *   mime_type_web_server, mime_type_tika, width, height, language, content)
-    */
+  /**
+   * Extract information about images from web archive using DataFrame and Spark SQL.
+   *
+   * @param d
+   *   DataFrame obtained from RecordLoader
+   * @return
+   *   Dataset[Row], where the schema is (crawl date, url, mime_type_web_server, mime_type_tika,
+   *   width, height, language, content)
+   */
   def apply(d: DataFrame): Dataset[Row] = {
     val spark = SparkSession.builder().master("local").getOrCreate()
     // scalastyle:off
@@ -43,7 +45,6 @@ object ImageInformationExtractor {
       $"width",
       $"height",
       $"md5",
-      $"sha1"
-    )
+      $"sha1")
   }
 }

@@ -20,12 +20,14 @@ import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
 object WebGraphExtractor {
 
-  /** Extract web graph from web archive using DataFrame and Spark SQL.
-    *
-    * @param d DataFrame obtained from RecordLoader
-    * @return Dataset[Row], where the schema is (crawl date, src, image url,
-    *   alt text)
-    */
+  /**
+   * Extract web graph from web archive using DataFrame and Spark SQL.
+   *
+   * @param d
+   *   DataFrame obtained from RecordLoader
+   * @return
+   *   Dataset[Row], where the schema is (crawl date, src, image url, alt text)
+   */
   def apply(d: DataFrame): Dataset[Row] = {
     val spark = SparkSession.builder().master("local").getOrCreate()
     d

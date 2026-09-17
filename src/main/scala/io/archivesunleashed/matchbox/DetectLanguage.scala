@@ -32,11 +32,14 @@ object DetectLanguage {
   private val detector: ThreadLocal[LanguageDetector] =
     ThreadLocal.withInitial(() => new OptimaizeLangDetector().loadModels())
 
-  /** Detects the language of a String input.
-    *
-    * @param input the string for which language can be detected
-    * @return ISO 639-2 language code (eg. "en", "fr" or "it").
-    */
+  /**
+   * Detects the language of a String input.
+   *
+   * @param input
+   *   the string for which language can be detected
+   * @return
+   *   ISO 639-2 language code (eg. "en", "fr" or "it").
+   */
   def apply(input: String): String = {
     if (input.isEmpty) {
       ""

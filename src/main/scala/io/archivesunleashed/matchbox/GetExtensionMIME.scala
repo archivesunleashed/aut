@@ -20,12 +20,16 @@ import org.apache.commons.io.FilenameUtils
 /** Get file extension using MIME type, then URL extension. */
 object GetExtensionMIME {
 
-  /** Returns the extension of a file specified by URL
-    *
-    * @param url string
-    * @param mimeType string
-    * @return string
-    */
+  /**
+   * Returns the extension of a file specified by URL
+   *
+   * @param url
+   *   string
+   * @param mimeType
+   *   string
+   * @return
+   *   string
+   */
   def apply(url: String, mimeType: String): String = {
     val tikaExtensions = DetectMimeTypeTika.getExtensions(mimeType)
     var ext = "unknown"

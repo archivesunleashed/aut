@@ -27,16 +27,9 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 class DetectMimeTypeTikaTest extends FunSuite {
   test("Detects MIME type from bytes") {
     assert(DetectMimeTypeTika(Array.empty[Byte]) == "N/A")
+    assert(DetectMimeTypeTika("<html><body>hi</body></html>".getBytes("UTF-8")) == "text/html")
     assert(
-      DetectMimeTypeTika(
-        "<html><body>hi</body></html>".getBytes("UTF-8")
-      ) == "text/html"
-    )
-    assert(
-      DetectMimeTypeTika(
-        "just some plain text, nothing more".getBytes("UTF-8")
-      ) == "text/plain"
-    )
+      DetectMimeTypeTika("just some plain text, nothing more".getBytes("UTF-8")) == "text/plain")
   }
 
   // DetectMimeTypeTika reuses a single Tika/AutoDetectParser/DefaultDetector
@@ -45,19 +38,14 @@ class DetectMimeTypeTikaTest extends FunSuite {
   // pipeline, that singleton can be invoked from several threads at once
   // within one executor JVM, so this hammers it concurrently across many
   // threads and distinct inputs to check it stays correct under contention.
-  test(
-    "Shared Tika singleton produces correct, stable results under concurrent load"
-  ) {
+  test("Shared Tika singleton produces correct, stable results under concurrent load") {
     val samples: Seq[(Array[Byte], String)] = Seq(
       "<html><body>hi</body></html>".getBytes("UTF-8") -> "text/html",
-      "just some plain text, nothing more".getBytes(
-        "UTF-8"
-      ) -> "text/plain",
+      "just some plain text, nothing more".getBytes("UTF-8") -> "text/plain",
       (Array[Byte](0x89.toByte, 'P', 'N', 'G', 0x0d, 0x0a, 0x1a, 0x0a) ++
         Array.fill[Byte](16)(0)) -> "image/png",
       "%PDF-1.4\n%some pdf content\n".getBytes("UTF-8") -> "application/pdf",
-      ("GIF89a".getBytes("UTF-8") ++ Array.fill[Byte](16)(0)) -> "image/gif"
-    )
+      ("GIF89a".getBytes("UTF-8") ++ Array.fill[Byte](16)(0)) -> "image/gif")
 
     implicit val ec: ExecutionContext = ExecutionContext.global
     val iterationsPerSample = 200
@@ -67,10 +55,7 @@ class DetectMimeTypeTikaTest extends FunSuite {
       _ <- 1 to iterationsPerSample
     } yield Future {
       val detected = DetectMimeTypeTika(bytes)
-      assert(
-        detected == expected,
-        s"expected $expected but got $detected under concurrent load"
-      )
+      assert(detected == expected, s"expected $expected but got $detected under concurrent load")
     }
 
     Await.result(Future.sequence(futures), 2.minutes)

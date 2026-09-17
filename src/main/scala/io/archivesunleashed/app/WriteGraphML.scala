@@ -22,12 +22,14 @@ import org.apache.spark.sql.Row
 
 object WriteGraphML {
 
-  /** Verifies graphmlPath is empty.
-    *
-    * @param data Array[Row] elements in format (crawl_date, src_domain,
-    *        dest_domain, count)
-    * @param graphmlPath output file
-    */
+  /**
+   * Verifies graphmlPath is empty.
+   *
+   * @param data
+   *   Array[Row] elements in format (crawl_date, src_domain, dest_domain, count)
+   * @param graphmlPath
+   *   output file
+   */
   def apply(data: Array[Row], graphmlPath: String): Boolean = {
     if (graphmlPath.isEmpty()) {
       false
@@ -36,13 +38,16 @@ object WriteGraphML {
     }
   }
 
-  /** Produces the GraphML output from an Array[Row] and outputs it to graphmlPath.
-    *
-    * @param data a Dataset[Row] of elements in format (crawl_date, src_domain,
-    *        dest_domain, count)
-    * @param graphmlPath output file
-    * @return true on success.
-    */
+  /**
+   * Produces the GraphML output from an Array[Row] and outputs it to graphmlPath.
+   *
+   * @param data
+   *   a Dataset[Row] of elements in format (crawl_date, src_domain, dest_domain, count)
+   * @param graphmlPath
+   *   output file
+   * @return
+   *   true on success.
+   */
   def makeFile(data: Array[Row], graphmlPath: String): Boolean = {
     val outFile =
       Files.newBufferedWriter(Paths.get(graphmlPath), StandardCharsets.UTF_8)
@@ -64,35 +69,27 @@ object WriteGraphML {
         "<default>0.0</default>\n" +
         "</key>\n" +
         "<key id=\"crawlDate\" for=\"edge\" attr.name=\"crawlDate\" attr.type=\"string\" />\n" +
-        "<graph mode=\"static\" edgedefault=\"directed\">\n"
-    )
+        "<graph mode=\"static\" edgedefault=\"directed\">\n")
 
     nodes foreach { n =>
       outFile.write(
         "<node id=\"" + ComputeMD5(n.asInstanceOf[String].getBytes) + "\">\n" +
           "<data key=\"label\">" + n
-          .asInstanceOf[String]
-          .escapeInvalidXML() + "</data>\n</node>\n"
-      )
+            .asInstanceOf[String]
+            .escapeInvalidXML() + "</data>\n</node>\n")
     }
 
     data foreach { e =>
       outFile.write(
-        "<edge source=\"" + ComputeMD5(
-          e.get(1).asInstanceOf[String].getBytes
-        ) + "\" target=\"" +
-          ComputeMD5(
-            e.get(2).asInstanceOf[String].getBytes
-          ) + "\" type=\"directed\">\n" +
+        "<edge source=\"" + ComputeMD5(e.get(1).asInstanceOf[String].getBytes) + "\" target=\"" +
+          ComputeMD5(e.get(2).asInstanceOf[String].getBytes) + "\" type=\"directed\">\n" +
           "<data key=\"weight\">" + e.get(3) + "</data>\n" +
           "<data key=\"crawlDate\">" + e.get(0) + "</data>\n" +
-          "</edge>\n"
-      )
+          "</edge>\n")
     }
     outFile.write(
       "</graph>\n" +
-        "</graphml>"
-    )
+        "</graphml>")
     outFile.close()
     true
   }

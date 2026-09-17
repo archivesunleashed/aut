@@ -49,23 +49,19 @@ class ExtractBoilerPipeTextTest extends FunSuite {
   // executor JVM, so this hammers it concurrently across many threads and
   // distinct inputs to check it stays correct under contention.
   test(
-    "Shared boilerpipe extractor singleton produces correct, stable results under concurrent load"
-  ) {
+    "Shared boilerpipe extractor singleton produces correct, stable results under concurrent load") {
     val samples: Seq[(String, String)] = Seq(
       (text, boiler),
       (
         """<p>Text with a boiler plate.<p>
    <footer>Copyright 2018</footer>""",
-        "Copyright 2018"
-      ),
+        "Copyright 2018"),
       (
         """<p>Text with a boiler plate.<p>
    <footer>Copyright 2019</footer>""",
-        "Copyright 2019"
-      ),
+        "Copyright 2019"),
       ("All Rights Reserved.", ""),
-      ("", "")
-    )
+      ("", ""))
 
     implicit val ec: ExecutionContext = ExecutionContext.global
     val iterationsPerSample = 200
@@ -75,10 +71,7 @@ class ExtractBoilerPipeTextTest extends FunSuite {
       _ <- 1 to iterationsPerSample
     } yield Future {
       val actual = ExtractBoilerpipeText(input)
-      assert(
-        actual == expected,
-        s"expected '$expected' but got '$actual' under concurrent load"
-      )
+      assert(actual == expected, s"expected '$expected' but got '$actual' under concurrent load")
     }
 
     Await.result(Future.sequence(futures), 2.minutes)

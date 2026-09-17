@@ -58,19 +58,11 @@ class ExtractHyperlinksTest extends FunSuite with BeforeAndAfter {
         $"domain",
         $"url",
         $"crawl_date",
-        explode_outer(extractLinks($"url", $"raw_content")).as("link")
-      )
-      .filter(
-        lower($"raw_content").contains("keynote")
-      )
+        explode_outer(extractLinks($"url", $"raw_content")).as("link"))
+      .filter(lower($"raw_content").contains("keynote"))
 
     val results = interResults
-      .select(
-        $"url",
-        $"domain",
-        $"crawl_date",
-        dest(array($"link")).as("destination_page")
-      )
+      .select($"url", $"domain", $"crawl_date", dest(array($"link")).as("destination_page"))
       .head(3)
 
     assert(results(0).get(0) == "http://www.archive.org/index.php")
@@ -81,11 +73,7 @@ class ExtractHyperlinksTest extends FunSuite with BeforeAndAfter {
     assert(results(1).get(0) == "http://www.archive.org/index.php")
     assert(results(1).get(1) == "archive.org")
     assert(results(1).get(2) == "20080430204826")
-    assert(
-      results(1).get(
-        3
-      ) == "http://www.archive.org/web/web.php"
-    )
+    assert(results(1).get(3) == "http://www.archive.org/web/web.php")
 
     assert(results(2).get(0) == "http://www.archive.org/index.php")
     assert(results(2).get(1) == "archive.org")

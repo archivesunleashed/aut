@@ -21,11 +21,14 @@ import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
 
 object DomainFrequencyExtractor {
 
-  /** Extract domain frequency from web archive using DataFrame and Spark SQL.
-    *
-    * @param d DataFrame obtained from RecordLoader
-    * @return Dataset[Row], where the schema is (domain, count)
-    */
+  /**
+   * Extract domain frequency from web archive using DataFrame and Spark SQL.
+   *
+   * @param d
+   *   DataFrame obtained from RecordLoader
+   * @return
+   *   Dataset[Row], where the schema is (domain, count)
+   */
   def apply(d: DataFrame): Dataset[Row] = {
     val spark = SparkSession.builder().master("local").getOrCreate()
     // scalastyle:off

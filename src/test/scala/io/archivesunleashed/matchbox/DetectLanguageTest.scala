@@ -44,8 +44,7 @@ class DetectLanguageTest extends FunSuite {
   // sequential detect() calls on the same thread, and stays correct when
   // many threads are each reusing their own cached instance concurrently.
   test(
-    "Cached, reused ThreadLocal detector produces correct, stable results under concurrent load"
-  ) {
+    "Cached, reused ThreadLocal detector produces correct, stable results under concurrent load") {
     val samples: Seq[(String, String)] =
       Seq(english -> "en", french -> "fr", german -> "de")
 
@@ -57,10 +56,7 @@ class DetectLanguageTest extends FunSuite {
       _ <- 1 to iterationsPerSample
     } yield Future {
       val detected = DetectLanguage(input)
-      assert(
-        detected == expected,
-        s"expected $expected but got $detected under concurrent load"
-      )
+      assert(detected == expected, s"expected $expected but got $detected under concurrent load")
     }
 
     Await.result(Future.sequence(futures), 2.minutes)

@@ -3,11 +3,13 @@ import hashlib
 import os
 from xml.sax.saxutils import escape
 
-from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, desc, first
-
 
 def ExtractPopularImages(d, limit, min_width, min_height):
+    # Imported lazily so this module (and the pure-Python SaveBytes/
+    # WriteGEXF/WriteGraphML below, none of which touch Spark at all) stays
+    # importable without pyspark installed.
+    from pyspark.sql.functions import col, desc, first
+
     df = d.select("url", "md5").filter(
         (col("width") >= min_width) & (col("height") >= min_height)
     )

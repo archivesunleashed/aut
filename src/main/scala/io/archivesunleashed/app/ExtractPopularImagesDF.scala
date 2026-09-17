@@ -23,20 +23,25 @@ object ExtractPopularImagesDF {
   val MIN_WIDTH: Int = 30
   val MIN_HEIGHT: Int = 30
 
-  /** Extracts the <i>n</i> most popular images from an DataFrame within a given size range.
-    *
-    * @param d DataFrame obtained from RecordLoader
-    * @param limit number of most popular images in the output
-    * @param minWidth of image
-    * @param minHeight of image
-    * @return Dataset[Row], where the schema is (url, count)
-    */
+  /**
+   * Extracts the <i>n</i> most popular images from an DataFrame within a given size range.
+   *
+   * @param d
+   *   DataFrame obtained from RecordLoader
+   * @param limit
+   *   number of most popular images in the output
+   * @param minWidth
+   *   of image
+   * @param minHeight
+   *   of image
+   * @return
+   *   Dataset[Row], where the schema is (url, count)
+   */
   def apply(
       d: DataFrame,
       limit: Int,
       minWidth: Int = MIN_WIDTH,
-      minHeight: Int = MIN_HEIGHT
-  ): Dataset[Row] = {
+      minHeight: Int = MIN_HEIGHT): Dataset[Row] = {
 
     val spark = SparkSession.builder().master("local").getOrCreate()
     // scalastyle:off

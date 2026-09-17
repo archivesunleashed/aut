@@ -21,14 +21,17 @@ import javax.imageio.ImageIO
 /** Image sizing utilities. */
 object ComputeImageSize {
 
-  /** Computes image size from a byte array using ImageIO.
-    *
-    * Used by `ExtractPopularImages` to calculate the size of
-    * the image as a tuple of integers (width, height).
-    *
-    * @param bytes image as a byte array
-    * @return size of image as a tuple (width, height) or (0,0).
-    */
+  /**
+   * Computes image size from a byte array using ImageIO.
+   *
+   * Used by `ExtractPopularImages` to calculate the size of the image as a tuple of integers
+   * (width, height).
+   *
+   * @param bytes
+   *   image as a byte array
+   * @return
+   *   size of image as a tuple (width, height) or (0,0).
+   */
   def apply(bytes: Array[Byte]): (Int, Int) = {
     val nullImage = (0, 0)
     try {

@@ -44,55 +44,32 @@ class WordProcessorFilesTest extends FunSuite with BeforeAndAfter {
       .wordProcessorFiles()
 
     val extracted = df
-      .select(
-        "url",
-        "filename",
-        "extension",
-        "mime_type_web_server",
-        "mime_type_tika",
-        "md5"
-      )
+      .select("url", "filename", "extension", "mime_type_web_server", "mime_type_tika", "md5")
       .orderBy(desc("md5"))
       .head(3)
       .toList
     assert(extracted.size == 3)
-    assert(
-      "https://ruebot.net/files/aut-test-fixtures/test-aut-fixtures.rtf" == extracted(
-        0
-      )(0)
-    )
+    assert("https://ruebot.net/files/aut-test-fixtures/test-aut-fixtures.rtf" == extracted(0)(0))
     assert("test-aut-fixtures.rtf" == extracted(0)(1))
     assert("rtf" == extracted(0)(2))
     assert("application/rtf" == extracted(0)(3))
     assert("application/rtf" == extracted(0)(4))
     assert("e483512b65ba44d71e843c57de2adeb7" == extracted(0)(5))
-    assert(
-      "https://ruebot.net/files/aut-test-fixtures/test-aut-fixtures.odt" == extracted(
-        1
-      )(0)
-    )
+    assert("https://ruebot.net/files/aut-test-fixtures/test-aut-fixtures.odt" == extracted(1)(0))
     assert("test-aut-fixtures.odt" == extracted(1)(1))
     assert("odt" == extracted(1)(2))
     assert("application/vnd.oasis.opendocument.text" == extracted(1)(3))
     assert("application/vnd.oasis.opendocument.text" == extracted(1)(4))
     assert("9ef1aaee5c18cd16c47e75aaa38bd393" == extracted(1)(5))
-    assert(
-      "https://ruebot.net/files/aut-test-fixtures/test-aut-fixtures.docx" == extracted(
-        2
-      )(0)
-    )
+    assert("https://ruebot.net/files/aut-test-fixtures/test-aut-fixtures.docx" == extracted(2)(0))
     assert("test-aut-fixtures.docx" == extracted(2)(1))
     assert("docx" == extracted(2)(2))
     assert(
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document" == extracted(
-        2
-      )(3)
-    )
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document" == extracted(2)(
+        3))
     assert(
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document" == extracted(
-        2
-      )(4)
-    )
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document" == extracted(2)(
+        4))
     assert("51040165e60629c6bf63c2bd40b9e628" == extracted(2)(5))
   }
 

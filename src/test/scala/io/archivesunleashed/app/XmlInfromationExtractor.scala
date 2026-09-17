@@ -48,8 +48,7 @@ class XmlInformationExtractorTest extends FunSuite with BeforeAndAfter {
     assert(dfResults(0).get(1) == "")
     assert(
       dfResults(0)
-        .get(2) == "http://www.archive.org/services/collection-rss.php"
-    )
+        .get(2) == "http://www.archive.org/services/collection-rss.php")
     assert(dfResults(0).get(3) == "collection-rss.php")
     assert(dfResults(0).get(4) == "xml")
     assert(dfResults(0).get(5) == "text/xml")

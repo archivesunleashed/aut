@@ -34,32 +34,22 @@ class ExtractDomainTest extends FunSuite {
       (lintool, github),
       (
         "http://ianmilligan.ca/2015/05/04/iipc-2015-slides-for-warcs-wats-and-wgets-presentation/",
-        "ianmilligan.ca"
-      ),
-      (index, "")
-    )
+        "ianmilligan.ca"),
+      (index, ""))
     .result()
 
   private val data2 = Seq.newBuilder
-    .+=(
-      (index, jimmylin, umiacs),
-      (lintool, jimmylin, github),
-      (index, lintool, github)
-    )
+    .+=((index, jimmylin, umiacs), (lintool, jimmylin, github), (index, lintool, github))
     .result()
 
   private val data3 = Seq.newBuilder
     .+=(
-      (
-        "http://www.seetorontonow.canada-booknow.com\\booking_results.php",
-        "canada-booknow.com"
-      )
-    )
+      ("http://www.seetorontonow.canada-booknow.com\\booking_results.php", "canada-booknow.com"))
     .result()
 
   test("Extract simple domain extraction RDD") {
-    data1.foreach {
-      case (link, domain) => assert(ExtractDomain(link) == domain)
+    data1.foreach { case (link, domain) =>
+      assert(ExtractDomain(link) == domain)
     }
   }
 
@@ -71,8 +61,8 @@ class ExtractDomainTest extends FunSuite {
   }
 
   test("Test for domain backslash RDD") {
-    data3.foreach {
-      case (link, domain) => assert(ExtractDomain(link) == domain)
+    data3.foreach { case (link, domain) =>
+      assert(ExtractDomain(link) == domain)
     }
   }
 }

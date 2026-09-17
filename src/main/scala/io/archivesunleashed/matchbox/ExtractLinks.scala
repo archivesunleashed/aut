@@ -23,16 +23,17 @@ import scala.Option
 /** Extracts links from a webpage given the HTML content (using Jsoup). */
 object ExtractLinks {
 
-  /** Extract links.
-    *
-    * @param src the src link
-    * @param html the content from which links are to be extracted
-    * @return a sequence of (source, target, anchortext).
-    */
-  def apply(
-      src: String,
-      html: String
-  ): Seq[(String, String, String)] = {
+  /**
+   * Extract links.
+   *
+   * @param src
+   *   the src link
+   * @param html
+   *   the content from which links are to be extracted
+   * @return
+   *   a sequence of (source, target, anchortext).
+   */
+  def apply(src: String, html: String): Seq[(String, String, String)] = {
     val srcMaybe: Option[String] = Option(src)
     val htmlMaybe: Option[String] = Option(html)
     val output = mutable.MutableList[(String, String, String)]()

@@ -46,9 +46,7 @@ class CssInformationExtractorTest extends FunSuite with BeforeAndAfter {
     assert(dfResults.length == RESULTSLENGTH)
     assert(dfResults(0).get(0) == "20080430204833")
     assert(dfResults(0).get(1) == "20080422021044")
-    assert(
-      dfResults(0).get(2) == "http://www.archive.org/stylesheets/details.css"
-    )
+    assert(dfResults(0).get(2) == "http://www.archive.org/stylesheets/details.css")
     assert(dfResults(0).get(3) == "details.css")
     assert(dfResults(0).get(4) == "css")
     assert(dfResults(0).get(5) == "text/css")

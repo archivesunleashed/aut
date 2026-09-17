@@ -35,8 +35,7 @@ case class TestMediaDetails(
     extension: String,
     mime_type: String,
     md5: String,
-    bytes: String
-)
+    bytes: String)
 
 @RunWith(classOf[JUnitRunner])
 class SaveMediaBytesTest extends FunSuite with BeforeAndAfter {
@@ -80,16 +79,14 @@ class SaveMediaBytesTest extends FunSuite with BeforeAndAfter {
     val dummyEncBytes = Base64.getEncoder.encodeToString(
       Array
         .range(0, 127)
-        .map(_.toByte)
-    )
+        .map(_.toByte))
     val dummyMD5 = ComputeMD5(dummyEncBytes.getBytes)
     val dummyAudio = TestMediaDetails(
       "http://example.com/fake.mp3",
       "mp3",
       "audio/mpeg",
       dummyMD5,
-      dummyEncBytes
-    )
+      dummyEncBytes)
 
     // For toDF().
     val spark = SparkSession.builder().master("local").getOrCreate()
@@ -105,8 +102,7 @@ class SaveMediaBytesTest extends FunSuite with BeforeAndAfter {
       new File("/tmp").listFiles
         .filter(_.isFile)
         .toList
-        .count(_.getName.startsWith("bar-" + dummyMD5)) == 0
-    )
+        .count(_.getName.startsWith("bar-" + dummyMD5)) == 0)
   }
 
   after {
