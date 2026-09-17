@@ -224,7 +224,8 @@ package object archivesunleashed {
       val records = rdd
         .removeFiledesc()
         .keepValidPages()
-        .map(r =>
+        .map { r =>
+          val content = RemoveHTML(RemoveHTTPHeader(r.getContentString))
           Row(
             r.getCrawlDate,
             CovertLastModifiedDate(r.getLastModified),
@@ -232,10 +233,10 @@ package object archivesunleashed {
             r.getUrl,
             r.getMimeType,
             DetectMimeTypeTika(r.getBinaryBytes),
-            DetectLanguage(RemoveHTML(RemoveHTTPHeader(r.getContentString))),
-            RemoveHTML(RemoveHTTPHeader(r.getContentString))
+            DetectLanguage(content),
+            content
           )
-        )
+        }
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -298,9 +299,11 @@ package object archivesunleashed {
     /* Extract image bytes and image metadata. */
     def images(): DataFrame = {
       val records = rdd
-        .keepImages()
-        .map(r => {
-          val mimeTypeTika = DetectMimeTypeTika(r.getBinaryBytes)
+        .map(r => (r, DetectMimeTypeTika(r.getBinaryBytes)))
+        .filter { case (r, mimeTypeTika) =>
+          r.getCrawlDate != null && mimeTypeTika.startsWith("image/")
+        }
+        .map { case (r, mimeTypeTika) =>
           val image =
             ExtractImageDetails(r.getUrl, mimeTypeTika, r.getBinaryBytes)
           val url = new URL(r.getUrl)
@@ -320,7 +323,7 @@ package object archivesunleashed {
             image.sha1Hash,
             image.body
           )
-        })
+        }
         .map(t =>
           Row(
             t._1,
@@ -380,7 +383,7 @@ package object archivesunleashed {
             filename,
             extension,
             r._1.getMimeType,
-            DetectMimeTypeTika(r._1.getBinaryBytes),
+            r._2,
             md5Hash,
             sha1Hash,
             encodedBytes
@@ -430,7 +433,7 @@ package object archivesunleashed {
             filename,
             extension,
             r._1.getMimeType,
-            DetectMimeTypeTika(r._1.getBinaryBytes),
+            r._2,
             md5Hash,
             sha1Hash,
             encodedBytes
@@ -480,7 +483,7 @@ package object archivesunleashed {
             filename,
             extension,
             r._1.getMimeType,
-            DetectMimeTypeTika(r._1.getBinaryBytes),
+            r._2,
             md5Hash,
             sha1Hash,
             encodedBytes
@@ -565,7 +568,7 @@ package object archivesunleashed {
             filename,
             extension,
             r._1.getMimeType,
-            DetectMimeTypeTika(r._1.getBinaryBytes),
+            r._2,
             md5Hash,
             sha1Hash,
             encodedBytes
@@ -630,7 +633,7 @@ package object archivesunleashed {
             filename,
             extension,
             r._1.getMimeType,
-            DetectMimeTypeTika(r._1.getBinaryBytes),
+            r._2,
             md5Hash,
             sha1Hash,
             encodedBytes
@@ -699,7 +702,7 @@ package object archivesunleashed {
             filename,
             extension,
             r._1.getMimeType,
-            DetectMimeTypeTika(r._1.getBinaryBytes),
+            r._2,
             md5Hash,
             sha1Hash,
             encodedBytes
@@ -950,7 +953,7 @@ package object archivesunleashed {
             filename,
             extension,
             r._1.getMimeType,
-            DetectMimeTypeTika(r._1.getBinaryBytes),
+            r._3,
             md5Hash,
             sha1Hash,
             RemoveHTTPHeader(r._1.getContentString)
