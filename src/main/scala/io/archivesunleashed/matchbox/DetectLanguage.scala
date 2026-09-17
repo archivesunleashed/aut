@@ -22,6 +22,16 @@ import org.apache.tika.language.detect.LanguageResult;
 /** Detects language using Apache Tika. */
 object DetectLanguage {
 
+  // OptimaizeLangDetector.loadModels() parses n-gram language profiles
+  // from the classpath on construction, which is expensive to repeat on
+  // every call. LanguageDetector instances are meant to be reset and
+  // reused across detect() calls, but aren't documented as safe to share
+  // across threads, so each thread gets its own cached instance instead
+  // of either a bare shared singleton or a fresh instance (and model
+  // reload) per call.
+  private val detector: ThreadLocal[LanguageDetector] =
+    ThreadLocal.withInitial(() => new OptimaizeLangDetector().loadModels())
+
   /** Detects the language of a String input.
     *
     * @param input the string for which language can be detected
@@ -31,8 +41,7 @@ object DetectLanguage {
     if (input.isEmpty) {
       ""
     } else {
-      val detector: LanguageDetector = new OptimaizeLangDetector().loadModels()
-      val result: LanguageResult = detector.detect(input)
+      val result: LanguageResult = detector.get().detect(input)
       result.getLanguage()
     }
   }
