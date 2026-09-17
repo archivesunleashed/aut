@@ -124,16 +124,18 @@ class ArcTest extends FunSuite with BeforeAndAfter {
 
     mimeTypeCounts.foreach {
       case ("image/gif", count)                     => assert(29L == count)
-      case ("image/png", count)                     => assert(8L == count)
-      case ("image/jpeg", count)                    => assert(18L == count)
       case ("text/html", count)                     => assert(132L == count)
-      case ("text/plain", count)                    => assert(86L == count)
-      case ("application/xml", count)               => assert(1L == count)
+      case ("text/plain", count)                    => assert(53L == count)
+      case ("text/x-robots", count)                 => assert(32L == count)
+      case ("text/javascript", count)               => assert(1L == count)
+      case ("application/xspf+xml", count)          => assert(1L == count)
       case ("application/rss+xml", count)           => assert(9L == count)
       case ("application/xhtml+xml", count)         => assert(1L == count)
       case ("application/octet-stream", count)      => assert(26L == count)
       case ("application/x-shockwave-flash", count) => assert(8L == count)
-      case (_, count)                               => print(_)
+      case ("N/A", count)                           => assert(7L == count)
+      case (mimeType, count) =>
+        fail(s"Unexpected MIME type in results: $mimeType ($count records)")
     }
   }
 

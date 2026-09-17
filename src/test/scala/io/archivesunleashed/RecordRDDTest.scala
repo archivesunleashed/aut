@@ -133,8 +133,8 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
     assert(
       r2.deep == Array(
         "dns:www.archive.org",
-        "http://www.archive.org/robots.txt",
-        "http://www.archive.org/images/logoc.jpg"
+        "http://www.archive.org/images/logoc.jpg",
+        "dns:ia331306.us.archive.org"
       ).deep
     )
   }
@@ -192,9 +192,9 @@ class RecordRDDTest extends FunSuite with BeforeAndAfter {
       .take(3)
     assert(
       r2.deep == Array(
+        "http://www.archive.org/robots.txt",
         "http://www.archive.org/",
-        "http://www.archive.org/index.php",
-        "http://www.archive.org/images/go-button-gateway.gif"
+        "http://www.archive.org/index.php"
       ).deep
     )
   }

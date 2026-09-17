@@ -15,7 +15,7 @@
  */
 package io.archivesunleashed.matchbox
 
-import org.apache.tika.langdetect.OptimaizeLangDetector;
+import org.apache.tika.langdetect.optimaize.OptimaizeLangDetector;
 import org.apache.tika.language.detect.LanguageDetector;
 import org.apache.tika.language.detect.LanguageResult;
 

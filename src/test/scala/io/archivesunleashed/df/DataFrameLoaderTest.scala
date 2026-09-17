@@ -163,9 +163,11 @@ class DataFrameLoaderTest extends FunSuite with BeforeAndAfter {
     )
 
     val r_16 = pt.select(crawl_date, url).take(1)(0)
-    assert(r_16.getAs[String](crawl_date) == "20080430204825")
+    assert(r_16.getAs[String](crawl_date) == "20080430205210")
     assert(
-      r_16.getAs[String](url) == "http://www.archive.org/robots.txt"
+      r_16.getAs[String](
+        url
+      ) == "http://www.archive.org/includes/csshover.htc"
     )
 
     val r_17 = xml.select(crawl_date, url).take(1)(0)

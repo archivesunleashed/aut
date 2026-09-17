@@ -41,18 +41,20 @@ class PlainTextInformationExtractorTest extends FunSuite with BeforeAndAfter {
   test("Plain text information extractor DF") {
     val df = RecordLoader.loadArchives(arcPath, sc).plainText()
     val dfResults = PlainTextInformationExtractor(df).collect()
-    val RESULTSLENGTH = 34
+    val RESULTSLENGTH = 2
 
     assert(dfResults.length == RESULTSLENGTH)
-    assert(dfResults(0).get(0) == "20080430204825")
-    assert(dfResults(0).get(1) == "20080202194044")
-    assert(dfResults(0).get(2) == "http://www.archive.org/robots.txt")
-    assert(dfResults(0).get(3) == "robots.txt")
-    assert(dfResults(0).get(4) == "txt")
+    assert(dfResults(0).get(0) == "20080430205210")
+    assert(dfResults(0).get(1) == "20060210060725")
+    assert(
+      dfResults(0).get(2) == "http://www.archive.org/includes/csshover.htc"
+    )
+    assert(dfResults(0).get(3) == "csshover.htc")
+    assert(dfResults(0).get(4) == "htc")
     assert(dfResults(0).get(5) == "text/plain")
     assert(dfResults(0).get(6) == "text/plain")
-    assert(dfResults(0).get(7) == "a6d6869f680b1bdd0d27bf5a5f49482e")
-    assert(dfResults(0).get(8) == "95046652b71aaa1e8a5a6af91e24016dfeae7bd4")
+    assert(dfResults(0).get(7) == "b177c2210b9b88ba772137c129f361ce")
+    assert(dfResults(0).get(8) == "f6d6e109017a2d3caa96f2c18564a77344fc048a")
   }
 
   after {
