@@ -290,32 +290,73 @@ package object archivesunleashed {
 
     /* Extract image bytes and image metadata. */
     def images(): DataFrame = {
-      val records = rdd
+      // DetectMimeTypeTika(r.getBinaryBytes) is computed once here and
+      // reused below (see package.scala history for why: it used to be
+      // computed twice, once in keepImages()'s own filter and again in
+      // this method's row-building step).
+      val rowsRdd = rdd
         .map(r => (r, DetectMimeTypeTika(r.getBinaryBytes)))
         .filter { case (r, mimeTypeTika) =>
           r.getCrawlDate != null && mimeTypeTika.startsWith("image/")
         }
-        .map { case (r, mimeTypeTika) =>
-          val image =
-            ExtractImageDetails(r.getUrl, mimeTypeTika, r.getBinaryBytes)
-          val url = new URL(r.getUrl)
-          val filename = FilenameUtils.getName(url.getPath())
-          val extension = GetExtensionMIME(url.getPath(), mimeTypeTika)
-          (
-            r.getCrawlDate,
-            CovertLastModifiedDate(r.getLastModified),
-            r.getUrl,
-            filename,
-            extension,
-            r.getMimeType,
-            mimeTypeTika,
-            image.width,
-            image.height,
-            image.md5Hash,
-            image.sha1Hash,
-            image.body)
-        }
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10, t._11, t._12))
+        .mapPartitions(iter => {
+          val out = scala.collection.mutable.ArrayBuffer.empty[Row]
+          iter.foreach { case (r, mimeTypeTika) =>
+            try {
+              val image = ExtractImageDetails(r.getUrl, mimeTypeTika, r.getBinaryBytes)
+
+              if (image != null) {
+                try {
+                  // try to parse URL; if it's invalid we skip the record
+                  val url = new URL(r.getUrl)
+                  val filename = FilenameUtils.getName(url.getPath)
+                  val extension = GetExtensionMIME(url.getPath, mimeTypeTika)
+
+                  // defensive guards for all fields
+                  val crawlDate: String = if (r.getCrawlDate != null) r.getCrawlDate else ""
+                  val lastModified: String =
+                    if (r.getLastModified != null) CovertLastModifiedDate(r.getLastModified)
+                    else ""
+                  val urlStr: String = if (r.getUrl != null) r.getUrl else ""
+                  val mimeServer: String = if (r.getMimeType != null) r.getMimeType else ""
+                  val mimeTikaStr: String = if (mimeTypeTika != null) mimeTypeTika else ""
+
+                  // box ints into java.lang.Integer to avoid unboxing NPEs
+                  val widthBox: java.lang.Integer =
+                    try { java.lang.Integer.valueOf(image.width) }
+                    catch { case _: Throwable => null }
+                  val heightBox: java.lang.Integer =
+                    try { java.lang.Integer.valueOf(image.height) }
+                    catch { case _: Throwable => null }
+
+                  val md5: String = if (image.md5Hash != null) image.md5Hash else ""
+                  val sha1: String = if (image.sha1Hash != null) image.sha1Hash else ""
+                  val bytes: String = if (image.body != null) image.body else ""
+
+                  out += Row(
+                    crawlDate,
+                    lastModified,
+                    urlStr,
+                    filename,
+                    extension,
+                    mimeServer,
+                    mimeTikaStr,
+                    widthBox,
+                    heightBox,
+                    md5,
+                    sha1,
+                    bytes)
+                } catch {
+                  case _: java.net.MalformedURLException => () // skip invalid URL
+                  case _: Throwable => () // skip other per-record issues
+                }
+              }
+            } catch {
+              case _: Throwable => () // skip record on any upstream failure
+            }
+          }
+          out.iterator
+        })
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -331,8 +372,8 @@ package object archivesunleashed {
         .add(StructField("sha1", StringType, true))
         .add(StructField("bytes", StringType, true))
 
-      val sqlContext = SparkSession.builder();
-      sqlContext.getOrCreate().createDataFrame(records, schema)
+      val sqlContext = SparkSession.builder()
+      sqlContext.getOrCreate().createDataFrame(rowsRdd, schema)
     }
 
     /* Extract PDF bytes and PDF metadata. */
