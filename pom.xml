@@ -580,7 +580,7 @@
     <dependency>
       <groupId>com.github.internetarchive</groupId>
       <artifactId>Sparkling</artifactId>
-      <version>main-f002a0509e-1</version>
+      <version>8d9b54a</version>
     </dependency>
   </dependencies>
 

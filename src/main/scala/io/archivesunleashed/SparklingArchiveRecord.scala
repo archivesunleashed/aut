@@ -106,6 +106,6 @@ class SparklingArchiveRecord(
 
   override def getPayloadDigest: String =
     Try {
-      meta.payloadDigest.orElse(warc.digestPayload()).getOrElse("")
+      meta.payloadDigest.getOrElse(warc.digestPayload())
     }.getOrElse("")
 }
