@@ -20,3 +20,4 @@ src/main/python/tf/model/graph/
 src/main/python/tf/model/category/
 .bloop/
 .metals/
+dependency-reduced-pom.xml
