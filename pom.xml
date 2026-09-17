@@ -473,11 +473,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.scala-lang.modules</groupId>
-      <artifactId>scala-parser-combinators_${scala.binary.version}</artifactId>
-      <version>1.1.2</version>
-    </dependency>
-    <dependency>
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-library</artifactId>
       <version>${scala.version}</version>
@@ -487,26 +482,15 @@
       <artifactId>commons-codec</artifactId>
       <version>1.12</version>
     </dependency>
-    <dependency>
+    <dependency>  <!-- Needed for Sparkling's Brotli-encoded content support (provided scope in its own build). -->
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-compress</artifactId>
-      <version>[1.26.0,)</version>
+      <version>1.28.0</version>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <version>${guava.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.hadoop</groupId>
-      <artifactId>hadoop-mapreduce-client-core</artifactId>
-      <version>${hadoop.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.servlet</groupId>
-          <artifactId>servlet-api</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.hadoop</groupId>
@@ -529,6 +513,10 @@
       <artifactId>spark-sql_${scala.binary.version}</artifactId>
       <version>${spark.version}</version>
     </dependency>
+    <!-- Not referenced directly in source, but needed at runtime for
+         Snappy-compressed WARC/ARC content via Hadoop's compression
+         codec framework; no test fixture exercises Snappy-compressed
+         content, so this has no test coverage either way. -->
     <dependency>
       <groupId>org.xerial.snappy</groupId>
       <artifactId>snappy-java</artifactId>
@@ -539,37 +527,34 @@
       <artifactId>jsoup</artifactId>
       <version>1.15.3</version>
     </dependency>
-    <dependency>
-      <groupId>org.netpreserve.commons</groupId>
-      <artifactId>webarchive-commons</artifactId>
-      <version>1.1.9</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.apache.hadoop</groupId>
-          <artifactId>hadoop-core</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.httpcomponents</groupId>
-          <artifactId>httpcore</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.httpcomponents</groupId>
-          <artifactId>httpclient</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>joda-time</groupId>
-          <artifactId>joda-time</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
+    <!-- Not referenced directly in source, but Spark's own
+         org.apache.spark.metrics.sink.MetricsServlet needs it (via
+         ObjectMapper) to initialize a SparkContext at all; without
+         it, every job fails immediately on startup. -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <version>${jackson.version}</version>
     </dependency>
+    <!-- Used directly (package.scala, GetExtensionMIME.scala, df/package.scala),
+         previously only present transitively via Tika. Declared explicitly and
+         pinned given the runtime classpath-collision history with Hadoop's
+         older bundled commons-io (see ShadedJarClasspathIT). -->
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.20.0</version>
+    </dependency>
     <dependency>
       <groupId>org.apache.tika</groupId>
       <artifactId>tika-core</artifactId>
+      <version>${tika.version}</version>
+    </dependency>
+    <!-- Used directly by ExtractTextFromPDFs.scala; previously only present
+         transitively via tika-parsers-standard-package. -->
+    <dependency>
+      <groupId>org.apache.tika</groupId>
+      <artifactId>tika-parser-pdf-module</artifactId>
       <version>${tika.version}</version>
     </dependency>
     <dependency>
@@ -607,32 +592,29 @@
       <artifactId>boilerpipe</artifactId>
       <version>1.2.2</version>
     </dependency>
-    <dependency>  <!-- Needed for running boilerpipe. -->
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-      <version>2.12.2</version>
-    </dependency>
-    <dependency>
-      <groupId>tl.lin</groupId>
-      <artifactId>lintools-datatypes</artifactId>
-      <version>1.1.1</version>
-    </dependency>
-    <!--START pull #321-->
+    <!-- tika-langdetect-optimaize excludes the official
+         com.optimaize.languagedetector:language-detector and needs a
+         substitute on the classpath at runtime (OptimaizeLangDetector
+         delegates to com.optimaize.langdetect.* classes); this republish
+         under different coordinates is that substitute. -->
     <dependency>
       <groupId>com.github.netarchivesuite</groupId>
       <artifactId>language-detector</artifactId>
       <version>language-detector-0.6a</version>
     </dependency>
-    <!--END pull #321-->
-    <dependency>
-      <groupId>org.apache.hadoop</groupId>
-      <artifactId>hadoop-aws</artifactId>
-      <version>${hadoop.version}</version>
-    </dependency>
     <dependency>
       <groupId>com.github.internetarchive</groupId>
       <artifactId>Sparkling</artifactId>
       <version>8d9b54a</version>
+    </dependency>
+    <!-- Not referenced directly in source, but needed at runtime for
+         s3a:// support (RecordLoader.loadArchives against S3-hosted
+         collections). No test fixture exercises S3, so this has no test
+         coverage either way. -->
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-aws</artifactId>
+      <version>${hadoop.version}</version>
     </dependency>
   </dependencies>
 
