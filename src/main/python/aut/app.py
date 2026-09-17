@@ -4,11 +4,13 @@ import os
 from xml.sax.saxutils import escape
 
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import desc, first
+from pyspark.sql.functions import col, desc, first
 
 
 def ExtractPopularImages(d, limit, min_width, min_height):
-    df = d.select("url", "md5")
+    df = d.select("url", "md5").filter(
+        (col("width") >= min_width) & (col("height") >= min_height)
+    )
     count = df.groupBy("md5").count()
 
     return (
@@ -132,10 +134,10 @@ def WriteGraphML(data, graphml_path):
             + hashlib.md5(edge[2].encode()).hexdigest()
             + '" type="directed">\n'
             + '<data key="weight">'
-            + str(row[3])
+            + str(edge[3])
             + "</data>\n"
             + '<data key="crawlDate">'
-            + str(row[0])
+            + str(edge[0])
             + "</data>\n"
             + "</edge>\n"
         )

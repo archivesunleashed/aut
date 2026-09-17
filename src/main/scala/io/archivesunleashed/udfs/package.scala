@@ -31,6 +31,7 @@ import io.archivesunleashed.matchbox.{
   RemoveHTML,
   RemoveHTTPHeader
 }
+import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.expressions.UserDefinedFunction
 import org.apache.spark.sql.functions.udf
 
@@ -49,8 +50,18 @@ package object udfs extends Serializable {
     udf(ExtractBoilerpipeText.apply(_: String))
   def extractDate: UserDefinedFunction =
     udf(ExtractDate.apply(_: String, _: String))
-  def extractDomain: UserDefinedFunction =
-    udf(ExtractDomain.apply(_: String))
+  // Broadcasts the public suffix list once per Spark application instead of
+  // letting the single-argument ExtractDomain.apply(url) trigger an
+  // independent network fetch on every executor JVM (see
+  // ExtractDomain.broadcast). Rebuilt fresh each time this def is accessed,
+  // but ExtractDomain.broadcast itself caches by applicationId, so this
+  // stays cheap after the first call.
+  def extractDomain: UserDefinedFunction = {
+    val suffixes = ExtractDomain.broadcast(
+      SparkSession.builder().getOrCreate().sparkContext
+    )
+    udf((url: String) => ExtractDomain(url, suffixes.value))
+  }
   def extractImageLinks: UserDefinedFunction =
     udf(ExtractImageLinks.apply(_: String, _: String))
   def extractLinks: UserDefinedFunction =
