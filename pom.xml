@@ -20,10 +20,10 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <project.name>${project.artifactId}</project.name>
-    <scala.version>2.12.10</scala.version>
+    <scala.version>2.12.18</scala.version>
     <scala.binary.version>2.12</scala.binary.version>
     <hadoop.version>2.7.4</hadoop.version>
-    <spark.version>3.0.1</spark.version>
+    <spark.version>3.5.9</spark.version>
     <guava.version>32.0.0-jre</guava.version>
     <github.global.server>github</github.global.server>
     <license.plugin.version>3.0</license.plugin.version>
@@ -44,7 +44,7 @@
     <jacoco.plugin.version>0.8.4</jacoco.plugin.version>
     <versions.plugin.version>2.1</versions.plugin.version>
     <tika.version>3.2.2</tika.version>
-    <jackson.version>2.10.0</jackson.version>
+    <jackson.version>2.15.2</jackson.version>
     <scala.maven.plugin.version>4.5.4</scala.maven.plugin.version>
   </properties>
 
@@ -240,7 +240,7 @@
             <compilerPlugin>
               <groupId>org.scalameta</groupId>
               <artifactId>semanticdb-scalac_${scala.version}</artifactId>
-              <version>4.6.0</version>
+              <version>4.17.4</version>
             </compilerPlugin>
           </compilerPlugins>
         </configuration>
