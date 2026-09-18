@@ -381,28 +381,37 @@ package object archivesunleashed {
       val records = rdd
         .map(r => (r, (DetectMimeTypeTika(r.getBinaryBytes))))
         .filter(r => r._2 == "application/pdf")
-        .map(r => {
-          val bytes = r._1.getBinaryBytes
-          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
-          val sha1Hash =
-            new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
-          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
-          val url = new URL(r._1.getUrl)
-          val filename = FilenameUtils.getName(url.getPath())
-          val extension = GetExtensionMIME(url.getPath(), r._2)
-          (
-            r._1.getCrawlDate,
-            CovertLastModifiedDate(r._1.getLastModified),
-            r._1.getUrl,
-            filename,
-            extension,
-            r._1.getMimeType,
-            r._2,
-            md5Hash,
-            sha1Hash,
-            encodedBytes)
+        .mapPartitions(iter => {
+          val out = scala.collection.mutable.ArrayBuffer.empty[Row]
+          iter.foreach { r =>
+            try {
+              val bytes = r._1.getBinaryBytes
+              val md5Hash =
+                new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+              val sha1Hash =
+                new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
+              val encodedBytes = Base64.getEncoder.encodeToString(bytes)
+              val url = new URL(r._1.getUrl)
+              val filename = FilenameUtils.getName(url.getPath())
+              val extension = GetExtensionMIME(url.getPath(), r._2)
+              out += Row(
+                r._1.getCrawlDate,
+                CovertLastModifiedDate(r._1.getLastModified),
+                r._1.getUrl,
+                filename,
+                extension,
+                r._1.getMimeType,
+                r._2,
+                md5Hash,
+                sha1Hash,
+                encodedBytes)
+            } catch {
+              case _: java.net.MalformedURLException => () // skip invalid URL
+              case _: Throwable => () // skip other per-record issues
+            }
+          }
+          out.iterator
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -425,28 +434,37 @@ package object archivesunleashed {
       val records = rdd
         .map(r => (r, (DetectMimeTypeTika(r.getBinaryBytes))))
         .filter(r => r._2.startsWith("audio/"))
-        .map(r => {
-          val bytes = r._1.getBinaryBytes
-          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
-          val sha1Hash =
-            new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
-          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
-          val url = new URL(r._1.getUrl)
-          val filename = FilenameUtils.getName(url.getPath())
-          val extension = GetExtensionMIME(url.getPath(), r._2)
-          (
-            r._1.getCrawlDate,
-            CovertLastModifiedDate(r._1.getLastModified),
-            r._1.getUrl,
-            filename,
-            extension,
-            r._1.getMimeType,
-            r._2,
-            md5Hash,
-            sha1Hash,
-            encodedBytes)
+        .mapPartitions(iter => {
+          val out = scala.collection.mutable.ArrayBuffer.empty[Row]
+          iter.foreach { r =>
+            try {
+              val bytes = r._1.getBinaryBytes
+              val md5Hash =
+                new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+              val sha1Hash =
+                new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
+              val encodedBytes = Base64.getEncoder.encodeToString(bytes)
+              val url = new URL(r._1.getUrl)
+              val filename = FilenameUtils.getName(url.getPath())
+              val extension = GetExtensionMIME(url.getPath(), r._2)
+              out += Row(
+                r._1.getCrawlDate,
+                CovertLastModifiedDate(r._1.getLastModified),
+                r._1.getUrl,
+                filename,
+                extension,
+                r._1.getMimeType,
+                r._2,
+                md5Hash,
+                sha1Hash,
+                encodedBytes)
+            } catch {
+              case _: java.net.MalformedURLException => () // skip invalid URL
+              case _: Throwable => () // skip other per-record issues
+            }
+          }
+          out.iterator
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -469,28 +487,37 @@ package object archivesunleashed {
       val records = rdd
         .map(r => (r, (DetectMimeTypeTika(r.getBinaryBytes))))
         .filter(r => r._2.startsWith("video/"))
-        .map(r => {
-          val bytes = r._1.getBinaryBytes
-          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
-          val sha1Hash =
-            new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
-          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
-          val url = new URL(r._1.getUrl)
-          val filename = FilenameUtils.getName(url.getPath())
-          val extension = GetExtensionMIME(url.getPath(), r._2)
-          (
-            r._1.getCrawlDate,
-            CovertLastModifiedDate(r._1.getLastModified),
-            r._1.getUrl,
-            filename,
-            extension,
-            r._1.getMimeType,
-            r._2,
-            md5Hash,
-            sha1Hash,
-            encodedBytes)
+        .mapPartitions(iter => {
+          val out = scala.collection.mutable.ArrayBuffer.empty[Row]
+          iter.foreach { r =>
+            try {
+              val bytes = r._1.getBinaryBytes
+              val md5Hash =
+                new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+              val sha1Hash =
+                new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
+              val encodedBytes = Base64.getEncoder.encodeToString(bytes)
+              val url = new URL(r._1.getUrl)
+              val filename = FilenameUtils.getName(url.getPath())
+              val extension = GetExtensionMIME(url.getPath(), r._2)
+              out += Row(
+                r._1.getCrawlDate,
+                CovertLastModifiedDate(r._1.getLastModified),
+                r._1.getUrl,
+                filename,
+                extension,
+                r._1.getMimeType,
+                r._2,
+                md5Hash,
+                sha1Hash,
+                encodedBytes)
+            } catch {
+              case _: java.net.MalformedURLException => () // skip invalid URL
+              case _: Throwable => () // skip other per-record issues
+            }
+          }
+          out.iterator
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -539,36 +566,45 @@ package object archivesunleashed {
             || ((r._1.getUrl.toLowerCase.endsWith(".csv")
               || r._1.getUrl.toLowerCase.endsWith(".tsv"))
               && r._2 == "text/plain"))
-        .map(r => {
-          val bytes = r._1.getBinaryBytes
-          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
-          val sha1Hash =
-            new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
-          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
-          val url = new URL(r._1.getUrl)
-          val filename = FilenameUtils.getName(url.getPath())
-          var mimeType = r._2
-          if (mimeType == "text/plain") {
-            if (r._1.getUrl.toLowerCase.endsWith(".csv")) {
-              mimeType = "test/csv"
-            } else if (r._1.getUrl.toLowerCase.endsWith(".tsv")) {
-              mimeType = "text/tab-separated-values"
+        .mapPartitions(iter => {
+          val out = scala.collection.mutable.ArrayBuffer.empty[Row]
+          iter.foreach { r =>
+            try {
+              val bytes = r._1.getBinaryBytes
+              val md5Hash =
+                new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+              val sha1Hash =
+                new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
+              val encodedBytes = Base64.getEncoder.encodeToString(bytes)
+              val url = new URL(r._1.getUrl)
+              val filename = FilenameUtils.getName(url.getPath())
+              var mimeType = r._2
+              if (mimeType == "text/plain") {
+                if (r._1.getUrl.toLowerCase.endsWith(".csv")) {
+                  mimeType = "test/csv"
+                } else if (r._1.getUrl.toLowerCase.endsWith(".tsv")) {
+                  mimeType = "text/tab-separated-values"
+                }
+              }
+              val extension = GetExtensionMIME(url.getPath(), mimeType)
+              out += Row(
+                r._1.getCrawlDate,
+                CovertLastModifiedDate(r._1.getLastModified),
+                r._1.getUrl,
+                filename,
+                extension,
+                r._1.getMimeType,
+                r._2,
+                md5Hash,
+                sha1Hash,
+                encodedBytes)
+            } catch {
+              case _: java.net.MalformedURLException => () // skip invalid URL
+              case _: Throwable => () // skip other per-record issues
             }
           }
-          val extension = GetExtensionMIME(url.getPath(), mimeType)
-          (
-            r._1.getCrawlDate,
-            CovertLastModifiedDate(r._1.getLastModified),
-            r._1.getUrl,
-            filename,
-            extension,
-            r._1.getMimeType,
-            r._2,
-            md5Hash,
-            sha1Hash,
-            encodedBytes)
+          out.iterator
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -605,28 +641,37 @@ package object archivesunleashed {
             || r._2 == "application/vnd.ms-powerpoint.slide.macroEnabled.12"
             || r._2 == "application/vnd.ms-powerpoint.slideshow.macroEnabled.12"
             || r._2 == "application/vnd.ms-powerpoint.template.macroEnabled.12")
-        .map(r => {
-          val bytes = r._1.getBinaryBytes
-          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
-          val sha1Hash =
-            new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
-          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
-          val url = new URL(r._1.getUrl)
-          val filename = FilenameUtils.getName(url.getPath())
-          val extension = GetExtensionMIME(url.getPath(), r._2)
-          (
-            r._1.getCrawlDate,
-            CovertLastModifiedDate(r._1.getLastModified),
-            r._1.getUrl,
-            filename,
-            extension,
-            r._1.getMimeType,
-            r._2,
-            md5Hash,
-            sha1Hash,
-            encodedBytes)
+        .mapPartitions(iter => {
+          val out = scala.collection.mutable.ArrayBuffer.empty[Row]
+          iter.foreach { r =>
+            try {
+              val bytes = r._1.getBinaryBytes
+              val md5Hash =
+                new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+              val sha1Hash =
+                new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
+              val encodedBytes = Base64.getEncoder.encodeToString(bytes)
+              val url = new URL(r._1.getUrl)
+              val filename = FilenameUtils.getName(url.getPath())
+              val extension = GetExtensionMIME(url.getPath(), r._2)
+              out += Row(
+                r._1.getCrawlDate,
+                CovertLastModifiedDate(r._1.getLastModified),
+                r._1.getUrl,
+                filename,
+                extension,
+                r._1.getMimeType,
+                r._2,
+                md5Hash,
+                sha1Hash,
+                encodedBytes)
+            } catch {
+              case _: java.net.MalformedURLException => () // skip invalid URL
+              case _: Throwable => () // skip other per-record issues
+            }
+          }
+          out.iterator
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -667,28 +712,37 @@ package object archivesunleashed {
             || r._2 == "application/macwriteii"
             || r._2 == "application/vnd.ms-works"
             || r._2 == "application/rtf")
-        .map(r => {
-          val bytes = r._1.getBinaryBytes
-          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
-          val sha1Hash =
-            new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
-          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
-          val url = new URL(r._1.getUrl)
-          val filename = FilenameUtils.getName(url.getPath())
-          val extension = GetExtensionMIME(url.getPath(), r._2)
-          (
-            r._1.getCrawlDate,
-            CovertLastModifiedDate(r._1.getLastModified),
-            r._1.getUrl,
-            filename,
-            extension,
-            r._1.getMimeType,
-            r._2,
-            md5Hash,
-            sha1Hash,
-            encodedBytes)
+        .mapPartitions(iter => {
+          val out = scala.collection.mutable.ArrayBuffer.empty[Row]
+          iter.foreach { r =>
+            try {
+              val bytes = r._1.getBinaryBytes
+              val md5Hash =
+                new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+              val sha1Hash =
+                new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
+              val encodedBytes = Base64.getEncoder.encodeToString(bytes)
+              val url = new URL(r._1.getUrl)
+              val filename = FilenameUtils.getName(url.getPath())
+              val extension = GetExtensionMIME(url.getPath(), r._2)
+              out += Row(
+                r._1.getCrawlDate,
+                CovertLastModifiedDate(r._1.getLastModified),
+                r._1.getUrl,
+                filename,
+                extension,
+                r._1.getMimeType,
+                r._2,
+                md5Hash,
+                sha1Hash,
+                encodedBytes)
+            } catch {
+              case _: java.net.MalformedURLException => () // skip invalid URL
+              case _: Throwable => () // skip other per-record issues
+            }
+          }
+          out.iterator
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -711,28 +765,36 @@ package object archivesunleashed {
       val records = rdd
         .map(r => (r, (r.getMimeType)))
         .filter(r => r._2 == "text/css")
-        .map(r => {
-          val bytes = r._1.getBinaryBytes
-          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
-          val sha1Hash =
-            new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
-          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
-          val url = new URL(r._1.getUrl)
-          val filename = FilenameUtils.getName(url.getPath())
-          val extension = GetExtensionMIME(url.getPath(), r._2)
-          (
-            r._1.getCrawlDate,
-            CovertLastModifiedDate(r._1.getLastModified),
-            r._1.getUrl,
-            filename,
-            extension,
-            r._1.getMimeType,
-            DetectMimeTypeTika(r._1.getBinaryBytes),
-            md5Hash,
-            sha1Hash,
-            RemoveHTTPHeader(r._1.getContentString))
+        .mapPartitions(iter => {
+          val out = scala.collection.mutable.ArrayBuffer.empty[Row]
+          iter.foreach { r =>
+            try {
+              val bytes = r._1.getBinaryBytes
+              val md5Hash =
+                new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+              val sha1Hash =
+                new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
+              val url = new URL(r._1.getUrl)
+              val filename = FilenameUtils.getName(url.getPath())
+              val extension = GetExtensionMIME(url.getPath(), r._2)
+              out += Row(
+                r._1.getCrawlDate,
+                CovertLastModifiedDate(r._1.getLastModified),
+                r._1.getUrl,
+                filename,
+                extension,
+                r._1.getMimeType,
+                DetectMimeTypeTika(r._1.getBinaryBytes),
+                md5Hash,
+                sha1Hash,
+                RemoveHTTPHeader(r._1.getContentString))
+            } catch {
+              case _: java.net.MalformedURLException => () // skip invalid URL
+              case _: Throwable => () // skip other per-record issues
+            }
+          }
+          out.iterator
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -755,28 +817,36 @@ package object archivesunleashed {
       val records = rdd
         .map(r => (r, (r.getMimeType)))
         .filter(r => r._2 == "text/html")
-        .map(r => {
-          val bytes = r._1.getBinaryBytes
-          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
-          val sha1Hash =
-            new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
-          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
-          val url = new URL(r._1.getUrl)
-          val filename = FilenameUtils.getName(url.getPath())
-          val extension = GetExtensionMIME(url.getPath(), r._2)
-          (
-            r._1.getCrawlDate,
-            CovertLastModifiedDate(r._1.getLastModified),
-            r._1.getUrl,
-            filename,
-            extension,
-            r._1.getMimeType,
-            DetectMimeTypeTika(r._1.getBinaryBytes),
-            md5Hash,
-            sha1Hash,
-            RemoveHTTPHeader(r._1.getContentString))
+        .mapPartitions(iter => {
+          val out = scala.collection.mutable.ArrayBuffer.empty[Row]
+          iter.foreach { r =>
+            try {
+              val bytes = r._1.getBinaryBytes
+              val md5Hash =
+                new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+              val sha1Hash =
+                new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
+              val url = new URL(r._1.getUrl)
+              val filename = FilenameUtils.getName(url.getPath())
+              val extension = GetExtensionMIME(url.getPath(), r._2)
+              out += Row(
+                r._1.getCrawlDate,
+                CovertLastModifiedDate(r._1.getLastModified),
+                r._1.getUrl,
+                filename,
+                extension,
+                r._1.getMimeType,
+                DetectMimeTypeTika(r._1.getBinaryBytes),
+                md5Hash,
+                sha1Hash,
+                RemoveHTTPHeader(r._1.getContentString))
+            } catch {
+              case _: java.net.MalformedURLException => () // skip invalid URL
+              case _: Throwable => () // skip other per-record issues
+            }
+          }
+          out.iterator
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -799,28 +869,36 @@ package object archivesunleashed {
       val records = rdd
         .map(r => (r, (r.getMimeType)))
         .filter(r => r._2.contains("javascript"))
-        .map(r => {
-          val bytes = r._1.getBinaryBytes
-          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
-          val sha1Hash =
-            new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
-          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
-          val url = new URL(r._1.getUrl)
-          val filename = FilenameUtils.getName(url.getPath())
-          val extension = GetExtensionMIME(url.getPath(), r._2)
-          (
-            r._1.getCrawlDate,
-            CovertLastModifiedDate(r._1.getLastModified),
-            r._1.getUrl,
-            filename,
-            extension,
-            r._1.getMimeType,
-            DetectMimeTypeTika(r._1.getBinaryBytes),
-            md5Hash,
-            sha1Hash,
-            RemoveHTTPHeader(r._1.getContentString))
+        .mapPartitions(iter => {
+          val out = scala.collection.mutable.ArrayBuffer.empty[Row]
+          iter.foreach { r =>
+            try {
+              val bytes = r._1.getBinaryBytes
+              val md5Hash =
+                new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+              val sha1Hash =
+                new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
+              val url = new URL(r._1.getUrl)
+              val filename = FilenameUtils.getName(url.getPath())
+              val extension = GetExtensionMIME(url.getPath(), r._2)
+              out += Row(
+                r._1.getCrawlDate,
+                CovertLastModifiedDate(r._1.getLastModified),
+                r._1.getUrl,
+                filename,
+                extension,
+                r._1.getMimeType,
+                DetectMimeTypeTika(r._1.getBinaryBytes),
+                md5Hash,
+                sha1Hash,
+                RemoveHTTPHeader(r._1.getContentString))
+            } catch {
+              case _: java.net.MalformedURLException => () // skip invalid URL
+              case _: Throwable => () // skip other per-record issues
+            }
+          }
+          out.iterator
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -843,28 +921,36 @@ package object archivesunleashed {
       val records = rdd
         .map(r => (r, (r.getMimeType)))
         .filter(r => r._2.contains("json"))
-        .map(r => {
-          val bytes = r._1.getBinaryBytes
-          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
-          val sha1Hash =
-            new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
-          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
-          val url = new URL(r._1.getUrl)
-          val filename = FilenameUtils.getName(url.getPath())
-          val extension = GetExtensionMIME(url.getPath(), r._2)
-          (
-            r._1.getCrawlDate,
-            CovertLastModifiedDate(r._1.getLastModified),
-            r._1.getUrl,
-            filename,
-            extension,
-            r._1.getMimeType,
-            DetectMimeTypeTika(r._1.getBinaryBytes),
-            md5Hash,
-            sha1Hash,
-            RemoveHTTPHeader(r._1.getContentString))
+        .mapPartitions(iter => {
+          val out = scala.collection.mutable.ArrayBuffer.empty[Row]
+          iter.foreach { r =>
+            try {
+              val bytes = r._1.getBinaryBytes
+              val md5Hash =
+                new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+              val sha1Hash =
+                new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
+              val url = new URL(r._1.getUrl)
+              val filename = FilenameUtils.getName(url.getPath())
+              val extension = GetExtensionMIME(url.getPath(), r._2)
+              out += Row(
+                r._1.getCrawlDate,
+                CovertLastModifiedDate(r._1.getLastModified),
+                r._1.getUrl,
+                filename,
+                extension,
+                r._1.getMimeType,
+                DetectMimeTypeTika(r._1.getBinaryBytes),
+                md5Hash,
+                sha1Hash,
+                RemoveHTTPHeader(r._1.getContentString))
+            } catch {
+              case _: java.net.MalformedURLException => () // skip invalid URL
+              case _: Throwable => () // skip other per-record issues
+            }
+          }
+          out.iterator
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -888,28 +974,36 @@ package object archivesunleashed {
         .map(r => (r, (r.getMimeType), (DetectMimeTypeTika(r.getBinaryBytes))))
         .filter(r => r._2 == "text/plain")
         .filter(r => r._3 == "text/plain")
-        .map(r => {
-          val bytes = r._1.getBinaryBytes
-          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
-          val sha1Hash =
-            new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
-          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
-          val url = new URL(r._1.getUrl)
-          val filename = FilenameUtils.getName(url.getPath())
-          val extension = GetExtensionMIME(url.getPath(), r._2)
-          (
-            r._1.getCrawlDate,
-            CovertLastModifiedDate(r._1.getLastModified),
-            r._1.getUrl,
-            filename,
-            extension,
-            r._1.getMimeType,
-            r._3,
-            md5Hash,
-            sha1Hash,
-            RemoveHTTPHeader(r._1.getContentString))
+        .mapPartitions(iter => {
+          val out = scala.collection.mutable.ArrayBuffer.empty[Row]
+          iter.foreach { r =>
+            try {
+              val bytes = r._1.getBinaryBytes
+              val md5Hash =
+                new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+              val sha1Hash =
+                new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
+              val url = new URL(r._1.getUrl)
+              val filename = FilenameUtils.getName(url.getPath())
+              val extension = GetExtensionMIME(url.getPath(), r._2)
+              out += Row(
+                r._1.getCrawlDate,
+                CovertLastModifiedDate(r._1.getLastModified),
+                r._1.getUrl,
+                filename,
+                extension,
+                r._1.getMimeType,
+                r._3,
+                md5Hash,
+                sha1Hash,
+                RemoveHTTPHeader(r._1.getContentString))
+            } catch {
+              case _: java.net.MalformedURLException => () // skip invalid URL
+              case _: Throwable => () // skip other per-record issues
+            }
+          }
+          out.iterator
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
@@ -932,28 +1026,36 @@ package object archivesunleashed {
       val records = rdd
         .map(r => (r, (r.getMimeType)))
         .filter(r => r._2.contains("xml"))
-        .map(r => {
-          val bytes = r._1.getBinaryBytes
-          val md5Hash = new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
-          val sha1Hash =
-            new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
-          val encodedBytes = Base64.getEncoder.encodeToString(bytes)
-          val url = new URL(r._1.getUrl)
-          val filename = FilenameUtils.getName(url.getPath())
-          val extension = GetExtensionMIME(url.getPath(), r._2)
-          (
-            r._1.getCrawlDate,
-            CovertLastModifiedDate(r._1.getLastModified),
-            r._1.getUrl,
-            filename,
-            extension,
-            r._1.getMimeType,
-            DetectMimeTypeTika(r._1.getBinaryBytes),
-            md5Hash,
-            sha1Hash,
-            RemoveHTTPHeader(r._1.getContentString))
+        .mapPartitions(iter => {
+          val out = scala.collection.mutable.ArrayBuffer.empty[Row]
+          iter.foreach { r =>
+            try {
+              val bytes = r._1.getBinaryBytes
+              val md5Hash =
+                new String(Hex.encodeHex(MessageDigest.getInstance("MD5").digest(bytes)))
+              val sha1Hash =
+                new String(Hex.encodeHex(MessageDigest.getInstance("SHA1").digest(bytes)))
+              val url = new URL(r._1.getUrl)
+              val filename = FilenameUtils.getName(url.getPath())
+              val extension = GetExtensionMIME(url.getPath(), r._2)
+              out += Row(
+                r._1.getCrawlDate,
+                CovertLastModifiedDate(r._1.getLastModified),
+                r._1.getUrl,
+                filename,
+                extension,
+                r._1.getMimeType,
+                DetectMimeTypeTika(r._1.getBinaryBytes),
+                md5Hash,
+                sha1Hash,
+                RemoveHTTPHeader(r._1.getContentString))
+            } catch {
+              case _: java.net.MalformedURLException => () // skip invalid URL
+              case _: Throwable => () // skip other per-record issues
+            }
+          }
+          out.iterator
         })
-        .map(t => Row(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10))
 
       val schema = new StructType()
         .add(StructField("crawl_date", StringType, true))
