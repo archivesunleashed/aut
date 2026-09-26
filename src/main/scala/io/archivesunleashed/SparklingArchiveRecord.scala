@@ -24,11 +24,40 @@ import org.archive.webservices.sparkling.http.HttpMessage
 import org.archive.webservices.sparkling.io.IOUtil
 import org.archive.webservices.sparkling.util.{ManagedVal, ValueSupplier}
 import org.archive.webservices.sparkling.warc.{WarcHeaders, WarcRecord}
+import org.slf4j.LoggerFactory
 import scala.util.Try
 
-/** Set MaxStringByteLength for SparklingArchiveRecord. */
+/** Set MaxStringByteLength and MaxBinaryBytes for SparklingArchiveRecord. */
 object SparklingArchiveRecord {
   val MaxStringByteLength: Int = 1024
+
+  /**
+   * Largest payload, in bytes, that getBinaryBytes will load into memory. Larger records are
+   * skipped (an empty array is returned) instead of being read.
+   *
+   * A JVM byte array cannot hold much more than 2 GiB, so reading a bigger payload throws an
+   * OutOfMemoryError. That is a fatal error, which the Try in getBinaryBytes does not catch, so
+   * a single oversized record would otherwise fail its task, and after Spark's retries the whole
+   * job, no matter how much heap is available. Override with -Daut.maxBinaryBytes=<bytes>.
+   */
+  val MaxBinaryBytes: Long = sys.props
+    .get("aut.maxBinaryBytes")
+    .flatMap(s => Try(s.toLong).toOption)
+    .filter(_ > 0)
+    .getOrElse(512L * 1024 * 1024)
+
+  private val log = LoggerFactory.getLogger(classOf[SparklingArchiveRecord])
+
+  /**
+   * Reads a stream fully, without ever holding more than max + 1 bytes.
+   *
+   * @return
+   *   the bytes, or None if the stream holds more than max bytes.
+   */
+  private[archivesunleashed] def readBounded(in: InputStream, max: Long): Option[Array[Byte]] = {
+    val bytes = IOUtil.bytes(new BoundedInputStream(max + 1, in))
+    if (bytes.length > max) None else Some(bytes)
+  }
 }
 
 /**
@@ -45,11 +74,11 @@ class SparklingArchiveRecord(
   def warc: WarcRecord =
     new WarcRecord(meta.versionStr, meta.headers, payload.get.get)
 
-  private def payload(r: WarcRecord): Array[Byte] = {
-    IOUtil.bytes(
-      if (maxMemoryBytes < 0) r.payload
-      else new BoundedInputStream(maxMemoryBytes, r.payload))
-  }
+  private def payloadStream(r: WarcRecord): InputStream =
+    if (maxMemoryBytes < 0) r.payload
+    else new BoundedInputStream(maxMemoryBytes, r.payload)
+
+  private def payload(r: WarcRecord): Array[Byte] = IOUtil.bytes(payloadStream(r))
   private def http(r: WarcRecord): Option[HttpMessage] = {
     if (maxMemoryBytes < 0) r.http
     else r.http.map(_.copy(maxBodyLength = maxMemoryBytes))
@@ -96,8 +125,13 @@ class SparklingArchiveRecord(
 
   override def getBinaryBytes: Array[Byte] =
     Try {
-      var record = warc
-      http(record).map(_.body).map(IOUtil.bytes).getOrElse(payload(record))
+      val record = warc
+      val stream = http(record).map(_.body).getOrElse(payloadStream(record))
+      readBounded(stream, MaxBinaryBytes).getOrElse {
+        log.warn(
+          s"Skipping payload over $MaxBinaryBytes bytes: ${meta.url.getOrElse("")} in $filename")
+        Array.empty[Byte]
+      }
     }.getOrElse(Array.empty)
 
   override def getHttpStatus: String =
