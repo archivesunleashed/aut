@@ -487,6 +487,16 @@
       <artifactId>commons-compress</artifactId>
       <version>1.28.0</version>
     </dependency>
+    <!-- Sparkling's HttpMessage decodes Content-Encoding: br bodies with
+         org.brotli.dec.BrotliInputStream, which nothing else here pulls in (it is an
+         optional dependency of commons-compress). Without it, any Brotli-encoded record
+         throws NoClassDefFoundError; that is a fatal LinkageError, which the Try around
+         body decoding does not catch, so a single such record fails the whole Spark job. -->
+    <dependency>
+      <groupId>org.brotli</groupId>
+      <artifactId>dec</artifactId>
+      <version>0.1.2</version>
+    </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
