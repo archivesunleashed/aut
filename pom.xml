@@ -113,7 +113,7 @@
                   <pattern>org.apache.commons.io.</pattern>
                   <shadedPattern>org.apache.commons.io.shaded.</shadedPattern>
                 </relocation>
-                <!-- See the org.brotli:dec dependency's comment above: without this, Sparkling's
+                <!-- See the org.brotli:dec dependency's comment above; without this, Sparkling's
                      bundled BrotliCompressorInputStream collides with (and loses to) Spark's own
                      bundled commons-compress at runtime, which lacks the Brotli decoder. -->
                 <relocation>
@@ -490,11 +490,11 @@
       <version>1.12</version>
     </dependency>
     <dependency>  <!-- Needed for Sparkling's Brotli-encoded content support (provided scope in its
-                       own build, so it doesn't come along transitively -- AUT must declare it
+                       own build, so it doesn't come along transitively: AUT must declare it
                        directly). Relocated below (see the shade-plugin config) for the same reason
                        as commons-io and Guava: without that, this copy's BrotliCompressorInputStream
                        loses to Spark's own bundled commons-compress at runtime, which lacks the
-                       decoder just below -- see that dependency's comment for how. -->
+                       decoder just below (see that dependency's comment for how). -->
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-compress</artifactId>
       <version>1.28.0</version>
@@ -502,13 +502,13 @@
     <!-- Needed by commons-compress's BrotliCompressorInputStream, which Sparkling's HttpMessage
          calls to decode Content-Encoding: br bodies. Nothing else here pulls it in (it is an
          optional dependency of commons-compress). Without it, decoding such a body throws
-         NoClassDefFoundError -- a fatal LinkageError that the Try around body decoding does not
+         NoClassDefFoundError, a fatal LinkageError that the Try around body decoding does not
          catch, so a single Brotli-encoded record fails the whole Spark job.
 
          Adding this dependency alone does not fix that, though: a real Spark distribution bundles
          its own commons-compress (e.g. spark-3.5.9-bin-hadoop3/jars/commons-compress-1.23.0.jar),
          and the JVM resolves an unqualified class name via the parent (system) class loader first.
-         So it's Spark's own BrotliCompressorInputStream that actually runs, not this fat jar's --
+         So it's Spark's own BrotliCompressorInputStream that actually runs, not this fat jar's,
          and *that* one still can't see org.brotli.dec.BrotliInputStream here, because a parent
          loader can never see a child loader's classes. Relocating org.apache.commons.compress.
          (below, same as commons-io and Guava already are, and for the same reason) fixes this:
