@@ -1,5 +1,38 @@
 # Changelog
 
+## [Unreleased](https://github.com/archivesunleashed/aut/tree/HEAD)
+
+[Full Changelog](https://github.com/archivesunleashed/aut/compare/aut-1.2.0...HEAD)
+
+**Implemented enhancements:**
+
+- Broadcast the public suffix list once per Spark application instead of fetching it on every executor, including in the `extract_domain` UDF.
+- Cache the Optimaize language detector per thread instead of loading its models on every `DetectLanguage` call.
+- Stop computing Tika MIME detection and `RemoveHTTPHeader`/`RemoveHTML` twice per record in the DataFrame builders.
+- Skip records larger than `aut.maxBinaryBytes` (default 512 MiB, override with `-Daut.maxBinaryBytes=<bytes>`) with a warning, instead of failing the job with an `OutOfMemoryError`.
+- Add `ShadedJarClasspathIT` and `BrotliRelocationIT` integration tests (run by `mvn verify`) to catch classpath collisions between the fat jar and a Spark distribution.
+- Add a Python test suite under `src/test/python/`.
+- Add concurrent-load tests for the shared Tika, boilerpipe, and language detector instances.
+- Adopt a `.scalafmt.conf`, reformat the codebase, and extend the Python formatter CI check to the tests.
+- Update the README for the new dependency versions, and add testing and code formatting sections.
+
+**Fixed bugs:**
+
+- One record with a URL that `java.net.URL` can't parse (e.g. `urn:`) no longer crashes the whole job. The affected record is skipped in `images()` and every other DataFrame builder.
+- Brotli-encoded (`Content-Encoding: br`) records no longer fail the job with `NoClassDefFoundError`. `commons-compress` is now relocated in the fat jar, and the Brotli decoder is bundled.
+- Tika 3.x no longer fails at runtime with `NoSuchMethodError` on Spark distributions that bundle an older `commons-io`. `commons-io` is now relocated in the fat jar.
+- PySpark `WriteGraphML` wrote the same stale weight and crawl date for every edge.
+- PySpark `ExtractPopularImages` ignored its `min_width` and `min_height` parameters.
+
+**Dependency updates:**
+
+- Apache Spark 3.0.1 → 3.5.9, Scala 2.12.10 → 2.12.18, Jackson 2.10.0 → 2.15.2
+- Apache Tika 1.23 → 3.2.2 (`tika-parsers-standard-package`, `tika-langdetect-optimaize`). `robots.txt` content is now detected as `text/x-robots` instead of `text/plain`.
+- Sparkling bumped to the current `main` (8d9b54a, 0.3.8-SNAPSHOT)
+- maven-shade-plugin 3.2.1 → 3.6.2
+- `commons-compress` pinned to 1.28.0 instead of an open-ended range
+- Removed unused `scala-parser-combinators`, `lintools-datatypes`, `hadoop-mapreduce-client-core`, `webarchive-commons`, and `xercesImpl`
+
 ## [aut-1.2.0](https://github.com/archivesunleashed/aut/tree/aut-1.2.0) (2022-11-17)
 
 [Full Changelog](https://github.com/archivesunleashed/aut/compare/aut-1.1.1...aut-1.2.0)
