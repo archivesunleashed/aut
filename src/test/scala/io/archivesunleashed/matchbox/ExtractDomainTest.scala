@@ -16,6 +16,7 @@
 
 package io.archivesunleashed.matchbox
 
+import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
@@ -63,6 +64,41 @@ class ExtractDomainTest extends FunSuite {
   test("Test for domain backslash RDD") {
     data3.foreach { case (link, domain) =>
       assert(ExtractDomain(link) == domain)
+    }
+  }
+
+  test("Extract domain with a supplied suffix list") {
+    val suffixes = Set("com", "co.uk", "*.ck")
+    assert(ExtractDomain("http://www.example.com/page", suffixes) == "example.com")
+    assert(ExtractDomain("http://news.bbc.co.uk/", suffixes) == "bbc.co.uk")
+    // "*.ck" makes any label under ck a public suffix, so the registrable domain keeps three labels.
+    assert(ExtractDomain("http://www.foo.bar.ck/", suffixes) == "foo.bar.ck")
+    // No matching suffix leaves the host unchanged.
+    assert(ExtractDomain("http://intranet.local/", suffixes) == "intranet.local")
+    assert(ExtractDomain(index, suffixes) == "")
+  }
+
+  test("Broadcast suffix list is reused per application and replaced for a new one") {
+    def context(): SparkContext =
+      new SparkContext(new SparkConf().setMaster("local[1]").setAppName("extract-domain"))
+
+    val first = context()
+    val firstBc =
+      try {
+        val bc = ExtractDomain.broadcast(first)
+        assert(ExtractDomain.broadcast(first) eq bc)
+        bc
+      } finally {
+        first.stop()
+      }
+
+    val second = context()
+    try {
+      val secondBc = ExtractDomain.broadcast(second)
+      assert(secondBc ne firstBc)
+      assert(secondBc.value == ExtractDomain.Suffixes)
+    } finally {
+      second.stop()
     }
   }
 }

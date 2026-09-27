@@ -41,7 +41,9 @@ object ExtractDomain {
     suffixesBroadcast match {
       case Some((appId, bc)) if appId == sc.applicationId => bc
       case _ =>
-        for ((_, bc) <- suffixesBroadcast) bc.destroy()
+        // Don't destroy the previous broadcast: only one SparkContext can be active, so its
+        // context is already stopped, and broadcast ids restart at 0 per context, so an async
+        // destroy would remove the new context's broadcast with the same id.
         val bc = sc.broadcast(Suffixes)
         suffixesBroadcast = Some((sc.applicationId, bc))
         bc
