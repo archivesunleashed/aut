@@ -956,6 +956,15 @@ class CommandLineAppTest extends FunSuite with BeforeAndAfter {
     }
   }
 
+  test("Command line app refuses to overwrite an existing output directory") {
+    Files.createDirectories(Paths.get(outputDir))
+    assertThrows[IllegalArgumentException] {
+      app.CommandLineAppRunner.test(
+        Array(inputOpt, arcPath, outputOpt, outputDir, extractOpt, plainTextOpt),
+        sc)
+    }
+  }
+
   after {
     if (sc != null) {
       sc.stop()

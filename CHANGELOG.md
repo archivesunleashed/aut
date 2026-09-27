@@ -13,6 +13,7 @@
 - Add `ShadedJarClasspathIT` and `BrotliRelocationIT` integration tests (run by `mvn verify`) to catch classpath collisions between the fat jar and a Spark distribution.
 - Add a Python test suite under `src/test/python/`.
 - Add concurrent-load tests for the shared Tika, boilerpipe, and language detector instances.
+- Add branch-coverage tests for `CovertLastModifiedDate`, `ExtractDate`, `ExtractDomain`, `ExtractLinks`, `GetExtensionMIME`, `RemoveHTTPHeader`, and `CommandLineApp`, raising branch coverage from 64% to 71%.
 - Adopt a `.scalafmt.conf`, reformat the codebase, and extend the Python formatter CI check to the tests.
 - Update the README for the new dependency versions, and add testing and code formatting sections.
 

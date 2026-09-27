@@ -48,6 +48,21 @@ class ExtractDateTest extends FunSuite {
     assert(ExtractDate(date, YYYYMMDDHHMMSS) == date.substring(startSS, secondSS))
     // scalastyle:off null
     assert(ExtractDate(null, YYYYMMDDHHMMSS) == "")
+    assert(ExtractDate(date, null: ExtractDate.DateComponent.DateComponent) == date)
+    // scalastyle:on null
+  }
+
+  test("Date extraction DF") {
+    val date = "20151204235402"
+    assert(ExtractDate(date, "YYYY") == "2015")
+    assert(ExtractDate(date, "MM") == "12")
+    assert(ExtractDate(date, "DD") == "04")
+    assert(ExtractDate(date, "YYYYMM") == "201512")
+    assert(ExtractDate(date, "YYYYMMDD") == "20151204")
+    assert(ExtractDate(date, "YYYYMMDDHHMMSS") == date)
+    assert(ExtractDate(date, "unrecognized") == date)
+    // scalastyle:off null
+    assert(ExtractDate(null, "YYYY") == "")
     // scalastyle:on null
   }
 }

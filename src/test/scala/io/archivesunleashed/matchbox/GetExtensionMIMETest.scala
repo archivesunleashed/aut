@@ -79,6 +79,16 @@ class GetExtensionMIMETest extends FunSuite with BeforeAndAfter {
     assert("70a4c9c1ab657782e6732b65224fd124" == extracted(2)(5))
   }
 
+  test("Get extension from URL when MIME type is unknown") {
+    val unknownMime = "application/x-aut-not-a-real-type"
+    assert(GetExtensionMIME("https://example.com/file.XYZ", unknownMime) == "xyz")
+    assert(GetExtensionMIME("https://example.com/file", unknownMime) == "unknown")
+  }
+
+  test("Prefer URL extension when it is one of the MIME type's extensions") {
+    assert(GetExtensionMIME("https://example.com/photo.jpeg", "image/jpeg") == "jpeg")
+  }
+
   after {
     if (sc != null) {
       sc.stop()

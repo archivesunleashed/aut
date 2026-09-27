@@ -32,5 +32,8 @@ class RemoveHTTPHeaderTest extends FunSuite {
     assert(unchanged == nohttp)
     assert(nothing == "")
     assert("".matches(nothing))
+    // scalastyle:off null
+    assert(RemoveHTTPHeader(null) == "")
+    // scalastyle:on null
   }
 }
