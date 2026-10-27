@@ -438,6 +438,7 @@ class CommandLineApp(conf: CmdAppConf) {
       d.write
         .option("timestampFormat", "yyyy/MM/dd HH:mm:ss ZZ")
         .format("csv")
+        .option("header", "true")
         .option("escape", "\"")
         .option("encoding", "utf-8")
         .save(saveTarget)
